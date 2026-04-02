@@ -2750,7 +2750,9 @@
         labelRole: "الدور",
         roleOptUser: "مستخدم",
         roleOptEngineer: "مهندس",
+        roleOptViewer: "مُطّلع (عرض فقط)",
         roleOptWarehouseClerk: "أمين مستودع",
+        labelBypassLowerApprovals: "تجاوز الموافقات الأدنى",
         roleOptAdmin: "مشرف",
         navWarehouseReview: "مراجعة المستودع",
         shortcutWarehouseReview: "مراجعة المستودع",
@@ -2815,6 +2817,7 @@
         alertGmRegionsRequired: "حدّد المناطق المسندة لمسؤول المجموعة من الإدارة.",
         alertWorkflowRoleNoPoEdit:
           "هذا الدور يعتمد على الشاشات المخصصة (مشتريات، استلام، حسابات، إلخ) ولا يعدّل أوامر الشراء من القائمة العامة.",
+        alertBypassLowerApprovalsNotAllowed: "لا تملك صلاحية تجاوز الموافقات الأدنى.",
         btnApprove: "موافقة",
         btnReject: "رفض",
         btnViewPoRequest: "عرض الطلب",
@@ -3185,8 +3188,10 @@
         labelRole: "Role",
         roleOptUser: "User",
         roleOptEngineer: "Engineer",
+        roleOptViewer: "Viewer (read-only)",
         roleOptWarehouseClerk: "Warehouse clerk",
         roleOptAdmin: "Administrator",
+        labelBypassLowerApprovals: "Bypass lower approvals",
         navWarehouseReview: "Warehouse review",
         shortcutWarehouseReview: "Warehouse review",
         warehouseReviewTitle: "Warehouse review",
@@ -3250,6 +3255,7 @@
         alertGmRegionsRequired: "Assign managed regions for this group manager in Administration.",
         alertWorkflowRoleNoPoEdit:
           "This role uses dedicated screens (purchasing, receipt, accounting, etc.) and cannot edit purchase orders from the main list.",
+        alertBypassLowerApprovalsNotAllowed: "You are not allowed to bypass lower approvals.",
         btnApprove: "Approve",
         btnReject: "Reject",
         btnViewPoRequest: "View request",
@@ -3944,6 +3950,7 @@
 
     async function workflowPoLinesPermission(po, mode) {
       if (!po || po.scope !== "project") return false;
+      if (isPoEditorRoleBlocked()) return false;
       if (hasAdminAccess()) {
         return mode === "pm" ? pmCanActOnWorkflowStatus(po.workflowStatus) : gmCanActOnWorkflowStatus(po.workflowStatus);
       }
@@ -4375,6 +4382,7 @@
           displayName,
           role: "user",
           visibleSections: [...DEFAULT_VISIBLE_SECTIONS],
+          canBypassLowerApprovals: false,
           assignedProjectIds: [],
           assignedRegionId: null,
           managedProjectIds: [],
@@ -4385,6 +4393,7 @@
           role: "user",
           displayName,
           visibleSections: [...DEFAULT_VISIBLE_SECTIONS],
+          canBypassLowerApprovals: false,
           assignedProjectIds: [],
           assignedRegionId: null,
           managedProjectIds: [],
@@ -4404,6 +4413,7 @@
         role: d.role || "user",
         displayName: d.displayName || u.email || "",
         visibleSections,
+        canBypassLowerApprovals: d.canBypassLowerApprovals === true,
         assignedProjectIds,
         assignedRegionId: d.assignedRegionId || null,
         managedProjectIds,
@@ -4452,6 +4462,10 @@
         const ids = currentUserProfile?.assignedProjectIds || [];
         return [...ids];
       }
+      if (r === "viewer") {
+        const ids = currentUserProfile?.assignedProjectIds || [];
+        return [...ids];
+      }
       if (r === "project_manager") {
         const ids = currentUserProfile?.managedProjectIds || [];
         return [...ids];
@@ -4477,7 +4491,7 @@
     function isPoEditorRoleBlocked() {
       const r = currentUserProfile?.role || userRole;
       if (hasAdminAccess()) return false;
-      return ["warehouse_clerk", "purchasing_officer", "warehouse_supervisor", "accountant"].includes(r);
+      return ["warehouse_clerk", "purchasing_officer", "warehouse_supervisor", "accountant", "viewer"].includes(r);
     }
 
     function refreshWorkflowQueuesByActiveScreen() {
@@ -4498,7 +4512,7 @@
       const clerk = container.querySelector("#user-clerk-region-wrap");
       const pm = container.querySelector("#user-pm-projects-wrap");
       const gm = container.querySelector("#user-gm-regions-wrap");
-      if (eng) eng.classList.toggle("hidden", role !== "engineer");
+      if (eng) eng.classList.toggle("hidden", role !== "engineer" && role !== "viewer");
       if (clerk) clerk.classList.toggle("hidden", role !== "warehouse_clerk");
       if (pm) pm.classList.toggle("hidden", role !== "project_manager");
       if (gm) gm.classList.toggle("hidden", role !== "group_manager" && role !== "warehouse_supervisor");
@@ -4824,16 +4838,20 @@
       $("modal-po-print-view")?.classList.remove("hidden");
     }
 
+    function userCanBypassLowerApprovals() {
+      return currentUserProfile?.canBypassLowerApprovals === true;
+    }
+
     function pmCanActOnWorkflowStatus(ws) {
-      return ws === "warehouse_review" || ws === "pending_project_manager";
+      if (ws === "pending_project_manager") return true;
+      if (ws === "warehouse_review") return hasAdminAccess() || userCanBypassLowerApprovals();
+      return false;
     }
 
     function gmCanActOnWorkflowStatus(ws) {
-      return (
-        ws === "warehouse_review" ||
-        ws === "pending_project_manager" ||
-        ws === "pending_group_manager"
-      );
+      if (ws === "pending_group_manager") return true;
+      if (ws === "warehouse_review" || ws === "pending_project_manager") return hasAdminAccess() || userCanBypassLowerApprovals();
+      return false;
     }
 
     function setRoleUI() {
@@ -4913,6 +4931,7 @@
       const r = userRole || "user";
       if (r === "admin") return t("roleAdmin");
       if (r === "engineer") return t("roleOptEngineer");
+      if (r === "viewer") return t("roleOptViewer");
       if (r === "warehouse_clerk") return t("roleOptWarehouseClerk");
       if (r === "project_manager") return t("roleOptProjectManager");
       if (r === "group_manager") return t("roleOptGroupManager");
@@ -5038,6 +5057,7 @@
       const wrap = $("po-projects-table-wrap");
       const ctx = projectPurchaseOrdersContext;
       if (!wrap || !ctx) return;
+      const canEdit = !isPoEditorRoleBlocked();
       const q = ($("po-projects-search")?.value || "").trim().toLowerCase();
       const wf = $("po-projects-filter-workflow")?.value || "";
       const pri = $("po-projects-filter-priority")?.value || "";
@@ -5076,8 +5096,11 @@
                   <td>${formatWorkflowTableCellForPo(r)}</td>
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
-                    <button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button>
-                    <button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>
+                    ${
+                      canEdit
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
+                        : ""
+                    }
                   </td>
                 </tr>`;
         })
@@ -5139,6 +5162,9 @@
             if (r === "engineer") {
               const allowed = currentUserProfile?.assignedProjectIds || [];
               rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
+            } else if (r === "viewer") {
+              const allowed = currentUserProfile?.assignedProjectIds || [];
+              rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
             } else if (r === "project_manager") {
               const allowed = currentUserProfile?.managedProjectIds || [];
               rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
@@ -5151,6 +5177,10 @@
                 );
             }
           }
+        }
+        if (scope !== "project") {
+          const r = currentUserProfile?.role || userRole;
+          if (!hasAdminAccess() && r === "viewer") rows = [];
         }
         rows.sort((a, b) => {
           const pri = (x) => (x.priority === "urgent" ? 1 : 0);
@@ -5185,6 +5215,7 @@
           wrap.innerHTML = `<p class="empty-state">${t("noOrdersYet")}</p>`;
           return;
         }
+        const canEdit = !isPoEditorRoleBlocked();
         const thead = `<tr>
               <th>${t("colTitle")}</th>
               <th>${t("colSupplier")}</th>
@@ -5203,8 +5234,13 @@
                   <td>${statusBadge(r.status || "draft")}</td>
                   <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
                   <td>
-                    <button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button>
-                    <button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>
+                    ${
+                      canEdit
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t(
+                            "edit"
+                          )}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
+                        : ""
+                    }
                   </td>
                 </tr>`
           )
@@ -5469,7 +5505,9 @@
       if (!snap.exists()) return;
       const po = snap.data();
       if (!pmCanActOnWorkflowStatus(po.workflowStatus)) {
-        alert(t("alertWarehouseReviewStale"));
+        if (po.workflowStatus === "warehouse_review" && !hasAdminAccess() && !userCanBypassLowerApprovals())
+          alert(t("alertBypassLowerApprovalsNotAllowed"));
+        else alert(t("alertWarehouseReviewStale"));
         return;
       }
       if (role === "project_manager" && managed.length && !managed.includes(po.projectId)) {
@@ -5511,7 +5549,9 @@
       if (!snap.exists()) return;
       const po = snap.data();
       if (!pmCanActOnWorkflowStatus(po.workflowStatus)) {
-        alert(t("alertWarehouseReviewStale"));
+        if (po.workflowStatus === "warehouse_review" && !hasAdminAccess() && !userCanBypassLowerApprovals())
+          alert(t("alertBypassLowerApprovalsNotAllowed"));
+        else alert(t("alertWarehouseReviewStale"));
         return;
       }
       if (role === "project_manager" && managed.length && !managed.includes(po.projectId)) {
@@ -5554,7 +5594,13 @@
       if (!snap.exists()) return;
       const po = snap.data();
       if (!gmCanActOnWorkflowStatus(po.workflowStatus)) {
-        alert(t("alertWarehouseReviewStale"));
+        if (
+          (po.workflowStatus === "warehouse_review" || po.workflowStatus === "pending_project_manager") &&
+          !hasAdminAccess() &&
+          !userCanBypassLowerApprovals()
+        )
+          alert(t("alertBypassLowerApprovalsNotAllowed"));
+        else alert(t("alertWarehouseReviewStale"));
         return;
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
@@ -5606,7 +5652,13 @@
       if (!snap.exists()) return;
       const po = snap.data();
       if (!gmCanActOnWorkflowStatus(po.workflowStatus)) {
-        alert(t("alertWarehouseReviewStale"));
+        if (
+          (po.workflowStatus === "warehouse_review" || po.workflowStatus === "pending_project_manager") &&
+          !hasAdminAccess() &&
+          !userCanBypassLowerApprovals()
+        )
+          alert(t("alertBypassLowerApprovalsNotAllowed"));
+        else alert(t("alertWarehouseReviewStale"));
         return;
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
@@ -5661,10 +5713,11 @@
       }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
+        const pmQueueStatuses = ["warehouse_review", "pending_project_manager"].filter((ws) => pmCanActOnWorkflowStatus(ws));
         const q = query(
           collection(db, "purchaseOrders"),
           where("scope", "==", "project"),
-          where("workflowStatus", "in", ["warehouse_review", "pending_project_manager"])
+          where("workflowStatus", "in", pmQueueStatuses)
         );
         const snap = await getDocs(q);
         let rows = [];
@@ -5739,10 +5792,13 @@
       }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
+        const gmQueueStatuses = ["warehouse_review", "pending_project_manager", "pending_group_manager"].filter((ws) =>
+          gmCanActOnWorkflowStatus(ws)
+        );
         const q = query(
           collection(db, "purchaseOrders"),
           where("scope", "==", "project"),
-          where("workflowStatus", "in", ["warehouse_review", "pending_project_manager", "pending_group_manager"])
+          where("workflowStatus", "in", gmQueueStatuses)
         );
         const snap = await getDocs(q);
         let rows = [];
@@ -5817,6 +5873,10 @@
       const rStake = currentUserProfile?.role || userRole;
       if (hasAdminAccess() || rStake === "purchasing_officer") return rows;
       if (rStake === "engineer") {
+        const allowed = currentUserProfile?.assignedProjectIds || [];
+        return rows.filter((row) => row.projectId && allowed.includes(row.projectId));
+      }
+      if (rStake === "viewer") {
         const allowed = currentUserProfile?.assignedProjectIds || [];
         return rows.filter((row) => row.projectId && allowed.includes(row.projectId));
       }
@@ -6893,6 +6953,7 @@
     function roleLabelDisplay(role) {
       if (role === "admin") return t("roleOptAdmin");
       if (role === "engineer") return t("roleOptEngineer");
+      if (role === "viewer") return t("roleOptViewer");
       if (role === "warehouse_clerk") return t("roleOptWarehouseClerk");
       if (role === "project_manager") return t("roleOptProjectManager");
       if (role === "group_manager") return t("roleOptGroupManager");
@@ -6903,6 +6964,10 @@
     }
 
     async function deletePo(id) {
+      if (isPoEditorRoleBlocked()) {
+        alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
+        return;
+      }
       if (!confirm(t("confirmDeletePo"))) return;
       await deleteDoc(doc(db, "purchaseOrders", id));
       const active = document.querySelector(".app-screen:not(.hidden)");
@@ -6957,7 +7022,7 @@
         const allow = await getProjectAllowlistForProjectPo();
         if (Array.isArray(allow) && allow.length === 0) {
           const r = currentUserProfile?.role || userRole;
-          if (r === "engineer") alert(t("alertNoAssignedProjects"));
+          if (r === "engineer" || r === "viewer") alert(t("alertNoAssignedProjects"));
           else if (r === "project_manager") alert(t("alertPmProjectsRequired"));
           else if (r === "group_manager") alert(t("alertGmRegionsRequired"));
           else alert(t("alertSelectProject"));
@@ -7677,6 +7742,7 @@
         const roleOpts = [
           { value: "user", label: t("roleOptUser") },
           { value: "engineer", label: t("roleOptEngineer") },
+          { value: "viewer", label: t("roleOptViewer") },
           { value: "warehouse_clerk", label: t("roleOptWarehouseClerk") },
           { value: "project_manager", label: t("roleOptProjectManager") },
           { value: "group_manager", label: t("roleOptGroupManager") },
@@ -7686,6 +7752,15 @@
           { value: "admin", label: t("roleOptAdmin") },
         ];
         addField("role", t("labelRole"), "select", roleOpts);
+
+        const bypassWrap = document.createElement("div");
+        bypassWrap.className = "field";
+        bypassWrap.innerHTML = `
+          <label style="display:flex;gap:0.6rem;align-items:center;">
+            <input type="checkbox" data-field="canBypassLowerApprovals" />
+            ${escapeHtml(t("labelBypassLowerApprovals"))}
+          </label>`;
+        fields.appendChild(bypassWrap);
 
         const secWrap = document.createElement("div");
         secWrap.className = "field";
@@ -8003,10 +8078,11 @@
               el.value = existingId;
               return;
             }
-            if (el.type === "checkbox" && key === "active") {
-              el.checked = data.active !== false;
+            if (el.type === "checkbox") {
+              if (key === "active") el.checked = data.active !== false;
+              else el.checked = data[key] === true;
             } else if (el.tagName === "SELECT") el.value = data[key] ?? "";
-            else if (el.type !== "checkbox") el.value = data[key] ?? "";
+            else el.value = data[key] ?? "";
           });
           if (collectionName === "userProfiles") {
             const uidInp = fields.querySelector("#ef-uid");
@@ -8089,10 +8165,10 @@
       $("entity-fields").querySelectorAll("[data-field]").forEach((el) => {
         const key = el.dataset.field;
         if (key === "uid") return;
-        if (el.type === "checkbox" && key === "active") {
-          data.active = el.checked;
+        if (el.type === "checkbox") {
+          data[key] = el.checked;
         } else if (el.tagName === "SELECT") data[key] = el.value || null;
-        else if (el.type !== "checkbox") data[key] = el.value.trim();
+        else data[key] = el.value.trim();
       });
 
       try {
@@ -8152,9 +8228,10 @@
             displayName: (data.displayName || "").trim(),
             role: roleVal,
             visibleSections,
+            canBypassLowerApprovals: data.canBypassLowerApprovals === true,
             updatedAt: serverTimestamp(),
           };
-          if (roleVal === "engineer") {
+          if (roleVal === "engineer" || roleVal === "viewer") {
             payload.assignedProjectIds = assignedProjectIds;
             payload.managedProjectIds = deleteField();
             payload.managedRegionIds = deleteField();
@@ -8190,6 +8267,7 @@
               currentUserProfile = {
                 role: d.role || "user",
                 visibleSections: normalizeVisibleSectionsFromDoc(d),
+                canBypassLowerApprovals: d.canBypassLowerApprovals === true,
                 assignedProjectIds: Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [],
                 assignedRegionId: d.assignedRegionId || null,
                 managedProjectIds: Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [],
