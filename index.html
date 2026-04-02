@@ -2726,6 +2726,10 @@
         companiesFilterSearch: "بحث: رمز، اسم، بريد، هاتف…",
         companiesFilterStatus: "الحالة",
         filterAll: "الكل",
+        usersFilterSearch: "بحث",
+        usersFilterSearchPlaceholder: "بحث: اسم/بريد/UID…",
+        usersFilterRole: "الدور",
+        usersFilterVisibleSection: "قسم ظاهر",
         filterActiveOnly: "نشط فقط",
         filterInactiveOnly: "غير نشط",
         companiesFilterNoMatch: "لا توجد نتائج تطابق الفلتر.",
@@ -3178,6 +3182,10 @@
         companiesFilterSearch: "Search: code, name, email, phone…",
         companiesFilterStatus: "Status",
         filterAll: "All",
+        usersFilterSearch: "Search",
+        usersFilterSearchPlaceholder: "Search: name/email/UID…",
+        usersFilterRole: "Role",
+        usersFilterVisibleSection: "Visible section",
         filterActiveOnly: "Active only",
         filterInactiveOnly: "Inactive only",
         companiesFilterNoMatch: "No rows match the filter.",
@@ -7780,38 +7788,134 @@
       rSnap.forEach((d) => {
         rmap[d.id] = regionOptionLabel({ id: d.id, ...d.data() });
       });
+      panel._userRows = rows;
+      panel._userRegionsMap = rmap;
       panel.innerHTML = `
-        <div class="toolbar">
+        <div class="po-projects-toolbar-strip" style="margin-bottom:0.65rem">
           <button type="button" class="btn btn-primary btn-sm" data-entity="userProfiles" data-action="add">${t("addUserProfile")}</button>
+          <div class="po-projects-filter-fields">
+            <label class="po-filter-field po-filter-field-search">
+              <span>${escapeHtml(t("usersFilterSearch"))}</span>
+              <input
+                type="search"
+                id="users-filter-search"
+                class="po-projects-filter-search"
+                placeholder="${escapeHtml(t("usersFilterSearchPlaceholder"))}"
+                autocomplete="off"
+              />
+            </label>
+            <label class="po-filter-field">
+              <span>${escapeHtml(t("usersFilterRole"))}</span>
+              <select id="users-filter-role"></select>
+            </label>
+            <label class="po-filter-field">
+              <span>${escapeHtml(t("usersFilterVisibleSection"))}</span>
+              <select id="users-filter-section"></select>
+            </label>
+            <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="users-filter-reset">
+              ${escapeHtml(t("poProjectsClearFilters"))}
+            </button>
+          </div>
         </div>
         <p style="color:var(--muted);font-size:0.9rem;margin-top:0;">${t("userProfilesHint")}</p>
         <div class="table-scroll"><table class="data-table">
           <thead><tr><th>${t("colUserEmail")}</th><th>${t("colUid")}</th><th>${t("colRole")}</th><th>${t("colAssignedProjects")}</th><th>${t("colManagedProjectsPm")}</th><th>${t("colManagedRegionsGm")}</th><th>${t("colAssignedRegion")}</th><th></th></tr></thead>
-          <tbody>
-            ${rows
-              .map(
-                (r) => `
+          <tbody></tbody>
+        </table></div>`;
+      const roleSel = panel.querySelector("#users-filter-role");
+      const sectionSel = panel.querySelector("#users-filter-section");
+      const searchInp = panel.querySelector("#users-filter-search");
+      const resetBtn = panel.querySelector("#users-filter-reset");
+      const uniqRoles = [...new Set(rows.map((r) => (r.role || "").trim()).filter(Boolean))].sort();
+      if (roleSel) {
+        roleSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          uniqRoles
+            .map((rv) => `<option value="${escapeAttr(rv)}">${escapeHtml(roleLabelDisplay(rv))}</option>`)
+            .join("");
+      }
+      const uniqSections = [
+        ...new Set(
+          rows
+            .flatMap((r) => (Array.isArray(r.visibleSections) ? r.visibleSections : []))
+            .map((x) => String(x || "").trim())
+            .filter(Boolean)
+        ),
+      ].sort();
+      if (sectionSel) {
+        sectionSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          uniqSections.map((sv) => `<option value="${escapeAttr(sv)}">${escapeHtml(sv)}</option>`).join("");
+      }
+      const applyUserFilters = () => {
+        const q = (searchInp?.value || "").trim().toLowerCase();
+        const roleVal = roleSel?.value || "";
+        const secVal = sectionSel?.value || "";
+        const filtered = rows.filter((r) => {
+          if (roleVal && String(r.role || "") !== roleVal) return false;
+          if (secVal) {
+            const secs = Array.isArray(r.visibleSections) ? r.visibleSections.map(String) : [];
+            if (!secs.includes(secVal)) return false;
+          }
+          if (!q) return true;
+          const hay = [
+            r.displayName,
+            r.email,
+            r.id,
+            r.role,
+            roleLabelDisplay(r.role),
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          return q.split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+        });
+        const tb = panel.querySelector("tbody");
+        if (!tb) return;
+        if (!filtered.length) {
+          tb.innerHTML = `<tr><td colspan="8" class="empty-state">${escapeHtml(
+            rows.length ? t("companiesFilterNoMatch") : t("noUserProfiles")
+          )}</td></tr>`;
+          return;
+        }
+        tb.innerHTML = filtered
+          .map((r) => {
+            const assignedCnt = Array.isArray(r.assignedProjectIds) ? r.assignedProjectIds.length : 0;
+            const managedPmCnt = Array.isArray(r.managedProjectIds) ? r.managedProjectIds.length : 0;
+            const managedGmCnt = Array.isArray(r.managedRegionIds) ? r.managedRegionIds.length : 0;
+            const regText =
+              r.role === "warehouse_clerk" ? rmap[r.assignedRegionId] || t("dash") : t("dash");
+            return `
               <tr>
                 <td>${escapeHtml(r.displayName || r.email || "")}</td>
                 <td style="font-size:0.8rem;word-break:break-all;">${escapeHtml(r.id)}</td>
                 <td>${escapeHtml(roleLabelDisplay(r.role))}</td>
-                <td>${Array.isArray(r.assignedProjectIds) ? r.assignedProjectIds.length : 0}</td>
-                <td>${Array.isArray(r.managedProjectIds) ? r.managedProjectIds.length : 0}</td>
-                <td>${Array.isArray(r.managedRegionIds) ? r.managedRegionIds.length : 0}</td>
-                <td>${
-                  r.role === "warehouse_clerk"
-                    ? escapeHtml(rmap[r.assignedRegionId] || t("dash"))
-                    : escapeHtml(t("dash"))
-                }</td>
+                <td>${assignedCnt}</td>
+                <td>${managedPmCnt}</td>
+                <td>${managedGmCnt}</td>
+                <td>${escapeHtml(regText)}</td>
                 <td>
-                  <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="userProfiles" data-id="${r.id}">${t("edit")}</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="userProfiles" data-id="${escapeAttr(
+                    r.id
+                  )}">${escapeHtml(t("edit"))}</button>
                 </td>
-              </tr>`
-              )
-              .join("")}
-          </tbody>
-        </table></div>`;
-      if (!rows.length) panel.querySelector("tbody").innerHTML = `<tr><td colspan="8" class="empty-state">${t("noUserProfiles")}</td></tr>`;
+              </tr>`;
+          })
+          .join("");
+        bindEntityButtons(panel);
+      };
+      const debounced = debounceFn(applyUserFilters, 200);
+      searchInp?.addEventListener("input", debounced);
+      roleSel?.addEventListener("change", applyUserFilters);
+      sectionSel?.addEventListener("change", applyUserFilters);
+      resetBtn?.addEventListener("click", () => {
+        if (searchInp) searchInp.value = "";
+        if (roleSel) roleSel.value = "";
+        if (sectionSel) sectionSel.value = "";
+        applyUserFilters();
+      });
+
+      applyUserFilters();
       bindEntityButtons(panel);
     }
 
