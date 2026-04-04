@@ -1581,6 +1581,11 @@
       margin: 0;
     }
 
+    input.po-gen-v-master[readonly] {
+      background: var(--surface2, #f4f4f5);
+      cursor: default;
+    }
+
     .po-meta-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1791,6 +1796,134 @@
 
       .header-user {
         margin-inline-start: 0;
+      }
+
+      .notifications-wrap {
+        position: relative;
+        margin-inline-end: 0.5rem;
+      }
+
+      .btn-notifications {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface2);
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .btn-notifications:hover {
+        background: var(--surface);
+      }
+
+      .notifications-bell {
+        font-size: 1.15rem;
+        line-height: 1;
+      }
+
+      .notifications-badge {
+        position: absolute;
+        top: -0.2rem;
+        inset-inline-end: -0.2rem;
+        min-width: 1.1rem;
+        height: 1.1rem;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: #dc2626;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1.1rem;
+        text-align: center;
+      }
+
+      .notifications-badge.hidden {
+        display: none;
+      }
+
+      .notifications-panel {
+        position: absolute;
+        top: calc(100% + 6px);
+        inset-inline-end: 0;
+        width: min(22rem, calc(100vw - 1.5rem));
+        max-height: min(24rem, 70vh);
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+        z-index: 3000;
+        overflow: hidden;
+      }
+
+      .notifications-panel.hidden {
+        display: none;
+      }
+
+      .notifications-panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.65rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .notifications-panel-head .btn-link {
+        font-size: 0.78rem;
+        padding: 0.2rem 0.35rem;
+        white-space: nowrap;
+      }
+
+      .notifications-list {
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .notif-item {
+        display: block;
+        width: 100%;
+        text-align: inherit;
+        padding: 0.65rem 0.75rem;
+        border: none;
+        border-bottom: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 0.85rem;
+        line-height: 1.35;
+      }
+
+      .notif-item:hover {
+        background: var(--surface2);
+      }
+
+      .notif-item.unread {
+        background: rgba(59, 130, 246, 0.08);
+      }
+
+      .notif-item-time {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      .notif-empty {
+        padding: 1rem 0.75rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-align: center;
       }
 
       .nav-backdrop {
@@ -2008,6 +2141,28 @@
         <button type="button" data-view="help" data-i18n="navHelp">المساعدة</button>
       </nav>
       <div class="header-end">
+        <div class="notifications-wrap" id="notifications-wrap">
+          <button
+            type="button"
+            class="btn-notifications"
+            id="btn-notifications"
+            aria-expanded="false"
+            aria-haspopup="true"
+            data-i18n-aria="notificationsBellAria"
+          >
+            <span class="notifications-bell" aria-hidden="true">🔔</span>
+            <span class="notifications-badge hidden" id="notifications-badge" aria-hidden="true">0</span>
+          </button>
+          <div class="notifications-panel hidden" id="notifications-panel" role="menu">
+            <div class="notifications-panel-head">
+              <span data-i18n="notificationsTitle">الإشعارات</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-notifications-mark-all" data-i18n="notificationsMarkAllRead">
+                تعليم الكل كمقروء
+              </button>
+            </div>
+            <div class="notifications-list" id="notifications-list"></div>
+          </div>
+        </div>
         <div class="header-lang">
           <button type="button" class="btn-lang" id="btn-lang-app" aria-label="Language"></button>
         </div>
@@ -2201,12 +2356,14 @@
         <div class="card">
           <div class="admin-tabs" id="admin-tabs">
             <button type="button" class="active" data-admin-tab="companies" data-i18n="tabCompanies">الشركات</button>
+            <button type="button" data-admin-tab="suppliers" data-i18n="tabSuppliers">الموردون</button>
             <button type="button" data-admin-tab="projects" data-i18n="tabProjects">المشاريع</button>
             <button type="button" data-admin-tab="regions" data-i18n="tabRegions">المناطق</button>
             <button type="button" data-admin-tab="warehouses" data-i18n="tabWarehouses">المستودعات</button>
             <button type="button" data-admin-tab="users" data-i18n="tabUsers">المستخدمون</button>
           </div>
           <div id="admin-panel-companies" class="admin-panel"></div>
+          <div id="admin-panel-suppliers" class="admin-panel hidden"></div>
           <div id="admin-panel-projects" class="admin-panel hidden"></div>
           <div id="admin-panel-regions" class="admin-panel hidden"></div>
           <div id="admin-panel-warehouses" class="admin-panel hidden"></div>
@@ -2220,8 +2377,16 @@
         <div class="card">
           <div class="help-section">
             <h3 data-i18n="helpAboutTitle">عن النظام</h3>
-            <p data-i18n="helpAboutP1">نظام لتتبع أوامر الشراء: مسار للمشاريع ومسار للإدارة العامة، مع إدارة الشركات والمشاريع والمناطق والمستودعات والمستخدمين.</p>
-            <p style="margin-top:0.75rem" data-i18n-html="helpAboutP2">لتشغيل الملف محلياً استخدم خادماً بسيطاً.</p>
+            <p data-i18n="helpAboutP1">نظام لتتبع أوامر الشراء: مسار للمشاريع ومسار للإدارة العامة، مع إدارة الشركات والموردين والمشاريع والمناطق والمستودعات والمستخدمين.</p>
+          </div>
+          <div class="help-section">
+            <h3 data-i18n="helpWorkflowTitle">مسار العمل</h3>
+            <p data-i18n-html="helpWorkflowBody"></p>
+          </div>
+          <div class="help-section">
+            <h3 data-i18n="helpRolesTitle">الأدوار والصلاحيات</h3>
+            <p data-i18n-html="helpRolesP1"></p>
+            <p style="margin-top:0.75rem" data-i18n-html="helpRolesP2"></p>
           </div>
           <div class="help-section">
             <h3 data-i18n="helpNavTitle">التنقل</h3>
@@ -2230,11 +2395,6 @@
           <div class="help-section">
             <h3 data-i18n="helpAccountTitle">الحساب</h3>
             <p data-i18n="helpAccountP1">يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. لاستعادة كلمة المرور أو تغييرها، راجع المشرف.</p>
-            <p style="margin-top:0.75rem" data-i18n-html="helpAccountFirstAdmin"></p>
-          </div>
-          <div class="help-section">
-            <h3 data-i18n="helpStorageTitle">التخزين</h3>
-            <p data-i18n="helpStorageHint">شعارات الشركات…</p>
           </div>
         </div>
       </section>
@@ -2253,17 +2413,164 @@
         <input type="hidden" id="po-scope" />
         <input type="hidden" id="po-status-project-snapshot" value="draft" />
         <div id="po-general-block">
-          <div class="field">
-            <label for="po-title" data-i18n="poTitleLabel">العنوان / المرجع</label>
-            <input type="text" id="po-title" />
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionIdentity">المرجع والشركة (المشتري)</div>
+            <div class="po-meta-grid">
+              <div class="field" style="margin:0">
+                <label for="po-gen-company" data-i18n="genPoLabelBuyerCompany">شركة المشتري</label>
+                <select id="po-gen-company"><option value="">—</option></select>
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-po-number" data-i18n="genPoLabelPoNumber">رقم أمر الشراء (PO)</label>
+                <input type="text" id="po-gen-po-number" required />
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-po-date" data-i18n="genPoLabelPoDate">تاريخ أمر الشراء</label>
+                <input type="date" id="po-gen-po-date" />
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-offer-type" data-i18n="genPoLabelOfferType">مصدر العرض</label>
+                <input type="text" id="po-gen-offer-type" data-i18n-placeholder="genPoPlaceholderOfferType" placeholder="مثال: By Email" />
+              </div>
+            </div>
+            <div id="po-gen-company-banner" class="po-company-banner hidden" aria-live="polite">
+              <img id="po-gen-company-logo" class="po-company-logo hidden" alt="" />
+              <p id="po-gen-company-name" class="po-company-name"></p>
+            </div>
           </div>
-          <div class="field">
-            <label for="po-supplier-general" data-i18n="poSupplierLabel">المورد</label>
-            <input type="text" id="po-supplier-general" />
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionVendor">بيانات المورّد (Vendor)</div>
+            <p class="sub po-gen-vendor-hint" style="margin:-0.25rem 0 0.5rem;color:var(--muted);font-size:0.82rem" data-i18n="genPoVendorFromMasterHint">
+              اختر مورداً مسجّلاً أو أضف مورداً جديداً؛ تُعبأ الحقول أدناه من بطاقة المورد.
+            </p>
+            <div class="po-meta-grid">
+              <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
+                <label for="po-gen-supplier" data-i18n="genPoLabelSelectSupplier">المورّد المسجّل</label>
+                <div class="po-gen-supplier-row" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+                  <select id="po-gen-supplier" style="flex:1;min-width:12rem"></select>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-po-gen-add-supplier" data-i18n="btnAddSupplier">
+                    إضافة مورد
+                  </button>
+                </div>
+              </div>
+              <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
+                <label for="po-gen-v-name" data-i18n="genPoLabelVendorName">اسم الشركة / المورّد</label>
+                <input type="text" id="po-gen-v-name" class="po-gen-v-master" readonly />
+              </div>
+              <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
+                <label for="po-gen-v-address" data-i18n="genPoLabelVendorAddress">العنوان</label>
+                <input type="text" id="po-gen-v-address" class="po-gen-v-master" readonly />
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-v-attn" data-i18n="genPoLabelVendorAttn">جهة الاتصال (Attn)</label>
+                <input type="text" id="po-gen-v-attn" class="po-gen-v-master" readonly />
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-v-phone" data-i18n="labelPhone">الهاتف</label>
+                <input type="text" id="po-gen-v-phone" class="po-gen-v-master" readonly />
+              </div>
+              <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
+                <label for="po-gen-v-email" data-i18n="labelEmailPrimary">البريد</label>
+                <input type="email" id="po-gen-v-email" class="po-gen-v-master" readonly />
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <label for="po-lines" data-i18n="poLinesLabel">البنود (سطر لكل بند: الصنف | الكمية | السعر)</label>
-            <textarea id="po-lines" data-i18n-placeholder="poLinesPlaceholder"></textarea>
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionBuyerContact">بيانات التواصل (المشتري)</div>
+            <div class="po-meta-grid">
+              <div class="field" style="margin:0">
+                <label for="po-gen-b-contact" data-i18n="genPoLabelBuyerContact">الشخص المسؤول</label>
+                <input type="text" id="po-gen-b-contact" />
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-b-phone" data-i18n="genPoLabelBuyerPhone">هاتف المشتري</label>
+                <input type="text" id="po-gen-b-phone" />
+              </div>
+              <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
+                <label for="po-gen-b-emails" data-i18n="genPoLabelBuyerEmails">بريد المشتري (سطر لكل بريد)</label>
+                <textarea id="po-gen-b-emails" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionLines">بنود أمر الشراء</div>
+            <div class="table-scroll po-lines-wrap">
+              <table class="data-table" id="po-gen-lines-table">
+                <thead>
+                  <tr>
+                    <th style="width:2.5rem">#</th>
+                    <th data-i18n="genPoColDesc">الوصف</th>
+                    <th data-i18n="genPoColUnit">الوحدة</th>
+                    <th data-i18n="genPoColQty">الكمية</th>
+                    <th data-i18n="genPoColPrice">السعر / ملاحظة سعر</th>
+                    <th data-i18n="genPoColLineTotal">الإجمالي</th>
+                    <th data-i18n="genPoColRemark">ملاحظة</th>
+                    <th aria-hidden="true"></th>
+                  </tr>
+                </thead>
+                <tbody id="po-gen-lines-tbody"></tbody>
+              </table>
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-po-gen-add-line" data-i18n="genPoAddLine">إضافة بند</button>
+            <div class="field" style="margin-top:0.75rem">
+              <label for="po-gen-total-words" data-i18n="genPoLabelTotalWords">المبلغ الإجمالي كتابة</label>
+              <input type="text" id="po-gen-total-words" />
+            </div>
+          </div>
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionNotesTerms">ملاحظات وشروط</div>
+            <div class="field">
+              <label for="po-gen-notes" data-i18n="genPoLabelGeneralNotes">ملاحظات عامة</label>
+              <textarea id="po-gen-notes" rows="4"></textarea>
+            </div>
+            <div class="field">
+              <label for="po-gen-term-pay" data-i18n="genPoLabelTermPayment">الدفع (Payment)</label>
+              <textarea id="po-gen-term-pay" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label for="po-gen-term-del" data-i18n="genPoLabelTermDelivery">التسليم (Delivery)</label>
+              <textarea id="po-gen-term-del" rows="2"></textarea>
+            </div>
+            <div class="field">
+              <label for="po-gen-term-pack" data-i18n="genPoLabelTermPacking">التغليف (Packing)</label>
+              <textarea id="po-gen-term-pack" rows="2"></textarea>
+            </div>
+            <div class="field">
+              <label for="po-gen-term-ship" data-i18n="genPoLabelTermShipping">مستندات الشحن</label>
+              <textarea id="po-gen-term-ship" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionDocs">المستندات المطلوبة</div>
+            <div class="table-scroll po-lines-wrap">
+              <table class="data-table" id="po-gen-docs-table">
+                <thead>
+                  <tr>
+                    <th style="width:2.5rem" data-i18n="genPoColSn">م</th>
+                    <th data-i18n="genPoColDocDesc">وصف المستند</th>
+                    <th data-i18n="genPoColOriginal">أصل</th>
+                    <th data-i18n="genPoColCopy">صورة</th>
+                    <th data-i18n="genPoColDocNotes">ملاحظات</th>
+                    <th aria-hidden="true"></th>
+                  </tr>
+                </thead>
+                <tbody id="po-gen-docs-tbody"></tbody>
+              </table>
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-po-gen-add-doc" data-i18n="genPoAddDocRow">إضافة صف</button>
+          </div>
+          <div class="po-form-section">
+            <div class="po-form-section-head" data-i18n="genPoSectionSign">التوقيع (نصي للطباعة)</div>
+            <div class="po-meta-grid">
+              <div class="field" style="margin:0">
+                <label for="po-gen-sign-vendor" data-i18n="genPoLabelSignVendor">المورّد — التاريخ / ملاحظة</label>
+                <input type="text" id="po-gen-sign-vendor" />
+              </div>
+              <div class="field" style="margin:0">
+                <label for="po-gen-sign-buyer" data-i18n="genPoLabelSignBuyer">المشتري — التاريخ / ملاحظة</label>
+                <input type="text" id="po-gen-sign-buyer" />
+              </div>
+            </div>
           </div>
           <div class="field">
             <label for="po-status" data-i18n="poStatusLabel">الحالة</label>
@@ -2358,7 +2665,7 @@
             </div>
           </div>
         </div>
-        <div class="field">
+        <div id="po-shared-notes" class="field">
           <label for="po-notes" data-i18n="poNotesLabel">ملاحظات</label>
           <textarea id="po-notes" rows="2"></textarea>
         </div>
@@ -2546,6 +2853,39 @@
     </div>
   </div>
 
+  <!-- إضافة مورد سريعة من نموذج أمر الإدارة العامة -->
+  <div id="modal-supplier-quick" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="modal-supplier-quick-title" data-i18n="modalQuickSupplierTitle">إضافة مورد جديد</h3>
+      <form id="form-supplier-quick">
+        <div class="field">
+          <label for="sq-supplier-name" data-i18n="labelSupplierName">اسم المورد / الشركة</label>
+          <input type="text" id="sq-supplier-name" required autocomplete="organization" />
+        </div>
+        <div class="field">
+          <label for="sq-supplier-address" data-i18n="genPoLabelVendorAddress">العنوان</label>
+          <input type="text" id="sq-supplier-address" autocomplete="street-address" />
+        </div>
+        <div class="field">
+          <label for="sq-supplier-attn" data-i18n="genPoLabelVendorAttn">جهة الاتصال (Attn)</label>
+          <input type="text" id="sq-supplier-attn" />
+        </div>
+        <div class="field">
+          <label for="sq-supplier-phone" data-i18n="labelPhone">الهاتف</label>
+          <input type="tel" id="sq-supplier-phone" />
+        </div>
+        <div class="field">
+          <label for="sq-supplier-email" data-i18n="labelEmailPrimary">البريد</label>
+          <input type="email" id="sq-supplier-email" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="modal-supplier-quick-cancel" data-i18n="cancel">إلغاء</button>
+          <button type="submit" class="btn btn-primary" data-i18n="save">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import {
@@ -2567,10 +2907,12 @@
       query,
       where,
       orderBy,
+      limit,
+      onSnapshot,
+      writeBatch,
       serverTimestamp,
       deleteField,
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
 
     const LANG_KEY = "pot_lang";
     let lang = localStorage.getItem(LANG_KEY) || "ar";
@@ -2677,7 +3019,9 @@
         tabRegions: "المناطق",
         tabWarehouses: "المستودعات",
         tabUsers: "المستخدمون",
+        tabSuppliers: "الموردون",
         addCompany: "إضافة شركة",
+        addSupplier: "إضافة مورد",
         addProject: "إضافة مشروع",
         addRegion: "إضافة منطقة",
         addWarehouse: "إضافة مستودع",
@@ -2699,6 +3043,7 @@
         noProjects: "لا توجد مشاريع",
         noRegions: "لا توجد مناطق",
         noWarehouses: "لا توجد مستودعات",
+        noSuppliers: "لا يوجد موردون",
         noUserProfiles: "لا توجد ملفات بعد",
         confirmDeleteRecord: "حذف هذا السجل؟",
         entityAddTitle: "إضافة",
@@ -2712,6 +3057,18 @@
         modalNewWarehouse: "مستودع جديد",
         modalEditUser: "تعديل مستخدم",
         modalNewUser: "ملف مستخدم جديد",
+        modalNewSupplier: "مورد جديد",
+        modalEditSupplier: "تعديل مورد",
+        modalQuickSupplierTitle: "إضافة مورد جديد",
+        labelSupplierCode: "رمز المورد",
+        labelSupplierCodeAuto: "يُولَّد تلقائياً عند الحفظ",
+        labelSupplierName: "اسم المورد / الشركة",
+        genPoLabelSelectSupplier: "المورّد المسجّل",
+        genPoVendorFromMasterHint:
+          "اختر مورداً من القائمة أو أضف مورداً جديداً؛ تُعبأ الحقول أدناه تلقائياً من بطاقة المورد.",
+        btnAddSupplier: "إضافة مورد",
+        alertSupplierName: "أدخل اسم المورد.",
+        alertSelectSupplier: "اختر مورداً مسجّلاً أو أضف مورداً جديداً (لا يُقبل ترك بيانات المورّد فارغة).",
         labelCompanyName: "اسم الشركة",
         labelCompanyCode: "رمز الشركة",
         labelCompanyCodeAuto: "يُولَّد تلقائياً عند الحفظ",
@@ -2938,25 +3295,33 @@
         helpTitle: "المساعدة",
         helpAboutTitle: "عن النظام",
         helpAboutP1:
-          "نظام لتتبع أوامر الشراء: مسار للمشاريع ومسار للإدارة العامة، مع إدارة الشركات والمشاريع والمناطق والمستودعات والمستخدمين.",
-        helpAboutP2:
-          'لتشغيل الملف محلياً استخدم خادماً بسيطاً (مثلاً «Live Server» في المحرر، أو من المجلد: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">npx --yes serve .</code>) وليس فتح الملف مباشرة كـ file:// حتى تعمل وحدات JavaScript.',
+          "نظام لتتبع أوامر الشراء: طلبات مرتبطة بالمشاريع (مع مسار مستودع وموافقات ومشتريات وحسابات) وأوامر للإدارة العامة في شاشة مستقلة، مع إدارة الشركات والموردين والمشاريع والمناطق والمستودعات والمستخدمين والصلاحيات.",
         helpNavTitle: "التنقل",
+        helpWorkflowTitle: "مسار العمل (طلبات المشاريع)",
+        helpWorkflowBody:
+          'هذا المسار يخصّ <strong>طلبات المشاريع</strong> بعد إنشائها والدخول في مرحلة المستودع: <strong>مراجعة المستودع</strong> → إن اكتفى المخزن يُغلق المسار ككمية متوفرة؛ وإلا <strong>موافقة مهندس أول</strong> → <strong>مدير مشروع</strong> → <strong>مسؤول مجموعة</strong> → <strong>مشتريات</strong> (قيد الشراء ثم إرسال للحسابات لسلفة العمل) → <strong>استلام المستودع</strong> → <strong>حسابات</strong> (إقفال وتسجيل القيم). رفض مهندس أول يوقف المسار بحالة «مرفوض (مهندس أول)». <strong>أوامر الإدارة العامة</strong> تُعرض وتُحدَّث من شاشتها ولا تمرّ حالياً بنفس طوابير المستودع/مهندس أول المعروضة هنا.',
+        helpRolesTitle: "الأدوار والصلاحيات",
+        helpRolesP1:
+          '<strong>المشرف (admin):</strong> إدارة البيانات الأساسية والمستخدمين؛ يرى شاشات الإدارة عند تفعيلها في الملف، ويطلع على طابور «موافقات مهندس أول» لجميع الطلبات المؤهلة. <strong>مهندس / مهندس أول:</strong> إنشاء وعرض طلبات المشاريع <em>المسندة</em>؛ «مهندس أول» يحتاج مشاريع مسندة في ملفه ليعمل طابور الموافقات، ويُعرض فيه فقط ما يخص تلك المشاريع. <strong>مُطّلع (عرض فقط):</strong> يطلع على طلبات المشاريع المسندة دون إنشاء أو موافقة.',
+        helpRolesP2:
+          'تظهر عناصر القائمة الجانبية حسب حقل <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> في ملف المستخدم. خيار <strong>تجاوز الموافقات الأدنى</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>) يتيح لمدير المشروع أو مسؤول المجموعة التصرف مبكراً على مراحل المستودع أو مهندس أول أو مدير مشروع (حسب الدور) عند تفعيله من الإدارة؛ المشرف يحتفظ بصلاحيات أوسع. بقية الأدوار: أمين مستودع، مدير مشروع، مسؤول مجموعة، مسؤول مشتريات، مسؤول استلام مستودع، محاسب — كلٌ حسب طوابيره المعروضة في النظام.',
         helpNavItem1: "<strong>لوحة التحكم:</strong> نظرة عامة واختصارات.",
-        helpNavItem2: "<strong>أوامر شراء المشاريع:</strong> طلبات مرتبطة بمشاريع محددة.",
-        helpNavItem3: "<strong>أوامر شراء الإدارة العامة:</strong> طلبات المركز الإداري.",
-        helpNavItem4: "<strong>الإدارة:</strong> تظهر إذا كان مفعّلاً في ملف المستخدم (قسم «الإدارة»).",
+        helpNavItem2: "<strong>أوامر شراء المشاريع:</strong> طلبات مرتبطة بمشاريع محددة (تخضع للمشاريع المسندة للمستخدم).",
+        helpNavItem3: "<strong>أوامر شراء الإدارة العامة:</strong> طلبات المركز الإداري في قائمة ونموذج مستقلّين (حالة الطلب التقليدية)، وليست ضمن طابور المستودع/مهندس أول الحالي.",
+        helpNavItem4: "<strong>الإدارة:</strong> تظهر إذا كان القسم مفعّلاً في ملف المستخدم (قسم «الإدارة»).",
         helpNavItem5:
-          "<strong>مراجعة المستودع:</strong> تسجيل المتوفر؛ إن اكتفى المخزن يُغلق المسار كـ كمية متوفرة، وإلا يمر لمدير المشروع. يبقى الطلب في «متابعة» بعد الإرسال.",
+          "<strong>مراجعة المستودع:</strong> لطلبات المشاريع — تسجيل المتوفر؛ إن اكتفى المخزن يُغلق المسار ككمية متوفرة، وإلا يُرسل الطلب إلى «بانتظار مهندس أول». يبقى الطلب قيد المتابعة بعد المراجعة.",
         helpNavItem6:
-          "<strong>موافقات مدير المشروع:</strong> بعد المستودع — الموافقة على طلبات المشاريع المسندة.",
+          "<strong>موافقات مهندس أول:</strong> لطلبات المشاريع بعد مراجعة المستودع عند عدم اكتفاء المخزن — الموافقة تمرّر الطلب لمدير المشروع؛ الرفض يوقف المسار.",
         helpNavItem7:
-          "<strong>موافقات مسؤول المجموعة:</strong> بعد مدير المشروع — الموافقة على مستوى المناطق المسندة.",
+          "<strong>موافقات مدير المشروع:</strong> بعد مهندس أول (أو عند التجاوز المسموح) — الموافقة على طلبات المشاريع المسندة.",
         helpNavItem8:
-          "<strong>المشتريات:</strong> بعد موافقة المجموعة — تأكيد «قيد الشراء» ثم إرسال الطلب للحسابات لتسليم سلفة العمل (عرض وطباعة متاح).",
+          "<strong>موافقات مسؤول المجموعة:</strong> بعد مدير المشروع — الموافقة على مستوى المناطق المسندة.",
         helpNavItem9:
-          "<strong>استلام المستودع:</strong> بعد تسليم السلفة — تأكيد الاستلام الفعلي ثم التحويل لقسم الحسابات للإقفال.",
+          "<strong>المشتريات:</strong> بعد موافقة المجموعة — تأكيد «قيد الشراء» ثم إرسال الطلب للحسابات لتسليم سلفة العمل (عرض وطباعة متاح).",
         helpNavItem10:
+          "<strong>استلام المستودع:</strong> بعد تسليم السلفة — تأكيد الاستلام الفعلي ثم التحويل لقسم الحسابات للإقفال.",
+        helpNavItem11:
           "<strong>الحسابات:</strong> سلفة ثم إقفال؛ وقسم «متابعة المسار» يبقي ظاهراً الطلبات بعد إطلاق السلفة (بانتظار المستودع) والمكتملة بعد إقفالكم.",
         navPurchasingQueue: "المشتريات",
         navWarehouseReceiptQueue: "استلام المستودع",
@@ -3026,11 +3391,66 @@
         helpAccountTitle: "الحساب",
         helpAccountP1:
           "يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. لاستعادة كلمة المرور أو تغييرها، راجع المشرف.",
-        helpAccountFirstAdmin:
-          '<strong>أول مشرف:</strong> بعد أول تسجيل دخول، افتح Firestore → <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">userProfiles</code> → مستندك واضبط <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">role</code> على <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">admin</code> ومصفوفة <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> لتتضمن <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">admin</code> (أو عدّل الملف لاحقاً من مستخدم يملك الإدارة).',
-        helpStorageTitle: "التخزين والشعارات",
-        helpStorageHint:
-          "شعارات الشركات تُرفع إلى Firebase Storage. فعّل Storage من لوحة Firebase واضبط قواعد الأمان للسماح للمستخدمين المسجّلين بالكتابة تحت المسار company-logos/ (والقراءة للعرض).",
+        genPoSectionIdentity: "المرجع والشركة (المشتري)",
+        genPoLabelBuyerCompany: "شركة المشتري",
+        genPoLabelPoNumber: "رقم أمر الشراء (PO)",
+        genPoLabelPoDate: "تاريخ أمر الشراء",
+        genPoLabelOfferType: "مصدر العرض",
+        genPoPlaceholderOfferType: "مثال: By Email",
+        genPoSectionVendor: "بيانات المورّد (Vendor)",
+        genPoLabelVendorName: "اسم الشركة / المورّد",
+        genPoLabelVendorAddress: "العنوان",
+        genPoLabelVendorAttn: "جهة الاتصال (Attn)",
+        genPoSectionBuyerContact: "بيانات التواصل (المشتري)",
+        genPoLabelBuyerContact: "الشخص المسؤول",
+        genPoLabelBuyerPhone: "هاتف المشتري",
+        genPoLabelBuyerEmails: "بريد المشتري (سطر لكل بريد)",
+        genPoSectionLines: "بنود أمر الشراء",
+        genPoColDesc: "الوصف",
+        genPoColUnit: "الوحدة",
+        genPoColQty: "الكمية",
+        genPoColPrice: "السعر / ملاحظة",
+        genPoColLineTotal: "الإجمالي",
+        genPoColRemark: "ملاحظة",
+        genPoAddLine: "إضافة بند",
+        genPoLabelTotalWords: "المبلغ الإجمالي كتابة",
+        genPoSectionNotesTerms: "ملاحظات وشروط",
+        genPoLabelGeneralNotes: "ملاحظات عامة",
+        genPoLabelTermPayment: "الدفع (Payment)",
+        genPoLabelTermDelivery: "التسليم (Delivery)",
+        genPoLabelTermPacking: "التغليف (Packing)",
+        genPoLabelTermShipping: "مستندات الشحن",
+        genPoSectionDocs: "المستندات المطلوبة",
+        genPoColSn: "م",
+        genPoColDocDesc: "وصف المستند",
+        genPoColOriginal: "أصل",
+        genPoColCopy: "صورة",
+        genPoColDocNotes: "ملاحظات",
+        genPoAddDocRow: "إضافة صف",
+        genPoSectionSign: "التوقيع (نصي للطباعة)",
+        genPoLabelSignVendor: "المورّد — التاريخ / ملاحظة",
+        genPoLabelSignBuyer: "المشتري — التاريخ / ملاحظة",
+        colGenPoCompany: "الشركة",
+        logoTooLarge: "حجم الشعار بعد الضغط كبير جداً. جرّب صورة أصغر أو أبسط.",
+        logoEncodeFailed: "تعذّر معالجة صورة الشعار.",
+        colGenPoPoNo: "رقم PO",
+        notificationsBellAria: "مركز الإشعارات",
+        notificationsTitle: "الإشعارات",
+        notificationsMarkAllRead: "تعليم الكل كمقروء",
+        notificationsEmpty: "لا توجد إشعارات.",
+        notif_po_warehouse: "طلب مشروع جديد {{ref}} — بانتظار مراجعة المستودع.",
+        notif_po_engineer_first: "طلب {{ref}} يحتاج موافقة مهندس أول.",
+        notif_po_stock_complete: "طلب {{ref}} اكتمل من المخزون.",
+        notif_po_pm: "طلب {{ref}} بانتظار موافقة مدير المشروع.",
+        notif_po_gm: "طلب {{ref}} بانتظار موافقة مسؤول المجموعة.",
+        notif_po_purchasing: "طلب {{ref}} في طابور المشتريات.",
+        notif_po_accounting_advance: "طلب {{ref}} بانتظار الحسابات (سلفة عمل).",
+        notif_po_warehouse_receipt: "طلب {{ref}} بانتظار تأكيد استلام المستودع.",
+        notif_po_accounting_close: "طلب {{ref}} بانتظار إقفال الحسابات.",
+        notif_po_completed: "طلب {{ref}} اكتمل المسار.",
+        notif_po_rejected_ef: "طلب {{ref}} مرفوض من مهندس أول.",
+        notif_po_rejected_pm: "طلب {{ref}} مرفوض من مدير المشروع.",
+        notif_po_rejected_gm: "طلب {{ref}} مرفوض من مسؤول المجموعة.",
       },
       en: {
         docTitle: "Purchase Order Tracking",
@@ -3133,7 +3553,9 @@
         tabRegions: "Regions",
         tabWarehouses: "Warehouses",
         tabUsers: "Users",
+        tabSuppliers: "Suppliers",
         addCompany: "Add company",
+        addSupplier: "Add supplier",
         addProject: "Add project",
         addRegion: "Add region",
         addWarehouse: "Add warehouse",
@@ -3155,6 +3577,7 @@
         noProjects: "No projects",
         noRegions: "No regions",
         noWarehouses: "No warehouses",
+        noSuppliers: "No suppliers yet",
         noUserProfiles: "No profiles yet",
         confirmDeleteRecord: "Delete this record?",
         entityAddTitle: "Add",
@@ -3168,6 +3591,18 @@
         modalNewWarehouse: "New warehouse",
         modalEditUser: "Edit user",
         modalNewUser: "New user profile",
+        modalNewSupplier: "New supplier",
+        modalEditSupplier: "Edit supplier",
+        modalQuickSupplierTitle: "Add new supplier",
+        labelSupplierCode: "Supplier code",
+        labelSupplierCodeAuto: "Generated automatically on save",
+        labelSupplierName: "Supplier / company name",
+        genPoLabelSelectSupplier: "Registered supplier",
+        genPoVendorFromMasterHint:
+          "Pick a supplier from the list or add a new one; the fields below are filled from the supplier record.",
+        btnAddSupplier: "Add supplier",
+        alertSupplierName: "Enter the supplier name.",
+        alertSelectSupplier: "Select a registered supplier or add a new one (vendor details cannot be left empty).",
         labelCompanyName: "Company name",
         labelCompanyCode: "Company code",
         labelCompanyCodeAuto: "Generated automatically on save",
@@ -3394,25 +3829,33 @@
         helpTitle: "Help",
         helpAboutTitle: "About",
         helpAboutP1:
-          "A purchase order tracking app: a path for projects and one for general administration, with companies, projects, regions, warehouses, and users.",
-        helpAboutP2:
-          'To run locally, use a simple server (e.g. Live Server, or from the folder: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">npx --yes serve .</code>). Avoid opening as file:// or ES modules may not load.',
+          "A purchase order tracking app: project orders use a full warehouse, approvals, purchasing, and accounting workflow; general-admin orders live on a separate screen with classic request status, plus companies, suppliers, projects, regions, warehouses, users, and permissions.",
         helpNavTitle: "Navigation",
+        helpWorkflowTitle: "Workflow (project orders)",
+        helpWorkflowBody:
+          'This path applies to <strong>project</strong> purchase orders once they enter warehouse review: <strong>Warehouse review</strong> → if fully covered, the workflow ends as fulfilled from stock; otherwise <strong>Engineer first</strong> → <strong>Project manager</strong> → <strong>Group manager</strong> → <strong>Purchasing</strong> (in progress, then to accounting for work advance) → <strong>Warehouse receipt</strong> → <strong>Accounting</strong> (closure and values). Rejecting at engineer first stops the workflow as rejected (engineer first). <strong>General admin</strong> orders are edited on their own screen and do not currently use the same warehouse / engineer-first queues shown here.',
+        helpRolesTitle: "Roles and permissions",
+        helpRolesP1:
+          '<strong>Administrator:</strong> Manages master data and users; sees Administration when enabled on the profile, and sees all eligible requests on Engineer first approvals. <strong>Engineer / Engineer first:</strong> Create and view project purchase orders for <em>assigned</em> projects; engineer first needs assigned projects to open the approvals queue, which then lists only those projects. <strong>Viewer (read-only):</strong> Read-only access to assigned project orders — no create or approve.',
+        helpRolesP2:
+          'Sidebar items follow <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> on the user profile. <strong>Bypass lower approvals</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>), when set by an admin, lets project managers or group managers act earlier on warehouse, engineer-first, or project-manager stages (depending on role); admins retain broader powers. Other roles — warehouse clerk, project manager, group manager, purchasing officer, warehouse receipt supervisor, accountant — each use their own queues as shown in the app.',
         helpNavItem1: "<strong>Dashboard:</strong> Overview and shortcuts.",
-        helpNavItem2: "<strong>Project purchase orders:</strong> Orders tied to specific projects.",
-        helpNavItem3: "<strong>General admin purchase orders:</strong> Central administration orders.",
-        helpNavItem4: "<strong>Administration:</strong> Shown if enabled in your user profile (Admin section).",
+        helpNavItem2: "<strong>Project purchase orders:</strong> Orders tied to specific projects (subject to assigned projects for the user).",
+        helpNavItem3: "<strong>General admin purchase orders:</strong> Central administration requests on a separate list and form (classic status), not the current warehouse / engineer-first pipeline.",
+        helpNavItem4: "<strong>Administration:</strong> Shown when the Admin section is enabled on your profile.",
         helpNavItem5:
-          "<strong>Warehouse review:</strong> Record availability; if fully covered the workflow closes as stock available, otherwise it goes to the project manager. Requests stay in follow-up after submit.",
+          "<strong>Warehouse review:</strong> For project orders — record availability; if fully covered the workflow closes as stock available, otherwise status becomes awaiting engineer first. Follow-up continues after review.",
         helpNavItem6:
-          "<strong>Project manager approvals:</strong> After warehouse review — approve requests for assigned projects.",
+          "<strong>Engineer first approvals:</strong> For project orders after warehouse review when stock does not fully cover — approve sends the request to the project manager; reject stops the workflow.",
         helpNavItem7:
-          "<strong>Group manager approvals:</strong> After the project manager — approve at assigned region level.",
+          "<strong>Project manager approvals:</strong> After engineer first (or when bypass allows) — approve assigned project requests.",
         helpNavItem8:
-          "<strong>Purchasing:</strong> After group approval — move to in progress, then send to accounting for work-advance handover. View & print the full request.",
+          "<strong>Group manager approvals:</strong> After the project manager — approve at assigned region level.",
         helpNavItem9:
-          "<strong>Warehouse receipt:</strong> After the advance is released — confirm physical receipt, then send back to accounting for final closure.",
+          "<strong>Purchasing:</strong> After group approval — move to in progress, then send to accounting for work-advance handover. View & print the full request.",
         helpNavItem10:
+          "<strong>Warehouse receipt:</strong> After the advance is released — confirm physical receipt, then send back to accounting for final closure.",
+        helpNavItem11:
           "<strong>Accounting:</strong> Advance and closure; Pipeline follow-up keeps requests visible after advance release (awaiting warehouse) and after you close them.",
         navPurchasingQueue: "Purchasing",
         navWarehouseReceiptQueue: "Warehouse receipt",
@@ -3483,11 +3926,66 @@
         helpAccountTitle: "Account",
         helpAccountP1:
           "Accounts are created by administrators in the Firebase console. For password reset or changes, contact your administrator.",
-        helpAccountFirstAdmin:
-          '<strong>First admin:</strong> After your first sign-in, open Firestore → <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">userProfiles</code> → your document and set <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">role</code> to <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">admin</code> and include <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">admin</code> in <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> (or edit later from a user who already has Administration).',
-        helpStorageTitle: "Storage & logos",
-        helpStorageHint:
-          "Company logos use Firebase Storage. Enable Storage in the Firebase console and set security rules so authenticated users can write under company-logos/ (and read for display).",
+        genPoSectionIdentity: "Reference & buyer company",
+        genPoLabelBuyerCompany: "Buyer company",
+        genPoLabelPoNumber: "Purchase order (PO) number",
+        genPoLabelPoDate: "PO date",
+        genPoLabelOfferType: "Offer source",
+        genPoPlaceholderOfferType: "e.g. By Email",
+        genPoSectionVendor: "Vendor details",
+        genPoLabelVendorName: "Vendor company name",
+        genPoLabelVendorAddress: "Address",
+        genPoLabelVendorAttn: "Attention (Attn)",
+        genPoSectionBuyerContact: "Buyer contact",
+        genPoLabelBuyerContact: "Contact person",
+        genPoLabelBuyerPhone: "Buyer phone",
+        genPoLabelBuyerEmails: "Buyer emails (one per line)",
+        genPoSectionLines: "PO line items",
+        genPoColDesc: "Description",
+        genPoColUnit: "Unit",
+        genPoColQty: "Qty",
+        genPoColPrice: "Price / note",
+        genPoColLineTotal: "Line total",
+        genPoColRemark: "Remark",
+        genPoAddLine: "Add line",
+        genPoLabelTotalWords: "Total amount in words",
+        genPoSectionNotesTerms: "Notes & terms",
+        genPoLabelGeneralNotes: "General notes",
+        genPoLabelTermPayment: "Payment",
+        genPoLabelTermDelivery: "Delivery",
+        genPoLabelTermPacking: "Packing",
+        genPoLabelTermShipping: "Shipping documents",
+        genPoSectionDocs: "Required documents",
+        genPoColSn: "#",
+        genPoColDocDesc: "Document",
+        genPoColOriginal: "Original",
+        genPoColCopy: "Copy",
+        genPoColDocNotes: "Notes",
+        genPoAddDocRow: "Add row",
+        genPoSectionSign: "Signatures (text for print)",
+        genPoLabelSignVendor: "Vendor — date / note",
+        genPoLabelSignBuyer: "Buyer — date / note",
+        colGenPoCompany: "Company",
+        logoTooLarge: "Logo is still too large after compression. Try a smaller or simpler image.",
+        logoEncodeFailed: "Could not process the logo image.",
+        colGenPoPoNo: "PO no.",
+        notificationsBellAria: "Notification center",
+        notificationsTitle: "Notifications",
+        notificationsMarkAllRead: "Mark all read",
+        notificationsEmpty: "No notifications yet.",
+        notif_po_warehouse: "New project request {{ref}} — awaiting warehouse review.",
+        notif_po_engineer_first: "Request {{ref}} needs engineer-first approval.",
+        notif_po_stock_complete: "Request {{ref}} fulfilled from warehouse stock.",
+        notif_po_pm: "Request {{ref}} awaits project manager approval.",
+        notif_po_gm: "Request {{ref}} awaits group manager approval.",
+        notif_po_purchasing: "Request {{ref}} is in the purchasing queue.",
+        notif_po_accounting_advance: "Request {{ref}} awaits accounting (work advance).",
+        notif_po_warehouse_receipt: "Request {{ref}} awaits warehouse receipt confirmation.",
+        notif_po_accounting_close: "Request {{ref}} awaits accounting closure.",
+        notif_po_completed: "Request {{ref}} workflow is complete.",
+        notif_po_rejected_ef: "Request {{ref}} was rejected (engineer first).",
+        notif_po_rejected_pm: "Request {{ref}} was rejected (project manager).",
+        notif_po_rejected_gm: "Request {{ref}} was rejected (group manager).",
       },
     };
 
@@ -3507,6 +4005,13 @@
       document.body.classList.toggle("lang-en", lang === "en");
     }
 
+    function syncNotificationsBellAria() {
+      const btn = $("btn-notifications");
+      if (!btn) return;
+      const k = btn.dataset.i18nAria;
+      if (k) btn.setAttribute("aria-label", t(k));
+    }
+
     function applyStaticI18n() {
       document.querySelectorAll("[data-i18n]").forEach((el) => {
         el.textContent = t(el.dataset.i18n);
@@ -3517,8 +4022,13 @@
       document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
         el.placeholder = t(el.dataset.i18nPlaceholder);
       });
+      document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
+        const k = el.dataset.i18nAria;
+        if (k) el.setAttribute("aria-label", t(k));
+      });
       document.title = t("docTitle");
       refreshNavToggleAria();
+      syncNotificationsBellAria();
     }
 
     function refreshNavToggleAria() {
@@ -3559,7 +4069,7 @@
       const ul = $("help-nav-list");
       if (!ul) return;
       ul.innerHTML = "";
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 1; i <= 11; i++) {
         const li = document.createElement("li");
         li.innerHTML = t("helpNavItem" + i);
         ul.appendChild(li);
@@ -3647,6 +4157,13 @@
           el.textContent = t(el.dataset.i18n);
         });
       }
+      const np = $("notifications-panel");
+      if (np && !np.classList.contains("hidden")) {
+        np.querySelectorAll("[data-i18n]").forEach((el) => {
+          el.textContent = t(el.dataset.i18n);
+        });
+        renderNotificationsList();
+      }
     }
 
     function setLang(next) {
@@ -3659,6 +4176,7 @@
       fillHelpNavList();
       updateLangButtons();
       refreshI18nOnOpenScreens();
+      if ($("notifications-panel") && !$("notifications-panel").classList.contains("hidden")) renderNotificationsList();
     }
 
     const firebaseConfig = {
@@ -3674,7 +4192,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     let currentUser = null;
     let userRole = "user";
@@ -3690,6 +4207,15 @@
     let projectPurchaseOrdersContext = null;
     let projectPoFiltersWired = false;
     let lastPoPrintDoc = null;
+
+    /** In-app inbox. Add Firestore rules: users read docs where userId==auth.uid; update only {read}; authenticated create allowed (merge with your project rules). */
+    const NOTIF_COL = "inAppNotifications";
+    const NOTIF_BATCH = 400;
+    const NOTIFY_PROFILE_CACHE_MS = 45000;
+    let notificationsUnsub = null;
+    let notificationsRows = [];
+    let userProfilesNotifyCache = { t: 0, list: null };
+    let notificationsBackdropCloseBound = false;
 
     const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-general"];
 
@@ -3730,22 +4256,582 @@
     }
 
     function sumLines(lines) {
-      return (lines || []).reduce((s, l) => s + (l.lineTotal || 0), 0);
+      return (lines || []).reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+    }
+
+    function companyLogoSrc(company) {
+      if (!company) return "";
+      const d = (company.logoDataUrl || "").trim();
+      if (d) return d;
+      return (company.logoUrl || "").trim();
+    }
+
+    function compressImageFileToDataUrl(file, maxEdge = 360, quality = 0.78, maxChars = 720000) {
+      return new Promise((resolve, reject) => {
+        if (!file || !file.type?.startsWith("image/")) {
+          reject(new Error("image"));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+            if (!w || !h) {
+              reject(new Error("image"));
+              return;
+            }
+            const scale = Math.min(1, maxEdge / Math.max(w, h));
+            w = Math.round(w * scale);
+            h = Math.round(h * scale);
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            let url = canvas.toDataURL("image/jpeg", quality);
+            if (url.length > maxChars) url = canvas.toDataURL("image/jpeg", 0.62);
+            if (url.length > maxChars) url = canvas.toDataURL("image/jpeg", 0.5);
+            if (url.length > maxChars) reject(new Error("large"));
+            else resolve(url);
+          };
+          img.onerror = () => reject(new Error("image"));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error("read"));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function encodeCompanyLogoForFirestore(file) {
+      try {
+        return await compressImageFileToDataUrl(file, 360, 0.78, 720000);
+      } catch (e) {
+        if (e?.message === "large") throw new Error(t("logoTooLarge"));
+        throw new Error(t("logoEncodeFailed"));
+      }
+    }
+
+    function normalizeGeneralFormFromPo(po) {
+      if (po.generalForm && typeof po.generalForm === "object") {
+        const g = { ...po.generalForm };
+        const sid = ((g.supplierId != null ? String(g.supplierId) : "") || (po.supplierId != null ? String(po.supplierId) : "")).trim();
+        g.supplierId = sid;
+        return g;
+      }
+      const lines = Array.isArray(po.lines) ? po.lines : [];
+      const mappedLines = lines.map((l) => ({
+        item: (l.item || "").trim(),
+        unit: (l.unit || "").trim(),
+        qty: Number(l.qty) || 0,
+        priceText:
+          l.priceText != null && String(l.priceText).trim() !== ""
+            ? String(l.priceText).trim()
+            : l.price != null && l.price !== ""
+              ? String(l.price)
+              : "",
+        lineTotal:
+          l.lineTotal != null && l.lineTotal !== ""
+            ? Number(l.lineTotal)
+            : (Number(l.qty) || 0) * (Number(l.price) || 0),
+        remark: (l.remark || "").trim(),
+      }));
+      return {
+        poNumber: (po.title || "").trim(),
+        poDate: (po.generalPoDate || "").trim() || "",
+        companyId: po.companyId || "",
+        supplierId: (po.supplierId != null ? String(po.supplierId).trim() : "") || "",
+        vendor: {
+          name: (po.supplierName || "").trim(),
+          address: "",
+          attn: "",
+          phone: "",
+          email: "",
+        },
+        offerType: "",
+        buyerExtra: { contact: "", phone: "", emails: "" },
+        lines: mappedLines.length ? mappedLines : [],
+        totalWords: (po.totalAmountWords || "").trim(),
+        notes: (po.notes || "").trim(),
+        termsPayment: "",
+        termsDelivery: "",
+        termsPacking: "",
+        termsShipping: "",
+        docRows: [],
+        signVendor: "",
+        signBuyer: "",
+      };
+    }
+
+    function clearGeneralLinesTable() {
+      const tb = $("po-gen-lines-tbody");
+      if (tb) tb.innerHTML = "";
+    }
+
+    function addGeneralLineRow(line) {
+      const tbody = $("po-gen-lines-tbody");
+      if (!tbody) return;
+      const tr = document.createElement("tr");
+      const idx = tbody.querySelectorAll("tr").length + 1;
+      const l = line || {};
+      tr.innerHTML = `
+        <td class="po-print-num">${idx}</td>
+        <td><input type="text" class="po-gen-line-item" value="${escapeAttr((l.item || "").trim())}" /></td>
+        <td><input type="text" class="po-gen-line-unit" value="${escapeAttr((l.unit || "").trim())}" /></td>
+        <td><input type="number" class="po-gen-line-qty" min="0" step="any" value="${escapeAttr(
+          l.qty != null && l.qty !== "" ? String(l.qty) : ""
+        )}" /></td>
+        <td><input type="text" class="po-gen-line-price" value="${escapeAttr((l.priceText != null ? String(l.priceText) : l.price != null ? String(l.price) : "").trim())}" /></td>
+        <td><input type="number" class="po-gen-line-total" min="0" step="any" value="${escapeAttr(
+          l.lineTotal != null && l.lineTotal !== "" ? String(l.lineTotal) : ""
+        )}" /></td>
+        <td><input type="text" class="po-gen-line-remark" value="${escapeAttr((l.remark || "").trim())}" /></td>
+        <td><button type="button" class="btn btn-secondary btn-sm po-gen-line-remove" aria-label="×">×</button></td>`;
+      tr.querySelector(".po-gen-line-remove")?.addEventListener("click", () => {
+        tr.remove();
+        renumberGeneralLineRows();
+      });
+      tbody.appendChild(tr);
+    }
+
+    function renumberGeneralLineRows() {
+      const tbody = $("po-gen-lines-tbody");
+      if (!tbody) return;
+      [...tbody.querySelectorAll("tr")].forEach((tr, i) => {
+        const c = tr.querySelector("td.po-print-num");
+        if (c) c.textContent = String(i + 1);
+      });
+    }
+
+    function collectGeneralLinesFromTable() {
+      const tbody = $("po-gen-lines-tbody");
+      if (!tbody) return [];
+      return [...tbody.querySelectorAll("tr")]
+        .map((tr) => ({
+          item: tr.querySelector(".po-gen-line-item")?.value?.trim() || "",
+          unit: tr.querySelector(".po-gen-line-unit")?.value?.trim() || "",
+          qty: parseFloat(String(tr.querySelector(".po-gen-line-qty")?.value)) || 0,
+          priceText: tr.querySelector(".po-gen-line-price")?.value?.trim() || "",
+          lineTotal: parseFloat(String(tr.querySelector(".po-gen-line-total")?.value)) || 0,
+          remark: tr.querySelector(".po-gen-line-remark")?.value?.trim() || "",
+        }))
+        .filter((l) => l.item || l.qty > 0 || l.priceText || l.lineTotal > 0 || l.remark);
+    }
+
+    function clearGeneralDocRows() {
+      const tb = $("po-gen-docs-tbody");
+      if (tb) tb.innerHTML = "";
+    }
+
+    function addGeneralDocRow(row) {
+      const tbody = $("po-gen-docs-tbody");
+      if (!tbody) return;
+      const r = row || {};
+      const tr = document.createElement("tr");
+      const sn = tbody.querySelectorAll("tr").length + 1;
+      tr.innerHTML = `
+        <td class="po-print-num">${sn}</td>
+        <td><input type="text" class="po-gen-doc-desc" value="${escapeAttr((r.description || "").trim())}" /></td>
+        <td><input type="number" class="po-gen-doc-orig" min="0" step="1" value="${escapeAttr(
+          r.originals != null ? String(r.originals) : ""
+        )}" /></td>
+        <td><input type="number" class="po-gen-doc-copy" min="0" step="1" value="${escapeAttr(r.copies != null ? String(r.copies) : "")}" /></td>
+        <td><input type="text" class="po-gen-doc-notes" value="${escapeAttr((r.notes || "").trim())}" /></td>
+        <td><button type="button" class="btn btn-secondary btn-sm po-gen-doc-remove">×</button></td>`;
+      tr.querySelector(".po-gen-doc-remove")?.addEventListener("click", () => {
+        tr.remove();
+        renumberGeneralDocRows();
+      });
+      tbody.appendChild(tr);
+    }
+
+    function renumberGeneralDocRows() {
+      const tbody = $("po-gen-docs-tbody");
+      if (!tbody) return;
+      [...tbody.querySelectorAll("tr")].forEach((tr, i) => {
+        const c = tr.querySelector("td.po-print-num");
+        if (c) c.textContent = String(i + 1);
+      });
+    }
+
+    function collectGeneralDocRowsFromTable() {
+      const tbody = $("po-gen-docs-tbody");
+      if (!tbody) return [];
+      return [...tbody.querySelectorAll("tr")]
+        .map((tr) => ({
+          description: tr.querySelector(".po-gen-doc-desc")?.value?.trim() || "",
+          originals: parseInt(String(tr.querySelector(".po-gen-doc-orig")?.value), 10) || 0,
+          copies: parseInt(String(tr.querySelector(".po-gen-doc-copy")?.value), 10) || 0,
+          notes: tr.querySelector(".po-gen-doc-notes")?.value?.trim() || "",
+        }))
+        .filter((r) => r.description || r.originals > 0 || r.copies > 0 || r.notes);
+    }
+
+    function setGeneralVendorInputs(v) {
+      const x = v || {};
+      if ($("po-gen-v-name")) $("po-gen-v-name").value = (x.name || "").trim();
+      if ($("po-gen-v-address")) $("po-gen-v-address").value = (x.address || "").trim();
+      if ($("po-gen-v-attn")) $("po-gen-v-attn").value = (x.attn || "").trim();
+      if ($("po-gen-v-phone")) $("po-gen-v-phone").value = (x.phone || "").trim();
+      if ($("po-gen-v-email")) $("po-gen-v-email").value = (x.email || "").trim();
+    }
+
+    function clearGeneralVendorInputs() {
+      setGeneralVendorInputs({});
+    }
+
+    async function applyGeneralVendorFromSupplierId(supplierId) {
+      const sid = (supplierId || "").trim();
+      if (!sid) {
+        clearGeneralVendorInputs();
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, "suppliers", sid));
+        if (!snap.exists()) return;
+        const d = snap.data();
+        setGeneralVendorInputs({
+          name: (d.name || "").trim(),
+          address: (d.address || "").trim(),
+          attn: (d.attn || "").trim(),
+          phone: (d.phone || "").trim(),
+          email: (d.email || "").trim(),
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function fillGeneralSupplierSelect(selectedId) {
+      const sel = $("po-gen-supplier");
+      if (!sel) return;
+      const cur = selectedId !== undefined && selectedId !== null ? String(selectedId) : sel.value || "";
+      sel.innerHTML = `<option value="">${escapeHtml(t("dash"))}</option>`;
+      const snap = await getDocs(collection(db, "suppliers"));
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      rows.sort((a, b) =>
+        supplierDisplayName(a).localeCompare(supplierDisplayName(b), lang === "ar" ? "ar" : "en")
+      );
+      rows
+        .filter((row) => row.active !== false)
+        .forEach((row) => {
+          const o = document.createElement("option");
+          o.value = row.id;
+          o.textContent = supplierOptionLabel(row);
+          sel.appendChild(o);
+        });
+      if (cur && [...sel.options].some((o) => o.value === cur)) sel.value = cur;
+    }
+
+    async function fillGeneralCompanySelect(selectedId) {
+      const sel = $("po-gen-company");
+      if (!sel) return;
+      const cur = selectedId || sel.value || "";
+      sel.innerHTML = `<option value="">${t("dash")}</option>`;
+      const snap = await getDocs(collection(db, "companies"));
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      rows.sort((a, b) => companyDisplayName(a).localeCompare(companyDisplayName(b), lang === "ar" ? "ar" : "en"));
+      rows.forEach((row) => {
+        const o = document.createElement("option");
+        o.value = row.id;
+        o.textContent = companyDisplayName(row);
+        sel.appendChild(o);
+      });
+      if (cur && [...sel.options].some((o) => o.value === cur)) sel.value = cur;
+    }
+
+    async function hydrateGeneralCompanyBanner() {
+      const cid = ($("po-gen-company")?.value || "").trim();
+      const banner = $("po-gen-company-banner");
+      const logo = $("po-gen-company-logo");
+      const cname = $("po-gen-company-name");
+      if (!banner || !logo || !cname) return;
+      if (!cid) {
+        banner.classList.add("hidden");
+        logo.classList.add("hidden");
+        logo.removeAttribute("src");
+        cname.textContent = "";
+        return;
+      }
+      const cs = await getDoc(doc(db, "companies", cid));
+      if (!cs.exists()) {
+        banner.classList.add("hidden");
+        return;
+      }
+      const company = { id: cs.id, ...cs.data() };
+      banner.classList.remove("hidden");
+      cname.textContent = companyDisplayName(company);
+      const src = companyLogoSrc(company);
+      if (src) {
+        logo.src = src;
+        logo.classList.remove("hidden");
+      } else {
+        logo.classList.add("hidden");
+        logo.removeAttribute("src");
+      }
+    }
+
+    function buildGeneralFormPayloadFromInputs() {
+      const g = {
+        poNumber: ($("po-gen-po-number")?.value || "").trim(),
+        poDate: ($("po-gen-po-date")?.value || "").trim(),
+        companyId: ($("po-gen-company")?.value || "").trim(),
+        supplierId: ($("po-gen-supplier")?.value || "").trim(),
+        vendor: {
+          name: ($("po-gen-v-name")?.value || "").trim(),
+          address: ($("po-gen-v-address")?.value || "").trim(),
+          attn: ($("po-gen-v-attn")?.value || "").trim(),
+          phone: ($("po-gen-v-phone")?.value || "").trim(),
+          email: ($("po-gen-v-email")?.value || "").trim(),
+        },
+        offerType: ($("po-gen-offer-type")?.value || "").trim(),
+        buyerExtra: {
+          contact: ($("po-gen-b-contact")?.value || "").trim(),
+          phone: ($("po-gen-b-phone")?.value || "").trim(),
+          emails: ($("po-gen-b-emails")?.value || "").trim(),
+        },
+        lines: collectGeneralLinesFromTable(),
+        totalWords: ($("po-gen-total-words")?.value || "").trim(),
+        notes: ($("po-gen-notes")?.value || "").trim(),
+        termsPayment: ($("po-gen-term-pay")?.value || "").trim(),
+        termsDelivery: ($("po-gen-term-del")?.value || "").trim(),
+        termsPacking: ($("po-gen-term-pack")?.value || "").trim(),
+        termsShipping: ($("po-gen-term-ship")?.value || "").trim(),
+        docRows: collectGeneralDocRowsFromTable(),
+        signVendor: ($("po-gen-sign-vendor")?.value || "").trim(),
+        signBuyer: ($("po-gen-sign-buyer")?.value || "").trim(),
+      };
+      return g;
+    }
+
+    function resetNewGeneralPoForm() {
+      const ids = [
+        "po-gen-po-number",
+        "po-gen-offer-type",
+        "po-gen-v-name",
+        "po-gen-v-address",
+        "po-gen-v-attn",
+        "po-gen-v-phone",
+        "po-gen-v-email",
+        "po-gen-b-contact",
+        "po-gen-b-phone",
+        "po-gen-b-emails",
+        "po-gen-total-words",
+        "po-gen-notes",
+        "po-gen-term-pay",
+        "po-gen-term-del",
+        "po-gen-term-pack",
+        "po-gen-term-ship",
+        "po-gen-sign-vendor",
+        "po-gen-sign-buyer",
+      ];
+      ids.forEach((id) => {
+        const el = $(id);
+        if (el) el.value = "";
+      });
+      if ($("po-gen-po-date")) $("po-gen-po-date").value = formatTodayYmd();
+      clearGeneralLinesTable();
+      addGeneralLineRow();
+      clearGeneralDocRows();
+      clearGeneralVendorInputs();
+      void Promise.all([
+        fillGeneralSupplierSelect(""),
+        fillGeneralCompanySelect("").then(() => void hydrateGeneralCompanyBanner()),
+      ]);
+    }
+
+    function loadGeneralPoFormFromDoc(po) {
+      const g = normalizeGeneralFormFromPo(po);
+      if ($("po-gen-po-number")) $("po-gen-po-number").value = g.poNumber || (po.title || "").trim();
+      if ($("po-gen-po-date")) $("po-gen-po-date").value = g.poDate || "";
+      if ($("po-gen-offer-type")) $("po-gen-offer-type").value = g.offerType || "";
+      const sid = (g.supplierId || "").trim();
+      const v = g.vendor || {};
+      const b = g.buyerExtra || {};
+      if ($("po-gen-b-contact")) $("po-gen-b-contact").value = b.contact || "";
+      if ($("po-gen-b-phone")) $("po-gen-b-phone").value = b.phone || "";
+      if ($("po-gen-b-emails")) $("po-gen-b-emails").value = b.emails || "";
+      if ($("po-gen-total-words")) $("po-gen-total-words").value = g.totalWords || "";
+      if ($("po-gen-notes")) $("po-gen-notes").value = g.notes || (po.notes || "").trim();
+      if ($("po-gen-term-pay")) $("po-gen-term-pay").value = g.termsPayment || "";
+      if ($("po-gen-term-del")) $("po-gen-term-del").value = g.termsDelivery || "";
+      if ($("po-gen-term-pack")) $("po-gen-term-pack").value = g.termsPacking || "";
+      if ($("po-gen-term-ship")) $("po-gen-term-ship").value = g.termsShipping || "";
+      if ($("po-gen-sign-vendor")) $("po-gen-sign-vendor").value = g.signVendor || "";
+      if ($("po-gen-sign-buyer")) $("po-gen-sign-buyer").value = g.signBuyer || "";
+      clearGeneralLinesTable();
+      const glines = Array.isArray(g.lines) && g.lines.length ? g.lines : [{}];
+      glines.forEach((l) => addGeneralLineRow(l));
+      clearGeneralDocRows();
+      const drows = Array.isArray(g.docRows) ? g.docRows : [];
+      drows.forEach((r) => addGeneralDocRow(r));
+      void Promise.all([
+        fillGeneralSupplierSelect(sid).then(async () => {
+          const supSel = $("po-gen-supplier");
+          if (!supSel) return;
+          if (sid && [...supSel.options].some((o) => o.value === sid)) {
+            supSel.value = sid;
+            if ((v.name || "").trim()) setGeneralVendorInputs(v);
+            else await applyGeneralVendorFromSupplierId(sid);
+          } else {
+            supSel.value = "";
+            setGeneralVendorInputs(v);
+          }
+        }),
+        fillGeneralCompanySelect(g.companyId || po.companyId || "").then(() => {
+          const sel = $("po-gen-company");
+          if (sel && g.companyId && [...sel.options].some((o) => o.value === g.companyId)) sel.value = g.companyId;
+          void hydrateGeneralCompanyBanner();
+        }),
+      ]);
+    }
+
+    function openGeneralPoPrintView(po) {
+      const g = normalizeGeneralFormFromPo(po);
+      const lines = Array.isArray(g.lines) && g.lines.length ? g.lines : [];
+      const docRows = Array.isArray(g.docRows) ? g.docRows : [];
+      const logoRaw = (po.companyLogoDataUrlSnapshot || po.companyLogoUrlSnapshot || "").trim();
+      const logoHtml = logoRaw ? `<img class="po-print-logo" src="${escapeAttr(logoRaw)}" alt="" />` : "";
+      const buyerName = (po.companyNameSnapshot || "").trim();
+      const companyHtml = buyerName ? `<p class="po-print-company">${escapeHtml(buyerName)}</p>` : "";
+      const refText = (g.poNumber || po.title || "").trim() || t("dash");
+      const poDateDisp =
+        g.poDate && /^\d{4}-\d{2}-\d{2}/.test(g.poDate)
+          ? g.poDate
+          : poRowDisplayDate(po);
+      const v = g.vendor || {};
+      const metaParts = [];
+      metaParts.push(`<dt>${escapeHtml(t("genPoLabelPoNumber"))}</dt><dd>${escapeHtml(refText)}</dd>`);
+      metaParts.push(`<dt>${escapeHtml(t("genPoLabelPoDate"))}</dt><dd>${escapeHtml(poDateDisp)}</dd>`);
+      if (g.offerType) metaParts.push(`<dt>${escapeHtml(t("genPoLabelOfferType"))}</dt><dd>${escapeHtml(g.offerType)}</dd>`);
+      const stKey = po.status || "draft";
+      const stTry = t("poStatus_" + stKey);
+      const stDisp = stTry && stTry !== "poStatus_" + stKey ? stTry : po.status || t("dash");
+      metaParts.push(`<dt>${escapeHtml(t("poPrintMetaStatus"))}</dt><dd>${escapeHtml(String(stDisp))}</dd>`);
+      const vendorBlock = `<div class="po-print-gen-block"><h3 class="po-print-section-title">${escapeHtml(t("genPoSectionVendor"))}</h3>
+        <dl class="po-print-dl po-print-dl--dense">
+          <dt>${escapeHtml(t("genPoLabelVendorName"))}</dt><dd>${escapeHtml(v.name || t("dash"))}</dd>
+          <dt>${escapeHtml(t("genPoLabelVendorAddress"))}</dt><dd>${escapeHtml(v.address || t("dash"))}</dd>
+          <dt>${escapeHtml(t("genPoLabelVendorAttn"))}</dt><dd>${escapeHtml(v.attn || t("dash"))}</dd>
+          <dt>${escapeHtml(t("labelPhone"))}</dt><dd>${escapeHtml(v.phone || t("dash"))}</dd>
+          <dt>${escapeHtml(t("labelEmailPrimary"))}</dt><dd>${escapeHtml(v.email || t("dash"))}</dd>
+        </dl></div>`;
+      const be = g.buyerExtra || {};
+      const buyerBlock = `<div class="po-print-gen-block"><h3 class="po-print-section-title">${escapeHtml(t("genPoSectionBuyerContact"))}</h3>
+        <dl class="po-print-dl po-print-dl--dense">
+          <dt>${escapeHtml(t("genPoLabelBuyerContact"))}</dt><dd>${escapeHtml(be.contact || t("dash"))}</dd>
+          <dt>${escapeHtml(t("genPoLabelBuyerPhone"))}</dt><dd>${escapeHtml(be.phone || t("dash"))}</dd>
+          <dt>${escapeHtml(t("genPoLabelBuyerEmails"))}</dt><dd style="white-space:pre-wrap">${escapeHtml(be.emails || t("dash"))}</dd>
+        </dl></div>`;
+
+      const lineTh = `<th class="po-print-num">#</th><th>${escapeHtml(t("genPoColDesc"))}</th><th>${escapeHtml(t("genPoColUnit"))}</th><th class="po-print-num">${escapeHtml(t("genPoColQty"))}</th><th>${escapeHtml(t("genPoColPrice"))}</th><th class="po-print-num">${escapeHtml(t("genPoColLineTotal"))}</th><th>${escapeHtml(t("genPoColRemark"))}</th>`;
+      const lineRows = lines.length
+        ? lines
+            .map(
+              (l, i) =>
+                `<tr><td class="po-print-num">${i + 1}</td><td>${escapeHtml(l.item || "")}</td><td>${escapeHtml(l.unit || "")}</td><td class="po-print-num">${escapeHtml(String(l.qty ?? ""))}</td><td>${escapeHtml(l.priceText || "")}</td><td class="po-print-num">${escapeHtml(String(l.lineTotal ?? ""))}</td><td>${escapeHtml(l.remark || "")}</td></tr>`
+            )
+            .join("")
+        : `<tr><td colspan="7">${escapeHtml(t("dash"))}</td></tr>`;
+      const totalNum = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+      const tfoot =
+        totalNum > 0
+          ? `<tfoot><tr><td colspan="5" style="text-align:end">${escapeHtml(t("poPrintGrandTotal"))}</td><td class="po-print-num">${escapeHtml(
+              totalNum.toLocaleString(localeTag())
+            )}</td><td></td></tr></tfoot>`
+          : "";
+      const totalWords = (g.totalWords || "").trim();
+      const totalWordsHtml = totalWords
+        ? `<p class="po-print-text-block"><strong>${escapeHtml(t("genPoLabelTotalWords"))}:</strong> ${escapeHtml(totalWords)}</p>`
+        : "";
+
+      let termsHtml = "";
+      const term = (title, body) =>
+        body
+          ? `<div class="po-print-narrative-item"><span class="po-print-narrative-label">${escapeHtml(title)}</span><p class="po-print-text-block" style="white-space:pre-wrap">${escapeHtml(body)}</p></div>`
+          : "";
+      termsHtml += term(t("genPoLabelGeneralNotes"), g.notes);
+      termsHtml += term(t("genPoLabelTermPayment"), g.termsPayment);
+      termsHtml += term(t("genPoLabelTermDelivery"), g.termsDelivery);
+      termsHtml += term(t("genPoLabelTermPacking"), g.termsPacking);
+      termsHtml += term(t("genPoLabelTermShipping"), g.termsShipping);
+      const termsBand = termsHtml
+        ? `<div class="po-print-narrative-band"><h3 class="po-print-unified-col-title">${escapeHtml(t("genPoSectionNotesTerms"))}</h3><div class="po-print-narrative-grid">${termsHtml}</div></div>`
+        : "";
+
+      let docSection = "";
+      if (docRows.length) {
+        const dth = `<th class="po-print-num">${escapeHtml(t("genPoColSn"))}</th><th>${escapeHtml(t("genPoColDocDesc"))}</th><th class="po-print-num">${escapeHtml(t("genPoColOriginal"))}</th><th class="po-print-num">${escapeHtml(t("genPoColCopy"))}</th><th>${escapeHtml(t("genPoColDocNotes"))}</th>`;
+        const dbody = docRows
+          .map(
+            (r, i) =>
+              `<tr><td class="po-print-num">${i + 1}</td><td>${escapeHtml(r.description || "")}</td><td class="po-print-num">${escapeHtml(String(r.originals ?? ""))}</td><td class="po-print-num">${escapeHtml(String(r.copies ?? ""))}</td><td style="white-space:pre-wrap">${escapeHtml(r.notes || "")}</td></tr>`
+          )
+          .join("");
+        docSection = `<section class="po-print-lines-section po-print-section"><h2 class="po-print-section-title">${escapeHtml(t("genPoSectionDocs"))}</h2><div class="po-print-table-wrap"><table class="po-print-table data-table"><thead><tr>${dth}</tr></thead><tbody>${dbody}</tbody></table></div></section>`;
+      }
+
+      const signHtml = `<div class="po-print-gen-sign-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+        <div class="po-print-sign-box"><p class="po-print-sign-hint">${escapeHtml(t("genPoSectionVendor"))}</p><p class="po-print-text-block">${escapeHtml(g.signVendor || "—")}</p></div>
+        <div class="po-print-sign-box"><p class="po-print-sign-hint">${escapeHtml(t("genPoLabelBuyerCompany"))}</p><p class="po-print-text-block">${escapeHtml(g.signBuyer || "—")}</p></div>
+      </div>`;
+
+      const html = `<article class="po-print-doc po-print-doc--general">
+        <header class="po-print-header">
+          <div class="po-print-header-brand">
+            ${logoHtml}
+            <div>${companyHtml}<h1 class="po-print-title">${escapeHtml(t("poPrintViewTitle"))}</h1></div>
+          </div>
+          <div class="po-print-header-aside">
+            <div class="po-print-ref-pill">${escapeHtml(refText)}</div>
+            <p class="po-print-date-line">${escapeHtml(t("poPrintMetaDate"))}: ${escapeHtml(poDateDisp)}</p>
+          </div>
+        </header>
+        <div class="po-print-unified-info">
+          <h3 class="po-print-unified-col-title">${escapeHtml(t("poPrintSectionRequestInfo"))}</h3>
+          <dl class="po-print-dl po-print-dl--dense">${metaParts.join("")}</dl>
+        </div>
+        <div class="po-print-gen-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start">
+          ${vendorBlock}${buyerBlock}
+        </div>
+        <section class="po-print-lines-section po-print-section">
+          <h2 class="po-print-section-title">${escapeHtml(t("genPoSectionLines"))}</h2>
+          <div class="po-print-table-wrap">
+            <table class="po-print-table data-table"><thead><tr>${lineTh}</tr></thead><tbody>${lineRows}</tbody>${tfoot}</table>
+          </div>
+          ${totalWordsHtml}
+        </section>
+        ${termsBand}
+        ${docSection}
+        ${signHtml}
+      </article>`;
+      const el = $("po-print-content");
+      if (el) el.innerHTML = html;
+      lastPoPrintDoc = { title: refText || t("docTitle"), html };
+      $("modal-po-print-view")?.classList.remove("hidden");
     }
 
     function syncPoModalBlocks(scope) {
       const gen = $("po-general-block");
       const proj = $("po-project-block");
-      const titleInp = $("po-title");
+      const sharedNotes = $("po-shared-notes");
+      const genPoNum = $("po-gen-po-number");
       if (!gen || !proj) return;
       if (scope === "project") {
         gen.classList.add("hidden");
         proj.classList.remove("hidden");
-        if (titleInp) titleInp.removeAttribute("required");
+        if (genPoNum) genPoNum.removeAttribute("required");
+        if (sharedNotes) sharedNotes.classList.remove("hidden");
       } else {
         gen.classList.remove("hidden");
         proj.classList.add("hidden");
-        if (titleInp) titleInp.setAttribute("required", "required");
+        if (genPoNum) genPoNum.setAttribute("required", "required");
+        if (sharedNotes) sharedNotes.classList.add("hidden");
       }
     }
 
@@ -4324,6 +5410,7 @@
           accountingClosedBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_completed", "po-projects");
         closeAccountingPoModal();
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
@@ -4360,8 +5447,9 @@
       if (company) {
         banner.classList.remove("hidden");
         cname.textContent = companyDisplayName(company);
-        if (company.logoUrl) {
-          logo.src = company.logoUrl;
+        const logoSrc = companyLogoSrc(company);
+        if (logoSrc) {
+          logo.src = logoSrc;
           logo.classList.remove("hidden");
         } else {
           logo.classList.add("hidden");
@@ -4638,6 +5726,10 @@
       if (!snap.exists()) return;
       const po = { id: snap.id, ...snap.data() };
       const isProject = po.scope === "project";
+      if (!isProject) {
+        openGeneralPoPrintView(po);
+        return;
+      }
       const pr = po.projectId ? await getDoc(doc(db, "projects", po.projectId)) : null;
       const pname = pr?.exists() ? projectDisplayName(pr.data()) : po.projectId || t("dash");
       const uids = new Set();
@@ -4731,7 +5823,7 @@
       const emptyLineRow = `<tr><td colspan="${lineColCount}">${escapeHtml(t("dash"))}</td></tr>`;
 
       const companyName = (po.companyNameSnapshot || "").trim();
-      const logoUrl = (po.companyLogoUrlSnapshot || "").trim();
+      const logoUrl = (po.companyLogoDataUrlSnapshot || po.companyLogoUrlSnapshot || "").trim();
       const refText = (po.poReference || po.title || "").trim() || t("dash");
       const logoHtml = logoUrl ? `<img class="po-print-logo" src="${escapeAttr(logoUrl)}" alt="" />` : "";
       const companyHtml = companyName ? `<p class="po-print-company">${escapeHtml(companyName)}</p>` : "";
@@ -5281,23 +6373,28 @@
         }
         const canEdit = !isPoEditorRoleBlocked();
         const thead = `<tr>
-              <th>${t("colTitle")}</th>
+              <th>${t("colGenPoPoNo")}</th>
+              <th>${t("colGenPoCompany")}</th>
               <th>${t("colSupplier")}</th>
-              <th>${t("colWorkflow")}</th>
               <th>${t("colStatus")}</th>
               <th>${t("colTotal")}</th>
               <th></th>
             </tr>`;
         const tbody = rows
-          .map(
-            (r) => `
+          .map((r) => {
+            const g = r.generalForm && typeof r.generalForm === "object" ? r.generalForm : null;
+            const poNo = (g?.poNumber || r.title || "").trim() || t("dash");
+            const comp = (r.companyNameSnapshot || "").trim() || t("dash");
+            const sup = (r.supplierName || g?.vendor?.name || "").trim() || t("dash");
+            return `
                 <tr>
-                  <td>${escapeHtml(r.title || "")}</td>
-                  <td>${escapeHtml(r.supplierName || t("dash"))}</td>
-                  <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
+                  <td>${escapeHtml(poNo)}</td>
+                  <td>${escapeHtml(comp)}</td>
+                  <td>${escapeHtml(sup)}</td>
                   <td>${statusBadge(r.status || "draft")}</td>
                   <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
                   <td>
+                    <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
                       canEdit
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t(
@@ -5306,8 +6403,8 @@
                         : ""
                     }
                   </td>
-                </tr>`
-          )
+                </tr>`;
+          })
           .join("");
         wrap.innerHTML = `<div class="table-scroll"><table class="data-table">
             <thead>${thead}</thead>
@@ -5315,6 +6412,9 @@
           </table></div>`;
         wrap.querySelectorAll(".btn-edit-po").forEach((btn) => {
           btn.addEventListener("click", () => openPoModal(btn.dataset.scope, btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
+          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
           btn.addEventListener("click", () => deletePo(btn.dataset.id));
@@ -5587,6 +6687,7 @@
           engineerFirstApprovedBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        void notifyProjectManagers(poId, po.projectId, poNotifRefText({ ...po, id: poId }), "notif_po_pm", "pm-approvals");
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -5619,6 +6720,7 @@
           engineerFirstRejectedBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_rejected_ef", "po-projects");
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -5748,6 +6850,14 @@
             projectManagerApprovedBy: currentUser.uid,
             updatedAt: serverTimestamp(),
           });
+          const regId = await resolveRegionIdForPo(po);
+          void notifyGroupManagersForRegion(
+            poId,
+            regId,
+            poNotifRefText({ ...po, id: poId }),
+            "notif_po_gm",
+            "gm-approvals"
+          );
           refreshWorkflowQueuesByActiveScreen();
           const act = document.querySelector(".app-screen:not(.hidden)");
           if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -5796,6 +6906,7 @@
             projectManagerRejectedBy: currentUser.uid,
             updatedAt: serverTimestamp(),
           });
+          void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_rejected_pm", "po-projects");
           refreshWorkflowQueuesByActiveScreen();
           const act = document.querySelector(".app-screen:not(.hidden)");
           if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -5849,6 +6960,13 @@
             groupManagerApprovedBy: currentUser.uid,
             updatedAt: serverTimestamp(),
           });
+          void notifyAllRole(
+            poId,
+            poNotifRefText({ ...po, id: poId }),
+            "purchasing_officer",
+            "purchasing-queue",
+            "notif_po_purchasing"
+          );
           refreshWorkflowQueuesByActiveScreen();
           const act = document.querySelector(".app-screen:not(.hidden)");
           if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -5907,6 +7025,7 @@
             groupManagerRejectedBy: currentUser.uid,
             updatedAt: serverTimestamp(),
           });
+          void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_rejected_gm", "po-projects");
           refreshWorkflowQueuesByActiveScreen();
           const act = document.querySelector(".app-screen:not(.hidden)");
           if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -6780,6 +7899,13 @@
           purchasingSentToAdvanceBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        void notifyAllRole(
+          poId,
+          poNotifRefText({ ...po, id: poId }),
+          "accountant",
+          "accounting-queue",
+          "notif_po_accounting_advance"
+        );
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -6808,6 +7934,8 @@
           advanceReleasedBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        const regId = await resolveRegionIdForPo(po);
+        void notifyWarehouseSupervisorsRegion(poId, regId, poNotifRefText({ ...po, id: poId }));
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -6848,6 +7976,13 @@
           warehouseReceiptConfirmedBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        void notifyAllRole(
+          poId,
+          poNotifRefText({ ...po, id: poId }),
+          "accountant",
+          "accounting-queue",
+          "notif_po_accounting_close"
+        );
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -6882,6 +8017,7 @@
           accountingClosedBy: currentUser.uid,
           updatedAt: serverTimestamp(),
         });
+        void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_completed", "po-projects");
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -7137,6 +8273,19 @@
       return String(max + 1).padStart(3, "0");
     }
 
+    async function generateNextSupplierCode() {
+      const snap = await getDocs(collection(db, "suppliers"));
+      let max = 0;
+      snap.forEach((d) => {
+        const c = d.data().code;
+        if (c != null && String(c).trim() !== "") {
+          const n = parseInt(String(c).replace(/\D/g, ""), 10);
+          if (!Number.isNaN(n) && n > max) max = n;
+        }
+      });
+      return "S" + String(max + 1).padStart(3, "0");
+    }
+
     function sortWarehousesByCode(rows) {
       return [...rows].sort((a, b) => {
         const na = parseInt(String(a.code || "").replace(/\D/g, ""), 10);
@@ -7166,6 +8315,20 @@
       return disp;
     }
 
+    function supplierDisplayName(data) {
+      if (!data) return "";
+      return (data.name || "").trim() || t("dash");
+    }
+
+    function supplierOptionLabel(row) {
+      const disp = supplierDisplayName(row);
+      const c = (row.code != null ? String(row.code).trim() : "") || "";
+      const dash = t("dash");
+      if (c && disp !== dash) return `${c} — ${disp}`;
+      if (c) return c;
+      return disp;
+    }
+
     function sortRegionsByCode(rows) {
       return [...rows].sort((a, b) => {
         const na = parseInt(String(a.code || "").replace(/\D/g, ""), 10);
@@ -7182,15 +8345,6 @@
       const c = (row.code || "").trim();
       if (c && n) return `${c} — ${n}`;
       return c || n || row.id || t("dash");
-    }
-
-    async function uploadCompanyLogo(file, companyDocId) {
-      const ext = (file.name.split(".").pop() || "jpg").replace(/[^a-z0-9]/gi, "").slice(0, 5) || "jpg";
-      const idPart = companyDocId || `new_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
-      const path = `company-logos/${idPart}_${crypto.randomUUID().slice(0, 8)}.${ext}`;
-      const storageRef = ref(storage, path);
-      await uploadBytes(storageRef, file, { contentType: file.type || "image/jpeg" });
-      return getDownloadURL(storageRef);
     }
 
     function roleLabelDisplay(role) {
@@ -7321,16 +8475,10 @@
           await hydrateProjectPoFromProjectSelect(true);
         }
       } else if (existingId && poData) {
-        $("po-title").value = poData.title || "";
-        $("po-supplier-general").value = poData.supplierName || "";
-        $("po-lines").value = linesToText(poData.lines);
-        $("po-notes").value = poData.notes || "";
+        loadGeneralPoFormFromDoc(poData);
       } else {
         $("po-id").value = "";
-        $("po-title").value = "";
-        $("po-supplier-general").value = "";
-        $("po-lines").value = "";
-        $("po-notes").value = "";
+        resetNewGeneralPoForm();
       }
 
       fillPoStatusOptions();
@@ -7405,7 +8553,13 @@
           regionId: ctx.project.regionId || null,
           regionName: ctx.regionRow ? regionOptionLabel(ctx.regionRow) : null,
           companyNameSnapshot: ctx.company ? companyDisplayName(ctx.company) : null,
-          companyLogoUrlSnapshot: ctx.company?.logoUrl || null,
+          ...(() => {
+            const csrc = ctx.company ? companyLogoSrc(ctx.company) : "";
+            return {
+              companyLogoUrlSnapshot: csrc.startsWith("http") ? csrc : null,
+              companyLogoDataUrlSnapshot: csrc.startsWith("data:") ? csrc : null,
+            };
+          })(),
           warehousesSummary: warehouseListSummary(ctx.warehouses),
           reasonRequest: ($("po-reason").value || "").trim(),
           usageNote: ($("po-usage").value || "").trim(),
@@ -7420,22 +8574,51 @@
           updatedAt: serverTimestamp(),
         };
       } else {
-        const title = ($("po-title").value || "").trim();
-        if (!title) {
+        const g = buildGeneralFormPayloadFromInputs();
+        if (!g.poNumber) {
           alert(t("alertPoTitleRequired"));
           return;
         }
-        const lines = parseLines($("po-lines").value);
-        const totalAmount = sumLines(lines);
+        const lines = g.lines;
+        if (!lines.length) {
+          alert(t("alertProjectPoLines"));
+          return;
+        }
+        if (!(g.vendor?.name || "").trim()) {
+          alert(t("alertSelectSupplier"));
+          return;
+        }
+        let companyNameSnapshot = null;
+        let companyLogoDataUrlSnapshot = null;
+        let companyLogoUrlSnapshot = null;
+        if (g.companyId) {
+          const cs = await getDoc(doc(db, "companies", g.companyId));
+          if (cs.exists()) {
+            const comp = { id: cs.id, ...cs.data() };
+            companyNameSnapshot = companyDisplayName(comp);
+            const csrc = companyLogoSrc(comp);
+            if (csrc.startsWith("data:")) companyLogoDataUrlSnapshot = csrc;
+            else if (csrc.startsWith("http")) companyLogoUrlSnapshot = csrc;
+          }
+        }
+        const totalAmount = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
         payload = {
-          title,
-          supplierName: ($("po-supplier-general").value || "").trim(),
+          title: g.poNumber,
+          supplierId: (g.supplierId || "").trim() || null,
+          supplierName: g.vendor.name || "",
           status: $("po-status").value,
           scope,
           projectId: null,
           lines,
           totalAmount,
-          notes: ($("po-notes").value || "").trim(),
+          notes: g.notes,
+          generalPoDate: g.poDate || null,
+          companyId: g.companyId || null,
+          companyNameSnapshot,
+          companyLogoDataUrlSnapshot,
+          companyLogoUrlSnapshot,
+          totalAmountWords: g.totalWords || "",
+          generalForm: g,
           updatedAt: serverTimestamp(),
         };
       }
@@ -7447,7 +8630,10 @@
           payload.createdAt = serverTimestamp();
           payload.createdBy = currentUser.uid;
           if (scope === "project") payload.workflowStatus = "warehouse_review";
-          await addDoc(collection(db, "purchaseOrders"), payload);
+          const newRef = await addDoc(collection(db, "purchaseOrders"), payload);
+          if (scope === "project" && payload.regionId) {
+            void notifyWarehouseClerksNewProjectPo(newRef.id, payload.regionId, poNotifRefText(payload));
+          }
         }
         closePoModal();
         if (scope === "project") loadPurchaseOrders("project");
@@ -7464,6 +8650,61 @@
       await hydrateProjectPoFromProjectSelect(!!$("po-id").value);
     });
     $("btn-po-add-line")?.addEventListener("click", () => addPoLineRow());
+    $("po-gen-company")?.addEventListener("change", () => void hydrateGeneralCompanyBanner());
+    $("btn-po-gen-add-line")?.addEventListener("click", () => addGeneralLineRow());
+    $("btn-po-gen-add-doc")?.addEventListener("click", () => addGeneralDocRow());
+
+    function openQuickSupplierModal() {
+      if ($("sq-supplier-name")) $("sq-supplier-name").value = "";
+      if ($("sq-supplier-address")) $("sq-supplier-address").value = "";
+      if ($("sq-supplier-attn")) $("sq-supplier-attn").value = "";
+      if ($("sq-supplier-phone")) $("sq-supplier-phone").value = "";
+      if ($("sq-supplier-email")) $("sq-supplier-email").value = "";
+      $("modal-supplier-quick")?.classList.remove("hidden");
+    }
+
+    function closeQuickSupplierModal() {
+      $("modal-supplier-quick")?.classList.add("hidden");
+    }
+
+    $("btn-po-gen-add-supplier")?.addEventListener("click", () => {
+      if ($("po-scope")?.value !== "general") return;
+      openQuickSupplierModal();
+    });
+    $("po-gen-supplier")?.addEventListener("change", () => void applyGeneralVendorFromSupplierId($("po-gen-supplier")?.value));
+    $("modal-supplier-quick-cancel")?.addEventListener("click", closeQuickSupplierModal);
+    $("form-supplier-quick")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = ($("sq-supplier-name")?.value || "").trim();
+      if (!name) {
+        alert(t("alertSupplierName"));
+        return;
+      }
+      try {
+        const code = await generateNextSupplierCode();
+        const payload = {
+          name,
+          address: ($("sq-supplier-address")?.value || "").trim() || null,
+          attn: ($("sq-supplier-attn")?.value || "").trim() || null,
+          phone: ($("sq-supplier-phone")?.value || "").trim() || null,
+          email: ($("sq-supplier-email")?.value || "").trim() || null,
+          code,
+          active: true,
+          updatedAt: serverTimestamp(),
+          createdAt: serverTimestamp(),
+        };
+        const ref = await addDoc(collection(db, "suppliers"), payload);
+        closeQuickSupplierModal();
+        await fillGeneralSupplierSelect(ref.id);
+        const sel = $("po-gen-supplier");
+        if (sel) {
+          sel.value = ref.id;
+          await applyGeneralVendorFromSupplierId(ref.id);
+        }
+      } catch (err) {
+        alert(t("saveFailed") + " " + err.message);
+      }
+    });
 
     $("modal-wh-cancel")?.addEventListener("click", closeWarehouseReviewModal);
     $("modal-wh-submit")?.addEventListener("click", async () => {
@@ -7491,6 +8732,8 @@
       }
       try {
         await updateDoc(doc(db, "purchaseOrders", poId), payload);
+        const mergedPo = { ...(whReviewPoSnapshot || {}), ...payload, id: poId };
+        void notifyAfterWarehouseReview(poId, mergedPo, fullStock);
         closeWarehouseReviewModal();
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
@@ -7555,6 +8798,7 @@
       panel.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
         if (tab === "companies") await renderCompanies(panel);
+        else if (tab === "suppliers") await renderSuppliers(panel);
         else if (tab === "projects") await renderProjects(panel);
         else if (tab === "regions") await renderRegions(panel);
         else if (tab === "warehouses") await renderWarehouses(panel);
@@ -7568,8 +8812,8 @@
       return `
               <tr>
                 <td>${
-                  r.logoUrl
-                    ? `<img class="company-logo-thumb" src="${escapeHtml(r.logoUrl)}" alt="" loading="lazy" />`
+                  companyLogoSrc(r)
+                    ? `<img class="company-logo-thumb" src="${escapeAttr(companyLogoSrc(r))}" alt="" loading="lazy" />`
                     : t("dash")
                 }</td>
                 <td>${escapeHtml(r.code != null && r.code !== "" ? String(r.code) : t("dash"))}</td>
@@ -7663,6 +8907,48 @@
           <tbody id="companies-table-body">${tbodyContent}</tbody>
         </table></div>`;
       if (rows.length) bindCompanyFilters(panel);
+    }
+
+    async function renderSuppliers(panel) {
+      const snap = await getDocs(collection(db, "suppliers"));
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      rows.sort((a, b) => {
+        const na = parseInt(String(a.code || "").replace(/\D/g, ""), 10);
+        const nb = parseInt(String(b.code || "").replace(/\D/g, ""), 10);
+        if (!Number.isNaN(na) && !Number.isNaN(nb) && na !== nb) return na - nb;
+        return supplierDisplayName(a).localeCompare(supplierDisplayName(b), lang === "ar" ? "ar" : "en");
+      });
+      panel.innerHTML = `
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-sm" data-entity="suppliers" data-action="add">${t("addSupplier")}</button>
+        </div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th>${t("colCode")}</th><th>${t("colName")}</th><th>${t("labelPhone")}</th><th>${t("colEmail")}</th><th>${t("colActive")}</th><th></th></tr></thead>
+          <tbody>
+            ${
+              rows.length
+                ? rows
+                    .map(
+                      (r) => `
+              <tr>
+                <td>${escapeHtml((r.code || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(supplierDisplayName(r))}</td>
+                <td>${escapeHtml((r.phone || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.email || "").trim() || t("dash"))}</td>
+                <td>${r.active !== false ? t("yes") : t("no")}</td>
+                <td>
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="suppliers" data-id="${r.id}">${t("edit")}</button>
+                  <button type="button" class="btn btn-danger btn-sm btn-del-entity" data-collection="suppliers" data-id="${r.id}">${t("delete")}</button>
+                </td>
+              </tr>`
+                    )
+                    .join("")
+                : `<tr><td colspan="6" class="empty-state">${t("noSuppliers")}</td></tr>`
+            }
+          </tbody>
+        </table></div>`;
+      bindEntityButtons(panel);
     }
 
     async function renderProjects(panel) {
@@ -7986,7 +9272,7 @@
         logoWrap.innerHTML = `
           <label for="company-logo-file">${escapeHtml(t("labelLogo"))}</label>
           <input type="file" id="company-logo-file" accept="image/*" />
-          <input type="hidden" id="ef-logoUrl" data-field="logoUrl" value="" />
+          <input type="hidden" id="ef-logoUrl" value="" />
           <img id="company-logo-preview" class="company-logo-preview hidden" alt="" />`;
         fields.appendChild(logoWrap);
         addField("active", t("labelActive"), "checkbox");
@@ -8004,6 +9290,22 @@
             });
           }
         }, 0);
+      } else if (collectionName === "suppliers") {
+        $("modal-entity-title").textContent = existingId ? t("modalEditSupplier") : t("modalNewSupplier");
+        const nextSupCode = existingId ? "" : await generateNextSupplierCode();
+        const supCodeRow = document.createElement("div");
+        supCodeRow.className = "field";
+        supCodeRow.innerHTML = `
+          <label for="ef-supplier-code">${escapeHtml(t("labelSupplierCode"))}</label>
+          <input type="text" id="ef-supplier-code" readonly data-field="code" value="${existingId ? "" : escapeHtml(nextSupCode)}" />
+          <p style="margin:0.25rem 0 0;font-size:0.8rem;color:var(--muted)">${escapeHtml(t("labelSupplierCodeAuto"))}</p>`;
+        fields.appendChild(supCodeRow);
+        addField("name", t("labelSupplierName"));
+        addField("address", t("genPoLabelVendorAddress"));
+        addField("attn", t("genPoLabelVendorAttn"));
+        addField("phone", t("labelPhone"), "tel");
+        addField("email", t("labelEmailPrimary"), "email");
+        addField("active", t("labelActive"), "checkbox");
       } else if (collectionName === "projects") {
         $("modal-entity-title").textContent = existingId ? t("modalEditProject") : t("modalNewProject");
         const nextProjCode = existingId ? "" : await generateNextProjectCode();
@@ -8438,9 +9740,11 @@
             if (nen) nen.value = (d.nameEn || "").trim();
             const prev = $("company-logo-preview");
             const hiddenLogo = $("ef-logoUrl");
-            if (d.logoUrl && prev && hiddenLogo) {
-              hiddenLogo.value = d.logoUrl;
-              prev.src = d.logoUrl;
+            const src = companyLogoSrc(d);
+            if (src && prev) {
+              if (hiddenLogo && (d.logoUrl || "").trim().startsWith("http")) hiddenLogo.value = (d.logoUrl || "").trim();
+              else if (hiddenLogo) hiddenLogo.value = "";
+              prev.src = src;
               prev.classList.remove("hidden");
             }
           }
@@ -8456,6 +9760,11 @@
           if (collectionName === "warehouses") {
             const d = snap.data();
             const codeInp = fields.querySelector("#ef-warehouse-code");
+            if (codeInp) codeInp.value = (d.code || "").trim();
+          }
+          if (collectionName === "suppliers") {
+            const d = snap.data();
+            const codeInp = fields.querySelector("#ef-supplier-code");
             if (codeInp) codeInp.value = (d.code || "").trim();
           }
           if (collectionName === "userProfiles" && userProjectAssign) {
@@ -8524,15 +9833,15 @@
           const fileInp = $("company-logo-file");
           if (fileInp?.files?.length > 0) {
             try {
-              data.logoUrl = await uploadCompanyLogo(fileInp.files[0], existingId || null);
+              data.logoDataUrl = await encodeCompanyLogoForFirestore(fileInp.files[0]);
+              data.logoUrl = deleteField();
             } catch (upErr) {
               alert(t("logoUploadFailed") + " " + upErr.message);
               return;
             }
           } else if (existingId) {
-            data.logoUrl = ($("ef-logoUrl")?.value || "").trim() || null;
-          } else {
-            data.logoUrl = (data.logoUrl || "").trim() || null;
+            const keepHttp = ($("ef-logoUrl")?.value || "").trim();
+            if (keepHttp.startsWith("http")) data.logoUrl = keepHttp;
           }
           if (!existingId) {
             data.code = await generateNextCompanyCode();
@@ -8601,6 +9910,7 @@
           }
           if (!existingId) payload.createdAt = serverTimestamp();
           await setDoc(doc(db, "userProfiles", uid), payload, { merge: true });
+          userProfilesNotifyCache = { t: 0, list: null };
 
           if (currentUser && uid === currentUser.uid) {
             const s = await getDoc(doc(db, "userProfiles", uid));
@@ -8730,6 +10040,36 @@
               createdAt: serverTimestamp(),
             });
           }
+        } else if (collectionName === "suppliers") {
+          const name = (data.name || "").trim();
+          if (!name) {
+            alert(t("alertSupplierName"));
+            return;
+          }
+          let code;
+          if (!existingId) {
+            code = await generateNextSupplierCode();
+          } else {
+            code = ($("ef-supplier-code")?.value || "").trim();
+            if (!code) code = await generateNextSupplierCode();
+          }
+          const activeCb = $("entity-fields").querySelector('[data-field="active"]');
+          const active = activeCb && activeCb.type === "checkbox" ? activeCb.checked : data.active !== false;
+          const supPayload = {
+            name,
+            address: (data.address || "").trim() || null,
+            attn: (data.attn || "").trim() || null,
+            phone: (data.phone || "").trim() || null,
+            email: (data.email || "").trim() || null,
+            code,
+            active,
+            updatedAt: serverTimestamp(),
+          };
+          if (existingId) {
+            await updateDoc(doc(db, collectionName, existingId), supPayload);
+          } else {
+            await addDoc(collection(db, collectionName), { ...supPayload, createdAt: serverTimestamp() });
+          }
         }
         closeEntityModal();
         if (hasAdminAccess()) loadAdminTab(activeAdminTab);
@@ -8795,6 +10135,307 @@
       if (e.matches) closeMobileNav();
     });
 
+    async function getUserProfilesForNotify() {
+      const now = Date.now();
+      if (userProfilesNotifyCache.list && now - userProfilesNotifyCache.t < NOTIFY_PROFILE_CACHE_MS) {
+        return userProfilesNotifyCache.list;
+      }
+      const snap = await getDocs(collection(db, "userProfiles"));
+      const list = [];
+      snap.forEach((d) => list.push({ uid: d.id, ...d.data() }));
+      userProfilesNotifyCache = { t: now, list };
+      return list;
+    }
+
+    function poNotifRefText(po) {
+      if (!po) return "";
+      return String((po.poReference || po.title || "").trim() || po.id || "").slice(0, 200);
+    }
+
+    function formatNotificationLine(kind, poReference) {
+      const ref = (poReference || "").trim() || t("dash");
+      const raw = t(kind);
+      return String(raw).replace(/\{\{ref\}\}/g, ref);
+    }
+
+    function formatNotifTime(ts) {
+      if (!ts || typeof ts.seconds !== "number") return "";
+      const d = new Date(ts.seconds * 1000);
+      return d.toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+    }
+
+    async function pushInAppNotifications(recipientUids, { poId, poReference, navTarget, kind }) {
+      if (!poId || !kind || !navTarget) return;
+      const actor = currentUser?.uid;
+      const uids = [...new Set((recipientUids || []).filter(Boolean))].filter((u) => u !== actor);
+      if (!uids.length) return;
+      const pref = (poReference || "").trim();
+      for (let i = 0; i < uids.length; i += NOTIF_BATCH) {
+        const slice = uids.slice(i, i + NOTIF_BATCH);
+        const batch = writeBatch(db);
+        slice.forEach((userId) => {
+          const nref = doc(collection(db, NOTIF_COL));
+          batch.set(nref, {
+            userId,
+            poId,
+            poReference: pref,
+            navTarget,
+            kind,
+            read: false,
+            createdAt: serverTimestamp(),
+          });
+        });
+        await batch.commit();
+      }
+    }
+
+    async function notifyWarehouseClerksNewProjectPo(poId, regionId, poReference) {
+      if (!regionId) return;
+      const profiles = await getUserProfilesForNotify();
+      const uids = profiles
+        .filter((p) => p.role === "warehouse_clerk" && p.assignedRegionId === regionId)
+        .map((p) => p.uid);
+      await pushInAppNotifications(uids, {
+        poId,
+        poReference,
+        navTarget: "warehouse-queue",
+        kind: "notif_po_warehouse",
+      });
+    }
+
+    async function notifyAfterWarehouseReview(poId, po, fullStock) {
+      const refText = poNotifRefText(po);
+      const profiles = await getUserProfilesForNotify();
+      if (fullStock) {
+        const cb = po.createdBy;
+        if (cb) {
+          await pushInAppNotifications([cb], {
+            poId,
+            poReference: refText,
+            navTarget: "po-projects",
+            kind: "notif_po_stock_complete",
+          });
+        }
+        return;
+      }
+      const pid = po.projectId;
+      if (!pid) return;
+      const uids = profiles.filter(
+        (p) => p.role === "engineer_first" && Array.isArray(p.assignedProjectIds) && p.assignedProjectIds.includes(pid)
+      ).map((p) => p.uid);
+      await pushInAppNotifications(uids, {
+        poId,
+        poReference: refText,
+        navTarget: "ef-approvals",
+        kind: "notif_po_engineer_first",
+      });
+    }
+
+    async function notifyProjectManagers(poId, projectId, poReference, kind, navTarget) {
+      if (!projectId) return;
+      const profiles = await getUserProfilesForNotify();
+      const uids = profiles.filter(
+        (p) => p.role === "project_manager" && Array.isArray(p.managedProjectIds) && p.managedProjectIds.includes(projectId)
+      ).map((p) => p.uid);
+      await pushInAppNotifications(uids, {
+        poId,
+        poReference,
+        navTarget: navTarget || "pm-approvals",
+        kind,
+      });
+    }
+
+    async function notifyGroupManagersForRegion(poId, regionId, poReference, kind, navTarget) {
+      if (!regionId) return;
+      const profiles = await getUserProfilesForNotify();
+      const uids = profiles.filter(
+        (p) => p.role === "group_manager" && Array.isArray(p.managedRegionIds) && p.managedRegionIds.includes(regionId)
+      ).map((p) => p.uid);
+      await pushInAppNotifications(uids, {
+        poId,
+        poReference,
+        navTarget: navTarget || "gm-approvals",
+        kind,
+      });
+    }
+
+    async function notifyAllRole(poId, poReference, role, navTarget, kind) {
+      const profiles = await getUserProfilesForNotify();
+      const uids = profiles.filter((p) => p.role === role).map((p) => p.uid);
+      await pushInAppNotifications(uids, { poId, poReference, navTarget, kind });
+    }
+
+    async function notifyWarehouseSupervisorsRegion(poId, regionId, poReference) {
+      if (!regionId) return;
+      const profiles = await getUserProfilesForNotify();
+      const uids = profiles.filter(
+        (p) =>
+          p.role === "warehouse_supervisor" && Array.isArray(p.managedRegionIds) && p.managedRegionIds.includes(regionId)
+      ).map((p) => p.uid);
+      await pushInAppNotifications(uids, {
+        poId,
+        poReference,
+        navTarget: "warehouse-receipt-queue",
+        kind: "notif_po_warehouse_receipt",
+      });
+    }
+
+    async function notifyCreatedBy(poId, po, kind, navTarget) {
+      const cb = po?.createdBy;
+      if (!cb) return;
+      await pushInAppNotifications([cb], {
+        poId,
+        poReference: poNotifRefText(po),
+        navTarget: navTarget || "po-projects",
+        kind,
+      });
+    }
+
+    async function resolveRegionIdForPo(po) {
+      let regionId = po?.regionId || null;
+      const projectId = po?.projectId;
+      if (!regionId && projectId) {
+        const pr = await getDoc(doc(db, "projects", projectId));
+        regionId = pr.exists() ? pr.data().regionId || null : null;
+      }
+      return regionId;
+    }
+
+    function stopNotificationsListener() {
+      if (typeof notificationsUnsub === "function") {
+        notificationsUnsub();
+        notificationsUnsub = null;
+      }
+      notificationsRows = [];
+      updateNotificationsBadge();
+    }
+
+    function updateNotificationsBadge() {
+      const badge = $("notifications-badge");
+      if (!badge) return;
+      const n = notificationsRows.filter((r) => !r.read).length;
+      if (n > 0) {
+        badge.textContent = n > 99 ? "99+" : String(n);
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
+    function renderNotificationsList() {
+      const listEl = $("notifications-list");
+      if (!listEl) return;
+      if (!notificationsRows.length) {
+        listEl.innerHTML = `<p class="notif-empty">${escapeHtml(t("notificationsEmpty"))}</p>`;
+        return;
+      }
+      listEl.innerHTML = notificationsRows
+        .map((r) => {
+          const text = escapeHtml(formatNotificationLine(r.kind, r.poReference));
+          const time = escapeHtml(formatNotifTime(r.createdAt));
+          const unread = r.read ? "" : " unread";
+          return `<button type="button" class="notif-item${unread}" data-notif-id="${escapeAttr(r.id)}" data-po-id="${escapeAttr(
+            r.poId || ""
+          )}" data-nav="${escapeAttr(r.navTarget || "")}">
+            ${text}<span class="notif-item-time">${time}</span>
+          </button>`;
+        })
+        .join("");
+      listEl.querySelectorAll(".notif-item").forEach((btn) => {
+        btn.addEventListener("click", () => onNotificationItemClick(btn));
+      });
+    }
+
+    async function onNotificationItemClick(btn) {
+      const id = btn.dataset.notifId;
+      const poId = btn.dataset.poId;
+      const nav = btn.dataset.nav;
+      if (id) {
+        try {
+          await updateDoc(doc(db, NOTIF_COL, id), { read: true });
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+      closeNotificationsPanel();
+      if (nav) showView(nav);
+      if (poId) setTimeout(() => openPoPrintViewModal(poId), 180);
+    }
+
+    function toggleNotificationsPanel() {
+      const panel = $("notifications-panel");
+      const btn = $("btn-notifications");
+      if (!panel || !btn) return;
+      const open = panel.classList.toggle("hidden") === false;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        renderNotificationsList();
+        ensureNotificationsBackdropClose();
+      }
+    }
+
+    function closeNotificationsPanel() {
+      const panel = $("notifications-panel");
+      const btn = $("btn-notifications");
+      if (panel) panel.classList.add("hidden");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    }
+
+    function ensureNotificationsBackdropClose() {
+      if (notificationsBackdropCloseBound) return;
+      notificationsBackdropCloseBound = true;
+      document.addEventListener(
+        "click",
+        (e) => {
+          const wrap = $("notifications-wrap");
+          if (!wrap) return;
+          if (!wrap.contains(e.target)) closeNotificationsPanel();
+        },
+        true
+      );
+    }
+
+    async function markAllNotificationsRead() {
+      const unread = notificationsRows.filter((r) => !r.read);
+      if (!unread.length) return;
+      for (let i = 0; i < unread.length; i += NOTIF_BATCH) {
+        const slice = unread.slice(i, i + NOTIF_BATCH);
+        const batch = writeBatch(db);
+        slice.forEach((r) => batch.update(doc(db, NOTIF_COL, r.id), { read: true }));
+        await batch.commit();
+      }
+    }
+
+    function startNotificationsListener() {
+      stopNotificationsListener();
+      if (!currentUser) return;
+      const qn = query(
+        collection(db, NOTIF_COL),
+        where("userId", "==", currentUser.uid),
+        orderBy("createdAt", "desc"),
+        limit(50)
+      );
+      notificationsUnsub = onSnapshot(
+        qn,
+        (snap) => {
+          notificationsRows = [];
+          snap.forEach((d) => notificationsRows.push({ id: d.id, ...d.data() }));
+          updateNotificationsBadge();
+          if ($("notifications-panel") && !$("notifications-panel").classList.contains("hidden")) renderNotificationsList();
+        },
+        (err) => console.error("notifications listener", err)
+      );
+    }
+
+    $("btn-notifications")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleNotificationsPanel();
+    });
+    $("btn-notifications-mark-all")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      void markAllNotificationsRead();
+    });
+
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user) {
@@ -8805,14 +10446,19 @@
         $("view-login").classList.add("hidden");
         $("view-app").classList.remove("hidden");
         $("header-email").textContent = user.email || "";
+        userProfilesNotifyCache = { t: 0, list: null };
+        startNotificationsListener();
         refreshDashboard();
         showView(firstAllowedView());
       } else {
+        stopNotificationsListener();
+        closeNotificationsPanel();
         closeMobileNav();
         $("view-app").classList.add("hidden");
         $("view-login").classList.remove("hidden");
         currentUserProfile = null;
         userRole = "user";
+        userProfilesNotifyCache = { t: 0, list: null };
         applyStaticI18n();
         updateLangButtons();
       }
