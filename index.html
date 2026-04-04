@@ -5632,6 +5632,14 @@
       return ["warehouse_clerk", "purchasing_officer", "warehouse_supervisor", "accountant", "viewer", "engineer_first"].includes(r);
     }
 
+    /** محاسب: إنشاء طلب مشروع جديد فقط (لا تعديل من القائمة ولا أوامر الإدارة العامة من هنا). */
+    function accountantMayOpenNewProjectPoModal(scope, existingId) {
+      const r = currentUserProfile?.role || userRole;
+      if (r !== "accountant") return false;
+      const id = (existingId || "").trim();
+      return scope === "project" && !id;
+    }
+
     function refreshWorkflowQueuesByActiveScreen() {
       const a = document.querySelector(".app-screen:not(.hidden)");
       if (!a) return;
@@ -8397,7 +8405,7 @@
     }
 
     async function openPoModal(scope, existingId) {
-      if (isPoEditorRoleBlocked()) {
+      if (isPoEditorRoleBlocked() && !accountantMayOpenNewProjectPoModal(scope, existingId)) {
         alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
         return;
       }
