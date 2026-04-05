@@ -520,6 +520,66 @@
       cursor: pointer;
     }
 
+    .section-checkboxes.section-checkboxes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+      gap: 0.35rem 0.85rem;
+      margin-top: 0.35rem;
+    }
+
+    .user-profile-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .user-form-section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface2);
+      padding: 0.85rem 1rem;
+    }
+
+    .user-form-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0 0 0.65rem;
+      padding-bottom: 0.45rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .user-form-section-body > .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .user-form-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 1rem;
+    }
+
+    .user-form-meta-grid .field--full {
+      grid-column: 1 / -1;
+    }
+
+    .user-form-hint {
+      margin: 0 0 0.65rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    #modal-entity .modal.modal-entity-user {
+      max-width: min(640px, calc(100vw - 1.25rem));
+    }
+
+    @media (max-width: 520px) {
+      .user-form-meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .assign-chips {
       display: flex;
       flex-wrap: wrap;
@@ -3277,6 +3337,12 @@
         alertWarehouseWrongRegion: "هذا الطلب لا يتبع منطقتك المسندة.",
         alertWarehouseReviewStale: "تمت معالجة هذا الطلب أو تغيّر وضعه. حدّث القائمة.",
         labelVisibleSections: "الأقسام الظاهرة في القائمة",
+        userFormSectionIdentity: "البيانات الأساسية",
+        userFormSectionRole: "الدور والصلاحيات",
+        userFormSectionNav: "القائمة والأقسام الظاهرة",
+        userFormSectionScope: "نطاق العمل حسب الدور",
+        userFormBypassHint: "يُستخدم لمدير المشروع أو مسؤول المجموعة للتصرف مبكراً في مراحل معيّنة من المسار عند تفعيله.",
+        userFormScopeHint: "يظهر أحد هذه البلوكات فقط حسب الدور المختار (مشاريع، منطقة أمين مستودع، إلخ).",
         labelAssignedProjects: "المشاريع المسندة (طلبات شراء المشاريع)",
         assignedProjectsHint: "ابحث عن مشروع ثم أضفه. يمكن إزالة أي مشروع من القائمة. ينطبق على دور المهندس.",
         assignProjectSearchPlaceholder: "بحث: رمز أو اسم مشروع…",
@@ -3811,6 +3877,13 @@
         alertWarehouseWrongRegion: "This request is not in your assigned region.",
         alertWarehouseReviewStale: "This request was already processed or its status changed. Refresh the list.",
         labelVisibleSections: "Visible menu sections",
+        userFormSectionIdentity: "Account details",
+        userFormSectionRole: "Role & permissions",
+        userFormSectionNav: "Menu & visible sections",
+        userFormSectionScope: "Scope by role",
+        userFormBypassHint:
+          "For project managers and group managers: when enabled, allows acting earlier on certain workflow stages.",
+        userFormScopeHint: "Only one of the blocks below applies, depending on the selected role.",
         labelAssignedProjects: "Assigned projects (project purchase orders)",
         assignedProjectsHint: "Search and add projects; remove with ×. Applies to the engineer role.",
         assignProjectSearchPlaceholder: "Search: code or project name…",
@@ -5652,6 +5725,20 @@
       if (a.id === "screen-accounting-queue") loadAccountingQueue();
     }
 
+    function appendUserFormSection(container, titleKey) {
+      const sec = document.createElement("section");
+      sec.className = "user-form-section";
+      const h = document.createElement("div");
+      h.className = "user-form-section-title";
+      h.textContent = t(titleKey);
+      const body = document.createElement("div");
+      body.className = "user-form-section-body";
+      sec.appendChild(h);
+      sec.appendChild(body);
+      container.appendChild(sec);
+      return body;
+    }
+
     function syncUserProfileRoleFields(container) {
       if (!container) return;
       const role = container.querySelector('[data-field="role"]')?.value;
@@ -5659,6 +5746,9 @@
       const clerk = container.querySelector("#user-clerk-region-wrap");
       const pm = container.querySelector("#user-pm-projects-wrap");
       const gm = container.querySelector("#user-gm-regions-wrap");
+      const bypass = container.querySelector("#user-bypass-wrap");
+      const showBypass = role === "project_manager" || role === "group_manager";
+      if (bypass) bypass.classList.toggle("hidden", !showBypass);
       if (eng) eng.classList.toggle("hidden", role !== "engineer" && role !== "engineer_first" && role !== "viewer");
       if (clerk) clerk.classList.toggle("hidden", role !== "warehouse_clerk");
       if (pm) pm.classList.toggle("hidden", role !== "project_manager");
@@ -9236,6 +9326,8 @@
       $("entity-id").value = existingId || "";
       const fields = $("entity-fields");
       fields.innerHTML = "";
+      fields.classList.remove("user-profile-form");
+      document.querySelector("#modal-entity .modal")?.classList.remove("modal-entity-user");
 
       const addField = (name, label, type = "text", options = null) => {
         const wrap = document.createElement("div");
@@ -9257,6 +9349,29 @@
         } else {
           wrap.innerHTML = `<label for="${id}">${label}</label><input type="${type}" id="${id}" data-field="${name}" />`;
           fields.appendChild(wrap);
+        }
+      };
+
+      const appendFieldTo = (container) => (name, label, type = "text", options = null) => {
+        const wrap = document.createElement("div");
+        wrap.className = "field";
+        const id = `ef-${name}`;
+        if (type === "select") {
+          wrap.innerHTML = `<label for="${id}">${label}</label><select id="${id}" data-field="${name}"></select>`;
+          container.appendChild(wrap);
+          const sel = wrap.querySelector("select");
+          options.forEach((o) => {
+            const opt = document.createElement("option");
+            opt.value = o.value;
+            opt.textContent = o.label;
+            sel.appendChild(opt);
+          });
+        } else if (type === "checkbox") {
+          wrap.innerHTML = `<label><input type="checkbox" id="${id}" data-field="${name}" checked /> ${label}</label>`;
+          container.appendChild(wrap);
+        } else {
+          wrap.innerHTML = `<label for="${id}">${label}</label><input type="${type}" id="${id}" data-field="${name}" />`;
+          container.appendChild(wrap);
         }
       };
 
@@ -9381,14 +9496,25 @@
         addField("regionId", t("labelRegionSelect"), "select", rOpts);
       } else if (collectionName === "userProfiles") {
         $("modal-entity-title").textContent = existingId ? t("modalEditUser") : t("modalNewUser");
+        fields.classList.add("user-profile-form");
+        document.querySelector("#modal-entity .modal")?.classList.add("modal-entity-user");
+
+        const identityBody = appendUserFormSection(fields, "userFormSectionIdentity");
+        const metaGrid = document.createElement("div");
+        metaGrid.className = "user-form-meta-grid";
+        identityBody.appendChild(metaGrid);
+
         const uidField = document.createElement("div");
-        uidField.className = "field";
+        uidField.className = "field field--full";
         uidField.innerHTML = `
           <label for="ef-uid">${t("labelUid")}</label>
           <input type="text" id="ef-uid" data-field="uid" ${existingId ? "readonly" : ""} placeholder="${escapeHtml(t("uidPlaceholder"))}" />`;
-        fields.appendChild(uidField);
-        addField("email", t("labelEmailDisplay"));
-        addField("displayName", t("labelDisplayName"));
+        metaGrid.appendChild(uidField);
+
+        const addToMeta = appendFieldTo(metaGrid);
+        addToMeta("email", t("labelEmailDisplay"));
+        addToMeta("displayName", t("labelDisplayName"));
+
         const roleOpts = [
           { value: "user", label: t("roleOptUser") },
           { value: "engineer", label: t("roleOptEngineer") },
@@ -9402,22 +9528,27 @@
           { value: "accountant", label: t("roleOptAccountant") },
           { value: "admin", label: t("roleOptAdmin") },
         ];
-        addField("role", t("labelRole"), "select", roleOpts);
+
+        const roleBody = appendUserFormSection(fields, "userFormSectionRole");
+        appendFieldTo(roleBody)("role", t("labelRole"), "select", roleOpts);
 
         const bypassWrap = document.createElement("div");
-        bypassWrap.className = "field";
+        bypassWrap.id = "user-bypass-wrap";
+        bypassWrap.className = "field hidden";
         bypassWrap.innerHTML = `
-          <label style="display:flex;gap:0.6rem;align-items:center;">
+          <label style="display:flex;gap:0.6rem;align-items:center;cursor:pointer;">
             <input type="checkbox" data-field="canBypassLowerApprovals" />
             ${escapeHtml(t("labelBypassLowerApprovals"))}
-          </label>`;
-        fields.appendChild(bypassWrap);
+          </label>
+          <p class="user-form-hint" style="margin-top:0.35rem;margin-bottom:0">${escapeHtml(t("userFormBypassHint"))}</p>`;
+        roleBody.appendChild(bypassWrap);
 
+        const navBody = appendUserFormSection(fields, "userFormSectionNav");
         const secWrap = document.createElement("div");
         secWrap.className = "field";
         secWrap.innerHTML = `
-          <span style="display:block;font-weight:600;margin-bottom:0.25rem">${escapeHtml(t("labelVisibleSections"))}</span>
-          <div class="section-checkboxes">
+          <span class="field-label-like">${escapeHtml(t("labelVisibleSections"))}</span>
+          <div class="section-checkboxes section-checkboxes-grid">
             <label><input type="checkbox" data-section-check="dashboard" /> ${escapeHtml(t("navDashboard"))}</label>
             <label><input type="checkbox" data-section-check="po-projects" /> ${escapeHtml(t("navPoProjects"))}</label>
             <label><input type="checkbox" data-section-check="po-general" /> ${escapeHtml(t("navPoGeneral"))}</label>
@@ -9430,7 +9561,13 @@
             <label><input type="checkbox" data-section-check="accounting-queue" /> ${escapeHtml(t("navAccountingQueue"))}</label>
             <label><input type="checkbox" data-section-check="admin" /> ${escapeHtml(t("navAdmin"))}</label>
           </div>`;
-        fields.appendChild(secWrap);
+        navBody.appendChild(secWrap);
+
+        const scopeBody = appendUserFormSection(fields, "userFormSectionScope");
+        const scopeIntro = document.createElement("p");
+        scopeIntro.className = "user-form-hint";
+        scopeIntro.textContent = t("userFormScopeHint");
+        scopeBody.appendChild(scopeIntro);
 
         const regSnapClerk = await getDocs(collection(db, "regions"));
         const regRowsClerk = [];
@@ -9455,43 +9592,44 @@
         clerkRegionWrap.innerHTML = `<label for="ef-assignedRegionId">${escapeHtml(t("labelAssignedRegionClerk"))}</label>`;
         clerkRegionWrap.appendChild(clerkSel);
         const clerkHint = document.createElement("p");
-        clerkHint.style.cssText = "margin:0.25rem 0 0;font-size:0.8rem;color:var(--muted)";
+        clerkHint.className = "user-form-hint";
+        clerkHint.style.marginTop = "0.25rem";
         clerkHint.textContent = t("assignedRegionClerkHint");
         clerkRegionWrap.appendChild(clerkHint);
-        fields.appendChild(clerkRegionWrap);
+        scopeBody.appendChild(clerkRegionWrap);
 
         const projBlock = document.createElement("div");
         projBlock.className = "field";
         projBlock.id = "user-engineer-projects-wrap";
         projBlock.innerHTML = `
           <label for="user-assign-search">${escapeHtml(t("labelAssignedProjects"))}</label>
-          <p style="margin:0.25rem 0 0;font-size:0.8rem;color:var(--muted)">${escapeHtml(t("assignedProjectsHint"))}</p>
+          <p class="user-form-hint" style="margin-top:0.25rem">${escapeHtml(t("assignedProjectsHint"))}</p>
           <div id="user-assign-chips" class="assign-chips"></div>
           <input type="search" id="user-assign-search" autocomplete="off" placeholder="${escapeHtml(t("assignProjectSearchPlaceholder"))}" />
           <ul id="user-assign-results" class="assign-search-results" role="listbox"></ul>`;
-        fields.appendChild(projBlock);
+        scopeBody.appendChild(projBlock);
 
         const pmBlock = document.createElement("div");
         pmBlock.className = "field hidden";
         pmBlock.id = "user-pm-projects-wrap";
         pmBlock.innerHTML = `
           <label for="user-pm-search">${escapeHtml(t("labelManagedProjectsPm"))}</label>
-          <p style="margin:0.25rem 0 0;font-size:0.8rem;color:var(--muted)">${escapeHtml(t("managedProjectsPmHint"))}</p>
+          <p class="user-form-hint" style="margin-top:0.25rem">${escapeHtml(t("managedProjectsPmHint"))}</p>
           <div id="user-pm-assign-chips" class="assign-chips"></div>
           <input type="search" id="user-pm-search" autocomplete="off" placeholder="${escapeHtml(t("assignProjectSearchPlaceholder"))}" />
           <ul id="user-pm-results" class="assign-search-results" role="listbox"></ul>`;
-        fields.appendChild(pmBlock);
+        scopeBody.appendChild(pmBlock);
 
         const gmBlock = document.createElement("div");
         gmBlock.className = "field hidden";
         gmBlock.id = "user-gm-regions-wrap";
         gmBlock.innerHTML = `
           <label for="user-gm-search">${escapeHtml(t("labelManagedRegionsGm"))}</label>
-          <p style="margin:0.25rem 0 0;font-size:0.8rem;color:var(--muted)">${escapeHtml(t("managedRegionsGmHint"))}</p>
+          <p class="user-form-hint" style="margin-top:0.25rem">${escapeHtml(t("managedRegionsGmHint"))}</p>
           <div id="user-gm-assign-chips" class="assign-chips"></div>
           <input type="search" id="user-gm-search" autocomplete="off" placeholder="${escapeHtml(t("assignRegionSearchPlaceholder"))}" />
           <ul id="user-gm-results" class="assign-search-results" role="listbox"></ul>`;
-        fields.appendChild(gmBlock);
+        scopeBody.appendChild(gmBlock);
 
         const pSnap = await getDocs(collection(db, "projects"));
         const allProjects = [];
@@ -9813,6 +9951,8 @@
       userProjectAssign = null;
       userPmProjectAssign = null;
       userGmRegionAssign = null;
+      $("entity-fields")?.classList.remove("user-profile-form");
+      document.querySelector("#modal-entity .modal")?.classList.remove("modal-entity-user");
       $("modal-entity").classList.add("hidden");
     }
 
@@ -9887,7 +10027,9 @@
             displayName: (data.displayName || "").trim(),
             role: roleVal,
             visibleSections,
-            canBypassLowerApprovals: data.canBypassLowerApprovals === true,
+            canBypassLowerApprovals:
+              (roleVal === "project_manager" || roleVal === "group_manager") &&
+              data.canBypassLowerApprovals === true,
             updatedAt: serverTimestamp(),
           };
           if (roleVal === "engineer" || roleVal === "engineer_first" || roleVal === "viewer") {
