@@ -2420,6 +2420,9 @@
             <button type="button" data-admin-tab="projects" data-i18n="tabProjects">المشاريع</button>
             <button type="button" data-admin-tab="regions" data-i18n="tabRegions">المناطق</button>
             <button type="button" data-admin-tab="warehouses" data-i18n="tabWarehouses">المستودعات</button>
+            <button type="button" data-admin-tab="purchasingRepresentatives" data-i18n="tabPurchasingRepresentatives">
+              مندوبو المشتريات
+            </button>
             <button type="button" data-admin-tab="users" data-i18n="tabUsers">المستخدمون</button>
           </div>
           <div id="admin-panel-companies" class="admin-panel"></div>
@@ -2427,6 +2430,7 @@
           <div id="admin-panel-projects" class="admin-panel hidden"></div>
           <div id="admin-panel-regions" class="admin-panel hidden"></div>
           <div id="admin-panel-warehouses" class="admin-panel hidden"></div>
+          <div id="admin-panel-purchasingRepresentatives" class="admin-panel hidden"></div>
           <div id="admin-panel-users" class="admin-panel hidden"></div>
         </div>
       </section>
@@ -2656,6 +2660,7 @@
                 <div class="field" style="margin:0">
                   <label for="po-reference" data-i18n="poRefLabel">مرجع أمر الشراء</label>
                   <input type="text" id="po-reference" readonly />
+                  <p id="po-reference-hint" class="user-form-hint hidden" aria-live="polite"></p>
                 </div>
                 <div class="field" style="margin:0">
                   <label for="po-request-date" data-i18n="poRequestDateLabel">تاريخ الطلب</label>
@@ -2882,6 +2887,25 @@
     </div>
   </div>
 
+  <!-- اختيار مندوب المشتريات عند «قيد الشراء» -->
+  <div id="modal-purchasing-representative" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 data-i18n="modalPurchasingRepPickTitle">مندوب المشتريات</h3>
+      <p class="user-form-hint" style="margin-top:0.35rem" data-i18n="modalPurchasingRepPickIntro"></p>
+      <input type="hidden" id="purchasing-advance-po-id" value="" />
+      <div class="field">
+        <label for="purchasing-advance-rep-select" data-i18n="labelPurchasingRepresentativePick">مندوب المشتريات</label>
+        <select id="purchasing-advance-rep-select"></select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="modal-purchasing-advance-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="modal-purchasing-advance-confirm" data-i18n="btnConfirmPurchasingRep">
+          تأكيد ونقل إلى قيد الشراء
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- تجاوز مراحل المسار (مدير مشروع / مسؤول مجموعة) -->
   <div id="modal-workflow-bypass" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal">
@@ -2972,6 +2996,7 @@
       writeBatch,
       serverTimestamp,
       deleteField,
+      runTransaction,
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const LANG_KEY = "pot_lang";
@@ -3044,6 +3069,8 @@
         poLinesPlaceholder: "مثال:\nأسمنت | 100 | 25\nحديد | 50 | 1200",
         poNotesLabel: "ملاحظات",
         poRefLabel: "مرجع أمر الشراء",
+        poRefFinalAtSaveHint:
+          "المعاينة أدناه تقديرية. الرقم النهائي يُخصَّص تلقائياً عند الحفظ لضمان عدم التكرار مع طلبات أخرى لنفس المشروع.",
         poRequestDateLabel: "تاريخ الطلب",
         poContractNumberLabel: "رقم العقد",
         poRequesterLabel: "مقدم الطلب",
@@ -3078,7 +3105,27 @@
         tabProjects: "المشاريع",
         tabRegions: "المناطق",
         tabWarehouses: "المستودعات",
+        tabPurchasingRepresentatives: "مندوبو المشتريات",
         tabUsers: "المستخدمون",
+        addPurchasingRepresentative: "إضافة مندوب",
+        modalNewPurchasingRepresentative: "مندوب مشتريات جديد",
+        modalEditPurchasingRepresentative: "تعديل مندوب مشتريات",
+        labelPurchasingRepCode: "رمز المندوب",
+        labelPurchasingRepCodeAuto: "يُولَّد تلقائياً عند الحفظ",
+        purchasingRepresentativesHint:
+          "المندوبون المعرفون هنا يُختارون عند نقل الطلب إلى «قيد الشراء»: من يستلم السلفة من الحسابات وينفّذ الشراء في السوق.",
+        noPurchasingRepresentatives: "لا يوجد مندوبو مشتريات بعد.",
+        modalPurchasingRepPickTitle: "تعيين مندوب المشتريات",
+        modalPurchasingRepPickIntro:
+          "اختر مندوب المشتريات الذي سيستلم السلفة من الحسابات وينفّذ شراء المواد. سيظهر الاسم في شاشتي المشتريات والحسابات.",
+        labelPurchasingRepresentativePick: "مندوب المشتريات",
+        selectPurchasingRepresentative: "— اختر مندوباً —",
+        btnConfirmPurchasingRep: "تأكيد ونقل إلى قيد الشراء",
+        colPurchasingRepresentative: "مندوب المشتريات",
+        alertSelectPurchasingRepresentative: "اختر مندوب المشتريات.",
+        alertNoPurchasingRepresentativesDefined: "لا يوجد مندوب مشتريات نشط. عرّف مندوباً من الإدارة ← مندوبو المشتريات.",
+        alertPurchasingRepNameRequired: "أدخل اسم مندوب المشتريات.",
+        labelPurchasingRepName: "اسم المندوب",
         tabSuppliers: "الموردون",
         addCompany: "إضافة شركة",
         addSupplier: "إضافة مورد",
@@ -3584,6 +3631,8 @@
         poLinesPlaceholder: "Example:\nCement | 100 | 25\nSteel | 50 | 1200",
         poNotesLabel: "Notes",
         poRefLabel: "PO reference",
+        poRefFinalAtSaveHint:
+          "The value below is a preview. The final reference is assigned automatically on save to avoid duplicates for the same project.",
         poRequestDateLabel: "Request date",
         poContractNumberLabel: "Contract number",
         poRequesterLabel: "Requester",
@@ -3618,7 +3667,28 @@
         tabProjects: "Projects",
         tabRegions: "Regions",
         tabWarehouses: "Warehouses",
+        tabPurchasingRepresentatives: "Purchasing representatives",
         tabUsers: "Users",
+        addPurchasingRepresentative: "Add representative",
+        modalNewPurchasingRepresentative: "New purchasing representative",
+        modalEditPurchasingRepresentative: "Edit purchasing representative",
+        labelPurchasingRepCode: "Representative code",
+        labelPurchasingRepCodeAuto: "Generated automatically on save",
+        purchasingRepresentativesHint:
+          "Representatives defined here are chosen when moving a request to in progress (purchasing): who collects the advance from accounting and buys materials.",
+        noPurchasingRepresentatives: "No purchasing representatives yet.",
+        modalPurchasingRepPickTitle: "Assign purchasing representative",
+        modalPurchasingRepPickIntro:
+          "Select the representative who will collect the advance from accounting and purchase materials. The name appears on Purchasing and Accounting.",
+        labelPurchasingRepresentativePick: "Purchasing representative",
+        selectPurchasingRepresentative: "— Select a representative —",
+        btnConfirmPurchasingRep: "Confirm and move to in progress (purchasing)",
+        colPurchasingRepresentative: "Purchasing representative",
+        alertSelectPurchasingRepresentative: "Select a purchasing representative.",
+        alertNoPurchasingRepresentativesDefined:
+          "No active purchasing representative is available. Add one under Administration → Purchasing representatives.",
+        alertPurchasingRepNameRequired: "Enter the purchasing representative’s name.",
+        labelPurchasingRepName: "Representative name",
         tabSuppliers: "Suppliers",
         addCompany: "Add company",
         addSupplier: "Add supplier",
@@ -4905,6 +4975,7 @@
         proj.classList.add("hidden");
         if (genPoNum) genPoNum.setAttribute("required", "required");
         if (sharedNotes) sharedNotes.classList.add("hidden");
+        $("po-reference-hint")?.classList.add("hidden");
       }
     }
 
@@ -4972,6 +5043,56 @@
         if (m) max = Math.max(max, parseInt(m[1], 10));
       });
       return max + 1;
+    }
+
+    /** مستندات في projectPoSeq: مفتاح lastSeq لكل (مشروع، سنة، مقطع العقد) — تُحدَّث داخل معاملة عند حفظ طلب جديد. */
+    function projectPoSeqCounterRef(projectId, year, contractSeg) {
+      const padded = String(contractSeg).padStart(3, "0");
+      return doc(db, "projectPoSeq", `${projectId}_${year}_${padded}`);
+    }
+
+    async function allocateProjectPoReferenceAtSave(projectId, requestDateYmd) {
+      const ctx = await loadProjectContext(projectId);
+      if (!ctx) return null;
+      const ymd = (requestDateYmd || formatTodayYmd()).slice(0, 10);
+      const year = ymdYear(ymd);
+      const contractSeg = ctx.contractSeg;
+      const counterRef = projectPoSeqCounterRef(projectId, year, contractSeg);
+
+      let lastErr;
+      for (let attempt = 0; attempt < 14; attempt++) {
+        const scanNext = await nextPoSequenceForProject(projectId, year, contractSeg);
+        try {
+          return await runTransaction(db, async (transaction) => {
+            const snap = await transaction.get(counterRef);
+            let nextSeq;
+            if (!snap.exists()) {
+              nextSeq = scanNext;
+              transaction.set(counterRef, {
+                lastSeq: nextSeq,
+                updatedAt: serverTimestamp(),
+              });
+            } else {
+              const prev = Number(snap.data().lastSeq) || 0;
+              nextSeq = Math.max(prev + 1, scanNext);
+              transaction.update(counterRef, {
+                lastSeq: nextSeq,
+                updatedAt: serverTimestamp(),
+              });
+            }
+            return formatPoReference(year, contractSeg, nextSeq);
+          });
+        } catch (err) {
+          lastErr = err;
+          const code = err?.code || "";
+          if (code === "aborted" || code === "failed-precondition") {
+            await new Promise((r) => setTimeout(r, 50 + attempt * 40));
+            continue;
+          }
+          throw err;
+        }
+      }
+      throw lastErr || new Error("allocateProjectPoReferenceAtSave");
     }
 
     function warehouseListSummary(rows) {
@@ -5496,6 +5617,7 @@
     async function hydrateProjectPoFromProjectSelect(preserveReference) {
       const pid = $("po-project").value;
       const existingId = $("po-id").value;
+      const refHint = $("po-reference-hint");
       const banner = $("po-company-banner");
       const logo = $("po-company-logo");
       const cname = $("po-company-name");
@@ -5508,12 +5630,14 @@
         $("po-contract-display").value = "";
         $("po-region-display").value = "";
         $("po-warehouses-display").value = "";
+        if (refHint) refHint.classList.add("hidden");
         if (!existingId) $("po-requester-display").value = requesterDisplayName();
         return;
       }
       const ctx = await loadProjectContext(pid);
       if (!ctx) {
         banner.classList.add("hidden");
+        if (refHint) refHint.classList.add("hidden");
         return;
       }
       const { project, company, regionRow, warehouses, contractSeg } = ctx;
@@ -5538,6 +5662,14 @@
       $("po-region-display").value = regionRow ? regionOptionLabel(regionRow) : t("dash");
       $("po-warehouses-display").value = warehouseListSummary(warehouses);
       if (!existingId) $("po-requester-display").value = requesterDisplayName();
+      if (refHint) {
+        if (!existingId) {
+          refHint.textContent = t("poRefFinalAtSaveHint");
+          refHint.classList.remove("hidden");
+        } else {
+          refHint.classList.add("hidden");
+        }
+      }
       if (!preserveReference && !existingId) {
         const ymd = $("po-request-date").value || formatTodayYmd();
         const year = ymdYear(ymd);
@@ -5554,6 +5686,11 @@
         return d.toLocaleDateString(localeTag());
       }
       return t("dash");
+    }
+
+    function purchasingRepresentativeCellHtml(po) {
+      const n = (po?.purchasingRepresentativeName || "").trim();
+      return escapeHtml(n || t("dash"));
     }
 
     function statusBadge(status) {
@@ -7485,6 +7622,7 @@
               <th>${t("colProject")}</th>
               <th>${t("colPriority")}</th>
               <th>${t("colWorkflow")}</th>
+              <th>${t("colPurchasingRepresentative")}</th>
               <th></th>
             </tr></thead>`;
         const actionBody =
@@ -7515,6 +7653,7 @@
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
                       <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${act}
@@ -7537,6 +7676,7 @@
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
                       <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>
@@ -7559,6 +7699,7 @@
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
                       <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>
@@ -7594,7 +7735,7 @@
         });
         if (canAct) {
           wrap.querySelectorAll(".btn-purchasing-advance").forEach((btn) => {
-            btn.addEventListener("click", () => runPurchasingAdvance(btn.dataset.id));
+            btn.addEventListener("click", () => void openPurchasingRepresentativeModal(btn.dataset.id));
           });
           wrap.querySelectorAll(".btn-purchasing-send-advance").forEach((btn) => {
             btn.addEventListener("click", () => runPurchasingSubmitToAdvanceAccounting(btn.dataset.id));
@@ -7806,6 +7947,7 @@
               <th>${t("colProject")}</th>
               <th>${t("colPriority")}</th>
               <th>${t("colWorkflow")}</th>
+              <th>${t("colPurchasingRepresentative")}</th>
               <th></th>
             </tr></thead><tbody>
               ${rowsAdv
@@ -7817,6 +7959,7 @@
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
                       <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
@@ -7857,6 +8000,7 @@
               <th>${t("colProject")}</th>
               <th>${t("colPriority")}</th>
               <th>${t("colWorkflow")}</th>
+              <th>${t("colPurchasingRepresentative")}</th>
               <th></th>
             </tr></thead><tbody>
               ${rowsFin
@@ -7868,6 +8012,7 @@
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
                       ${
@@ -7916,6 +8061,7 @@
               <th>${t("colProject")}</th>
               <th>${t("colPriority")}</th>
               <th>${t("colWorkflow")}</th>
+              <th>${t("colPurchasingRepresentative")}</th>
               <th></th>
             </tr></thead><tbody>
               ${rowsTrack
@@ -7927,6 +8073,7 @@
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
                       <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>
@@ -7949,11 +8096,18 @@
       }
     }
 
-    async function runPurchasingAdvance(poId) {
+    function closePurchasingRepresentativeModal() {
+      $("modal-purchasing-representative")?.classList.add("hidden");
+      const hid = $("purchasing-advance-po-id");
+      if (hid) hid.value = "";
+      const sel = $("purchasing-advance-rep-select");
+      if (sel) sel.innerHTML = "";
+    }
+
+    async function openPurchasingRepresentativeModal(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
       if (role !== "purchasing_officer" && !hasAdminAccess()) return;
-      if (!confirm(t("confirmPurchasingAdvance"))) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -7962,13 +8116,77 @@
         alert(t("alertWarehouseReviewStale"));
         return;
       }
+      const repSnap = await getDocs(collection(db, "purchasingRepresentatives"));
+      const reps = [];
+      repSnap.forEach((d) => reps.push({ id: d.id, ...d.data() }));
+      const activeReps = reps.filter((r) => r.active !== false);
+      activeReps.sort((a, b) =>
+        (a.name || "").trim().localeCompare((b.name || "").trim(), lang === "ar" ? "ar" : "en")
+      );
+      if (!activeReps.length) {
+        alert(t("alertNoPurchasingRepresentativesDefined"));
+        return;
+      }
+      const sel = $("purchasing-advance-rep-select");
+      if (!sel) return;
+      sel.innerHTML =
+        `<option value="">${escapeHtml(t("selectPurchasingRepresentative"))}</option>` +
+        activeReps
+          .map(
+            (r) =>
+              `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`
+          )
+          .join("");
+      const hid = $("purchasing-advance-po-id");
+      if (hid) hid.value = poId;
+      $("modal-purchasing-representative")?.classList.remove("hidden");
+      sel.focus();
+    }
+
+    async function submitPurchasingAdvanceFromModal() {
+      const poId = ($("purchasing-advance-po-id")?.value || "").trim();
+      const repId = ($("purchasing-advance-rep-select")?.value || "").trim();
+      if (!poId) return;
+      if (!repId) {
+        alert(t("alertSelectPurchasingRepresentative"));
+        return;
+      }
+      const role = currentUserProfile?.role || userRole;
+      if (role !== "purchasing_officer" && !hasAdminAccess()) return;
+      const ref = doc(db, "purchaseOrders", poId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const po = snap.data();
+      if (po.workflowStatus !== "pending_purchasing") {
+        alert(t("alertWarehouseReviewStale"));
+        closePurchasingRepresentativeModal();
+        return;
+      }
+      const repDoc = await getDoc(doc(db, "purchasingRepresentatives", repId));
+      if (!repDoc.exists()) {
+        alert(t("alertNoPurchasingRepresentativesDefined"));
+        return;
+      }
+      const repData = repDoc.data();
+      if (repData.active === false) {
+        alert(t("alertNoPurchasingRepresentativesDefined"));
+        return;
+      }
+      const repName = (repData.name || "").trim();
+      if (!repName) {
+        alert(t("alertPurchasingRepNameRequired"));
+        return;
+      }
       try {
         await updateDoc(ref, {
           workflowStatus: "in_progress_purchasing",
           purchasingInProgressAt: serverTimestamp(),
           purchasingInProgressBy: currentUser.uid,
+          purchasingRepresentativeId: repId,
+          purchasingRepresentativeName: repName,
           updatedAt: serverTimestamp(),
         });
+        closePurchasingRepresentativeModal();
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -8384,6 +8602,19 @@
       return "S" + String(max + 1).padStart(3, "0");
     }
 
+    async function generateNextPurchasingRepCode() {
+      const snap = await getDocs(collection(db, "purchasingRepresentatives"));
+      let max = 0;
+      snap.forEach((d) => {
+        const c = d.data().code;
+        if (c != null && String(c).trim() !== "") {
+          const n = parseInt(String(c).replace(/\D/g, ""), 10);
+          if (!Number.isNaN(n) && n > max) max = n;
+        }
+      });
+      return "PR" + String(max + 1).padStart(3, "0");
+    }
+
     function sortWarehousesByCode(rows) {
       return [...rows].sort((a, b) => {
         const na = parseInt(String(a.code || "").replace(/\D/g, ""), 10);
@@ -8626,10 +8857,25 @@
           alert(t("alertProjectPoLines"));
           return;
         }
-        const poRef = ($("po-reference").value || "").trim();
-        if (!poRef) {
-          alert(t("alertSelectProject"));
-          return;
+        const requestDate = ($("po-request-date").value || formatTodayYmd()).slice(0, 10);
+        let poRef;
+        if (id) {
+          poRef = ($("po-reference").value || "").trim();
+          if (!poRef) {
+            alert(t("alertSelectProject"));
+            return;
+          }
+        } else {
+          try {
+            poRef = await allocateProjectPoReferenceAtSave(pid, requestDate);
+          } catch (allocErr) {
+            alert(t("saveFailed") + " " + (allocErr?.message || String(allocErr)));
+            return;
+          }
+          if (!poRef) {
+            alert(t("alertSelectProject"));
+            return;
+          }
         }
         const ctx = await loadProjectContext(pid);
         if (!ctx) {
@@ -8645,7 +8891,7 @@
         payload = {
           title: poRef,
           poReference: poRef,
-          requestDate: ($("po-request-date").value || formatTodayYmd()).slice(0, 10),
+          requestDate,
           requesterName: ($("po-requester-display").value || "").trim() || requesterDisplayName(),
           contractNumberSnapshot: (ctx.project.contractNumber || "").trim() || null,
           regionId: ctx.project.regionId || null,
@@ -8747,6 +8993,11 @@
       if ($("po-scope").value !== "project") return;
       await hydrateProjectPoFromProjectSelect(!!$("po-id").value);
     });
+    $("po-request-date")?.addEventListener("change", async () => {
+      if ($("po-scope").value !== "project") return;
+      if ($("po-id").value) return;
+      await hydrateProjectPoFromProjectSelect(false);
+    });
     $("btn-po-add-line")?.addEventListener("click", () => addPoLineRow());
     $("po-gen-company")?.addEventListener("change", () => void hydrateGeneralCompanyBanner());
     $("btn-po-gen-add-line")?.addEventListener("click", () => addGeneralLineRow());
@@ -8803,6 +9054,9 @@
         alert(t("saveFailed") + " " + err.message);
       }
     });
+
+    $("modal-purchasing-advance-cancel")?.addEventListener("click", closePurchasingRepresentativeModal);
+    $("modal-purchasing-advance-confirm")?.addEventListener("click", () => void submitPurchasingAdvanceFromModal());
 
     $("modal-wh-cancel")?.addEventListener("click", closeWarehouseReviewModal);
     $("modal-wh-submit")?.addEventListener("click", async () => {
@@ -8900,6 +9154,7 @@
         else if (tab === "projects") await renderProjects(panel);
         else if (tab === "regions") await renderRegions(panel);
         else if (tab === "warehouses") await renderWarehouses(panel);
+        else if (tab === "purchasingRepresentatives") await renderPurchasingRepresentatives(panel);
         else if (tab === "users") await renderUsers(panel);
       } catch (e) {
         panel.innerHTML = `<p class="error-msg">${e.message}</p>`;
@@ -9043,6 +9298,50 @@
                     )
                     .join("")
                 : `<tr><td colspan="6" class="empty-state">${t("noSuppliers")}</td></tr>`
+            }
+          </tbody>
+        </table></div>`;
+      bindEntityButtons(panel);
+    }
+
+    async function renderPurchasingRepresentatives(panel) {
+      const snap = await getDocs(collection(db, "purchasingRepresentatives"));
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      rows.sort((a, b) => {
+        const na = parseInt(String(a.code || "").replace(/\D/g, ""), 10);
+        const nb = parseInt(String(b.code || "").replace(/\D/g, ""), 10);
+        if (!Number.isNaN(na) && !Number.isNaN(nb) && na !== nb) return na - nb;
+        const an = (a.name || "").trim();
+        const bn = (b.name || "").trim();
+        return an.localeCompare(bn, lang === "ar" ? "ar" : "en");
+      });
+      panel.innerHTML = `
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-sm" data-entity="purchasingRepresentatives" data-action="add">${t("addPurchasingRepresentative")}</button>
+        </div>
+        <p style="color:var(--muted);font-size:0.9rem;margin-top:0;">${t("purchasingRepresentativesHint")}</p>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th>${t("colCode")}</th><th>${t("colName")}</th><th>${t("labelPhone")}</th><th>${t("colActive")}</th><th></th></tr></thead>
+          <tbody>
+            ${
+              rows.length
+                ? rows
+                    .map(
+                      (r) => `
+              <tr>
+                <td>${escapeHtml((r.code || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.name || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.phone || "").trim() || t("dash"))}</td>
+                <td>${r.active !== false ? t("yes") : t("no")}</td>
+                <td>
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="purchasingRepresentatives" data-id="${r.id}">${t("edit")}</button>
+                  <button type="button" class="btn btn-danger btn-sm btn-del-entity" data-collection="purchasingRepresentatives" data-id="${r.id}">${t("delete")}</button>
+                </td>
+              </tr>`
+                    )
+                    .join("")
+                : `<tr><td colspan="5" class="empty-state">${t("noPurchasingRepresentatives")}</td></tr>`
             }
           </tbody>
         </table></div>`;
@@ -9428,6 +9727,21 @@
         addField("attn", t("genPoLabelVendorAttn"));
         addField("phone", t("labelPhone"), "tel");
         addField("email", t("labelEmailPrimary"), "email");
+        addField("active", t("labelActive"), "checkbox");
+      } else if (collectionName === "purchasingRepresentatives") {
+        $("modal-entity-title").textContent = existingId
+          ? t("modalEditPurchasingRepresentative")
+          : t("modalNewPurchasingRepresentative");
+        const nextCode = existingId ? "" : await generateNextPurchasingRepCode();
+        const codeRow = document.createElement("div");
+        codeRow.className = "field";
+        codeRow.innerHTML = `
+          <label for="ef-purchasing-rep-code">${escapeHtml(t("labelPurchasingRepCode"))}</label>
+          <input type="text" id="ef-purchasing-rep-code" readonly data-field="code" value="${existingId ? "" : escapeHtml(nextCode)}" />
+          <p style="margin:0.25rem 0 0;font-size:0.8rem;color:var(--muted)">${escapeHtml(t("labelPurchasingRepCodeAuto"))}</p>`;
+        fields.appendChild(codeRow);
+        addField("name", t("labelPurchasingRepName"));
+        addField("phone", t("labelPhone"), "tel");
         addField("active", t("labelActive"), "checkbox");
       } else if (collectionName === "projects") {
         $("modal-entity-title").textContent = existingId ? t("modalEditProject") : t("modalNewProject");
@@ -10219,6 +10533,33 @@
             await updateDoc(doc(db, collectionName, existingId), supPayload);
           } else {
             await addDoc(collection(db, collectionName), { ...supPayload, createdAt: serverTimestamp() });
+          }
+        } else if (collectionName === "purchasingRepresentatives") {
+          const name = (data.name || "").trim();
+          if (!name) {
+            alert(t("alertPurchasingRepNameRequired"));
+            return;
+          }
+          let code;
+          if (!existingId) {
+            code = await generateNextPurchasingRepCode();
+          } else {
+            code = ($("ef-purchasing-rep-code")?.value || "").trim();
+            if (!code) code = await generateNextPurchasingRepCode();
+          }
+          const activeCb = $("entity-fields").querySelector('[data-field="active"]');
+          const active = activeCb && activeCb.type === "checkbox" ? activeCb.checked : data.active !== false;
+          const prPayload = {
+            name,
+            phone: (data.phone || "").trim() || null,
+            code,
+            active,
+            updatedAt: serverTimestamp(),
+          };
+          if (existingId) {
+            await updateDoc(doc(db, collectionName, existingId), prPayload);
+          } else {
+            await addDoc(collection(db, collectionName), { ...prPayload, createdAt: serverTimestamp() });
           }
         }
         closeEntityModal();
