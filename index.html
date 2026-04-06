@@ -728,6 +728,14 @@
       background: rgba(255, 255, 255, 0.02);
     }
 
+    .data-table td.po-table-reason-cell {
+      max-width: 12rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: top;
+    }
+
     .badge {
       display: inline-block;
       padding: 0.2rem 0.5rem;
@@ -6365,6 +6373,12 @@
       return ctx.projectContractNumber[r.projectId] || "";
     }
 
+    function projectPoReasonTableCell(reason) {
+      const full = (reason || "").trim();
+      if (!full) return `<td>${escapeHtml(t("dash"))}</td>`;
+      return `<td class="po-table-reason-cell" title="${escapeAttr(full)}">${escapeHtml(full)}</td>`;
+    }
+
     function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg) {
       if (wf && (r.workflowStatus || "") !== wf) return false;
       if (pri && (r.priority || "normal") !== pri) return false;
@@ -6380,6 +6394,8 @@
         cDisp,
         projectPoContractDisplay(r, ctx),
         rName,
+        (r.requesterName || "").trim(),
+        (r.reasonRequest || "").trim(),
         workflowLabelForDocument(r),
         poRowDisplayDate(r),
       ]
@@ -6462,6 +6478,8 @@
               <th>${t("colCompany")}</th>
               <th>${t("colContractNumber")}</th>
               <th>${t("colRegion")}</th>
+              <th>${t("poRequesterLabel")}</th>
+              <th>${t("poReasonLabel")}</th>
               <th>${t("colPriority")}</th>
               <th>${t("colWorkflow")}</th>
               <th></th>
@@ -6483,6 +6501,8 @@
                   <td>${escapeHtml(compName)}</td>
                   <td>${escapeHtml(contractNo)}</td>
                   <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
+                  ${projectPoReasonTableCell(r.reasonRequest)}
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
                   <td>
