@@ -812,6 +812,86 @@
       font-size: 1.05rem;
     }
 
+    /* Accounting values modal: improve layout + readability */
+    #modal-accounting-po .detail-panel {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.65rem 0.85rem;
+      margin-top: 0.35rem;
+      margin-bottom: 0.65rem;
+    }
+
+    /* Give the lines table its own vertical scroll area */
+    #modal-accounting-po .table-scroll.po-lines-wrap {
+      overflow: auto;
+      max-height: min(52vh, 520px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    #modal-accounting-po .table-scroll.po-lines-wrap .data-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--surface);
+    }
+
+    #modal-accounting-po .acc-line-qty,
+    #modal-accounting-po .acc-line-price,
+    #modal-accounting-po .acc-line-cur {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem 0.45rem;
+      font-size: 0.9rem;
+      line-height: 1.25;
+    }
+
+    #modal-accounting-po td .acc-line-qty,
+    #modal-accounting-po td .acc-line-price,
+    #modal-accounting-po td .acc-line-cur {
+      width: 100%;
+      min-width: 5.5rem;
+    }
+
+    #modal-accounting-po .acc-line-desc {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.45rem;
+      font-size: 0.9rem;
+      line-height: 1.25;
+    }
+
+    #modal-accounting-po .acc-line-total {
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    #modal-accounting-po .acc-grand-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      position: sticky;
+      bottom: 0;
+    }
+
+    /* Reports: group/subtotal rows */
+    #screen-reports .data-table tr.report-group-row td {
+      background: rgba(99, 102, 241, 0.10);
+      border-bottom-color: rgba(99, 102, 241, 0.25);
+    }
+
+    #screen-reports .data-table tr.report-subtotal-row td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
     .workflow-cell-in-progress {
       color: #fbbf24;
       font-weight: 600;
@@ -2446,6 +2526,10 @@
                 </select>
               </label>
               <label class="po-filter-field">
+                <span data-i18n="reportCompanyLabel">الشركة</span>
+                <select id="rep-purch-company"></select>
+              </label>
+              <label class="po-filter-field">
                 <span data-i18n="reportProjectLabel">المشروع</span>
                 <select id="rep-purch-project"></select>
               </label>
@@ -2457,11 +2541,22 @@
                 <span data-i18n="reportWorkflowLabel">حالة المسار</span>
                 <select id="rep-purch-workflow"></select>
               </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportGroupByLabel">تجميع حسب</span>
+                <select id="rep-purch-group">
+                  <option value="" data-i18n="reportGroupNone">بدون</option>
+                  <option value="project" data-i18n="reportGroupProject">المشروع</option>
+                  <option value="rep" data-i18n="reportGroupRep">مندوب المشتريات</option>
+                </select>
+              </label>
               <button type="button" class="btn btn-primary btn-sm" id="btn-run-purch-report" data-i18n="btnRunReport">
                 عرض التقرير
               </button>
               <button type="button" class="btn btn-secondary btn-sm" id="btn-print-purch-report" data-i18n="btnPrintReport">
                 طباعة التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-export-purch-report" data-i18n="btnExportCsv">
+                تصدير CSV
               </button>
             </div>
           </div>
@@ -2783,6 +2878,7 @@
                   <thead>
                     <tr>
                       <th data-i18n="poLineDescCol">الوصف</th>
+                      <th data-i18n="poLineUnitCol">الوحدة</th>
                       <th data-i18n="poLineQtyCol">الكمية</th>
                       <th aria-hidden="true"></th>
                     </tr>
@@ -3175,6 +3271,7 @@
         poLinesTableLabel: "بنود الطلب",
         poLineDescCol: "الوصف",
         poLineQtyCol: "الكمية",
+        poLineUnitCol: "الوحدة",
         poAddLineBtn: "إضافة بند",
         colPoReference: "المرجع",
         colRequestDate: "تاريخ الطلب",
@@ -3547,12 +3644,18 @@
         reportFromDateLabel: "من تاريخ",
         reportToDateLabel: "إلى تاريخ",
         reportBaseCurrencyLabel: "عملة التقرير",
+        reportCompanyLabel: "الشركة",
         reportProjectLabel: "المشروع",
         reportRepresentativeLabel: "مندوب المشتريات",
         reportWorkflowLabel: "حالة المسار",
+        reportGroupByLabel: "تجميع حسب",
+        reportGroupNone: "بدون",
+        reportGroupProject: "المشروع",
+        reportGroupRep: "مندوب المشتريات",
         reportAllOpt: "الكل",
         btnPrintReport: "طباعة التقرير",
         btnRunReport: "عرض التقرير",
+        btnExportCsv: "تصدير CSV",
         reportFxHint: "يتم تحويل العملات تلقائياً حسب آخر سعر صرف مُسجّل بتاريخ يساوي أو يسبق تاريخ الطلب.",
         reportNoFxRates: "لا توجد أسعار صرف مُسجّلة. أضف سعراً من الإدارة ← أسعار الصرف.",
         reportNoRows: "لا توجد بيانات ضمن الفترة.",
@@ -3560,6 +3663,8 @@
         reportTotalOriginalUsd: "إجمالي USD (أصلي)",
         reportTotalConverted: "الإجمالي بعد التحويل",
         reportFxUsedLabel: "سعر الصرف المستخدم (USD→IQD)",
+        reportGroupHeader: "مجموعة",
+        reportGroupSubtotal: "مجموع المجموعة",
         reportColTotalIqd: "مبلغ IQD",
         reportColTotalUsd: "مبلغ USD",
         reportColConverted: "المبلغ بعد التحويل",
@@ -3782,6 +3887,7 @@
         poLinesTableLabel: "Request line items",
         poLineDescCol: "Description",
         poLineQtyCol: "Quantity",
+        poLineUnitCol: "Unit",
         poAddLineBtn: "Add line",
         colPoReference: "Reference",
         colRequestDate: "Date",
@@ -4156,12 +4262,18 @@
         reportFromDateLabel: "From date",
         reportToDateLabel: "To date",
         reportBaseCurrencyLabel: "Report currency",
+        reportCompanyLabel: "Company",
         reportProjectLabel: "Project",
         reportRepresentativeLabel: "Purchasing representative",
         reportWorkflowLabel: "Workflow status",
+        reportGroupByLabel: "Group by",
+        reportGroupNone: "None",
+        reportGroupProject: "Project",
+        reportGroupRep: "Representative",
         reportAllOpt: "All",
         btnPrintReport: "Print report",
         btnRunReport: "Run report",
+        btnExportCsv: "Export CSV",
         reportFxHint: "Currencies are converted automatically using the latest FX rate on or before the request date.",
         reportNoFxRates: "No FX rates are available. Add a rate under Administration → FX rates.",
         reportNoRows: "No data within the selected period.",
@@ -4169,6 +4281,8 @@
         reportTotalOriginalUsd: "Total USD (original)",
         reportTotalConverted: "Total converted",
         reportFxUsedLabel: "FX used (USD→IQD)",
+        reportGroupHeader: "Group",
+        reportGroupSubtotal: "Subtotal",
         reportColTotalIqd: "IQD amount",
         reportColTotalUsd: "USD amount",
         reportColConverted: "Converted amount",
@@ -4322,7 +4436,9 @@
     }
 
     function localeTag() {
-      return lang === "ar" ? "ar-SA" : "en-US";
+      // Force Western (English) digits in both languages.
+      // Keep Arabic locale for date/month names, but use Latin numbering system.
+      return lang === "ar" ? "ar-SA-u-nu-latn" : "en-US";
     }
 
     function applyDocumentLang() {
@@ -5323,7 +5439,23 @@
       if (tb) tb.innerHTML = "";
     }
 
-    function addPoLineRow(desc, qty) {
+    const PROJECT_PO_UNIT_OPTIONS = [
+      { v: "PCS", ar: "PCS — قطعة", en: "PCS — pcs" },
+      { v: "BOX", ar: "BOX — كرتون", en: "BOX — box" },
+      { v: "SET", ar: "SET — طقم", en: "SET — set" },
+      { v: "M", ar: "M — متر", en: "M — meter" },
+      { v: "M2", ar: "M2 — متر مربع", en: "M2 — m²" },
+      { v: "KG", ar: "KG — كغم", en: "KG — kg" },
+      { v: "L", ar: "L — لتر", en: "L — liter" },
+      { v: "ROLL", ar: "ROLL — لفة", en: "ROLL — roll" },
+    ];
+
+    function projectPoUnitLabel(opt) {
+      if (lang === "ar") return opt.ar;
+      return opt.en;
+    }
+
+    function addPoLineRow(desc, unit, qty) {
       const tbody = $("po-lines-tbody");
       if (!tbody) return;
       const tr = document.createElement("tr");
@@ -5334,24 +5466,34 @@
       if (desc != null && desc !== "") inp1.value = String(desc);
       td1.appendChild(inp1);
       const td2 = document.createElement("td");
+      const selUnit = document.createElement("select");
+      selUnit.className = "po-line-unit";
+      selUnit.innerHTML =
+        `<option value=\"\">—</option>` +
+        PROJECT_PO_UNIT_OPTIONS.map((o) => `<option value=\"${escapeAttr(o.v)}\">${escapeHtml(projectPoUnitLabel(o))}</option>`).join("");
+      const u0 = (unit || "").trim();
+      selUnit.value = u0 && [...selUnit.options].some((o) => o.value === u0) ? u0 : "PCS";
+      td2.appendChild(selUnit);
+      const td3 = document.createElement("td");
       const inp2 = document.createElement("input");
       inp2.type = "number";
       inp2.className = "po-line-qty";
       inp2.min = "0";
       inp2.step = "any";
       if (qty != null && qty !== "" && !Number.isNaN(Number(qty))) inp2.value = String(qty);
-      td2.appendChild(inp2);
-      const td3 = document.createElement("td");
+      td3.appendChild(inp2);
+      const td4 = document.createElement("td");
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "btn btn-secondary btn-sm btn-po-line-remove";
       btn.setAttribute("aria-label", t("delete"));
       btn.textContent = "×";
       btn.addEventListener("click", () => tr.remove());
-      td3.appendChild(btn);
+      td4.appendChild(btn);
       tr.appendChild(td1);
       tr.appendChild(td2);
       tr.appendChild(td3);
+      tr.appendChild(td4);
       tbody.appendChild(tr);
     }
 
@@ -5361,9 +5503,10 @@
       return [...tbody.querySelectorAll("tr")]
         .map((tr) => {
           const item = tr.querySelector(".po-line-desc")?.value?.trim() || "";
+          const unit = (tr.querySelector(".po-line-unit")?.value || "").trim() || null;
           const qtyRaw = tr.querySelector(".po-line-qty")?.value;
           const qty = parseFloat(String(qtyRaw)) || 0;
-          return { item, qty, price: 0, lineTotal: 0 };
+          return { item, unit, qty, price: 0, lineTotal: 0 };
         })
         .filter((l) => l.item || l.qty > 0);
     }
@@ -5624,6 +5767,8 @@
       inpQty.step = "any";
       inpQty.value = String(qty);
       td2.appendChild(inpQty);
+      // Column order must match the table head:
+      // desc, qty, currency, unit price, line total
       const td3 = document.createElement("td");
       const curSel = document.createElement("select");
       curSel.className = "acc-line-cur";
@@ -5632,6 +5777,8 @@
       curSel.value = cur0 === "USD" ? "USD" : "IQD";
       curSel.addEventListener("change", () => recalcAccountingModalTotals());
       td3.appendChild(curSel);
+
+      const td4 = document.createElement("td");
       const inpPrice = document.createElement("input");
       inpPrice.type = "number";
       inpPrice.className = "acc-line-price";
@@ -5639,14 +5786,16 @@
       inpPrice.step = "any";
       inpPrice.value = price > 0 ? String(price) : "";
       inpPrice.addEventListener("input", () => recalcAccountingModalTotals());
-      td3.appendChild(inpPrice);
-      const td4 = document.createElement("td");
-      td4.className = "acc-line-total";
-      td4.textContent = (qty * price).toLocaleString(localeTag());
+      td4.appendChild(inpPrice);
+
+      const td5 = document.createElement("td");
+      td5.className = "acc-line-total";
+      td5.textContent = (qty * price).toLocaleString(localeTag());
       tr.appendChild(td1);
       tr.appendChild(td2);
       tr.appendChild(td3);
       tr.appendChild(td4);
+      tr.appendChild(td5);
       tbody.appendChild(tr);
     }
 
@@ -5787,6 +5936,8 @@
       const toInp = $("rep-purch-to");
       const btn = $("btn-run-purch-report");
       const printBtn = $("btn-print-purch-report");
+      const exportBtn = $("btn-export-purch-report");
+      const coSel = $("rep-purch-company");
       const projSel = $("rep-purch-project");
       const repSel = $("rep-purch-rep");
       const wfSel = $("rep-purch-workflow");
@@ -5798,16 +5949,30 @@
         printBtn.dataset.wired = "1";
         printBtn.addEventListener("click", () => void printPurchasingReport());
       }
+      if (exportBtn && !exportBtn.dataset.wired) {
+        exportBtn.dataset.wired = "1";
+        exportBtn.addEventListener("click", () => exportPurchasingReportCsv());
+      }
       const today = formatTodayYmd();
       if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
       if (toInp && !toInp.value) toInp.value = today;
 
       // fill filters lists
       try {
-        const [pSnap, rSnap] = await Promise.all([
+        const [pSnap, rSnap, cSnap] = await Promise.all([
           getDocs(collection(db, "projects")),
           getDocs(collection(db, "purchasingRepresentatives")),
+          getDocs(collection(db, "companies")),
         ]);
+        const companies = [];
+        cSnap.forEach((d) => companies.push({ id: d.id, ...d.data() }));
+        const loc = lang === "ar" ? "ar" : "en";
+        companies.sort((a, b) => companyDisplayName(a).localeCompare(companyDisplayName(b), loc));
+        if (coSel) {
+          coSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(companyDisplayName(c))}</option>`).join("");
+        }
         const projects = [];
         pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
         sortProjectsByCode(projects);
@@ -5883,12 +6048,74 @@
       w.print();
     }
 
+    let lastPurchasingReportSnapshot = null;
+
+    function exportPurchasingReportCsv() {
+      const snap = lastPurchasingReportSnapshot;
+      if (!snap || !Array.isArray(snap.rows) || !snap.rows.length) {
+        alert(t("reportNoRows"));
+        return;
+      }
+      const sep = ",";
+      const q = (v) => {
+        const s = String(v ?? "");
+        if (/["\n,]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
+        return s;
+      };
+      const head = [
+        t("colPoReference"),
+        t("colRequestDate"),
+        t("reportCompanyLabel"),
+        t("colProject"),
+        t("colRegion"),
+        t("colWorkflow"),
+        t("colPurchasingRepresentative"),
+        t("reportColTotalIqd"),
+        t("reportColTotalUsd"),
+        `${t("reportColConverted")} (${snap.convLabel})`,
+        t("reportColFxRate"),
+      ];
+      const lines = [head.map(q).join(sep)];
+      snap.rows.forEach((r) => {
+        lines.push(
+          [
+            r.ref,
+            r.requestDate,
+            r.company,
+            r.project,
+            r.region,
+            workflowLabel(r.workflowStatus),
+            r.rep,
+            `IQD ${Number(r.totIqd || 0)}`,
+            `USD ${Number(r.totUsd || 0)}`,
+            `${snap.convLabel} ${Number(r.converted || 0)}`,
+            r.fxRate != null ? r.fxRate : "",
+          ]
+            .map(q)
+            .join(sep)
+        );
+      });
+      const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      const from = (snap.from || "").slice(0, 10);
+      const to = (snap.to || "").slice(0, 10);
+      a.href = URL.createObjectURL(blob);
+      a.download = `purchasing_report_${from}_${to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 0);
+    }
+
     async function runPurchasingReport() {
       const wrap = $("reports-purchasing-wrap");
       if (!wrap) return;
       const from = ($("rep-purch-from")?.value || "").slice(0, 10);
       const to = ($("rep-purch-to")?.value || "").slice(0, 10);
       const base = ($("rep-purch-base")?.value || "IQD").trim() || "IQD";
+      const groupBy = ($("rep-purch-group")?.value || "").trim();
       if (!from || !to) return;
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
@@ -5933,9 +6160,21 @@
           return;
         }
 
-        const pSnap = await getDocs(collection(db, "projects"));
+        const [pSnap, cSnap] = await Promise.all([
+          getDocs(collection(db, "projects")),
+          getDocs(collection(db, "companies")),
+        ]);
         const projectNames = {};
-        pSnap.forEach((d) => (projectNames[d.id] = projectDisplayName(d.data())));
+        const projectCompanyId = {};
+        pSnap.forEach((d) => {
+          const pd = d.data();
+          projectNames[d.id] = projectDisplayName(pd);
+          projectCompanyId[d.id] = pd.companyId || null;
+        });
+        const companyNameById = {};
+        cSnap.forEach((d) => {
+          companyNameById[d.id] = companyDisplayName(d.data());
+        });
 
         let sumIqd = 0;
         let sumUsd = 0;
@@ -5969,13 +6208,17 @@
           sumIqd += totIqd;
           sumUsd += totUsd;
           sumConverted += converted;
+          const cid = po.projectId ? projectCompanyId[po.projectId] : null;
+          const company = cid ? (companyNameById[cid] || cid) : t("dash");
           return {
             id: po.id,
             projectId: po.projectId || null,
+            companyId: cid || null,
             repId: (po.purchasingRepresentativeId || "").trim() || null,
             workflowStatus: (po.workflowStatus || "").trim() || null,
             ref: (po.poReference || po.title || "").trim() || t("dash"),
             requestDate: rd || t("dash"),
+            company,
             project: projectNames[po.projectId] || po.projectId || t("dash"),
             region: (po.regionName || "").trim() || t("dash"),
             rep: (po.purchasingRepresentativeName || "").trim() || t("dash"),
@@ -5985,10 +6228,12 @@
             fxRate: rate > 0 ? rate : null,
           };
         });
+        const fCompany = ($("rep-purch-company")?.value || "").trim();
         const fProject = ($("rep-purch-project")?.value || "").trim();
         const fRep = ($("rep-purch-rep")?.value || "").trim();
         const fWf = ($("rep-purch-workflow")?.value || "").trim();
         const reportRows = reportRowsRaw.filter((r) => {
+          if (fCompany && r.companyId !== fCompany) return false;
           if (fProject && r.projectId !== fProject) return false;
           if (fRep && r.repId !== fRep) return false;
           if (fWf && r.workflowStatus !== fWf) return false;
@@ -5997,9 +6242,11 @@
 
         const fxDisp = fxUsed ? String(fxUsed.usdToIqd) : t("dash");
         const convLabel = base === "USD" ? "USD" : "IQD";
+        lastPurchasingReportSnapshot = { from, to, base, convLabel, rows: reportRows.map((x) => ({ ...x })) };
         const tableHead = `<thead><tr>
             <th>${escapeHtml(t("colPoReference"))}</th>
             <th>${escapeHtml(t("colRequestDate"))}</th>
+            <th>${escapeHtml(t("reportCompanyLabel"))}</th>
             <th>${escapeHtml(t("colProject"))}</th>
             <th>${escapeHtml(t("colRegion"))}</th>
             <th>${escapeHtml(t("colWorkflow"))}</th>
@@ -6010,26 +6257,74 @@
             <th>${escapeHtml(t("reportColFxRate"))}</th>
             <th></th>
           </tr></thead>`;
-        const tableBody = `<tbody>${reportRows
-          .map((r) => {
-            const fxCell = r.fxRate != null ? String(r.fxRate) : t("dash");
-            return `<tr>
-              <td>${escapeHtml(r.ref)}</td>
-              <td>${escapeHtml(r.requestDate)}</td>
-              <td>${escapeHtml(r.project)}</td>
-              <td>${escapeHtml(r.region)}</td>
-              <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
-              <td>${escapeHtml(r.rep)}</td>
-              <td>${escapeHtml("IQD " + r.totIqd.toLocaleString(localeTag()))}</td>
-              <td>${escapeHtml("USD " + r.totUsd.toLocaleString(localeTag()))}</td>
-              <td>${escapeHtml(convLabel + " " + r.converted.toLocaleString(localeTag()))}</td>
-              <td>${escapeHtml(fxCell)}</td>
-              <td><button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeAttr(r.id)}">${escapeHtml(
-                t("btnPoPrintView")
-              )}</button></td>
-            </tr>`;
-          })
-          .join("")}</tbody>`;
+        const byGroupKey = (r) => {
+          if (groupBy === "project") return r.project || t("dash");
+          if (groupBy === "rep") return r.rep || t("dash");
+          return "";
+        };
+        const loc = lang === "ar" ? "ar" : "en";
+        const sortedRows = [...reportRows].sort((a, b) => {
+          const ga = byGroupKey(a);
+          const gb = byGroupKey(b);
+          if (ga && gb && ga !== gb) return ga.localeCompare(gb, loc);
+          if (ga && !gb) return -1;
+          if (!ga && gb) return 1;
+          return (a.requestDate || "").localeCompare(b.requestDate || "", loc);
+        });
+        let curGroup = null;
+        let gIqd = 0;
+        let gUsd = 0;
+        let gConv = 0;
+        const flushGroup = () => {
+          if (!curGroup) return "";
+          const html = `<tr class="report-subtotal-row">
+            <td colspan="7" style="font-weight:700">${escapeHtml(t("reportGroupSubtotal"))} — ${escapeHtml(curGroup)}</td>
+            <td>${escapeHtml("IQD " + gIqd.toLocaleString(localeTag()))}</td>
+            <td>${escapeHtml("USD " + gUsd.toLocaleString(localeTag()))}</td>
+            <td>${escapeHtml(convLabel + " " + gConv.toLocaleString(localeTag()))}</td>
+            <td>${escapeHtml(t("dash"))}</td>
+            <td></td>
+          </tr>`;
+          gIqd = 0;
+          gUsd = 0;
+          gConv = 0;
+          return html;
+        };
+        const bodyHtml = [];
+        sortedRows.forEach((r) => {
+          const gk = groupBy ? byGroupKey(r) : null;
+          if (groupBy && gk !== curGroup) {
+            if (curGroup != null) bodyHtml.push(flushGroup());
+            curGroup = gk;
+            bodyHtml.push(
+              `<tr class="report-group-row"><td colspan="11" style="font-weight:800">${escapeHtml(
+                t("reportGroupHeader")
+              )}: ${escapeHtml(curGroup || t("dash"))}</td></tr>`
+            );
+          }
+          gIqd += Number(r.totIqd) || 0;
+          gUsd += Number(r.totUsd) || 0;
+          gConv += Number(r.converted) || 0;
+          const fxCell = r.fxRate != null ? String(r.fxRate) : t("dash");
+          bodyHtml.push(`<tr>
+            <td>${escapeHtml(r.ref)}</td>
+            <td>${escapeHtml(r.requestDate)}</td>
+            <td>${escapeHtml(r.company)}</td>
+            <td>${escapeHtml(r.project)}</td>
+            <td>${escapeHtml(r.region)}</td>
+            <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
+            <td>${escapeHtml(r.rep)}</td>
+            <td>${escapeHtml("IQD " + r.totIqd.toLocaleString(localeTag()))}</td>
+            <td>${escapeHtml("USD " + r.totUsd.toLocaleString(localeTag()))}</td>
+            <td>${escapeHtml(convLabel + " " + r.converted.toLocaleString(localeTag()))}</td>
+            <td>${escapeHtml(fxCell)}</td>
+            <td><button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeAttr(
+              r.id
+            )}">${escapeHtml(t("btnPoPrintView"))}</button></td>
+          </tr>`);
+        });
+        if (groupBy && curGroup != null) bodyHtml.push(flushGroup());
+        const tableBody = `<tbody>${bodyHtml.join("")}</tbody>`;
 
         wrap.innerHTML = `
           <div class="detail-panel" style="margin-bottom:0.75rem">
@@ -6511,9 +6806,12 @@
       const lines = Array.isArray(po.lines) ? po.lines : [];
       const showPrices = !isProject || lines.some((l) => Number(l.price) > 0);
       let lineColCount = 2;
+      if (isProject) lineColCount += 1;
       if (isProject) lineColCount += 2;
       if (showPrices) lineColCount += 2;
-      let lineTh = `<th>${escapeHtml(t("poLineDescCol"))}</th><th class="po-print-num">${escapeHtml(t("poLineQtyCol"))}</th>`;
+      let lineTh = `<th>${escapeHtml(t("poLineDescCol"))}</th>`;
+      if (isProject) lineTh += `<th>${escapeHtml(t("poLineUnitCol"))}</th>`;
+      lineTh += `<th class="po-print-num">${escapeHtml(t("poLineQtyCol"))}</th>`;
       if (isProject) lineTh += `<th>${escapeHtml(t("poPrintColAvailable"))}</th><th class="po-print-num">${escapeHtml(t("poPrintColToBuy"))}</th>`;
       if (showPrices)
         lineTh += `<th class="po-print-num">${escapeHtml(t("poPrintColUnitPrice"))}</th><th class="po-print-num">${escapeHtml(t("poPrintColLineTotal"))}</th>`;
@@ -6521,7 +6819,8 @@
         .map((l) => {
           const desc = escapeHtml(String(l.item || "").trim());
           const qty = escapeHtml(String(Number(l.qty) || 0));
-          let cells = `<td>${desc}</td><td class="po-print-num">${qty}</td>`;
+          const unit = escapeHtml(String((l.unit || "").trim() || t("dash")));
+          let cells = `<td>${desc}</td>${isProject ? `<td>${unit}</td>` : ""}<td class="po-print-num">${qty}</td>`;
           if (isProject)
             cells += `<td>${escapeHtml(poPrintLineAvailableText(l))}</td><td class="po-print-num">${escapeHtml(
               poPrintLineToBuyQty(l)
@@ -9390,7 +9689,7 @@
           $("po-notes").value = poData.notes || "";
           clearPoLinesTable();
           const lines = Array.isArray(poData.lines) ? poData.lines : [];
-          if (lines.length) lines.forEach((l) => addPoLineRow(l.item, l.qty));
+          if (lines.length) lines.forEach((l) => addPoLineRow(l.item, l.unit, l.qty));
           else addPoLineRow();
           await hydrateProjectPoFromProjectSelect(true);
         } else {
