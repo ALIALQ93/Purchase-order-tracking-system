@@ -1372,8 +1372,12 @@
       }
 
       /* اطبع فقط محتوى مودال الطباعة */
-      body * {
-        visibility: hidden !important;
+      /* ملاحظة: visibility:hidden يُبقي العناصر تأخذ مساحة وقد ينتج صفحات بيضاء */
+      body > *:not(#modal-po-print-view) {
+        display: none !important;
+      }
+      #modal-po-print-view {
+        display: block !important;
       }
       #modal-po-print-view,
       #modal-po-print-view * {
@@ -1382,7 +1386,8 @@
 
       /* ضع المحتوى في أعلى الصفحة بدون فراغات إضافية */
       #modal-po-print-view.modal-overlay {
-        position: fixed !important;
+        /* مهم: العناصر ذات position:fixed قد تتكرر في كل صفحة عند الطباعة */
+        position: absolute !important;
         inset: 0 !important;
         left: 0 !important;
         top: 0 !important;
@@ -1390,8 +1395,8 @@
         background: #fff !important;
         padding: 0 !important;
         margin: 0 !important;
-        align-items: flex-start !important;
-        justify-content: center !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
         overflow: visible !important;
       }
 
@@ -1426,15 +1431,13 @@
       #modal-po-print-view .po-print-doc {
         display: flex !important;
         flex-direction: column !important;
-        /* A4 height 297mm - (top 3mm + bottom 10mm) */
-        min-height: 284mm !important;
+        /* لا تجبر ارتفاع A4 (قد يسبب صفحات إضافية/تكرار في بعض المتصفحات) */
+        min-height: auto !important;
       }
       /* اجعل الفراغ (إن وجد) بعد آخر قسم في الأسفل */
       #modal-po-print-view .po-print-doc::after {
-        content: "" !important;
-        display: block !important;
-        flex: 1 1 auto !important;
-        min-height: 0 !important;
+        content: none !important;
+        display: none !important;
       }
 
       #modal-po-print-view .po-print-header {
@@ -2205,6 +2208,7 @@
         <button type="button" data-view="purchasing-queue" data-nav-section="purchasing-queue" data-i18n="navPurchasingQueue">المشتريات</button>
         <button type="button" data-view="warehouse-receipt-queue" data-nav-section="warehouse-receipt-queue" data-i18n="navWarehouseReceiptQueue">استلام المستودع</button>
         <button type="button" data-view="accounting-queue" data-nav-section="accounting-queue" data-i18n="navAccountingQueue">الحسابات</button>
+        <button type="button" data-view="reports" data-nav-section="reports" data-i18n="navReports">التقارير</button>
         <button type="button" class="nav-admin-only" data-view="admin" data-nav-section="admin" data-i18n="navAdmin">الإدارة</button>
         <button type="button" data-view="help" data-i18n="navHelp">المساعدة</button>
       </nav>
@@ -2262,6 +2266,7 @@
             <button type="button" class="btn btn-secondary" data-jump="purchasing-queue" data-nav-section="purchasing-queue" data-i18n="shortcutPurchasing">المشتريات</button>
             <button type="button" class="btn btn-secondary" data-jump="warehouse-receipt-queue" data-nav-section="warehouse-receipt-queue" data-i18n="shortcutWarehouseReceipt">استلام المستودع</button>
             <button type="button" class="btn btn-secondary" data-jump="accounting-queue" data-nav-section="accounting-queue" data-i18n="shortcutAccounting">الحسابات</button>
+            <button type="button" class="btn btn-secondary" data-jump="reports" data-nav-section="reports" data-i18n="shortcutReports">التقارير</button>
             <button type="button" class="btn btn-secondary nav-admin-only" data-jump="admin" data-nav-section="admin" data-i18n="shortcutAdmin">الإدارة</button>
           </div>
         </div>
@@ -2418,6 +2423,55 @@
         </div>
       </section>
 
+      <!-- التقارير -->
+      <section id="screen-reports" class="app-screen hidden">
+        <h1 class="page-title" data-i18n="reportsTitle">التقارير</h1>
+        <div class="card">
+          <h3 data-i18n="reportPurchasingPeriodTitle">تقرير مشتريات حسب الفترة</h3>
+          <div class="po-projects-toolbar-strip" style="margin-bottom:0.65rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-purch-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-purch-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportBaseCurrencyLabel">عملة التقرير</span>
+                <select id="rep-purch-base">
+                  <option value="IQD">IQD</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportProjectLabel">المشروع</span>
+                <select id="rep-purch-project"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportRepresentativeLabel">مندوب المشتريات</span>
+                <select id="rep-purch-rep"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportWorkflowLabel">حالة المسار</span>
+                <select id="rep-purch-workflow"></select>
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-run-purch-report" data-i18n="btnRunReport">
+                عرض التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-print-purch-report" data-i18n="btnPrintReport">
+                طباعة التقرير
+              </button>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportFxHint">
+            يتم تحويل العملات تلقائياً حسب آخر سعر صرف مُسجّل بتاريخ يساوي أو يسبق تاريخ الطلب.
+          </p>
+          <div id="reports-purchasing-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
+        </div>
+      </section>
+
       <!-- الإدارة -->
       <section id="screen-admin" class="app-screen hidden">
         <h1 class="page-title" data-i18n="adminTitle">الإدارة</h1>
@@ -2431,6 +2485,7 @@
             <button type="button" data-admin-tab="purchasingRepresentatives" data-i18n="tabPurchasingRepresentatives">
               مندوبو المشتريات
             </button>
+            <button type="button" data-admin-tab="fxRates" data-i18n="tabFxRates">أسعار الصرف</button>
             <button type="button" data-admin-tab="users" data-i18n="tabUsers">المستخدمون</button>
           </div>
           <div id="admin-panel-companies" class="admin-panel"></div>
@@ -2439,6 +2494,7 @@
           <div id="admin-panel-regions" class="admin-panel hidden"></div>
           <div id="admin-panel-warehouses" class="admin-panel hidden"></div>
           <div id="admin-panel-purchasingRepresentatives" class="admin-panel hidden"></div>
+          <div id="admin-panel-fxRates" class="admin-panel hidden"></div>
           <div id="admin-panel-users" class="admin-panel hidden"></div>
         </div>
       </section>
@@ -2872,6 +2928,7 @@
             <tr>
               <th data-i18n="poLineDescCol">الوصف</th>
               <th data-i18n="poLineQtyCol">الكمية</th>
+              <th data-i18n="reportBaseCurrencyLabel">العملة</th>
               <th data-i18n="accUnitPriceCol">سعر الوحدة</th>
               <th data-i18n="accLineTotalCol">مجموع البند</th>
             </tr>
@@ -2890,6 +2947,35 @@
         </button>
         <button type="button" class="btn btn-primary" id="modal-acc-po-complete" data-i18n="btnCompleteAccountingWorkflow">
           حفظ وإغلاق المسار
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- استلام المستودع: تسجيل الكميات الفعلية -->
+  <div id="modal-warehouse-receipt-qty" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal po-modal-wide">
+      <h3 data-i18n="warehouseReceiptQtyModalTitle">استلام المستودع — الكميات الفعلية</h3>
+      <p class="sub" style="margin-top:-0.35rem;color:var(--muted)" data-i18n="warehouseReceiptQtyModalHint">
+        أدخل الكمية المستلمة فعلياً لكل بند. يمكن أن تكون أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.
+      </p>
+      <input type="hidden" id="wr-po-id" />
+      <div class="table-scroll po-lines-wrap" style="margin-top:0.5rem">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th data-i18n="poLineDescCol">الوصف</th>
+              <th data-i18n="poLineQtyCol">الكمية</th>
+              <th data-i18n="warehouseReceiptActualQtyCol">المستلم فعلياً</th>
+            </tr>
+          </thead>
+          <tbody id="wr-lines-tbody"></tbody>
+        </table>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="wr-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="wr-confirm" data-i18n="btnConfirmWarehouseReceiptQty">
+          حفظ وإرسال للحسابات
         </button>
       </div>
     </div>
@@ -3092,6 +3178,7 @@
         poAddLineBtn: "إضافة بند",
         colPoReference: "المرجع",
         colRequestDate: "تاريخ الطلب",
+        colSubmittedAtIraq: "وقت الرفع (العراق)",
         alertProjectPoLines: "أضف بنداً واحداً على الأقل بوصف وكمية أكبر من صفر.",
         alertPoTitleRequired: "أدخل عنوان الطلب.",
         cancel: "إلغاء",
@@ -3341,6 +3428,7 @@
         poPrintSectionNarrative: "الوصف والملاحظات",
         poPrintSignatureLabel: "التوقيع / الختم",
         poPrintSigAdministration: "الإدارة العامة",
+        poPrintSigPurchasing: "المشتريات",
         poPrintSigName: "الاسم",
         poPrintSigDate: "التاريخ",
         poPrintColUnitPrice: "سعر الوحدة",
@@ -3420,12 +3508,12 @@
         helpNavTitle: "التنقل",
         helpWorkflowTitle: "مسار العمل (طلبات المشاريع)",
         helpWorkflowBody:
-          'هذا المسار يخصّ <strong>طلبات المشاريع</strong> بعد إنشائها والدخول في مرحلة المستودع: <strong>مراجعة المستودع</strong> → إن اكتفى المخزن يُغلق المسار ككمية متوفرة؛ وإلا <strong>موافقة مهندس أول</strong> → <strong>مدير مشروع</strong> → <strong>مسؤول مجموعة</strong> → <strong>مشتريات</strong> (قيد الشراء ثم إرسال للحسابات لسلفة العمل) → <strong>استلام المستودع</strong> → <strong>حسابات</strong> (إقفال وتسجيل القيم). رفض مهندس أول يوقف المسار بحالة «مرفوض (مهندس أول)». <strong>أوامر الإدارة العامة</strong> تُعرض وتُحدَّث من شاشتها ولا تمرّ حالياً بنفس طوابير المستودع/مهندس أول المعروضة هنا.',
+          'هذا المسار يخصّ <strong>طلبات المشاريع</strong> بعد إنشائها والدخول في مرحلة المستودع: <strong>مراجعة المستودع</strong> → إن اكتفى المخزن يُغلق المسار ككمية متوفرة؛ وإلا <strong>موافقة مهندس أول</strong> → <strong>مدير مشروع</strong> → <strong>مسؤول مجموعة</strong> → <strong>مشتريات</strong> (تعيين <em>مندوب المشتريات</em> ثم نقل الطلب إلى «قيد الشراء» وإرساله للحسابات لسلفة العمل) → <strong>استلام المستودع</strong> (تسجيل الكميات المستلمة فعلياً لكل بند مع إمكانية الاستلام الجزئي) → <strong>حسابات</strong> (تسجيل سعر الوحدة لكل بند وإقفال المسار). رفض مهندس أول يوقف المسار بحالة «مرفوض (مهندس أول)». <strong>أوامر الإدارة العامة</strong> تُعرض وتُحدَّث من شاشتها ولا تمرّ حالياً بنفس طوابير المستودع/مهندس أول المعروضة هنا.',
         helpRolesTitle: "الأدوار والصلاحيات",
         helpRolesP1:
           '<strong>المشرف (admin):</strong> إدارة البيانات الأساسية والمستخدمين؛ يرى شاشات الإدارة عند تفعيلها في الملف، ويطلع على طابور «موافقات مهندس أول» لجميع الطلبات المؤهلة. <strong>مهندس / مهندس أول:</strong> إنشاء وعرض طلبات المشاريع <em>المسندة</em>؛ «مهندس أول» يحتاج مشاريع مسندة في ملفه ليعمل طابور الموافقات، ويُعرض فيه فقط ما يخص تلك المشاريع. <strong>مُطّلع (عرض فقط):</strong> يطلع على طلبات المشاريع المسندة دون إنشاء أو موافقة.',
         helpRolesP2:
-          'تظهر عناصر القائمة الجانبية حسب حقل <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> في ملف المستخدم. خيار <strong>تجاوز الموافقات الأدنى</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>) يتيح لمدير المشروع أو مسؤول المجموعة التصرف مبكراً على مراحل المستودع أو مهندس أول أو مدير مشروع (حسب الدور) عند تفعيله من الإدارة؛ المشرف يحتفظ بصلاحيات أوسع. بقية الأدوار: أمين مستودع، مدير مشروع، مسؤول مجموعة، مسؤول مشتريات، مسؤول استلام مستودع، محاسب — كلٌ حسب طوابيره المعروضة في النظام.',
+          'تظهر عناصر القائمة الجانبية حسب حقل <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> في ملف المستخدم. خيار <strong>تجاوز الموافقات الأدنى</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>) يتيح لمدير المشروع أو مسؤول المجموعة التصرف مبكراً على مراحل المستودع أو مهندس أول أو مدير مشروع (حسب الدور) عند تفعيله من الإدارة؛ المشرف يحتفظ بصلاحيات أوسع. ملاحظة: <strong>مندوبو المشتريات</strong> و<strong>أسعار الصرف</strong> تُعرَّف من الإدارة، و<strong>التقارير</strong> تظهر فقط لمن تم تفعيل قسم «التقارير» له.',
         helpNavItem1: "<strong>لوحة التحكم:</strong> نظرة عامة واختصارات.",
         helpNavItem2: "<strong>أوامر شراء المشاريع:</strong> طلبات مرتبطة بمشاريع محددة (تخضع للمشاريع المسندة للمستخدم).",
         helpNavItem3: "<strong>أوامر شراء الإدارة العامة:</strong> طلبات المركز الإداري في قائمة ونموذج مستقلّين (حالة الطلب التقليدية)، وليست ضمن طابور المستودع/مهندس أول الحالي.",
@@ -3439,17 +3527,50 @@
         helpNavItem8:
           "<strong>موافقات مسؤول المجموعة:</strong> بعد مدير المشروع — الموافقة على مستوى المناطق المسندة.",
         helpNavItem9:
-          "<strong>المشتريات:</strong> بعد موافقة المجموعة — تأكيد «قيد الشراء» ثم إرسال الطلب للحسابات لتسليم سلفة العمل (عرض وطباعة متاح).",
+          "<strong>المشتريات:</strong> بعد موافقة المجموعة — اختر مندوب المشتريات ثم انقل الطلب إلى «قيد الشراء»، وبعدها أرسله للحسابات لسلفة العمل. يظهر اسم المندوب في شاشتي المشتريات والحسابات.",
         helpNavItem10:
-          "<strong>استلام المستودع:</strong> بعد تسليم السلفة — تأكيد الاستلام الفعلي ثم التحويل لقسم الحسابات للإقفال.",
+          "<strong>استلام المستودع:</strong> بعد تسليم السلفة — سجّل الكميات المستلمة فعلياً لكل بند (يمكن أكثر من المطلوب). عند الاستلام الجزئي سيطلب منك النظام قرار الإغلاق أو إبقاء الطلب مفتوحاً.",
         helpNavItem11:
           "<strong>الحسابات:</strong> سلفة ثم إقفال؛ وقسم «متابعة المسار» يبقي ظاهراً الطلبات بعد إطلاق السلفة (بانتظار المستودع) والمكتملة بعد إقفالكم.",
+        helpNavItem12:
+          "<strong>التقارير:</strong> تقرير مشتريات حسب الفترة مع فلاتر (تاريخ/مشروع/مندوب/حالة مسار) وتحويل عملات تلقائي حسب آخر سعر صرف بتاريخ الطلب.",
         navPurchasingQueue: "المشتريات",
         navWarehouseReceiptQueue: "استلام المستودع",
         navAccountingQueue: "الحسابات",
+        navReports: "التقارير",
         shortcutPurchasing: "المشتريات",
         shortcutWarehouseReceipt: "استلام المستودع",
         shortcutAccounting: "الحسابات",
+        shortcutReports: "التقارير",
+        reportsTitle: "التقارير",
+        reportPurchasingPeriodTitle: "تقرير مشتريات حسب الفترة",
+        reportFromDateLabel: "من تاريخ",
+        reportToDateLabel: "إلى تاريخ",
+        reportBaseCurrencyLabel: "عملة التقرير",
+        reportProjectLabel: "المشروع",
+        reportRepresentativeLabel: "مندوب المشتريات",
+        reportWorkflowLabel: "حالة المسار",
+        reportAllOpt: "الكل",
+        btnPrintReport: "طباعة التقرير",
+        btnRunReport: "عرض التقرير",
+        reportFxHint: "يتم تحويل العملات تلقائياً حسب آخر سعر صرف مُسجّل بتاريخ يساوي أو يسبق تاريخ الطلب.",
+        reportNoFxRates: "لا توجد أسعار صرف مُسجّلة. أضف سعراً من الإدارة ← أسعار الصرف.",
+        reportNoRows: "لا توجد بيانات ضمن الفترة.",
+        reportTotalOriginalIqd: "إجمالي IQD (أصلي)",
+        reportTotalOriginalUsd: "إجمالي USD (أصلي)",
+        reportTotalConverted: "الإجمالي بعد التحويل",
+        reportFxUsedLabel: "سعر الصرف المستخدم (USD→IQD)",
+        reportColTotalIqd: "مبلغ IQD",
+        reportColTotalUsd: "مبلغ USD",
+        reportColConverted: "المبلغ بعد التحويل",
+        reportColFxRate: "سعر الصرف",
+        tabFxRates: "أسعار الصرف",
+        addFxRate: "إضافة سعر",
+        modalNewFxRate: "سعر صرف جديد",
+        modalEditFxRate: "تعديل سعر صرف",
+        labelFxDate: "التاريخ",
+        labelFxUsdToIqd: "USD → IQD",
+        noFxRates: "لا توجد أسعار صرف بعد.",
         purchasingQueueTitle: "تنفيذ المشتريات",
         purchasingQueueHint:
           "يُفضَّل متابعة الطلب منذ إدراجه: القسم الأول يعرض مراحل المستودع والموافقات قبل المشتريات. ثم «يحتاج إجراء» عند وصول الطلب إليكم، و«متابعة المسار» بعد إرسال السلفة للحسابات حتى الإقفال. استخدم «عرض وطباعة» للاطلاع الكامل.",
@@ -3468,6 +3589,16 @@
         warehouseReceiptSectionTrack: "متابعة بعد التأكيد",
         emptyWarehouseReceiptAction: "لا توجد طلبات بانتظار تأكيد الاستلام.",
         emptyWarehouseReceiptTrack: "لا توجد طلبات في المتابعة (إقفال أو مكتمل) لمنطقتك.",
+        warehouseReceiptQtyModalTitle: "استلام المستودع — الكميات الفعلية",
+        warehouseReceiptQtyModalHint:
+          "أدخل الكمية المستلمة فعلياً لكل بند. يمكن أن تكون أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.",
+        warehouseReceiptActualQtyCol: "المستلم فعلياً",
+        btnConfirmWarehouseReceiptQty: "حفظ وإرسال للحسابات",
+        confirmWarehouseReceiptPartialClose:
+          "تم إدخال استلام جزئي (أقل من المطلوب) في أحد البنود.\nهل تريد إغلاق الطلب وإرساله للحسابات للإقفال، أم إبقاءه مفتوحاً في الاستلام؟",
+        btnCloseAndSendToAccounting: "إغلاق وإرسال للحسابات",
+        btnKeepOpenInReceipt: "إبقاءه مفتوحاً",
+        alertWarehouseReceiptNoLines: "لا توجد بنود لتسجيل الاستلام.",
         alertWarehouseSupervisorRegionsRequired: "حدّد المناطق المسندة لمسؤول استلام المستودع من الإدارة.",
         accountingQueueTitle: "الحسابات",
         accountingQueueHint: "سلفة ثم إقفال؛ وقسم المتابعة يعرض الطلبات بعد إطلاق السلفة وحتى اكتمال المسار.",
@@ -3654,6 +3785,7 @@
         poAddLineBtn: "Add line",
         colPoReference: "Reference",
         colRequestDate: "Date",
+        colSubmittedAtIraq: "Submitted time (Iraq)",
         alertProjectPoLines: "Add at least one line with a description and quantity greater than zero.",
         alertPoTitleRequired: "Enter a title for the order.",
         cancel: "Cancel",
@@ -3904,6 +4036,7 @@
         poPrintSectionNarrative: "Description & notes",
         poPrintSignatureLabel: "Signature / stamp",
         poPrintSigAdministration: "General management",
+        poPrintSigPurchasing: "Purchasing",
         poPrintSigName: "Name",
         poPrintSigDate: "Date",
         poPrintColUnitPrice: "Unit price",
@@ -3984,12 +4117,12 @@
         helpNavTitle: "Navigation",
         helpWorkflowTitle: "Workflow (project orders)",
         helpWorkflowBody:
-          'This path applies to <strong>project</strong> purchase orders once they enter warehouse review: <strong>Warehouse review</strong> → if fully covered, the workflow ends as fulfilled from stock; otherwise <strong>Engineer first</strong> → <strong>Project manager</strong> → <strong>Group manager</strong> → <strong>Purchasing</strong> (in progress, then to accounting for work advance) → <strong>Warehouse receipt</strong> → <strong>Accounting</strong> (closure and values). Rejecting at engineer first stops the workflow as rejected (engineer first). <strong>General admin</strong> orders are edited on their own screen and do not currently use the same warehouse / engineer-first queues shown here.',
+          'This path applies to <strong>project</strong> purchase orders once they enter warehouse review: <strong>Warehouse review</strong> → if fully covered, the workflow ends as fulfilled from stock; otherwise <strong>Engineer first</strong> → <strong>Project manager</strong> → <strong>Group manager</strong> → <strong>Purchasing</strong> (assign a <em>purchasing representative</em>, move to in progress, then send to accounting for work advance) → <strong>Warehouse receipt</strong> (record actual received quantities per line; partial receipt supported) → <strong>Accounting</strong> (record unit prices per line and close). Rejecting at engineer first stops the workflow as rejected (engineer first). <strong>General admin</strong> orders are edited on their own screen and do not currently use the same warehouse / engineer-first queues shown here.',
         helpRolesTitle: "Roles and permissions",
         helpRolesP1:
           '<strong>Administrator:</strong> Manages master data and users; sees Administration when enabled on the profile, and sees all eligible requests on Engineer first approvals. <strong>Engineer / Engineer first:</strong> Create and view project purchase orders for <em>assigned</em> projects; engineer first needs assigned projects to open the approvals queue, which then lists only those projects. <strong>Viewer (read-only):</strong> Read-only access to assigned project orders — no create or approve.',
         helpRolesP2:
-          'Sidebar items follow <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> on the user profile. <strong>Bypass lower approvals</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>), when set by an admin, lets project managers or group managers act earlier on warehouse, engineer-first, or project-manager stages (depending on role); admins retain broader powers. Other roles — warehouse clerk, project manager, group manager, purchasing officer, warehouse receipt supervisor, accountant — each use their own queues as shown in the app.',
+          'Sidebar items follow <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> on the user profile. <strong>Bypass lower approvals</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>), when set by an admin, lets project managers or group managers act earlier on warehouse, engineer-first, or project-manager stages (depending on role); admins retain broader powers. Note: <strong>Purchasing representatives</strong> and <strong>FX rates</strong> are managed under Administration, and <strong>Reports</strong> are shown only when enabled on the profile.',
         helpNavItem1: "<strong>Dashboard:</strong> Overview and shortcuts.",
         helpNavItem2: "<strong>Project purchase orders:</strong> Orders tied to specific projects (subject to assigned projects for the user).",
         helpNavItem3: "<strong>General admin purchase orders:</strong> Central administration requests on a separate list and form (classic status), not the current warehouse / engineer-first pipeline.",
@@ -4003,17 +4136,50 @@
         helpNavItem8:
           "<strong>Group manager approvals:</strong> After the project manager — approve at assigned region level.",
         helpNavItem9:
-          "<strong>Purchasing:</strong> After group approval — move to in progress, then send to accounting for work-advance handover. View & print the full request.",
+          "<strong>Purchasing:</strong> After group approval — choose the purchasing representative, move to in progress, then send to accounting for the work advance. The representative name appears on Purchasing and Accounting.",
         helpNavItem10:
-          "<strong>Warehouse receipt:</strong> After the advance is released — confirm physical receipt, then send back to accounting for final closure.",
+          "<strong>Warehouse receipt:</strong> After the advance is released — record actual received quantities per line (may exceed requested). If receipt is partial, you’ll be asked whether to close or keep it open.",
         helpNavItem11:
           "<strong>Accounting:</strong> Advance and closure; Pipeline follow-up keeps requests visible after advance release (awaiting warehouse) and after you close them.",
+        helpNavItem12:
+          "<strong>Reports:</strong> Purchasing report by period with filters (date/project/representative/workflow) and automatic currency conversion using the latest FX rate on or before the request date.",
         navPurchasingQueue: "Purchasing",
         navWarehouseReceiptQueue: "Warehouse receipt",
         navAccountingQueue: "Accounting",
+        navReports: "Reports",
         shortcutPurchasing: "Purchasing",
         shortcutWarehouseReceipt: "Warehouse receipt",
         shortcutAccounting: "Accounting",
+        shortcutReports: "Reports",
+        reportsTitle: "Reports",
+        reportPurchasingPeriodTitle: "Purchasing report by period",
+        reportFromDateLabel: "From date",
+        reportToDateLabel: "To date",
+        reportBaseCurrencyLabel: "Report currency",
+        reportProjectLabel: "Project",
+        reportRepresentativeLabel: "Purchasing representative",
+        reportWorkflowLabel: "Workflow status",
+        reportAllOpt: "All",
+        btnPrintReport: "Print report",
+        btnRunReport: "Run report",
+        reportFxHint: "Currencies are converted automatically using the latest FX rate on or before the request date.",
+        reportNoFxRates: "No FX rates are available. Add a rate under Administration → FX rates.",
+        reportNoRows: "No data within the selected period.",
+        reportTotalOriginalIqd: "Total IQD (original)",
+        reportTotalOriginalUsd: "Total USD (original)",
+        reportTotalConverted: "Total converted",
+        reportFxUsedLabel: "FX used (USD→IQD)",
+        reportColTotalIqd: "IQD amount",
+        reportColTotalUsd: "USD amount",
+        reportColConverted: "Converted amount",
+        reportColFxRate: "FX rate",
+        tabFxRates: "FX rates",
+        addFxRate: "Add rate",
+        modalNewFxRate: "New FX rate",
+        modalEditFxRate: "Edit FX rate",
+        labelFxDate: "Date",
+        labelFxUsdToIqd: "USD → IQD",
+        noFxRates: "No FX rates yet.",
         purchasingQueueTitle: "Purchasing",
         purchasingQueueHint:
           "Track each request from submission: the first section lists warehouse review and approvals before purchasing. Then Action when it reaches you, and Pipeline follow-up after you send it to accounting until closure. Use View & print for the full request.",
@@ -4032,6 +4198,16 @@
         warehouseReceiptSectionTrack: "Follow-up after confirmation",
         emptyWarehouseReceiptAction: "No requests awaiting receipt confirmation.",
         emptyWarehouseReceiptTrack: "No follow-up requests (closure or complete) for your region.",
+        warehouseReceiptQtyModalTitle: "Warehouse receipt — actual quantities",
+        warehouseReceiptQtyModalHint:
+          "Enter the actual received quantity per line. It may exceed the requested quantity. If receipt is partial, you'll be asked whether to close or keep it open.",
+        warehouseReceiptActualQtyCol: "Received (actual)",
+        btnConfirmWarehouseReceiptQty: "Save and send to accounting",
+        confirmWarehouseReceiptPartialClose:
+          "Partial receipt was entered (one or more lines received less than requested).\nDo you want to close and send to accounting, or keep it open in warehouse receipt?",
+        btnCloseAndSendToAccounting: "Close and send",
+        btnKeepOpenInReceipt: "Keep open",
+        alertWarehouseReceiptNoLines: "No line items to record receipt.",
         alertWarehouseSupervisorRegionsRequired: "Assign managed regions for this warehouse receipt supervisor in Administration.",
         accountingQueueTitle: "Accounting",
         accountingQueueHint: "Advance and closure; follow-up shows requests after advance release through completion.",
@@ -4220,7 +4396,7 @@
       const ul = $("help-nav-list");
       if (!ul) return;
       ul.innerHTML = "";
-      for (let i = 1; i <= 11; i++) {
+      for (let i = 1; i <= 12; i++) {
         const li = document.createElement("li");
         li.innerHTML = t("helpNavItem" + i);
         ul.appendChild(li);
@@ -5409,17 +5585,20 @@
     function recalcAccountingModalTotals() {
       const tbody = $("acc-po-lines-tbody");
       if (!tbody) return;
-      let grand = 0;
+      let totIqd = 0;
+      let totUsd = 0;
       tbody.querySelectorAll("tr").forEach((tr) => {
         const qty = parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || 0;
         const price = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
+        const cur = (tr.querySelector(".acc-line-cur")?.value || "IQD").trim() || "IQD";
         const lt = qty * price;
-        grand += lt;
+        if (cur === "USD") totUsd += lt;
+        else totIqd += lt;
         const cell = tr.querySelector(".acc-line-total");
-        if (cell) cell.textContent = lt.toLocaleString(localeTag());
+        if (cell) cell.textContent = `${cur} ${lt.toLocaleString(localeTag())}`;
       });
       const gEl = $("acc-po-grand-total");
-      if (gEl) gEl.textContent = grand.toLocaleString(localeTag());
+      if (gEl) gEl.textContent = `IQD ${totIqd.toLocaleString(localeTag())}  |  USD ${totUsd.toLocaleString(localeTag())}`;
     }
 
     function addAccountingLineRow(line) {
@@ -5446,6 +5625,13 @@
       inpQty.value = String(qty);
       td2.appendChild(inpQty);
       const td3 = document.createElement("td");
+      const curSel = document.createElement("select");
+      curSel.className = "acc-line-cur";
+      curSel.innerHTML = `<option value="IQD">IQD</option><option value="USD">USD</option>`;
+      const cur0 = (line?.currency || "").trim();
+      curSel.value = cur0 === "USD" ? "USD" : "IQD";
+      curSel.addEventListener("change", () => recalcAccountingModalTotals());
+      td3.appendChild(curSel);
       const inpPrice = document.createElement("input");
       inpPrice.type = "number";
       inpPrice.className = "acc-line-price";
@@ -5473,9 +5659,11 @@
           const item = tr.querySelector(".acc-line-desc")?.value?.trim() || base.item || "";
           const qty = parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || Number(base.qty) || 0;
           const price = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
+          const currency = (tr.querySelector(".acc-line-cur")?.value || base.currency || "IQD").trim() || "IQD";
           const line = {
             item,
             qty,
+            currency: currency === "USD" ? "USD" : "IQD",
             price,
             lineTotal: qty * price,
           };
@@ -5588,6 +5776,284 @@
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
         return false;
+      }
+    }
+
+    async function loadPurchasingReportScreen() {
+      const wrap = $("reports-purchasing-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+      const fromInp = $("rep-purch-from");
+      const toInp = $("rep-purch-to");
+      const btn = $("btn-run-purch-report");
+      const printBtn = $("btn-print-purch-report");
+      const projSel = $("rep-purch-project");
+      const repSel = $("rep-purch-rep");
+      const wfSel = $("rep-purch-workflow");
+      if (btn && !btn.dataset.wired) {
+        btn.dataset.wired = "1";
+        btn.addEventListener("click", () => void runPurchasingReport());
+      }
+      if (printBtn && !printBtn.dataset.wired) {
+        printBtn.dataset.wired = "1";
+        printBtn.addEventListener("click", () => void printPurchasingReport());
+      }
+      const today = formatTodayYmd();
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
+
+      // fill filters lists
+      try {
+        const [pSnap, rSnap] = await Promise.all([
+          getDocs(collection(db, "projects")),
+          getDocs(collection(db, "purchasingRepresentatives")),
+        ]);
+        const projects = [];
+        pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
+        sortProjectsByCode(projects);
+        if (projSel) {
+          projSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            projects.map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(projectOptionLabel(p))}</option>`).join("");
+        }
+        const reps = [];
+        rSnap.forEach((d) => reps.push({ id: d.id, ...d.data() }));
+        const activeReps = reps.filter((x) => x.active !== false);
+        activeReps.sort((a, b) => (a.name || "").trim().localeCompare((b.name || "").trim(), lang === "ar" ? "ar" : "en"));
+        if (repSel) {
+          repSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            activeReps.map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`).join("");
+        }
+        const wfValues = [
+          "warehouse_review",
+          "pending_engineer_first",
+          "pending_project_manager",
+          "pending_group_manager",
+          "pending_purchasing",
+          "in_progress_purchasing",
+          "pending_advance_accounting",
+          "pending_warehouse_receipt",
+          "pending_accounting",
+          "workflow_complete",
+        ];
+        if (wfSel) {
+          wfSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            wfValues.map((v) => `<option value="${escapeAttr(v)}">${escapeHtml(workflowLabel(v))}</option>`).join("");
+        }
+      } catch (_) {
+        // ignore filter fill errors; report can still run
+      }
+    }
+
+    function printPurchasingReport() {
+      const wrap = $("reports-purchasing-wrap");
+      if (!wrap) return;
+      const html = wrap.innerHTML || "";
+      if (!html.trim()) return;
+      const from = ($("rep-purch-from")?.value || "").slice(0, 10);
+      const to = ($("rep-purch-to")?.value || "").slice(0, 10);
+      const base = ($("rep-purch-base")?.value || "IQD").trim() || "IQD";
+      const title = t("reportPurchasingPeriodTitle");
+      const head = `
+        <style>
+          body{font-family:Tahoma,Arial,sans-serif;margin:16px;color:#111}
+          h1{margin:0 0 8px;font-size:18px}
+          .sub{margin:0 0 12px;color:#555;font-size:12px}
+          table{width:100%;border-collapse:collapse;font-size:12px}
+          th,td{border:1px solid #ddd;padding:6px;vertical-align:top}
+          th{background:#f3f4f6}
+          .no-print{display:none !important}
+          @page{size:A4 portrait;margin:10mm}
+        </style>
+      `;
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        `<!doctype html><html><head><meta charset="utf-8" />${head}<title>${escapeHtml(title)}</title></head><body>` +
+          `<h1>${escapeHtml(title)}</h1>` +
+          `<p class="sub">${escapeHtml(from)} → ${escapeHtml(to)} · ${escapeHtml(base)}</p>` +
+          html +
+          `</body></html>`
+      );
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    async function runPurchasingReport() {
+      const wrap = $("reports-purchasing-wrap");
+      if (!wrap) return;
+      const from = ($("rep-purch-from")?.value || "").slice(0, 10);
+      const to = ($("rep-purch-to")?.value || "").slice(0, 10);
+      const base = ($("rep-purch-base")?.value || "IQD").trim() || "IQD";
+      if (!from || !to) return;
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const [poSnap, fxSnap] = await Promise.all([
+          getDocs(query(collection(db, "purchaseOrders"), where("scope", "==", "project"))),
+          getDocs(query(collection(db, "fxRates"), orderBy("dateTs", "asc"))),
+        ]);
+        const fxRows = [];
+        fxSnap.forEach((d) => {
+          const x = d.data();
+          fxRows.push({
+            date: (x.date || "").trim(),
+            dateMs: x.dateTs?.seconds ? x.dateTs.seconds * 1000 : new Date(x.dateTs || 0).getTime(),
+            usdToIqd: Number(x.usdToIqd) || 0,
+          });
+        });
+        fxRows.sort((a, b) => (a.dateMs || 0) - (b.dateMs || 0));
+        const fxAvailable = fxRows.filter((r) => r.dateMs && r.usdToIqd > 0);
+        if (!fxAvailable.length) {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoFxRates"))}</p>`;
+          return;
+        }
+        const pickFxForMs = (ms) => {
+          let best = null;
+          for (const r of fxAvailable) {
+            if (r.dateMs <= ms) best = r;
+            else break;
+          }
+          return best;
+        };
+
+        const rows = [];
+        poSnap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+        const inRange = rows.filter((po) => {
+          const rd = (po.requestDate || "").slice(0, 10);
+          if (rd && /^\d{4}-\d{2}-\d{2}$/.test(rd)) return rd >= from && rd <= to;
+          const cd = po.createdAt?.seconds ? formatYmdFromFirestore(po.createdAt) : "";
+          return cd >= from && cd <= to;
+        });
+        if (!inRange.length) {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+
+        const pSnap = await getDocs(collection(db, "projects"));
+        const projectNames = {};
+        pSnap.forEach((d) => (projectNames[d.id] = projectDisplayName(d.data())));
+
+        let sumIqd = 0;
+        let sumUsd = 0;
+        let sumConverted = 0;
+        let fxUsed = null;
+
+        const reportRowsRaw = inRange.map((po) => {
+          const rd = (po.requestDate || "").slice(0, 10) || formatYmdFromFirestore(po.createdAt);
+          const [yy, mm, dd] = rd.split("-").map((x) => parseInt(x, 10));
+          const ms = Date.UTC(yy, (mm || 1) - 1, dd || 1, 0, 0, 0);
+          const fx = pickFxForMs(ms);
+          if (fx) fxUsed = fx;
+          const rate = fx ? fx.usdToIqd : 0;
+          const lines = Array.isArray(po.lines) ? po.lines : [];
+          let totIqd = 0;
+          let totUsd = 0;
+          lines.forEach((l) => {
+            const qty = Number(l.qty) || 0;
+            const price = Number(l.price) || 0;
+            const cur = (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD";
+            const lt = qty * price;
+            if (cur === "USD") totUsd += lt;
+            else totIqd += lt;
+          });
+          let converted = 0;
+          if (base === "USD") {
+            converted = totUsd + (rate > 0 ? totIqd / rate : 0);
+          } else {
+            converted = totIqd + totUsd * rate;
+          }
+          sumIqd += totIqd;
+          sumUsd += totUsd;
+          sumConverted += converted;
+          return {
+            id: po.id,
+            projectId: po.projectId || null,
+            repId: (po.purchasingRepresentativeId || "").trim() || null,
+            workflowStatus: (po.workflowStatus || "").trim() || null,
+            ref: (po.poReference || po.title || "").trim() || t("dash"),
+            requestDate: rd || t("dash"),
+            project: projectNames[po.projectId] || po.projectId || t("dash"),
+            region: (po.regionName || "").trim() || t("dash"),
+            rep: (po.purchasingRepresentativeName || "").trim() || t("dash"),
+            totIqd,
+            totUsd,
+            converted,
+            fxRate: rate > 0 ? rate : null,
+          };
+        });
+        const fProject = ($("rep-purch-project")?.value || "").trim();
+        const fRep = ($("rep-purch-rep")?.value || "").trim();
+        const fWf = ($("rep-purch-workflow")?.value || "").trim();
+        const reportRows = reportRowsRaw.filter((r) => {
+          if (fProject && r.projectId !== fProject) return false;
+          if (fRep && r.repId !== fRep) return false;
+          if (fWf && r.workflowStatus !== fWf) return false;
+          return true;
+        });
+
+        const fxDisp = fxUsed ? String(fxUsed.usdToIqd) : t("dash");
+        const convLabel = base === "USD" ? "USD" : "IQD";
+        const tableHead = `<thead><tr>
+            <th>${escapeHtml(t("colPoReference"))}</th>
+            <th>${escapeHtml(t("colRequestDate"))}</th>
+            <th>${escapeHtml(t("colProject"))}</th>
+            <th>${escapeHtml(t("colRegion"))}</th>
+            <th>${escapeHtml(t("colWorkflow"))}</th>
+            <th>${escapeHtml(t("colPurchasingRepresentative"))}</th>
+            <th>${escapeHtml(t("reportColTotalIqd"))}</th>
+            <th>${escapeHtml(t("reportColTotalUsd"))}</th>
+            <th>${escapeHtml(t("reportColConverted"))} (${escapeHtml(convLabel)})</th>
+            <th>${escapeHtml(t("reportColFxRate"))}</th>
+            <th></th>
+          </tr></thead>`;
+        const tableBody = `<tbody>${reportRows
+          .map((r) => {
+            const fxCell = r.fxRate != null ? String(r.fxRate) : t("dash");
+            return `<tr>
+              <td>${escapeHtml(r.ref)}</td>
+              <td>${escapeHtml(r.requestDate)}</td>
+              <td>${escapeHtml(r.project)}</td>
+              <td>${escapeHtml(r.region)}</td>
+              <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
+              <td>${escapeHtml(r.rep)}</td>
+              <td>${escapeHtml("IQD " + r.totIqd.toLocaleString(localeTag()))}</td>
+              <td>${escapeHtml("USD " + r.totUsd.toLocaleString(localeTag()))}</td>
+              <td>${escapeHtml(convLabel + " " + r.converted.toLocaleString(localeTag()))}</td>
+              <td>${escapeHtml(fxCell)}</td>
+              <td><button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeAttr(r.id)}">${escapeHtml(
+                t("btnPoPrintView")
+              )}</button></td>
+            </tr>`;
+          })
+          .join("")}</tbody>`;
+
+        wrap.innerHTML = `
+          <div class="detail-panel" style="margin-bottom:0.75rem">
+            <div class="wf-po-meta-grid">
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportTotalOriginalIqd"))}</span><span>${escapeHtml(
+                "IQD " + sumIqd.toLocaleString(localeTag())
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportTotalOriginalUsd"))}</span><span>${escapeHtml(
+                "USD " + sumUsd.toLocaleString(localeTag())
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportFxUsedLabel"))}</span><span>${escapeHtml(
+                fxDisp
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportTotalConverted"))}</span><span>${escapeHtml(
+                convLabel + " " + sumConverted.toLocaleString(localeTag())
+              )}</span></div>
+            </div>
+          </div>`;
+        wrap.innerHTML += `<div class="table-scroll"><table class="data-table">${tableHead}${tableBody}</table></div>`;
+        wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
+          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+      } catch (e) {
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
       }
     }
 
@@ -5795,6 +6261,7 @@
       if (list.includes("purchasing-queue")) return "purchasing-queue";
       if (list.includes("warehouse-receipt-queue")) return "warehouse-receipt-queue";
       if (list.includes("accounting-queue")) return "accounting-queue";
+      if (list.includes("reports")) return "reports";
       if (list.includes("admin")) return "admin";
       return "help";
     }
@@ -5936,6 +6403,16 @@
     function formatFirestoreInstant(ts) {
       if (!ts?.seconds) return t("dash");
       return new Date(ts.seconds * 1000).toLocaleString(localeTag());
+    }
+
+    function formatFirestoreInstantIraq(ts) {
+      if (!ts?.seconds) return t("dash");
+      return new Date(ts.seconds * 1000).toLocaleTimeString("en-US", {
+        timeZone: "Asia/Baghdad",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
     }
 
     async function displayNameForUserProfileUid(uid) {
@@ -6127,6 +6604,14 @@
             <span>${escapeHtml(t("poPrintSigDate"))}: ____________</span>
           </div>
         </div>`;
+      const purchasingSignBox = `<div class="po-print-sign-box">
+          <p class="po-print-sign-hint">${escapeHtml(t("poPrintSignatureLabel"))}</p>
+          <div class="po-print-sign-line" aria-hidden="true"></div>
+          <div class="po-print-sign-meta">
+            <span>${escapeHtml(t("poPrintSigName"))}: ____________________</span>
+            <span>${escapeHtml(t("poPrintSigDate"))}: ____________</span>
+          </div>
+        </div>`;
 
       const appr = [
         { stage: t("poPrintStageWarehouse"), uid: po.warehouseReviewBy, at: po.warehouseReviewAt },
@@ -6210,7 +6695,9 @@
                 </div>
               </div>
               <div class="po-print-sign-col">
-                <h2 class="po-print-section-title">${escapeHtml(t("poPrintSigAdministration"))}</h2>
+                <h2 class="po-print-section-title">${escapeHtml(t("poPrintSigPurchasing"))}</h2>
+                ${purchasingSignBox}
+                <h2 class="po-print-section-title" style="margin-top:0.9rem">${escapeHtml(t("poPrintSigAdministration"))}</h2>
                 ${adminSignBox}
               </div>
             </div>
@@ -6275,6 +6762,8 @@
                           ? "warehouse-receipt-queue"
                           : name === "accounting-queue"
                             ? "accounting-queue"
+                              : name === "reports"
+                                ? "reports"
                             : name === "admin"
                               ? "admin"
                               : null;
@@ -6302,6 +6791,7 @@
         "purchasing-queue": "screen-purchasing-queue",
         "warehouse-receipt-queue": "screen-warehouse-receipt-queue",
         "accounting-queue": "screen-accounting-queue",
+        reports: "screen-reports",
         admin: "screen-admin",
         help: "screen-help",
       };
@@ -6317,6 +6807,7 @@
         if (name === "purchasing-queue") loadPurchasingQueue();
         if (name === "warehouse-receipt-queue") loadWarehouseReceiptQueue();
         if (name === "accounting-queue") loadAccountingQueue();
+        if (name === "reports") loadPurchasingReportScreen();
         if (name === "admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
         if (name === "dashboard") refreshDashboard();
         if (name === "help") fillHelpNavList();
@@ -6474,6 +6965,7 @@
       const thead = `<tr>
               <th>${t("colPoReference")}</th>
               <th>${t("colRequestDate")}</th>
+              <th>${t("colSubmittedAtIraq")}</th>
               <th>${t("colProject")}</th>
               <th>${t("colCompany")}</th>
               <th>${t("colContractNumber")}</th>
@@ -6497,6 +6989,7 @@
                 <tr>
                   <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                  <td>${escapeHtml(formatFirestoreInstantIraq(r.createdAt))}</td>
                   <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(compName)}</td>
                   <td>${escapeHtml(contractNo)}</td>
@@ -7914,7 +8407,7 @@
         });
         if (canAct) {
           wrap.querySelectorAll(".btn-warehouse-receipt-confirm").forEach((btn) => {
-            btn.addEventListener("click", () => runWarehouseReceiptConfirm(btn.dataset.id));
+            btn.addEventListener("click", () => void openWarehouseReceiptQtyModal(btn.dataset.id));
           });
         }
       } catch (e) {
@@ -8280,7 +8773,37 @@
       }
     }
 
-    async function runWarehouseReceiptConfirm(poId) {
+    let wrEditBaseLines = null;
+
+    function closeWarehouseReceiptQtyModal() {
+      $("modal-warehouse-receipt-qty")?.classList.add("hidden");
+      $("wr-po-id") && ($("wr-po-id").value = "");
+      wrEditBaseLines = null;
+      const tb = $("wr-lines-tbody");
+      if (tb) tb.innerHTML = "";
+    }
+
+    function renderWarehouseReceiptQtyLines(lines) {
+      const tb = $("wr-lines-tbody");
+      if (!tb) return;
+      tb.innerHTML = "";
+      (lines || []).forEach((l, idx) => {
+        const item = (l.item || "").trim();
+        const qty = Number(l.qty) || 0;
+        const recv0 =
+          l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
+            ? Number(l.receivedQty)
+            : qty;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(item || t("dash"))}</td>
+          <td class="po-print-num">${escapeHtml(String(qty))}</td>
+          <td><input type="number" class="wr-line-received" min="0" step="any" value="${escapeAttr(String(recv0))}" data-idx="${idx}" /></td>`;
+        tb.appendChild(tr);
+      });
+    }
+
+    async function openWarehouseReceiptQtyModal(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
       const regions = currentUserProfile?.managedRegionIds || [];
@@ -8288,7 +8811,6 @@
         alert(t("alertWarehouseSupervisorRegionsRequired"));
         return;
       }
-      if (!confirm(t("confirmWarehouseReceipt"))) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -8305,20 +8827,88 @@
           return;
         }
       }
+      const lines = Array.isArray(po.lines) ? po.lines : [];
+      if (!lines.length) {
+        alert(t("alertWarehouseReceiptNoLines"));
+        return;
+      }
+      wrEditBaseLines = lines.map((l) => ({ ...l }));
+      $("wr-po-id").value = poId;
+      renderWarehouseReceiptQtyLines(lines);
+      $("modal-warehouse-receipt-qty")?.classList.remove("hidden");
+      $("wr-lines-tbody")?.querySelector("input.wr-line-received")?.focus();
+    }
+
+    function collectWarehouseReceiptQtyLines() {
+      const tb = $("wr-lines-tbody");
+      if (!tb || !wrEditBaseLines) return null;
+      const next = wrEditBaseLines.map((l) => ({ ...l }));
+      tb.querySelectorAll("input.wr-line-received").forEach((inp) => {
+        const idx = parseInt(inp.dataset.idx || "", 10);
+        if (!Number.isFinite(idx) || idx < 0 || idx >= next.length) return;
+        const v = parseFloat(String(inp.value));
+        next[idx].receivedQty = Number.isFinite(v) && v >= 0 ? v : 0;
+      });
+      return next;
+    }
+
+    async function submitWarehouseReceiptQtyModal() {
+      const poId = ($("wr-po-id")?.value || "").trim();
+      if (!poId || !wrEditBaseLines) return;
+      const role = currentUserProfile?.role || userRole;
+      const regions = currentUserProfile?.managedRegionIds || [];
+      const ref = doc(db, "purchaseOrders", poId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const po = snap.data();
+      if (po.workflowStatus !== "pending_warehouse_receipt") {
+        alert(t("alertWarehouseReviewStale"));
+        closeWarehouseReceiptQtyModal();
+        return;
+      }
+      if (role === "warehouse_supervisor" && regions.length) {
+        const pr = await getDoc(doc(db, "projects", po.projectId));
+        const regId = pr.exists() ? pr.data().regionId || null : null;
+        if (!regId || !regions.includes(regId)) {
+          alert(t("alertWarehouseWrongRegion"));
+          return;
+        }
+      }
+      const newLines = collectWarehouseReceiptQtyLines();
+      if (!newLines || !newLines.length) {
+        alert(t("alertWarehouseReceiptNoLines"));
+        return;
+      }
+      const isPartial = newLines.some((l) => (Number(l.receivedQty) || 0) < (Number(l.qty) || 0));
+      let sendToAccounting = true;
+      if (isPartial) {
+        // OK = close + send, Cancel = keep open
+        sendToAccounting = confirm(t("confirmWarehouseReceiptPartialClose"));
+      }
       try {
-        await updateDoc(ref, {
-          workflowStatus: "pending_accounting",
-          warehouseReceiptConfirmedAt: serverTimestamp(),
-          warehouseReceiptConfirmedBy: currentUser.uid,
+        const payload = {
+          lines: newLines,
+          warehouseReceiptRecordedAt: serverTimestamp(),
+          warehouseReceiptRecordedBy: currentUser.uid,
+          warehouseReceiptIsPartial: isPartial,
           updatedAt: serverTimestamp(),
-        });
-        void notifyAllRole(
-          poId,
-          poNotifRefText({ ...po, id: poId }),
-          "accountant",
-          "accounting-queue",
-          "notif_po_accounting_close"
-        );
+        };
+        if (sendToAccounting) {
+          payload.workflowStatus = "pending_accounting";
+          payload.warehouseReceiptConfirmedAt = serverTimestamp();
+          payload.warehouseReceiptConfirmedBy = currentUser.uid;
+        }
+        await updateDoc(ref, payload);
+        if (sendToAccounting) {
+          void notifyAllRole(
+            poId,
+            poNotifRefText({ ...po, id: poId }),
+            "accountant",
+            "accounting-queue",
+            "notif_po_accounting_close"
+          );
+        }
+        closeWarehouseReceiptQtyModal();
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
@@ -9078,6 +9668,9 @@
     $("modal-purchasing-advance-cancel")?.addEventListener("click", closePurchasingRepresentativeModal);
     $("modal-purchasing-advance-confirm")?.addEventListener("click", () => void submitPurchasingAdvanceFromModal());
 
+    $("wr-cancel")?.addEventListener("click", closeWarehouseReceiptQtyModal);
+    $("wr-confirm")?.addEventListener("click", () => void submitWarehouseReceiptQtyModal());
+
     $("modal-wh-cancel")?.addEventListener("click", closeWarehouseReviewModal);
     $("modal-wh-submit")?.addEventListener("click", async () => {
       const role = currentUserProfile?.role || userRole;
@@ -9175,6 +9768,7 @@
         else if (tab === "regions") await renderRegions(panel);
         else if (tab === "warehouses") await renderWarehouses(panel);
         else if (tab === "purchasingRepresentatives") await renderPurchasingRepresentatives(panel);
+        else if (tab === "fxRates") await renderFxRates(panel);
         else if (tab === "users") await renderUsers(panel);
       } catch (e) {
         panel.innerHTML = `<p class="error-msg">${e.message}</p>`;
@@ -9362,6 +9956,39 @@
                     )
                     .join("")
                 : `<tr><td colspan="5" class="empty-state">${t("noPurchasingRepresentatives")}</td></tr>`
+            }
+          </tbody>
+        </table></div>`;
+      bindEntityButtons(panel);
+    }
+
+    async function renderFxRates(panel) {
+      const snap = await getDocs(query(collection(db, "fxRates"), orderBy("dateTs", "desc")));
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      panel.innerHTML = `
+        <div class="toolbar">
+          <button type="button" class="btn btn-primary btn-sm" data-entity="fxRates" data-action="add">${t("addFxRate")}</button>
+        </div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th>${escapeHtml(t("labelFxDate"))}</th><th>${escapeHtml(t("labelFxUsdToIqd"))}</th><th></th></tr></thead>
+          <tbody>
+            ${
+              rows.length
+                ? rows
+                    .map(
+                      (r) => `
+              <tr>
+                <td>${escapeHtml((r.date || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(String(r.usdToIqd ?? t("dash")))}</td>
+                <td>
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="fxRates" data-id="${r.id}">${t("edit")}</button>
+                  <button type="button" class="btn btn-danger btn-sm btn-del-entity" data-collection="fxRates" data-id="${r.id}">${t("delete")}</button>
+                </td>
+              </tr>`
+                    )
+                    .join("")
+                : `<tr><td colspan="3" class="empty-state">${t("noFxRates")}</td></tr>`
             }
           </tbody>
         </table></div>`;
@@ -9748,6 +10375,13 @@
         addField("phone", t("labelPhone"), "tel");
         addField("email", t("labelEmailPrimary"), "email");
         addField("active", t("labelActive"), "checkbox");
+      } else if (collectionName === "fxRates") {
+        $("modal-entity-title").textContent = existingId ? t("modalEditFxRate") : t("modalNewFxRate");
+        const dateRow = document.createElement("div");
+        dateRow.className = "field";
+        dateRow.innerHTML = `<label for="ef-fx-date">${escapeHtml(t("labelFxDate"))}</label><input type="date" id="ef-fx-date" data-field="date" />`;
+        fields.appendChild(dateRow);
+        addField("usdToIqd", t("labelFxUsdToIqd"), "number");
       } else if (collectionName === "purchasingRepresentatives") {
         $("modal-entity-title").textContent = existingId
           ? t("modalEditPurchasingRepresentative")
@@ -9893,6 +10527,7 @@
             <label><input type="checkbox" data-section-check="purchasing-queue" /> ${escapeHtml(t("navPurchasingQueue"))}</label>
             <label><input type="checkbox" data-section-check="warehouse-receipt-queue" /> ${escapeHtml(t("navWarehouseReceiptQueue"))}</label>
             <label><input type="checkbox" data-section-check="accounting-queue" /> ${escapeHtml(t("navAccountingQueue"))}</label>
+            <label><input type="checkbox" data-section-check="reports" /> ${escapeHtml(t("navReports"))}</label>
             <label><input type="checkbox" data-section-check="admin" /> ${escapeHtml(t("navAdmin"))}</label>
           </div>`;
         navBody.appendChild(secWrap);
@@ -10580,6 +11215,30 @@
             await updateDoc(doc(db, collectionName, existingId), prPayload);
           } else {
             await addDoc(collection(db, collectionName), { ...prPayload, createdAt: serverTimestamp() });
+          }
+        } else if (collectionName === "fxRates") {
+          const date = (data.date || "").trim();
+          const usdToIqd = parseFloat(String(data.usdToIqd));
+          if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            alert(t("labelFxDate"));
+            return;
+          }
+          if (!Number.isFinite(usdToIqd) || usdToIqd <= 0) {
+            alert(t("labelFxUsdToIqd"));
+            return;
+          }
+          const [yy, mm, dd] = date.split("-").map((x) => parseInt(x, 10));
+          const dateTs = new Date(Date.UTC(yy, (mm || 1) - 1, dd || 1, 0, 0, 0));
+          const payload = {
+            date,
+            dateTs,
+            usdToIqd,
+            updatedAt: serverTimestamp(),
+          };
+          if (existingId) {
+            await updateDoc(doc(db, collectionName, existingId), payload);
+          } else {
+            await addDoc(collection(db, collectionName), { ...payload, createdAt: serverTimestamp() });
           }
         }
         closeEntityModal();
