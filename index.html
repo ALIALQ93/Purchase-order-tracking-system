@@ -2565,6 +2565,18 @@
           </p>
           <div id="reports-purchasing-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
+        <div class="card">
+          <h3 data-i18n="reportDeptAchievementsTitle">إنجاز الأقسام (طلبات المشاريع)</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportDeptAchievementsHint">
+            يعتمد هذا التقرير على تواريخ الانتقال بين مراحل المسار (المسجلة تلقائياً عند كل إجراء). يعرض عدد الإنجازات ضمن الفترة ومتوسط زمن الانتقال من المرحلة السابقة.
+          </p>
+          <div class="toolbar" style="gap:0.5rem;justify-content:flex-start;margin-top:0.5rem">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-run-dept-ach-report" data-i18n="btnRunReport">
+              عرض التقرير
+            </button>
+          </div>
+          <div id="reports-dept-ach-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
+        </div>
       </section>
 
       <!-- الإدارة -->
@@ -3641,6 +3653,15 @@
         shortcutReports: "التقارير",
         reportsTitle: "التقارير",
         reportPurchasingPeriodTitle: "تقرير مشتريات حسب الفترة",
+        reportDeptAchievementsTitle: "إنجاز الأقسام (طلبات المشاريع)",
+        reportDeptAchievementsHint:
+          "يعتمد هذا التقرير على تواريخ الانتقال بين مراحل المسار (المسجلة تلقائياً عند كل إجراء). يعرض عدد الإنجازات ضمن الفترة ومتوسط زمن الانتقال من المرحلة السابقة.",
+        reportDeptColStage: "المرحلة",
+        reportDeptColCount: "عدد الإنجازات",
+        reportDeptColAvgDuration: "متوسط زمن الانتقال",
+        reportDeptColDetails: "تفاصيل",
+        reportDeptDetailsToggle: "عرض الطلبات",
+        reportDeptNoData: "لا توجد إنجازات ضمن الفترة.",
         reportFromDateLabel: "من تاريخ",
         reportToDateLabel: "إلى تاريخ",
         reportBaseCurrencyLabel: "عملة التقرير",
@@ -4259,6 +4280,15 @@
         shortcutReports: "Reports",
         reportsTitle: "Reports",
         reportPurchasingPeriodTitle: "Purchasing report by period",
+        reportDeptAchievementsTitle: "Department achievements (Project POs)",
+        reportDeptAchievementsHint:
+          "This report uses workflow milestone timestamps (recorded at each action). It shows the count of achievements within the period and the average time from the previous stage.",
+        reportDeptColStage: "Stage",
+        reportDeptColCount: "Achievements",
+        reportDeptColAvgDuration: "Avg transition time",
+        reportDeptColDetails: "Details",
+        reportDeptDetailsToggle: "View POs",
+        reportDeptNoData: "No achievements in the selected period.",
         reportFromDateLabel: "From date",
         reportToDateLabel: "To date",
         reportBaseCurrencyLabel: "Report currency",
@@ -6012,6 +6042,22 @@
       }
     }
 
+    async function loadDeptAchievementsReportScreen() {
+      const wrap = $("reports-dept-ach-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportDeptNoData"))}</p>`;
+      const btn = $("btn-run-dept-ach-report");
+      if (btn && !btn.dataset.wired) {
+        btn.dataset.wired = "1";
+        btn.addEventListener("click", () => void runDeptAchievementsReport());
+      }
+    }
+
+    async function loadReportsScreen() {
+      await loadPurchasingReportScreen();
+      await loadDeptAchievementsReportScreen();
+    }
+
     function printPurchasingReport() {
       const wrap = $("reports-purchasing-wrap");
       if (!wrap) return;
@@ -6020,32 +6066,258 @@
       const from = ($("rep-purch-from")?.value || "").slice(0, 10);
       const to = ($("rep-purch-to")?.value || "").slice(0, 10);
       const base = ($("rep-purch-base")?.value || "IQD").trim() || "IQD";
+      const projText = $("rep-purch-project")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const repText = $("rep-purch-rep")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const wfText = $("rep-purch-workflow")?.selectedOptions?.[0]?.textContent?.trim() || "";
       const title = t("reportPurchasingPeriodTitle");
+      const dir = document.documentElement.getAttribute("dir") || "rtl";
       const head = `
         <style>
-          body{font-family:Tahoma,Arial,sans-serif;margin:16px;color:#111}
-          h1{margin:0 0 8px;font-size:18px}
-          .sub{margin:0 0 12px;color:#555;font-size:12px}
-          table{width:100%;border-collapse:collapse;font-size:12px}
-          th,td{border:1px solid #ddd;padding:6px;vertical-align:top}
-          th{background:#f3f4f6}
-          .no-print{display:none !important}
-          @page{size:A4 portrait;margin:10mm}
+          :root { --border:#e5e7eb; --muted:#6b7280; --bg:#f3f4f6; --ink:#111827; }
+          * { box-sizing: border-box; }
+          html, body { margin:0; padding:0; color:var(--ink); }
+          body {
+            font-family: "Tajawal", Tahoma, Arial, sans-serif;
+            padding: 14mm 10mm;
+            line-height: 1.35;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          @page { size: A4 landscape; margin: 10mm; }
+
+          .report-head {
+            display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+            padding-bottom:10px; border-bottom:2px solid #111827; margin-bottom:10px;
+          }
+          .report-title { margin:0; font-size:18px; font-weight:800; }
+          .report-sub { margin:4px 0 0; color:var(--muted); font-size:12px; line-height:1.35; }
+          .report-meta { text-align:end; font-size:12px; color:var(--muted); white-space:pre-line; }
+
+          /* reuse existing summary markup */
+          .detail-panel { border:1px solid var(--border); border-radius:10px; background:#fff; padding:10px 12px; }
+          .wf-po-meta-grid { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:8px; }
+          .wf-po-meta-block { border:1px solid var(--border); border-radius:10px; padding:8px 10px; background:#fff; }
+          .wf-po-meta-label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+          .wf-po-meta-block span:last-child { font-size:13px; font-weight:800; font-variant-numeric: tabular-nums; }
+
+          table { width:100%; border-collapse: collapse; table-layout: fixed; }
+          thead { display: table-header-group; }
+          th, td { border:1px solid var(--border); padding:7px 8px; vertical-align:top; }
+          th { background: var(--bg); font-size:11.5px; font-weight:800; text-align:start; }
+          td { font-size:11.25px; }
+          .po-print-num, .num { text-align:end; font-variant-numeric: tabular-nums; white-space:nowrap; }
+          tr { break-inside: avoid; }
+
+          /* hide UI-only elements */
+          .no-print, button, .btn, .modal-actions { display:none !important; }
+          .table-scroll { overflow: visible !important; }
+
+          /* remove the action column (View & print) in report print */
+          table thead th:last-child,
+          table tbody td:last-child {
+            display: none !important;
+          }
+
+          /* RTL adjustments */
+          html[dir="rtl"] body { direction: rtl; }
+          html[dir="rtl"] .report-meta { text-align:start; }
+          html[dir="rtl"] .po-print-num, html[dir="rtl"] .num { text-align:start; }
         </style>
       `;
       const w = window.open("", "_blank");
       if (!w) return;
       w.document.open();
+      const metaLines = [
+        `${from} → ${to} · ${base}`,
+        projText ? `${t("reportProjectLabel")}: ${projText}` : "",
+        repText ? `${t("reportRepresentativeLabel")}: ${repText}` : "",
+        wfText ? `${t("reportWorkflowLabel")}: ${wfText}` : "",
+      ].filter(Boolean);
       w.document.write(
-        `<!doctype html><html><head><meta charset="utf-8" />${head}<title>${escapeHtml(title)}</title></head><body>` +
-          `<h1>${escapeHtml(title)}</h1>` +
-          `<p class="sub">${escapeHtml(from)} → ${escapeHtml(to)} · ${escapeHtml(base)}</p>` +
+        `<!doctype html><html dir="${escapeAttr(dir)}"><head><meta charset="utf-8" />${head}<title>${escapeHtml(title)}</title></head><body>` +
+          `<header class="report-head">` +
+          `<div><h1 class="report-title">${escapeHtml(title)}</h1><p class="report-sub">${escapeHtml(t("reportFxHint"))}</p></div>` +
+          `<div class="report-meta">${escapeHtml(metaLines.join("\n"))}</div>` +
+          `</header>` +
           html +
           `</body></html>`
       );
       w.document.close();
       w.focus();
       w.print();
+    }
+
+    function tsToMs(ts) {
+      if (!ts) return null;
+      if (typeof ts === "number" && Number.isFinite(ts)) return ts;
+      if (ts?.seconds) return ts.seconds * 1000;
+      const d = new Date(ts);
+      const ms = d.getTime();
+      return Number.isFinite(ms) ? ms : null;
+    }
+
+    function fmtDuration(ms) {
+      const n = Number(ms) || 0;
+      if (n <= 0) return t("dash");
+      const mins = Math.round(n / 60000);
+      if (mins < 60) return `${mins} ${t("mins") || "min"}`;
+      const hours = Math.round(mins / 60);
+      if (hours < 48) return `${hours} ${t("hours") || "h"}`;
+      const days = Math.round(hours / 24);
+      return `${days} ${t("days") || "d"}`;
+    }
+
+    async function runDeptAchievementsReport() {
+      const wrap = $("reports-dept-ach-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="loading">${escapeHtml(t("loading"))}</p>`;
+
+      const fromYmd = ($("rep-purch-from")?.value || "").slice(0, 10);
+      const toYmd = ($("rep-purch-to")?.value || "").slice(0, 10);
+      if (!fromYmd || !toYmd) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportDeptNoData"))}</p>`;
+        return;
+      }
+      const fromMs = new Date(fromYmd + "T00:00:00").getTime();
+      const toMs = new Date(toYmd + "T23:59:59.999").getTime();
+
+      const milestones = [
+        {
+          key: "warehouseReviewAt",
+          labelKey: "poPrintStageWarehouse",
+          prev: ["createdAt"],
+        },
+        {
+          key: "engineerFirstApprovedAt",
+          labelKey: "poPrintStageEngineerFirst",
+          prev: ["warehouseReviewAt", "createdAt"],
+        },
+        {
+          key: "projectManagerApprovedAt",
+          labelKey: "poPrintStagePm",
+          prev: ["engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+        },
+        {
+          key: "groupManagerApprovedAt",
+          labelKey: "poPrintStageGm",
+          prev: ["projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+        },
+        {
+          key: "purchasingInProgressAt",
+          labelKey: "workflowStatus_in_progress_purchasing",
+          prev: ["groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+        },
+        {
+          key: "purchasingSentToAdvanceAt",
+          labelKey: "workflowStatus_pending_advance_accounting",
+          prev: ["purchasingInProgressAt", "groupManagerApprovedAt", "createdAt"],
+        },
+        {
+          key: "advanceReleasedAt",
+          labelKey: "workflowStatus_pending_warehouse_receipt",
+          prev: ["purchasingSentToAdvanceAt", "purchasingInProgressAt", "createdAt"],
+        },
+        {
+          key: "warehouseReceiptRecordedAt",
+          labelKey: "warehouseReceiptQueueTitle",
+          prev: ["advanceReleasedAt", "purchasingInProgressAt", "createdAt"],
+        },
+        {
+          key: "warehouseReceiptConfirmedAt",
+          labelKey: "workflowStatus_pending_accounting",
+          prev: ["warehouseReceiptRecordedAt", "advanceReleasedAt", "createdAt"],
+        },
+        {
+          key: "accountingClosedAt",
+          labelKey: "workflowStatus_workflow_complete",
+          prev: ["warehouseReceiptConfirmedAt", "warehouseReceiptRecordedAt", "advanceReleasedAt", "createdAt"],
+        },
+      ];
+
+      let pos = [];
+      try {
+        const snap = await getDocs(collection(db, "purchaseOrders"));
+        snap.forEach((d) => pos.push({ id: d.id, ...d.data() }));
+      } catch (err) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("saveFailed") + " " + err.message)}</p>`;
+        return;
+      }
+      pos = pos.filter((po) => po?.scope === "project");
+
+      const stageAgg = new Map(); // key -> {label, count, sumDurMs, poRefs:[]}
+      const poRef = (po) => (po?.poReference || po?.title || po?.id || "").toString().trim();
+
+      for (const po of pos) {
+        for (const m of milestones) {
+          const atMs = tsToMs(po?.[m.key]);
+          if (!atMs || atMs < fromMs || atMs > toMs) continue;
+
+          let prevMs = null;
+          for (const p of m.prev) {
+            const v = tsToMs(po?.[p]);
+            if (v) {
+              prevMs = v;
+              break;
+            }
+          }
+          const dur = prevMs ? Math.max(0, atMs - prevMs) : 0;
+
+          const k = m.key;
+          const label = (t(m.labelKey) || "").trim() || m.key;
+          if (!stageAgg.has(k)) stageAgg.set(k, { key: k, label, count: 0, sumDurMs: 0, poRefs: [] });
+          const row = stageAgg.get(k);
+          row.count += 1;
+          if (dur > 0) row.sumDurMs += dur;
+          row.poRefs.push(poRef(po));
+        }
+      }
+
+      const rows = [...stageAgg.values()].filter((r) => r.count > 0);
+      if (!rows.length) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportDeptNoData"))}</p>`;
+        return;
+      }
+
+      rows.sort((a, b) => milestones.findIndex((x) => x.key === a.key) - milestones.findIndex((x) => x.key === b.key));
+
+      const table =
+        `<div class="table-scroll"><table class="data-table">` +
+        `<thead><tr>` +
+        `<th>${escapeHtml(t("reportDeptColStage"))}</th>` +
+        `<th class="num">${escapeHtml(t("reportDeptColCount"))}</th>` +
+        `<th>${escapeHtml(t("reportDeptColAvgDuration"))}</th>` +
+        `<th>${escapeHtml(t("reportDeptColDetails"))}</th>` +
+        `</tr></thead><tbody>` +
+        rows
+          .map((r) => {
+            const avg = r.sumDurMs > 0 ? Math.round(r.sumDurMs / r.count) : 0;
+            const uniq = [...new Set(r.poRefs.filter(Boolean))];
+            const details =
+              `<details>` +
+              `<summary>${escapeHtml(t("reportDeptDetailsToggle"))} (${uniq.length})</summary>` +
+              `<div style="margin-top:0.35rem;color:var(--muted);font-size:0.9rem">${escapeHtml(fromYmd)} → ${escapeHtml(toYmd)}</div>` +
+              `<div style="margin-top:0.35rem;display:flex;flex-wrap:wrap;gap:0.35rem">` +
+              uniq
+                .slice(0, 250)
+                .map((x) => `<span class="chip" style="font-variant-numeric:tabular-nums">${escapeHtml(x)}</span>`)
+                .join("") +
+              (uniq.length > 250 ? `<span class="chip">${escapeHtml("…")}</span>` : "") +
+              `</div>` +
+              `</details>`;
+            return (
+              `<tr>` +
+              `<td>${escapeHtml(r.label)}</td>` +
+              `<td class="num">${escapeHtml(String(r.count))}</td>` +
+              `<td>${escapeHtml(fmtDuration(avg))}</td>` +
+              `<td>${details}</td>` +
+              `</tr>`
+            );
+          })
+          .join("") +
+        `</tbody></table></div>`;
+
+      wrap.innerHTML = table;
     }
 
     let lastPurchasingReportSnapshot = null;
@@ -7106,7 +7378,7 @@
         if (name === "purchasing-queue") loadPurchasingQueue();
         if (name === "warehouse-receipt-queue") loadWarehouseReceiptQueue();
         if (name === "accounting-queue") loadAccountingQueue();
-        if (name === "reports") loadPurchasingReportScreen();
+        if (name === "reports") loadReportsScreen();
         if (name === "admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
         if (name === "dashboard") refreshDashboard();
         if (name === "help") fillHelpNavList();
