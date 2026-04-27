@@ -2471,6 +2471,31 @@
           <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.9rem;" data-i18n="warehouseReceiptQueueHint">
             الطلبات «قيد الشراء» في مناطقك — متابعة الاستلام مع أمين المستودع ثم التأكيد للحسابات.
           </p>
+          <div class="po-projects-toolbar-strip" style="margin-bottom:0.65rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field po-filter-field-search">
+                <span data-i18n="warehouseReceiptSearchLabel">بحث</span>
+                <input
+                  type="search"
+                  id="wrq-search"
+                  class="po-projects-filter-search"
+                  data-i18n-placeholder="warehouseReceiptSearchPlaceholder"
+                  autocomplete="off"
+                />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="warehouseReceiptFilterProjectLabel">المشروع</span>
+                <select id="wrq-filter-project"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</span>
+                <select id="wrq-filter-rep"></select>
+              </label>
+              <button type="button" class="btn btn-secondary btn-sm" id="wrq-filter-reset" data-i18n="warehouseReceiptClearFilters">
+                مسح الفلاتر
+              </button>
+            </div>
+          </div>
           <div id="warehouse-receipt-queue-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
       </section>
@@ -3058,6 +3083,7 @@
           <thead>
             <tr>
               <th data-i18n="poLineDescCol">الوصف</th>
+              <th data-i18n="poLineUnitCol">الوحدة</th>
               <th data-i18n="poLineQtyCol">الكمية</th>
               <th data-i18n="poPrintColAvailable">المتوفر</th>
               <th data-i18n="poPrintColToBuy">المطلوب للشراء</th>
@@ -3626,6 +3652,8 @@
         alertGmRegionsRequired: "حدّد المناطق المسندة لمسؤول المجموعة من الإدارة.",
         alertWorkflowRoleNoPoEdit:
           "هذا الدور يعتمد على الشاشات المخصصة (مشتريات، استلام، حسابات، إلخ) ولا يعدّل أوامر الشراء من القائمة العامة.",
+        alertPoLockedAfterPurchasing:
+          "لا يمكن تعديل هذا الطلب بعد تحويله إلى «قيد الشراء» أو «طلب سلفة» إلا من مشرف الإدارة.",
         alertBypassLowerApprovalsNotAllowed: "لا تملك صلاحية تجاوز الموافقات الأدنى.",
         confirmRejectPoEf: "رفض هذا الطلب؟ سيتم إيقاف المسار عند مهندس أول.",
         btnApprove: "موافقة",
@@ -3844,6 +3872,11 @@
         warehouseReceiptQueueTitle: "استلام المستودعات",
         warehouseReceiptQueueHint:
           "تأكيد الاستلام للطلبات الصادرة من الحسابات. بعد التأكيد يبقى الطلب ظاهراً في «متابعة المسار» حتى إقفال الحسابات والاكتمال.",
+        warehouseReceiptSearchLabel: "بحث",
+        warehouseReceiptSearchPlaceholder: "رقم الطلب، المشروع، المنطقة، المندوب، مقدم الطلب، سبب الطلب…",
+        warehouseReceiptFilterProjectLabel: "المشروع",
+        warehouseReceiptFilterRepLabel: "مندوب المشتريات",
+        warehouseReceiptClearFilters: "مسح الفلاتر",
         emptyWarehouseReceiptQueue: "لا توجد طلبات في شاشة استلام المستودع لمناطقك.",
         warehouseReceiptSectionAction: "بانتظار تأكيد الاستلام",
         warehouseReceiptSectionTrack: "متابعة بعد التأكيد",
@@ -4303,6 +4336,8 @@
         alertGmRegionsRequired: "Assign managed regions for this group manager in Administration.",
         alertWorkflowRoleNoPoEdit:
           "This role uses dedicated screens (purchasing, receipt, accounting, etc.) and cannot edit purchase orders from the main list.",
+        alertPoLockedAfterPurchasing:
+          "This purchase order cannot be edited after it reaches “in progress (purchasing)” or “work advance requested” except by an admin supervisor.",
         alertBypassLowerApprovalsNotAllowed: "You are not allowed to bypass lower approvals.",
         confirmRejectPoEf: "Reject this request? The workflow will stop at engineer first review.",
         btnApprove: "Approve",
@@ -4522,6 +4557,11 @@
         warehouseReceiptQueueTitle: "Warehouse receipt",
         warehouseReceiptQueueHint:
           "Confirm receipt for requests released from accounting. After confirmation, the request stays under follow-up until accounting closes it.",
+        warehouseReceiptSearchLabel: "Search",
+        warehouseReceiptSearchPlaceholder: "PO ref, project, region, representative, requester, reason…",
+        warehouseReceiptFilterProjectLabel: "Project",
+        warehouseReceiptFilterRepLabel: "Purchasing representative",
+        warehouseReceiptClearFilters: "Clear filters",
         emptyWarehouseReceiptQueue: "No requests on the warehouse receipt screen for your regions.",
         warehouseReceiptSectionAction: "Awaiting receipt confirmation",
         warehouseReceiptSectionTrack: "Follow-up after confirmation",
@@ -5410,7 +5450,7 @@
         ? lines
             .map(
               (l, i) =>
-                `<tr><td class="po-print-num">${i + 1}</td><td>${escapeHtml(l.item || "")}</td><td>${escapeHtml(l.unit || "")}</td><td class="po-print-num">${escapeHtml(String(l.qty ?? ""))}</td><td>${escapeHtml(l.priceText || "")}</td><td class="po-print-num">${escapeHtml(String(l.lineTotal ?? ""))}</td><td>${escapeHtml(l.remark || "")}</td></tr>`
+                `<tr><td class="po-print-num">${i + 1}</td><td>${escapeHtml(l.item || "")}</td><td>${escapeHtml((l.unit || "").trim() || t("dash"))}</td><td class="po-print-num">${escapeHtml(String(l.qty ?? ""))}</td><td>${escapeHtml(l.priceText || "")}</td><td class="po-print-num">${escapeHtml(String(l.lineTotal ?? ""))}</td><td>${escapeHtml(l.remark || "")}</td></tr>`
             )
             .join("")
         : `<tr><td colspan="7">${escapeHtml(t("dash"))}</td></tr>`;
@@ -5749,7 +5789,7 @@
       if (tb) tb.innerHTML = "";
     }
 
-    function addWorkflowPoLineRow(desc, qty, availableQty, toBuyQty) {
+    function addWorkflowPoLineRow(desc, unit, qty, availableQty, toBuyQty) {
       const tbody = $("wf-po-lines-tbody");
       if (!tbody) return;
       const tr = document.createElement("tr");
@@ -5760,43 +5800,54 @@
       if (desc != null && desc !== "") inp1.value = String(desc);
       td1.appendChild(inp1);
       const td2 = document.createElement("td");
+      const selUnit = document.createElement("select");
+      selUnit.className = "wf-line-unit";
+      selUnit.innerHTML = PROJECT_PO_UNIT_OPTIONS.map(
+        (u) => `<option value="${escapeAttr(u.value)}">${escapeHtml(u.label)}</option>`
+      ).join("");
+      const u0 = (unit || "").trim();
+      selUnit.value = PROJECT_PO_UNIT_OPTIONS.some((o) => o.value === u0) ? u0 : PROJECT_PO_UNIT_OPTIONS[0]?.value || "PCS";
+      td2.appendChild(selUnit);
+
+      const td3 = document.createElement("td");
       const inp2 = document.createElement("input");
       inp2.type = "number";
       inp2.className = "wf-line-qty";
       inp2.min = "0";
       inp2.step = "any";
       if (qty != null && qty !== "" && !Number.isNaN(Number(qty))) inp2.value = String(qty);
-      td2.appendChild(inp2);
+      td3.appendChild(inp2);
 
-      const td3 = document.createElement("td");
+      const td4 = document.createElement("td");
       const inp3 = document.createElement("input");
       inp3.type = "text";
       inp3.className = "wf-line-avail";
       inp3.readOnly = true;
       inp3.value = availableQty != null && availableQty !== "" ? String(availableQty) : t("dash");
-      td3.appendChild(inp3);
+      td4.appendChild(inp3);
 
-      const td4 = document.createElement("td");
+      const td5 = document.createElement("td");
       const inp4 = document.createElement("input");
       inp4.type = "text";
       inp4.className = "wf-line-to-buy";
       inp4.readOnly = true;
       inp4.value = toBuyQty != null && toBuyQty !== "" ? String(toBuyQty) : t("dash");
-      td4.appendChild(inp4);
+      td5.appendChild(inp4);
 
-      const td5 = document.createElement("td");
+      const td6 = document.createElement("td");
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "btn btn-secondary btn-sm btn-wf-line-remove";
       btn.setAttribute("aria-label", t("delete"));
       btn.textContent = "×";
       btn.addEventListener("click", () => tr.remove());
-      td5.appendChild(btn);
+      td6.appendChild(btn);
       tr.appendChild(td1);
       tr.appendChild(td2);
       tr.appendChild(td3);
       tr.appendChild(td4);
       tr.appendChild(td5);
+      tr.appendChild(td6);
       tbody.appendChild(tr);
     }
 
@@ -5807,6 +5858,7 @@
       return [...tbody.querySelectorAll("tr")]
         .map((tr) => {
           const item = tr.querySelector(".wf-line-desc")?.value?.trim() || "";
+          const unitSel = (tr.querySelector(".wf-line-unit")?.value || "").trim();
           const qty = parseFloat(String(tr.querySelector(".wf-line-qty")?.value)) || 0;
           let orig = null;
           if (item) {
@@ -5817,8 +5869,15 @@
             }
           }
           const price = orig && !Number.isNaN(Number(orig.price)) ? Number(orig.price) : 0;
+          const unit =
+            unitSel
+              ? unitSel
+              : orig && (orig.unit != null ? String(orig.unit) : "").trim()
+                ? String(orig.unit).trim()
+                : null;
           const line = {
             item,
+            unit,
             qty,
             price,
             lineTotal: price * qty,
@@ -5888,6 +5947,7 @@
         mode,
         snapshotLines: snapLines.map((l) => ({
           item: l.item,
+          unit: (l.unit || "").trim(),
           qty: l.qty,
           price: l.price != null ? Number(l.price) : 0,
           lineTotal: l.lineTotal != null ? Number(l.lineTotal) : 0,
@@ -5910,9 +5970,9 @@
       if (snapLines.length)
         snapLines.forEach((l) => {
           const av = lineTotalAvailableQty(l);
-          addWorkflowPoLineRow(l.item, l.qty, av, lineToBuyQty(l));
+          addWorkflowPoLineRow(l.item, l.unit, l.qty, av, lineToBuyQty(l));
         });
-      else addWorkflowPoLineRow("", "", "", "");
+      else addWorkflowPoLineRow("", "", "", "", "");
       $("modal-workflow-po-lines").classList.remove("hidden");
     }
 
@@ -6041,11 +6101,13 @@
         .map((tr, idx) => {
           const base = accPoEditBaseLines[idx] || {};
           const item = tr.querySelector(".acc-line-desc")?.value?.trim() || base.item || "";
+          const unit = (base.unit || "").trim() || null;
           const qty = parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || Number(base.qty) || 0;
           const price = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
           const currency = (tr.querySelector(".acc-line-cur")?.value || base.currency || "IQD").trim() || "IQD";
           const line = {
             item,
+            unit,
             qty,
             currency: currency === "USD" ? "USD" : "IQD",
             price,
@@ -6104,6 +6166,7 @@
       const snapLines = Array.isArray(po.lines) ? po.lines : [];
       accPoEditBaseLines = snapLines.map((l) => ({
         item: l.item,
+        unit: (l.unit || "").trim(),
         qty: l.qty,
         price: l.price != null ? Number(l.price) : 0,
         currency: (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD",
@@ -8372,6 +8435,10 @@
         .map((r) => {
           const compName = projectPoCompanyDisplay(r, ctx) || t("dash");
           const contractNo = projectPoContractDisplay(r, ctx) || t("dash");
+          const lockedAfterPurchasing =
+            !hasAdminAccess() &&
+            ["in_progress_purchasing", "pending_advance_accounting"].includes(String(r.workflowStatus || ""));
+          const canEditRow = canEdit && !lockedAfterPurchasing;
           return `
                 <tr>
                   <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
@@ -8390,7 +8457,7 @@
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
-                      canEdit
+                      canEditRow
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
                         : ""
                     }
@@ -9668,6 +9735,50 @@
       return [];
     }
 
+    function wireWarehouseReceiptFiltersOnce() {
+      const search = $("wrq-search");
+      const proj = $("wrq-filter-project");
+      const rep = $("wrq-filter-rep");
+      const reset = $("wrq-filter-reset");
+      if (!search || !proj || !rep || !reset) return;
+      if (reset.dataset.wired) return;
+      reset.dataset.wired = "1";
+      const fire = debounceFn(() => loadWarehouseReceiptQueue(), 260);
+      search.addEventListener("input", fire);
+      proj.addEventListener("change", () => void loadWarehouseReceiptQueue());
+      rep.addEventListener("change", () => void loadWarehouseReceiptQueue());
+      reset.addEventListener("click", () => {
+        search.value = "";
+        proj.value = "";
+        rep.value = "";
+        void loadWarehouseReceiptQueue();
+      });
+    }
+
+    function warehouseReceiptRowMatchesFilters(po, projectName, q, projectId, repIdOrName) {
+      if (projectId && (po?.projectId || "") !== projectId) return false;
+      if (repIdOrName) {
+        const pid = (po?.purchasingRepresentativeId || "").trim();
+        const pn = (po?.purchasingRepresentativeName || "").trim();
+        if (repIdOrName !== pid && repIdOrName !== pn) return false;
+      }
+      const query = (q || "").trim().toLowerCase();
+      if (!query) return true;
+      const hay = [
+        (po?.poReference || po?.title || "").trim(),
+        (projectName || "").trim(),
+        (po?.regionName || "").trim(),
+        (po?.purchasingRepresentativeName || "").trim(),
+        (po?.requesterName || "").trim(),
+        (po?.reasonRequest || "").trim(),
+        workflowLabelForDocument(po),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return matchesQueryAllWords(hay, query);
+    }
+
     async function loadWarehouseReceiptQueue() {
       const wrap = $("warehouse-receipt-queue-wrap");
       if (!wrap) return;
@@ -9679,6 +9790,11 @@
       }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
+        wireWarehouseReceiptFiltersOnce();
+        const qText = ($("wrq-search")?.value || "").trim();
+        const fProject = ($("wrq-filter-project")?.value || "").trim();
+        const fRep = ($("wrq-filter-rep")?.value || "").trim();
+
         const qAction = query(
           collection(db, "purchaseOrders"),
           where("scope", "==", "project"),
@@ -9705,6 +9821,50 @@
         });
         rowsAction = filterWarehouseReceiptRowsByRegion(rowsAction, projectRegion, regions, role);
         rowsTrack = filterWarehouseReceiptRowsByRegion(rowsTrack, projectRegion, regions, role);
+
+        // fill filter options (preserve selection)
+        const projSel = $("wrq-filter-project");
+        if (projSel) {
+          const ids = [...new Set([...rowsAction, ...rowsTrack].map((r) => r.projectId).filter(Boolean))];
+          ids.sort((a, b) => (projectNames[a] || a).localeCompare(projectNames[b] || b, lang === "ar" ? "ar" : "en"));
+          const cur = projSel.value;
+          projSel.innerHTML =
+            `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+            ids.map((id) => `<option value="${escapeAttr(id)}">${escapeHtml(projectNames[id] || id)}</option>`).join("");
+          projSel.value = ids.includes(cur) ? cur : "";
+        }
+        const repSel = $("wrq-filter-rep");
+        if (repSel) {
+          const reps = [...rowsAction, ...rowsTrack]
+            .map((r) => ({
+              id: (r.purchasingRepresentativeId || "").trim(),
+              name: (r.purchasingRepresentativeName || "").trim(),
+            }))
+            .filter((x) => x.id || x.name);
+          const uniq = [];
+          const seen = new Set();
+          reps.forEach((x) => {
+            const key = x.id || x.name;
+            if (seen.has(key)) return;
+            seen.add(key);
+            uniq.push(x);
+          });
+          uniq.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id, lang === "ar" ? "ar" : "en"));
+          const cur = repSel.value;
+          repSel.innerHTML =
+            `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+            uniq
+              .map((r) => `<option value="${escapeAttr(r.id || r.name)}">${escapeHtml(r.name || r.id)}</option>`)
+              .join("");
+          repSel.value = uniq.some((x) => (x.id || x.name) === cur) ? cur : "";
+        }
+
+        // apply filters
+        const rowOk = (r) =>
+          warehouseReceiptRowMatchesFilters(r, projectNames[r.projectId] || r.projectId || "", qText, fProject, fRep);
+        rowsAction = rowsAction.filter(rowOk);
+        rowsTrack = rowsTrack.filter(rowOk);
+
         const sortReceipt = (rows) =>
           rows.sort((a, b) => {
             const pri = (x) => (x.priority === "urgent" ? 1 : 0);
@@ -9734,6 +9894,9 @@
               <th>${t("colRequestDate")}</th>
               <th>${t("colProject")}</th>
               <th>${t("colRegion")}</th>
+              <th>${t("colPurchasingRepresentative")}</th>
+              <th>${t("poRequesterLabel")}</th>
+              <th>${t("poReasonLabel")}</th>
               <th>${t("colPriority")}</th>
               <th>${t("colWorkflow")}</th>
               <th></th>
@@ -9749,6 +9912,9 @@
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
+                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
                   <td class="td-approval-actions">
@@ -9776,6 +9942,9 @@
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
+                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
                   <td class="td-approval-actions">
@@ -10785,6 +10954,18 @@
         if (scope === "project") existingProjectId = poData.projectId || null;
       }
 
+      // After purchasing starts / advance is requested, only admin supervisor can edit the PO.
+      if (
+        scope === "project" &&
+        existingId &&
+        poData &&
+        !hasAdminAccess() &&
+        ["in_progress_purchasing", "pending_advance_accounting"].includes(String(poData.workflowStatus || ""))
+      ) {
+        alert(t("alertPoLockedAfterPurchasing"));
+        return;
+      }
+
       if (scope === "project") {
         const allow = await getProjectAllowlistForProjectPo();
         if (Array.isArray(allow) && allow.length === 0) {
@@ -10962,6 +11143,7 @@
         }
         const lines = okLines.map((l) => ({
           item: l.item,
+          unit: (l.unit || "").trim() || null,
           qty: Number(l.qty),
           price: 0,
           lineTotal: 0,
@@ -11189,7 +11371,7 @@
 
     $("modal-wf-po-cancel")?.addEventListener("click", closeWorkflowPoDetailModal);
     $("modal-wf-po-save")?.addEventListener("click", () => saveWorkflowPoLines());
-    $("btn-wf-po-add-line")?.addEventListener("click", () => addWorkflowPoLineRow());
+    $("btn-wf-po-add-line")?.addEventListener("click", () => addWorkflowPoLineRow("", "", "", "", ""));
 
     $("modal-acc-po-cancel")?.addEventListener("click", closeAccountingPoModal);
     $("modal-acc-po-save")?.addEventListener("click", () => saveAccountingPoValuesFromModal(true));
