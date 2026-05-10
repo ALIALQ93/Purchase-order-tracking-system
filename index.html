@@ -2291,6 +2291,7 @@
       <nav class="nav-links" id="main-nav">
         <button type="button" data-view="dashboard" data-nav-section="dashboard" data-i18n="navDashboard">لوحة التحكم</button>
         <button type="button" data-view="po-projects" data-nav-section="po-projects" data-i18n="navPoProjects">أوامر شراء المشاريع</button>
+        <button type="button" data-view="po-projects-rejected" data-nav-section="po-projects-rejected" data-i18n="navPoProjectsRejected">طلبات مرفوضة</button>
         <button type="button" data-view="po-general" data-nav-section="po-general" data-i18n="navPoGeneral">أوامر شراء الإدارة العامة</button>
         <button type="button" data-view="warehouse-queue" data-nav-section="warehouse-queue" data-i18n="navWarehouseReview">مراجعة المستودع</button>
         <button type="button" data-view="ef-approvals" data-nav-section="ef-approvals" data-i18n="navEfApprovals">موافقات مهندس أول</button>
@@ -2349,6 +2350,7 @@
           <h2 data-i18n="shortcutsTitle">اختصارات</h2>
           <div class="toolbar">
             <button type="button" class="btn btn-secondary" data-jump="po-projects" data-nav-section="po-projects" data-i18n="shortcutPoProjects">أوامر شراء المشاريع</button>
+            <button type="button" class="btn btn-secondary" data-jump="po-projects-rejected" data-nav-section="po-projects-rejected" data-i18n="shortcutPoProjectsRejected">طلبات مرفوضة</button>
             <button type="button" class="btn btn-secondary" data-jump="po-general" data-nav-section="po-general" data-i18n="shortcutPoGeneral">أوامر شراء الإدارة العامة</button>
             <button type="button" class="btn btn-secondary" data-jump="warehouse-queue" data-nav-section="warehouse-queue" data-i18n="shortcutWarehouseReview">مراجعة المستودع</button>
             <button type="button" class="btn btn-secondary" data-jump="ef-approvals" data-nav-section="ef-approvals" data-i18n="shortcutEfApprovals">موافقات مهندس أول</button>
@@ -2408,6 +2410,53 @@
             </div>
           </div>
           <div id="po-projects-table-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
+        </div>
+      </section>
+
+      <section id="screen-po-projects-rejected" class="app-screen hidden">
+        <h1 class="page-title" data-i18n="poProjectsRejectedTitle">طلبات المشاريع المرفوضة</h1>
+        <div class="card">
+          <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.9rem;" data-i18n="poProjectsRejectedHint">
+            الطلبات التي توقّف مسارها بالرفض من مهندس أول أو مدير مشروع أو مسؤول مجموعة. للاطلاع والطباعة فقط.
+          </p>
+          <div class="po-projects-toolbar-strip">
+            <div id="po-projects-rejected-filter-bar" class="po-projects-filter-fields hidden">
+              <label class="po-filter-field po-filter-field-search">
+                <span data-i18n="poProjectsSearchLabel">بحث</span>
+                <input
+                  type="search"
+                  id="po-projects-rejected-search"
+                  class="po-projects-filter-search"
+                  data-i18n-placeholder="poProjectsSearchPlaceholder"
+                  autocomplete="off"
+                />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterWorkflowLabel">مرحلة المسار</span>
+                <select id="po-projects-rejected-filter-workflow"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterPriorityLabel">الأولوية</span>
+                <select id="po-projects-rejected-filter-priority">
+                  <option value="" data-i18n="filterAll">الكل</option>
+                  <option value="urgent" data-i18n="poPriorityUrgent">عاجل</option>
+                  <option value="normal" data-i18n="poPriorityNormal">عادي</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterCompanyLabel">الشركة</span>
+                <select id="po-projects-rejected-filter-company"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterRegionLabel">المنطقة</span>
+                <select id="po-projects-rejected-filter-region"></select>
+              </label>
+              <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="po-projects-rejected-filter-reset" data-i18n="poProjectsClearFilters">
+                مسح الفلاتر
+              </button>
+            </div>
+          </div>
+          <div id="po-projects-rejected-table-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
       </section>
 
@@ -3343,6 +3392,12 @@
         brand: "أوامر الشراء",
         navDashboard: "لوحة التحكم",
         navPoProjects: "أوامر شراء المشاريع",
+        navPoProjectsRejected: "طلبات مرفوضة (مشاريع)",
+        poProjectsRejectedTitle: "طلبات المشاريع المرفوضة",
+        poProjectsRejectedHint:
+          "تظهر هنا الطلبات التي انتهى مسارها بالرفض (مهندس أول، مدير مشروع، أو مسؤول مجموعة). لا تظهر في قائمة «أوامر شراء المشاريع» الرئيسية.",
+        rejectedProjectPosEmpty: "لا توجد طلبات مرفوضة ضمن نطاق صلاحيتك.",
+        shortcutPoProjectsRejected: "طلبات مرفوضة (مشاريع)",
         navPoGeneral: "أوامر شراء الإدارة العامة",
         navAdmin: "الإدارة",
         navHelp: "المساعدة",
@@ -3764,7 +3819,8 @@
         helpRolesP2:
           'تظهر عناصر القائمة الجانبية حسب حقل <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> في ملف المستخدم. خيار <strong>تجاوز الموافقات الأدنى</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>) يتيح لمدير المشروع أو مسؤول المجموعة التصرف مبكراً على مراحل المستودع أو مهندس أول أو مدير مشروع (حسب الدور) عند تفعيله من الإدارة؛ المشرف يحتفظ بصلاحيات أوسع. ملاحظة: <strong>مندوبو المشتريات</strong> و<strong>أسعار الصرف</strong> تُعرَّف من الإدارة، و<strong>التقارير</strong> تظهر فقط لمن تم تفعيل قسم «التقارير» له.',
         helpNavItem1: "<strong>لوحة التحكم:</strong> نظرة عامة واختصارات.",
-        helpNavItem2: "<strong>أوامر شراء المشاريع:</strong> طلبات مرتبطة بمشاريع محددة (تخضع للمشاريع المسندة للمستخدم).",
+        helpNavItem2:
+          "<strong>أوامر شراء المشاريع:</strong> طلبات نشطة للمسار (بدون المرفوضة). <strong>طلبات مرفوضة:</strong> أرشيف الطلبات التي توقّف مسارها بالرفض (عرض وطباعة).",
         helpNavItem3: "<strong>أوامر شراء الإدارة العامة:</strong> طلبات المركز الإداري في قائمة ونموذج مستقلّين (حالة الطلب التقليدية)، وليست ضمن طابور المستودع/مهندس أول الحالي.",
         helpNavItem4: "<strong>الإدارة:</strong> تظهر إذا كان القسم مفعّلاً في ملف المستخدم (قسم «الإدارة»).",
         helpNavItem5:
@@ -4026,6 +4082,12 @@
         brand: "Purchase Orders",
         navDashboard: "Dashboard",
         navPoProjects: "Project purchase orders",
+        navPoProjectsRejected: "Rejected (projects)",
+        poProjectsRejectedTitle: "Rejected project requests",
+        poProjectsRejectedHint:
+          "Requests whose workflow ended with rejection (engineer first, project manager, or group manager). Not shown on the main project orders list.",
+        rejectedProjectPosEmpty: "No rejected requests in your scope.",
+        shortcutPoProjectsRejected: "Rejected (projects)",
         navPoGeneral: "General admin purchase orders",
         navAdmin: "Administration",
         navHelp: "Help",
@@ -4449,7 +4511,8 @@
         helpRolesP2:
           'Sidebar items follow <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">visibleSections</code> on the user profile. <strong>Bypass lower approvals</strong> (<code style="background:var(--surface2);padding:2px 6px;border-radius:4px">canBypassLowerApprovals</code>), when set by an admin, lets project managers or group managers act earlier on warehouse, engineer-first, or project-manager stages (depending on role); admins retain broader powers. Note: <strong>Purchasing representatives</strong> and <strong>FX rates</strong> are managed under Administration, and <strong>Reports</strong> are shown only when enabled on the profile.',
         helpNavItem1: "<strong>Dashboard:</strong> Overview and shortcuts.",
-        helpNavItem2: "<strong>Project purchase orders:</strong> Orders tied to specific projects (subject to assigned projects for the user).",
+        helpNavItem2:
+          "<strong>Project purchase orders:</strong> Active pipeline orders (excludes rejected). <strong>Rejected:</strong> Archive of workflow-terminated rejections (view/print).",
         helpNavItem3: "<strong>General admin purchase orders:</strong> Central administration requests on a separate list and form (classic status), not the current warehouse / engineer-first pipeline.",
         helpNavItem4: "<strong>Administration:</strong> Shown when the Admin section is enabled on your profile.",
         helpNavItem5:
@@ -4809,7 +4872,7 @@
       const active = document.querySelector(".app-screen:not(.hidden)");
       const id = active?.id;
       if (id === "screen-dashboard") refreshDashboard();
-      if (id === "screen-po-projects") loadPurchaseOrders("project");
+      if (id === "screen-po-projects" || id === "screen-po-projects-rejected") refreshActiveProjectPoListIfAny();
       if (id === "screen-po-general") loadPurchaseOrders("general");
       if (id === "screen-warehouse-review") loadWarehouseReviewQueue();
       if (id === "screen-pm-approvals") loadPmApprovalQueue();
@@ -4921,7 +4984,9 @@
     let accPoReadOnlyMode = false;
     let accPoAllowVerifyMode = false;
     let projectPurchaseOrdersContext = null;
+    let projectRejectedPurchaseOrdersContext = null;
     let projectPoFiltersWired = false;
+    let rejectedProjectPoFiltersWired = false;
     let lastPoPrintDoc = null;
 
     /** In-app inbox. Add Firestore rules: users read docs where userId==auth.uid; update only {read}; authenticated create allowed (merge with your project rules). */
@@ -4933,7 +4998,69 @@
     let userProfilesNotifyCache = { t: 0, list: null };
     let notificationsBackdropCloseBound = false;
 
-    const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-general"];
+    const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-projects-rejected", "po-general"];
+
+    /** أنهاء مسار بالرفض — تُستبعد من قائمة المشاريع الرئيسية وتُعرض في «طلبات مرفوضة». */
+    const PROJECT_PO_REJECTED_WORKFLOW_STATUSES = ["rejected_engineer_first", "rejected_pm", "rejected_gm"];
+
+    function isProjectPoRejectedWorkflowStatus(ws) {
+      return PROJECT_PO_REJECTED_WORKFLOW_STATUSES.includes(String(ws || ""));
+    }
+
+    /** طلبات مشاريع بعد تقييد الدور؛ قبل فصل المرفوض/غير المرفوض. */
+    async function fetchProjectPurchaseOrdersTableContext() {
+      const q = query(collection(db, "purchaseOrders"), where("scope", "==", "project"));
+      const snap = await getDocs(q);
+      let rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      const projectNames = {};
+      const projectRegion = {};
+      const projectContractNumber = {};
+      const projectCompanyId = {};
+      const companyNameById = {};
+      const pSnap = await getDocs(collection(db, "projects"));
+      const companyIds = new Set();
+      pSnap.forEach((d) => {
+        const pd = d.data();
+        projectNames[d.id] = projectDisplayName(pd);
+        projectRegion[d.id] = pd.regionId || null;
+        projectContractNumber[d.id] = (pd.contractNumber || "").trim();
+        const cid = pd.companyId || null;
+        projectCompanyId[d.id] = cid;
+        if (cid) companyIds.add(cid);
+      });
+      await Promise.all(
+        [...companyIds].map(async (cid) => {
+          const cs = await getDoc(doc(db, "companies", cid));
+          if (cs.exists()) companyNameById[cid] = companyDisplayName(cs.data());
+        })
+      );
+      const r = currentUserProfile?.role || userRole;
+      if (!hasAdminAccess()) {
+        if (r === "engineer" || r === "engineer_first") {
+          const allowed = currentUserProfile?.assignedProjectIds || [];
+          rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
+        } else if (r === "viewer") {
+          const allowed = currentUserProfile?.assignedProjectIds || [];
+          rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
+        } else if (r === "project_manager") {
+          const allowed = currentUserProfile?.managedProjectIds || [];
+          rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
+        } else if (r === "group_manager") {
+          const regions = currentUserProfile?.managedRegionIds || [];
+          if (!regions.length) rows = [];
+          else
+            rows = rows.filter((row) => row.projectId && regions.includes(projectRegion[row.projectId]));
+        }
+      }
+      rows.sort((a, b) => {
+        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pd = pri(b) - pri(a);
+        if (pd !== 0) return pd;
+        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+      });
+      return { rows, projectNames, projectRegion, projectContractNumber, projectCompanyId, companyNameById };
+    }
 
     const $ = (id) => document.getElementById(id);
 
@@ -6006,8 +6133,7 @@
         });
         closeWorkflowPoDetailModal();
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -6264,8 +6390,7 @@
         }));
         if (showAlert) alert(t("alertAccountingValuesSaved"));
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
         return true;
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
@@ -6306,7 +6431,7 @@
         refreshWorkflowQueuesByActiveScreen();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-purchasing-queue") loadPurchasingQueue();
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -7515,8 +7640,7 @@
         void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_completed", "po-projects");
         closeAccountingPoModal();
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -7660,6 +7784,14 @@
       if (!Array.isArray(visibleSections) || visibleSections.length === 0) {
         visibleSections = normalizeVisibleSectionsFromDoc(d);
         await updateDoc(ref, { visibleSections, updatedAt: serverTimestamp() });
+      } else if (visibleSections.includes("po-projects") && !visibleSections.includes("po-projects-rejected")) {
+        const vs = [...visibleSections];
+        const ix = vs.indexOf("po-projects");
+        if (ix !== -1) {
+          vs.splice(ix + 1, 0, "po-projects-rejected");
+          visibleSections = vs;
+          await updateDoc(ref, { visibleSections, updatedAt: serverTimestamp() });
+        }
       }
       const assignedProjectIds = Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [];
       const managedProjectIds = Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [];
@@ -7757,6 +7889,15 @@
       if (r !== "accountant") return false;
       const id = (existingId || "").trim();
       return scope === "project" && !id;
+    }
+
+    /** مسؤول مشتريات: إنشاء طلب جديد (مشروع أو إدارة عامة) فقط؛ التعديل والحذف من القائمة يبقى محظوراً. */
+    function purchasingOfficerMayOpenNewPoModal(scope, existingId) {
+      const r = currentUserProfile?.role || userRole;
+      if (r !== "purchasing_officer") return false;
+      const id = (existingId || "").trim();
+      if (id) return false;
+      return scope === "project" || scope === "general";
     }
 
     function refreshWorkflowQueuesByActiveScreen() {
@@ -8191,6 +8332,8 @@
             ? "dashboard"
             : name === "po-projects"
               ? "po-projects"
+              : name === "po-projects-rejected"
+                ? "po-projects-rejected"
               : name === "po-general"
                 ? "po-general"
                 : name === "warehouse-queue"
@@ -8228,6 +8371,7 @@
       const map = {
         dashboard: "screen-dashboard",
         "po-projects": "screen-po-projects",
+        "po-projects-rejected": "screen-po-projects-rejected",
         "po-general": "screen-po-general",
         "warehouse-queue": "screen-warehouse-review",
         "ef-approvals": "screen-ef-approvals",
@@ -8244,6 +8388,7 @@
       if (id) {
         $(id).classList.remove("hidden");
         if (name === "po-projects") loadPurchaseOrders("project");
+        if (name === "po-projects-rejected") loadRejectedProjectPurchaseOrders();
         if (name === "po-general") loadPurchaseOrders("general");
         if (name === "warehouse-queue") loadWarehouseReviewQueue();
         if (name === "ef-approvals") loadEfApprovalQueue();
@@ -8490,86 +8635,35 @@
       }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
-        const q = query(collection(db, "purchaseOrders"), where("scope", "==", scope));
-        const snap = await getDocs(q);
-        let rows = [];
-        snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
-        const projectNames = {};
-        const projectRegion = {};
-        const projectContractNumber = {};
-        const projectCompanyId = {};
-        const companyNameById = {};
         if (scope === "project") {
-          const pSnap = await getDocs(collection(db, "projects"));
-          const companyIds = new Set();
-          pSnap.forEach((d) => {
-            const pd = d.data();
-            projectNames[d.id] = projectDisplayName(pd);
-            projectRegion[d.id] = pd.regionId || null;
-            projectContractNumber[d.id] = (pd.contractNumber || "").trim();
-            const cid = pd.companyId || null;
-            projectCompanyId[d.id] = cid;
-            if (cid) companyIds.add(cid);
-          });
-          await Promise.all(
-            [...companyIds].map(async (cid) => {
-              const cs = await getDoc(doc(db, "companies", cid));
-              if (cs.exists()) companyNameById[cid] = companyDisplayName(cs.data());
-            })
-          );
-          const r = currentUserProfile?.role || userRole;
-          if (!hasAdminAccess()) {
-            if (r === "engineer" || r === "engineer_first") {
-              const allowed = currentUserProfile?.assignedProjectIds || [];
-              rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
-            } else if (r === "viewer") {
-              const allowed = currentUserProfile?.assignedProjectIds || [];
-              rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
-            } else if (r === "project_manager") {
-              const allowed = currentUserProfile?.managedProjectIds || [];
-              rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
-            } else if (r === "group_manager") {
-              const regions = currentUserProfile?.managedRegionIds || [];
-              if (!regions.length) rows = [];
-              else
-                rows = rows.filter(
-                  (row) => row.projectId && regions.includes(projectRegion[row.projectId])
-                );
-            }
-          }
-        }
-        if (scope !== "project") {
-          const r = currentUserProfile?.role || userRole;
-          if (!hasAdminAccess() && r === "viewer") rows = [];
-        }
-        rows.sort((a, b) => {
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-          const pd = pri(b) - pri(a);
-          if (pd !== 0) return pd;
-          return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
-        });
-
-        if (scope === "project") {
+          const ctx = await fetchProjectPurchaseOrdersTableContext();
+          const rows = ctx.rows.filter((row) => !isProjectPoRejectedWorkflowStatus(row.workflowStatus));
           if (!rows.length) {
             projectPurchaseOrdersContext = null;
             filterBar?.classList.add("hidden");
             wrap.innerHTML = `<p class="empty-state">${t("noOrdersYet")}</p>`;
             return;
           }
-          projectPurchaseOrdersContext = {
-            rows,
-            projectNames,
-            projectRegion,
-            projectContractNumber,
-            projectCompanyId,
-            companyNameById,
-          };
+          projectPurchaseOrdersContext = { ...ctx, rows };
           filterBar?.classList.remove("hidden");
           populateProjectPoFilterOptions();
           wireProjectPoFiltersOnce();
           renderProjectPurchaseOrdersTable();
           return;
         }
+
+        const q = query(collection(db, "purchaseOrders"), where("scope", "==", scope));
+        const snap = await getDocs(q);
+        let rows = [];
+        snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+        const r = currentUserProfile?.role || userRole;
+        if (!hasAdminAccess() && r === "viewer") rows = [];
+        rows.sort((a, b) => {
+          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+          const pd = pri(b) - pri(a);
+          if (pd !== 0) return pd;
+          return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+        });
 
         if (!rows.length) {
           wrap.innerHTML = `<p class="empty-state">${t("noOrdersYet")}</p>`;
@@ -8631,6 +8725,159 @@
         }
         wrap.innerHTML = `<p class="error-msg">${t("loadError")} ${e.message || ""}</p>`;
       }
+    }
+
+    function refreshActiveProjectPoListIfAny() {
+      const act = document.querySelector(".app-screen:not(.hidden)");
+      if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+      else if (act?.id === "screen-po-projects-rejected") loadRejectedProjectPurchaseOrders();
+    }
+
+    async function loadRejectedProjectPurchaseOrders() {
+      const wrap = $("po-projects-rejected-table-wrap");
+      const filterBar = $("po-projects-rejected-filter-bar");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const ctx = await fetchProjectPurchaseOrdersTableContext();
+        const rows = ctx.rows.filter((row) => isProjectPoRejectedWorkflowStatus(row.workflowStatus));
+        if (!rows.length) {
+          projectRejectedPurchaseOrdersContext = null;
+          filterBar?.classList.add("hidden");
+          wrap.innerHTML = `<p class="empty-state">${t("rejectedProjectPosEmpty")}</p>`;
+          return;
+        }
+        projectRejectedPurchaseOrdersContext = { ...ctx, rows };
+        filterBar?.classList.remove("hidden");
+        populateRejectedProjectPoFilterOptions();
+        wireRejectedProjectPoFiltersOnce();
+        renderRejectedProjectPurchaseOrdersTable();
+      } catch (e) {
+        console.error(e);
+        projectRejectedPurchaseOrdersContext = null;
+        filterBar?.classList.add("hidden");
+        wrap.innerHTML = `<p class="error-msg">${t("loadError")} ${e.message || ""}</p>`;
+      }
+    }
+
+    function populateRejectedProjectPoFilterOptions() {
+      const ctx = projectRejectedPurchaseOrdersContext;
+      if (!ctx) return;
+      const wfSel = $("po-projects-rejected-filter-workflow");
+      const coSel = $("po-projects-rejected-filter-company");
+      const regSel = $("po-projects-rejected-filter-region");
+      if (!wfSel || !coSel || !regSel) return;
+      const loc = lang === "ar" ? "ar" : "en";
+      const workflows = [...new Set(ctx.rows.map((r) => r.workflowStatus || "").filter(Boolean))].sort();
+      const companies = [
+        ...new Set(ctx.rows.map((r) => projectPoCompanyDisplay(r, ctx)).filter(Boolean)),
+      ].sort((a, b) => a.localeCompare(b, loc));
+      const regions = [...new Set(ctx.rows.map((r) => (r.regionName || "").trim()).filter(Boolean))].sort((a, b) =>
+        a.localeCompare(b, loc)
+      );
+      const wfVal = wfSel.value;
+      wfSel.innerHTML =
+        `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+        workflows.map((w) => `<option value="${escapeHtml(w)}">${escapeHtml(workflowLabel(w))}</option>`).join("");
+      wfSel.value = workflows.includes(wfVal) ? wfVal : "";
+      const coVal = coSel.value;
+      coSel.innerHTML =
+        `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+        companies.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+      coSel.value = companies.includes(coVal) ? coVal : "";
+      const regVal = regSel.value;
+      regSel.innerHTML =
+        `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+        regions.map((x) => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join("");
+      regSel.value = regions.includes(regVal) ? regVal : "";
+    }
+
+    function wireRejectedProjectPoFiltersOnce() {
+      if (rejectedProjectPoFiltersWired) return;
+      rejectedProjectPoFiltersWired = true;
+      const debouncedRender = debounceFn(() => renderRejectedProjectPurchaseOrdersTable(), 280);
+      $("po-projects-rejected-search")?.addEventListener("input", debouncedRender);
+      ["po-projects-rejected-filter-workflow", "po-projects-rejected-filter-priority", "po-projects-rejected-filter-company", "po-projects-rejected-filter-region"].forEach((fid) => {
+        $(fid)?.addEventListener("change", () => renderRejectedProjectPurchaseOrdersTable());
+      });
+      $("po-projects-rejected-filter-reset")?.addEventListener("click", () => {
+        const s = $("po-projects-rejected-search");
+        if (s) s.value = "";
+        const wf = $("po-projects-rejected-filter-workflow");
+        if (wf) wf.value = "";
+        const pr = $("po-projects-rejected-filter-priority");
+        if (pr) pr.value = "";
+        const co = $("po-projects-rejected-filter-company");
+        if (co) co.value = "";
+        const rg = $("po-projects-rejected-filter-region");
+        if (rg) rg.value = "";
+        renderRejectedProjectPurchaseOrdersTable();
+      });
+    }
+
+    function renderRejectedProjectPurchaseOrdersTable() {
+      const wrap = $("po-projects-rejected-table-wrap");
+      const ctx = projectRejectedPurchaseOrdersContext;
+      if (!wrap || !ctx) return;
+      const q = ($("po-projects-rejected-search")?.value || "").trim().toLowerCase();
+      const wf = $("po-projects-rejected-filter-workflow")?.value || "";
+      const pri = $("po-projects-rejected-filter-priority")?.value || "";
+      const co = $("po-projects-rejected-filter-company")?.value || "";
+      const reg = $("po-projects-rejected-filter-region")?.value || "";
+      const filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg));
+      const thead = `<tr>
+              <th>${t("colPoReference")}</th>
+              <th>${t("colRequestDate")}</th>
+              <th>${t("colSubmittedAtIraq")}</th>
+              <th>${t("colProject")}</th>
+              <th>${t("colCompany")}</th>
+              <th>${t("colContractNumber")}</th>
+              <th>${t("colRegion")}</th>
+              <th>${t("poRequesterLabel")}</th>
+              <th>${t("poReasonLabel")}</th>
+              <th>${t("poRequestTypeLabel")}</th>
+              <th>${t("poVehicleInfoLabel")}</th>
+              <th>${t("colPriority")}</th>
+              <th>${t("colWorkflow")}</th>
+              <th></th>
+            </tr>`;
+      if (!filtered.length) {
+        wrap.innerHTML = `<p class="empty-state">${ctx.rows.length ? t("poProjectsNoFilterResults") : t("rejectedProjectPosEmpty")}</p>`;
+        return;
+      }
+      const scope = "project";
+      const tbody = filtered
+        .map((r) => {
+          const compName = projectPoCompanyDisplay(r, ctx) || t("dash");
+          const contractNo = projectPoContractDisplay(r, ctx) || t("dash");
+          return `
+                <tr>
+                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                  <td>${escapeHtml(formatFirestoreInstantIraq(r.createdAt))}</td>
+                  <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                  <td>${escapeHtml(compName)}</td>
+                  <td>${escapeHtml(contractNo)}</td>
+                  <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
+                  ${projectPoReasonTableCell(r.reasonRequest)}
+                  <td>${escapeHtml(projectPoRequestTypeLabel(r.requestType))}</td>
+                  <td title="${escapeAttr(projectPoVehicleInfoLabel(r))}">${escapeHtml(projectPoVehicleInfoLabel(r))}</td>
+                  <td>${priorityBadge(r.priority)}</td>
+                  <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>
+                    <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
+                  </td>
+                </tr>`;
+        })
+        .join("");
+      wrap.innerHTML = `<div class="table-scroll"><table class="data-table">
+            <thead>${thead}</thead>
+            <tbody>${tbody}</tbody>
+          </table></div>`;
+      wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
+        btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
     }
 
     function warehouseShortLabel(w) {
@@ -8893,8 +9140,7 @@
         });
         void notifyProjectManagers(poId, po.projectId, poNotifRefText({ ...po, id: poId }), "notif_po_pm", "pm-approvals");
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -8926,8 +9172,7 @@
         });
         void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_rejected_ef", "po-projects");
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -9063,8 +9308,7 @@
             "gm-approvals"
           );
           refreshWorkflowQueuesByActiveScreen();
-          const act = document.querySelector(".app-screen:not(.hidden)");
-          if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+          refreshActiveProjectPoListIfAny();
         } catch (err) {
           alert(t("saveFailed") + " " + err.message);
         }
@@ -9112,8 +9356,7 @@
           });
           void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_rejected_pm", "po-projects");
           refreshWorkflowQueuesByActiveScreen();
-          const act = document.querySelector(".app-screen:not(.hidden)");
-          if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+          refreshActiveProjectPoListIfAny();
         } catch (err) {
           alert(t("saveFailed") + " " + err.message);
         }
@@ -9172,8 +9415,7 @@
             "notif_po_purchasing"
           );
           refreshWorkflowQueuesByActiveScreen();
-          const act = document.querySelector(".app-screen:not(.hidden)");
-          if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+          refreshActiveProjectPoListIfAny();
         } catch (err) {
           alert(t("saveFailed") + " " + err.message);
         }
@@ -9231,8 +9473,7 @@
           });
           void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_rejected_gm", "po-projects");
           refreshWorkflowQueuesByActiveScreen();
-          const act = document.querySelector(".app-screen:not(.hidden)");
-          if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+          refreshActiveProjectPoListIfAny();
         } catch (err) {
           alert(t("saveFailed") + " " + err.message);
         }
@@ -10300,8 +10541,7 @@
         });
         closePurchasingRepresentativeModal();
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -10335,8 +10575,7 @@
           "notif_po_accounting_advance"
         );
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -10365,8 +10604,7 @@
         const regId = await resolveRegionIdForPo(po);
         void notifyWarehouseSupervisorsRegion(poId, regId, poNotifRefText({ ...po, id: poId }));
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -10509,8 +10747,7 @@
         }
         closeWarehouseReceiptQtyModal();
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -10544,8 +10781,7 @@
         });
         void notifyCreatedBy(poId, { ...po, id: poId }, "notif_po_completed", "po-projects");
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -10907,7 +11143,7 @@
       if (!confirm(t("confirmDeletePo"))) return;
       await deleteDoc(doc(db, "purchaseOrders", id));
       const active = document.querySelector(".app-screen:not(.hidden)");
-      if (active?.id === "screen-po-projects") loadPurchaseOrders("project");
+      refreshActiveProjectPoListIfAny();
       if (active?.id === "screen-po-general") loadPurchaseOrders("general");
       if (active?.id === "screen-warehouse-review") loadWarehouseReviewQueue();
       if (active?.id === "screen-pm-approvals") loadPmApprovalQueue();
@@ -10935,7 +11171,11 @@
     }
 
     async function openPoModal(scope, existingId) {
-      if (isPoEditorRoleBlocked() && !accountantMayOpenNewProjectPoModal(scope, existingId)) {
+      if (
+        isPoEditorRoleBlocked() &&
+        !accountantMayOpenNewProjectPoModal(scope, existingId) &&
+        !purchasingOfficerMayOpenNewPoModal(scope, existingId)
+      ) {
         alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
         return;
       }
@@ -11243,7 +11483,7 @@
           }
         }
         closePoModal();
-        if (scope === "project") loadPurchaseOrders("project");
+        if (scope === "project") refreshActiveProjectPoListIfAny();
         else loadPurchaseOrders("general");
         refreshWorkflowQueuesByActiveScreen();
       } catch (err) {
@@ -11355,8 +11595,7 @@
         void notifyAfterWarehouseReview(poId, mergedPo, fullStock);
         closeWarehouseReviewModal();
         refreshWorkflowQueuesByActiveScreen();
-        const act = document.querySelector(".app-screen:not(.hidden)");
-        if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
+        refreshActiveProjectPoListIfAny();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
       }
@@ -12176,6 +12415,7 @@
           <div class="section-checkboxes section-checkboxes-grid">
             <label><input type="checkbox" data-section-check="dashboard" /> ${escapeHtml(t("navDashboard"))}</label>
             <label><input type="checkbox" data-section-check="po-projects" /> ${escapeHtml(t("navPoProjects"))}</label>
+            <label><input type="checkbox" data-section-check="po-projects-rejected" /> ${escapeHtml(t("navPoProjectsRejected"))}</label>
             <label><input type="checkbox" data-section-check="po-general" /> ${escapeHtml(t("navPoGeneral"))}</label>
             <label><input type="checkbox" data-section-check="warehouse-queue" /> ${escapeHtml(t("navWarehouseReview"))}</label>
             <label><input type="checkbox" data-section-check="ef-approvals" /> ${escapeHtml(t("navEfApprovals"))}</label>
@@ -12466,7 +12706,7 @@
 
         if (!existingId) {
           fields.querySelectorAll("[data-section-check]").forEach((cb) => {
-            cb.checked = ["dashboard", "po-projects", "po-general"].includes(cb.dataset.sectionCheck);
+            cb.checked = ["dashboard", "po-projects", "po-projects-rejected", "po-general"].includes(cb.dataset.sectionCheck);
           });
           userProjectAssign.renderAssignChips();
           userProjectAssign.renderAssignResults("");
