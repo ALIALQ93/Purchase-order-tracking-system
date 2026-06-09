@@ -3979,6 +3979,8 @@
           "لم تُسجَّل أسعار للبنود بعد. هل تريد إغلاق المسار بدون قيم محاسبية؟",
         accountingPoModalTitle: "تسجيل قيم الشراء",
         accountingPoModalHint: "أدخل سعر الوحدة لكل بند؛ يُحسب المجموع تلقائياً. احفظ القيم ثم يمكنك إغلاق المسار من هنا أو من القائمة.",
+        accountingPoModalHintPurchasing:
+          "أدخل سعر الوحدة لكل بند؛ يُحسب المجموع تلقائياً. احفظ القيم ثم اعتمد الأسعار عند الانتهاء.",
         accUnitPriceCol: "سعر الوحدة",
         accLineTotalCol: "مجموع البند",
         accGrandTotalLabel: "الإجمالي",
@@ -4672,6 +4674,8 @@
         accountingPoModalTitle: "Record purchase values",
         accountingPoModalHint:
           "Enter a unit price per line; line totals update automatically. Save values, then close the workflow from here or the list.",
+        accountingPoModalHintPurchasing:
+          "Enter a unit price per line; line totals update automatically. Save values, then verify prices when done.",
         accUnitPriceCol: "Unit price",
         accLineTotalCol: "Line total",
         accGrandTotalLabel: "Grand total",
@@ -6283,10 +6287,13 @@
         alert(t("alertWarehouseReviewStale"));
         return;
       }
-      accPoReadOnlyMode = role === "purchasing_officer" && !hasAdminAccess();
-      accPoAllowVerifyMode = (role === "purchasing_officer" || hasAdminAccess()) && po.workflowStatus === "pending_accounting";
+      const isPurchasingOfficer = role === "purchasing_officer" && !hasAdminAccess();
+      accPoReadOnlyMode = false;
+      accPoAllowVerifyMode = (isPurchasingOfficer || hasAdminAccess()) && po.workflowStatus === "pending_accounting";
       const isComplete = po.workflowStatus === "workflow_complete";
       const isAdmin = hasAdminAccess();
+      const canSavePrices = (role === "accountant" || isPurchasingOfficer || hasAdminAccess()) && !isComplete;
+      const canCloseFromModal = (role === "accountant" || hasAdminAccess()) && !isComplete;
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const pname = pr.exists() ? projectDisplayName(pr.data()) : po.projectId || t("dash");
       const snapLines = Array.isArray(po.lines) ? po.lines : [];
@@ -6333,8 +6340,8 @@
       const btnSave = $("modal-acc-po-save");
       const btnComplete = $("modal-acc-po-complete");
       const btnVerify = $("modal-acc-po-verify");
-      if (btnSave) btnSave.classList.toggle("hidden", accPoReadOnlyMode || isComplete);
-      if (btnComplete) btnComplete.classList.toggle("hidden", accPoReadOnlyMode || isComplete);
+      if (btnSave) btnSave.classList.toggle("hidden", !canSavePrices);
+      if (btnComplete) btnComplete.classList.toggle("hidden", !canCloseFromModal);
       if (btnVerify) btnVerify.classList.toggle("hidden", !accPoAllowVerifyMode || verified);
       const btnReq = $("modal-acc-po-amend-request");
       const btnAppr = $("modal-acc-po-amend-approve");
@@ -6342,13 +6349,21 @@
       const mayAppr = isAdmin && isComplete && !!po.pricesAmendmentRequested && !po.pricesAmendmentApproved;
       if (btnReq) btnReq.classList.toggle("hidden", !mayReq);
       if (btnAppr) btnAppr.classList.toggle("hidden", !mayAppr);
+      const hintEl = $("modal-accounting-po")?.querySelector(".wf-po-hint");
+      if (hintEl) hintEl.textContent = isPurchasingOfficer ? t("accountingPoModalHintPurchasing") : t("accountingPoModalHint");
       $("modal-accounting-po").classList.remove("hidden");
     }
 
     async function saveAccountingPoValuesFromModal(showAlert) {
       const poId = $("acc-po-id")?.value;
       if (!poId || !accPoEditBaseLines) return false;
-      if (accPoReadOnlyMode) return false;
+      const saveRole = currentUserProfile?.role || userRole;
+      if (
+        saveRole !== "accountant" &&
+        saveRole !== "purchasing_officer" &&
+        !hasAdminAccess()
+      )
+        return false;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) {
@@ -9879,6 +9894,12 @@
             ? `<tbody>
               ${rowsTrack
                 .map((r) => {
+                  const canRecord = canAct && r.workflowStatus === "pending_accounting";
+                  const recordBtn = canRecord
+                    ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                        t("btnAccountingRecordValues")
+                      )}</button>`
+                    : "";
                   const canVerify = canAct && r.workflowStatus === "pending_accounting" && !r.pricesVerified;
                   const verifyBtn = canVerify
                     ? `<button type="button" class="btn btn-secondary btn-sm btn-verify-prices" data-id="${escapeHtml(r.id)}">${escapeHtml(
@@ -9897,7 +9918,7 @@
                     <div class="approval-actions-cell">
                       <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(
                         t("btnPoPrintView")
-                      )}</button>${verifyBtn}
+                      )}</button>${recordBtn}${verifyBtn}
                     </div>
                   </td>
                 </tr>`
@@ -9950,6 +9971,9 @@
         wrap.innerHTML = html;
         wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
           btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
+          btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-verify-prices").forEach((btn) => {
           btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
