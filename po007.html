@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<!-- مرجع تصميم PO007 فقط — المحرّر الفعلي مدمج في index.html (لا يُحمَّل في التطبيق) -->
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Purchase Order PO No.07 – ALBAB / ALHANDASYA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --mid: #444;
+      --light: #777;
+      --border: #bbb;
+      --accent: #1c4587;
+      --accent-light: #e8eef7;
+      --header-bg: #1c3557;
+      --row-alt: #f5f7fa;
+      --paper: #ffffff;
+      --edit-highlight: #fffbe6;
+      --edit-border: #f0c040;
+      --toolbar-h: 56px;
+    }
+
+    html[dir="rtl"] body {
+      font-family: 'IBM Plex Sans Arabic', 'IBM Plex Sans', sans-serif;
+    }
+
+    .doc-header { direction: ltr; }
+    .dh-logo { flex-shrink: 0; }
+    .dh-meta { margin-left: auto; text-align: right; min-width: 42%; }
+    .dh-buyer-name {
+      font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.3;
+      text-align: right;
+    }
+    html[dir="rtl"] .dh-meta,
+    html[dir="rtl"] .dh-buyer-name,
+    html[dir="rtl"] .dh-po { text-align: right; }
+    html[dir="rtl"] .party-cell { border-right: none; border-left: 1.5px solid var(--border); }
+    html[dir="rtl"] .party-cell:last-child { border-left: none; }
+    html[dir="rtl"] .items-table thead th,
+    html[dir="rtl"] .delivery-table thead th { text-align: right; }
+    html[dir="rtl"] .items-table thead th.r,
+    html[dir="rtl"] .delivery-table thead th.c { text-align: center; }
+    html[dir="rtl"] .note-list li { padding: 3px 22px 3px 0; }
+    html[dir="rtl"] .note-list li::before { left: auto; right: 0; }
+    html[dir="rtl"] .desc ul { margin-left: 0; margin-right: 14px; }
+    html[dir="rtl"] .total-row td.tl { text-align: right; padding-left: 0; padding-right: 10px; }
+    html[dir="rtl"] .total-row td.ta { text-align: left; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      color: var(--ink);
+      background: #c9cfd8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: calc(var(--toolbar-h) + 20px);
+      padding-bottom: 32px;
+      gap: 22px;
+      min-height: 100vh;
+    }
+
+    /* ══ TOOLBAR ══════════════════════════════ */
+    #toolbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--toolbar-h);
+      background: var(--header-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 9999;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    #toolbar .tb-title {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #toolbar .tb-title .po-badge {
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #c8d8f5;
+    }
+
+    #toolbar .tb-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tb-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      outline: none;
+    }
+
+    .tb-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    #btn-edit   { background: #f0c040; color: #1a1a1a; }
+    #btn-edit:hover { background: #e6b800; }
+
+    #btn-save   { background: #2ecc71; color: #fff; display: none; }
+    #btn-save:hover { background: #27ae60; }
+
+    #btn-cancel { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); display: none; }
+    #btn-cancel:hover { background: rgba(255,255,255,0.2); }
+
+    #btn-download { background: var(--accent); color: #fff; }
+    #btn-download:hover { background: #163a72; }
+
+    #btn-print { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.18); }
+    #btn-print:hover { background: rgba(255,255,255,0.18); }
+
+    .edit-indicator {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      color: #f0c040;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .edit-indicator .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #f0c040;
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ══ A4 PAGE ══════════════════════════════ */
+    .page {
+      background: var(--paper);
+      width: 794px;
+      min-height: 1123px;
+      padding: 36px 44px 28px;
+      box-shadow: 0 6px 36px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-content { flex: 1; }
+
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #ddd;
+      padding-top: 7px;
+      margin-top: 14px;
+      font-size: 9px;
+      color: #aaa;
+      flex-shrink: 0;
+    }
+    .pf-num { color: var(--accent); font-weight: 700; font-size: 10px; }
+
+    /* ══ HEADER ══════════════════════════════ */
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2.5px solid #222;
+      padding-bottom: 13px;
+      margin-bottom: 15px;
+    }
+
+    .dh-brand-en { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
+    .dh-sub-en   { font-size: 9px; color: #888; margin-top: 2px; }
+    .dh-brand-co { font-size: 14px; font-weight: 700; color: var(--ink); }
+    .dh-sub-co   { font-size: 9px; color: var(--light); }
+
+    .dh-po { text-align: right; font-size: 10px; color: var(--mid); line-height: 1.7; margin-top: 4px; }
+    .dh-po strong { color: var(--ink); font-size: 11px; }
+
+    /* MINI HEADER page 2 */
+    .mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+    .mh-title { font-weight: 700; font-size: 11.5px; color: var(--accent); }
+    .mh-po    { font-size: 10px; color: var(--mid); }
+
+    /* ══ PARTIES ══════════════════════════════ */
+    .parties {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1.5px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .party-cell { padding: 10px 13px; border-right: 1.5px solid var(--border); }
+    .party-cell:last-child { border-right: none; }
+    .party-cell .lbl,
+    .party-heading {
+      font-size: 10px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .5px;
+      border-bottom: 1px solid var(--accent-light);
+      padding-bottom: 3px; margin-bottom: 7px;
+    }
+    .party-company {
+      margin-bottom: 6px;
+      font-size: 10.5px;
+      line-height: 1.45;
+    }
+    .party-sub {
+      font-size: 9.5px; font-weight: 600; color: var(--mid);
+      margin: 8px 0 4px;
+      text-transform: uppercase; letter-spacing: .3px;
+    }
+    .party-cell p { margin-bottom: 2px; line-height: 1.55; color: var(--mid); font-size: 10px; }
+    .party-cell p strong { color: var(--ink); }
+    .offer-badge {
+      display: inline-block; background: var(--accent-light); color: var(--accent);
+      border: 1px solid #c5d3eb; border-radius: 4px;
+      padding: 2px 8px; font-size: 9.5px; font-weight: 600; margin-top: 5px;
+    }
+
+    /* ══ ITEMS TABLE ══════════════════════════ */
+    .items-table { width: 100%; border-collapse: collapse; }
+    .items-table thead tr { background: var(--header-bg); color: #fff; }
+    .items-table thead th {
+      padding: 7px 8px; text-align: left;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .3px; text-transform: uppercase;
+    }
+    .items-table thead th.r { text-align: right; }
+    .items-table thead th.c { text-align: center; }
+    .items-table tbody tr { border-bottom: 1px solid #e0e4ea; }
+    .items-table tbody tr:nth-child(even) { background: var(--row-alt); }
+    .items-table td { padding: 8px 8px; vertical-align: top; font-size: 10px; line-height: 1.55; }
+    .items-table td.no { width: 34px; text-align: center; font-weight: 700; color: var(--accent); }
+    .items-table td.item { width: 100px; }
+    .items-table td.desc { min-width: 140px; }
+    .items-table td.qty { width: 52px; text-align: center; font-weight: 600; }
+    .items-table td.price { width: 110px; text-align: right; }
+    html[dir="rtl"] .items-table td.price,
+    html[dir="rtl"] .items-table td.line-total { text-align: left; }
+    .items-table .item-tag,
+    .items-table .desc .e-block {
+      direction: auto;
+      unicode-bidi: plaintext;
+      text-align: start;
+    }
+    .items-table td.qty .e,
+    .items-table td.price .e,
+    .items-table td.line-total .e {
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+
+    .item-tag {
+      display: inline-block; background: var(--accent-light); color: var(--accent);
+      border-radius: 3px; padding: 2px 6px; font-size: 9px; font-weight: 700; white-space: nowrap;
+    }
+
+    /* Items table — حقول تحرير عالية وواضحة */
+    body.edit-mode .items-table thead th {
+      padding: 12px 12px;
+      font-size: 12px;
+    }
+    body.edit-mode .items-table tbody tr {
+      border-bottom: 2px solid #d8dee8;
+    }
+    body.edit-mode .items-table tbody td {
+      padding: 14px 12px;
+      vertical-align: middle;
+    }
+    body.edit-mode .items-table td.item { min-width: 130px; }
+    body.edit-mode .items-table td.desc { min-width: 220px; }
+    body.edit-mode .items-table td.qty { min-width: 76px; }
+    body.edit-mode .items-table td.price { min-width: 130px; }
+
+    body.edit-mode .items-table [contenteditable] {
+      background: #fff;
+      border: 2.5px solid #5a8fd4;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink);
+      min-width: 52px;
+      min-height: 48px;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 2px 6px rgba(28, 69, 135, 0.12);
+      cursor: text;
+    }
+    body.edit-mode .items-table [contenteditable]:focus {
+      background: #fff;
+      border-color: #1c4587;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(28, 69, 135, 0.22);
+    }
+    body.edit-mode .items-table [contenteditable]:empty::before {
+      color: #9aa8bc;
+      font-weight: 500;
+      pointer-events: none;
+    }
+    body.edit-mode .items-table .item-tag[contenteditable]:empty::before {
+      content: attr(data-placeholder);
+    }
+    body.edit-mode .items-table .desc .e-block[contenteditable]:empty::before,
+    body.edit-mode .items-table .desc .editable-block[contenteditable]:empty::before {
+      content: attr(data-placeholder);
+    }
+
+    body.edit-mode .items-table .item-tag {
+      display: block;
+      width: 100%;
+      white-space: pre-wrap;
+      min-height: 52px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    body.edit-mode .items-table .desc .e-block,
+    body.edit-mode .items-table .desc .editable-block {
+      min-height: 96px;
+      width: 100%;
+      font-size: 14px;
+      color: var(--ink);
+      background: #fff;
+      border: 2.5px solid #5a8fd4;
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 6px rgba(28, 69, 135, 0.12);
+      line-height: 1.65;
+    }
+    body.edit-mode .items-table .desc .e-block:focus,
+    body.edit-mode .items-table .desc .editable-block:focus {
+      border-color: #1c4587;
+      box-shadow: 0 0 0 4px rgba(28, 69, 135, 0.22);
+      background: #fff;
+    }
+
+    body.edit-mode .items-table td.qty .e,
+    body.edit-mode .items-table td.price:not(.line-total) .e {
+      min-height: 48px;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.edit-mode .items-table td.line-total {
+      background: #c9d9f0;
+      border-radius: 8px;
+    }
+    body.edit-mode .items-table td.line-total .e {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1c4587;
+      text-align: end;
+      padding: 12px 14px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    body.edit-mode .items-table .add-items-row-btn {
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 2.5px dashed #1c4587;
+      border-radius: 8px;
+      color: #1c4587;
+      background: #e8eef7;
+      margin: 10px 0 6px;
+    }
+    body.edit-mode .items-table .add-items-row-btn:hover {
+      background: #d0ddf5;
+    }
+
+    body.edit-mode .items-table .del-btn {
+      font-size: 11px;
+      padding: 6px 11px;
+      margin-bottom: 6px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    html[dir="rtl"] body.edit-mode .items-table .del-btn {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+    body.edit-mode .items-table td.no .item-no {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    .desc-title { font-weight: 700; color: var(--ink); margin-bottom: 4px; font-size: 10px; }
+    .desc ul { margin-left: 14px; margin-bottom: 4px; }
+    .desc ul li { margin-bottom: 1px; color: var(--mid); font-size: 9.5px; }
+    .suitable-label { font-weight: 600; color: var(--ink); margin-top: 5px; margin-bottom: 2px; }
+    .mv-spec { font-style: italic; color: var(--mid); font-size: 9.5px; }
+    .mv-bold { font-weight: 700; font-style: normal; color: var(--ink); }
+
+    .total-row td {
+      background: var(--header-bg); color: #fff;
+      font-weight: 700; font-size: 10.5px; border: none;
+    }
+    .total-row td.tl { text-align: left; padding-left: 10px; }
+    .total-row td.ta { text-align: right; font-size: 12px; }
+
+    /* ══ SECTIONS ════════════════════════════ */
+    .section { margin-top: 20px; }
+
+    .section-heading {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--header-bg); color: #fff;
+      padding: 5px 12px; font-weight: 700; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 9px;
+    }
+    .section-heading .num {
+      background: rgba(255,255,255,0.15); border-radius: 3px;
+      padding: 1px 6px; font-size: 10.5px;
+    }
+
+    .note-list { list-style: none; padding: 0 4px; }
+    .note-list li {
+      padding: 3px 0 3px 22px; position: relative;
+      color: var(--mid); line-height: 1.55;
+      border-bottom: 1px dashed #e5e8ee; font-size: 10px;
+    }
+    .note-list li:last-child { border-bottom: none; }
+    .note-list li::before {
+      content: attr(data-n); position: absolute; left: 0; top: 3px;
+      font-weight: 700; color: var(--accent); font-size: 10px;
+    }
+
+    .doc-list { list-style: none; padding: 0 4px; display: flex; flex-direction: column; gap: 4px; }
+    .doc-list li {
+      display: flex; align-items: center; gap: 7px;
+      color: var(--mid); font-size: 10px;
+    }
+    .doc-list li::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--accent); flex-shrink: 0;
+    }
+
+    .payment-list { list-style: none; padding: 0 4px; display: flex; flex-direction: column; gap: 6px; }
+    .payment-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      color: var(--mid); line-height: 1.55; padding: 6px 10px;
+      background: var(--row-alt); border-left: 4px solid var(--accent);
+      border-radius: 0 4px 4px 0; font-size: 10px;
+    }
+    .payment-list li .pct {
+      font-weight: 700; color: var(--accent); white-space: nowrap; font-size: 12px; min-width: 34px;
+    }
+
+    .delivery-table { width: 100%; border-collapse: collapse; }
+    .delivery-table thead tr { background: var(--accent); }
+    .delivery-table thead th { padding: 5px 10px; color: #fff; font-size: 10px; font-weight: 600; text-align: left; }
+    .delivery-table thead th.c { text-align: center; }
+    .delivery-table tbody tr { border-bottom: 1px solid #e0e4ea; }
+    .delivery-table tbody tr:nth-child(even) { background: var(--row-alt); }
+    .delivery-table td { padding: 5px 10px; font-size: 10px; color: var(--mid); vertical-align: middle; }
+    .delivery-table td.lt { text-align: center; font-weight: 700; color: var(--accent); }
+
+    .inspection-list { list-style: none; padding: 0 4px; display: flex; flex-direction: column; gap: 6px; }
+    .inspection-list li {
+      display: flex; align-items: flex-start; gap: 7px;
+      color: var(--mid); line-height: 1.65; font-size: 10px;
+    }
+    .inspection-list li::before {
+      content: '•'; color: var(--accent); font-size: 14px; line-height: 1.2; flex-shrink: 0;
+    }
+    .inspection-list li strong { color: var(--ink); }
+
+    .warranty-text { color: var(--mid); line-height: 1.7; padding: 0 4px; font-size: 10px; }
+
+    .effective-list { list-style: none; padding: 0 4px; }
+    .effective-list li {
+      display: flex; align-items: flex-start; gap: 7px;
+      color: var(--mid); line-height: 1.65; font-size: 10px;
+    }
+    .effective-list li::before {
+      content: '•'; color: var(--accent); font-size: 14px; line-height: 1.2; flex-shrink: 0;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+
+    /* ══ SIGNATURES ══════════════════════════ */
+    .signatures { display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid var(--border); margin-top: 20px; }
+    .sig-cell { padding: 13px 15px; border-right: 1.5px solid var(--border); }
+    .sig-cell:last-child { border-right: none; }
+    .sig-cell .cname { font-weight: 700; font-size: 11px; color: var(--ink); margin-bottom: 14px; }
+    .sig-line {
+      display: flex; gap: 6px; margin-bottom: 10px;
+      align-items: center; font-size: 10px; color: var(--mid);
+    }
+    .sig-line .sl { font-weight: 600; color: var(--ink); min-width: 70px; }
+    .sig-line .sv { flex: 1; border-bottom: 1px solid var(--border); min-height: 20px; }
+
+    /* ══ EDIT MODE STYLES ══════════════════════ */
+    body.edit-mode [contenteditable] {
+      outline: none;
+      background: var(--edit-highlight);
+      border-bottom: 1.5px dashed var(--edit-border);
+      cursor: text;
+      border-radius: 2px;
+      padding: 1px 3px;
+      min-width: 20px;
+      display: inline-block;
+    }
+
+    body.edit-mode [contenteditable]:focus {
+      background: #fff9d6;
+      border-bottom-color: #c8960a;
+      box-shadow: 0 2px 6px rgba(240,192,64,0.25);
+    }
+
+    /* editable blocks (div, p, li) */
+    body.edit-mode .editable-block {
+      outline: none;
+      background: var(--edit-highlight);
+      border: 1px dashed var(--edit-border);
+      border-radius: 3px;
+      padding: 3px 5px;
+      cursor: text;
+    }
+    body.edit-mode .editable-block:focus {
+      background: #fff9d6;
+      border-color: #c8960a;
+    }
+
+    /* highlight entire table cell in edit mode */
+    body.edit-mode td[contenteditable],
+    body.edit-mode td .editable-block {
+      min-width: 30px;
+    }
+
+    .section-move-btn {
+      display: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      line-height: 1.4;
+      user-select: none;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+    body.edit-mode .section-move-btn { display: inline-flex; align-items: center; }
+    .section-move-btn:hover { background: rgba(255,255,255,0.28); }
+
+    /* editable section title */
+    .sec-title { flex: 1; }
+    /* auto-synced targets — shows live update indicator */
+    body.edit-mode [id^="tgt-"] {
+      position: relative;
+      border-bottom: 1.5px dotted #27ae60;
+      cursor: default;
+    }
+    body.edit-mode [id^="tgt-"]::after {
+      content: '↺ auto';
+      font-size: 7.5px;
+      font-weight: 700;
+      color: #27ae60;
+      background: #eafaf1;
+      border: 1px solid #a9dfbf;
+      border-radius: 3px;
+      padding: 0 4px;
+      margin-left: 5px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    body.edit-mode .sec-title[contenteditable] {
+      background: rgba(255,255,255,0.12);
+      border-bottom: 1.5px dashed rgba(255,255,255,0.5);
+      border-radius: 2px;
+      padding: 1px 4px;
+      outline: none;
+      color: #fff;
+      cursor: text;
+    }
+    body.edit-mode .sec-title[contenteditable]:focus {
+      background: rgba(255,255,255,0.22);
+    }
+
+    /* ══ SECTION ADD / DELETE ════════════════════ */
+    .section-del-btn {
+      display: none;
+      margin-left: auto;
+      cursor: pointer;
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    body.edit-mode .section-del-btn { display: inline-flex; align-items: center; gap: 3px; }
+    .section-del-btn:hover { background: #c0392b; }
+
+    .add-section-btn {
+      display: none;
+      width: 100%;
+      text-align: center;
+      padding: 7px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px dashed #1c4587;
+      border-radius: 6px;
+      color: #1c4587;
+      background: #e8eef7;
+      transition: background .15s;
+      margin-top: 10px;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    .add-section-btn:hover { background: #d0ddf5; }
+    body.edit-mode .add-section-btn { display: block; }
+
+    /* ══ ADD / DELETE CONTROLS ══════════════════ */
+    .add-row-btn, .add-item-btn, .add-para-btn {
+      display: none;
+      width: 100%;
+      text-align: center;
+      padding: 5px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px dashed var(--edit-border);
+      border-radius: 4px;
+      color: #b8860b;
+      background: #fffbe6;
+      transition: background .15s;
+      margin-top: 4px;
+      user-select: none;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    .add-row-btn:hover, .add-item-btn:hover, .add-para-btn:hover { background: #fff3b0; }
+    body.edit-mode .add-row-btn,
+    body.edit-mode .add-item-btn,
+    body.edit-mode .add-para-btn { display: block; }
+
+    .del-btn {
+      display: none;
+      cursor: pointer;
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 6px;
+      margin-right: 6px;
+      vertical-align: middle;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    body.edit-mode .del-btn { display: inline-block; }
+    .del-btn:hover { background: #c0392b; }
+
+    .table-add-wrap { margin-top: 3px; }
+
+    /* ══ SAVED TOAST ══════════════════════════ */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1c3557;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      transition: transform .3s ease, opacity .3s;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 99999;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    @media print {
+      #toolbar, #toast { display: none !important; }
+      body { background: white; padding: 0; gap: 0; padding-top: 0; }
+      .page { box-shadow: none; page-break-after: always; }
+      [contenteditable] { background: transparent !important; border: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ TOOLBAR ══════════════════════════════════ -->
+<div id="toolbar">
+  <div class="tb-title">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8d8f5" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Purchase Order
+    <span class="po-badge">PO No.07 &nbsp;|&nbsp; Rev.B</span>
+  </div>
+  <div class="tb-actions">
+    <div class="edit-indicator" id="edit-indicator">
+      <span class="dot"></span> Editing Mode
+    </div>
+    <button class="tb-btn" id="btn-edit" onclick="startEdit()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit
+    </button>
+    <button class="tb-btn" id="btn-save" onclick="saveEdits()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save
+    </button>
+    <button class="tb-btn" id="btn-cancel" onclick="cancelEdit()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Cancel
+    </button>
+    <button class="tb-btn" id="btn-download" onclick="downloadHTML()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </button>
+    <button class="tb-btn" id="btn-print" onclick="window.print()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+  </div>
+</div>
+
+<div id="toast">✓ Changes saved successfully</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 1
+══════════════════════════════════════════════ -->
+<div class="page" id="page1">
+  <div class="page-content">
+
+    <!-- HEADER -->
+    <div class="doc-header">
+      <div class="dh-logo">
+        <img id="po007-company-logo" src="data:image/png;base64,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WEABgH9Yu5A+/da1ecGq8iyqWGtpZqelfi8EENYNv0FWyXibtsd+JvXl4bhYW2YfmdTptX+nUA+kNPk3rhkD3BratzQ3fY9Nne1t8FDqVU3p1NkMFw6UYNys+6nr1e6/p9N+ZI2JZhVXi7yWm6YvdrHVCHv4vSWh8cjN9vrt5B39krIVGSQQ5zTYoaaUz1FC+tEwI4A1ruHh267rRsVjymt1Qp75Jasktlonhm9JguFcHxNm2G3DEDs1vkfE79F3M2F9tmq1uyO3Y1X3mljtD6V4pi0cL3Sb9XHyH4rJVJZL+PTkc9TBUHiMisrwbtm0UtdLt9V1O9mWoFZjd9itjsPutYypmbBSVEUkYZUSObxcLdzvv1HPyK43PUOspLtS2iDDbvWXCa3NuEtPE+PjgYXlpa4E8yCPDzC45jTXe/S4PcYrPVU7oLvHU1cDyC6mZwuB4tuXj4LqZQb/AGjVwZDb8Xr7zSvsYowaZ7GhsnfF+xLjyGwH3qJSmm3d2uuX0M6NDCyjCLhHNllfvNXadlrmsr7/AENxw3JLdlVkZdbcJmM43RSwzM4ZIZGnZzHjwIWZWmaR2C52OxV896jjhuN2uM1xngjfxNgMhHsbjrsB+K3NdFNtxTluVGMhTp15xpO8U9Ofx5+vmERFmcwREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQH//Z" alt="ALBAB Company" style="height:72px;width:72px;object-fit:contain;display:block;">
+      </div>
+
+      <div class="dh-meta">
+        <div class="dh-buyer-name" id="tgt-header-buyer">ALBAB COMPANY FOR GENERAL CONTRACTING LTD</div>
+        <div class="dh-po" style="margin-top:6px;">
+          <div><span data-po-i18n="poProject">Project:</span> <span id="src-po-project">—</span></div>
+          <div><strong><span data-po-i18n="poTitle">Purchase Order (PO) No.</span><span class="e" id="src-po-num">—</span></strong></div>
+          <div><span data-po-i18n="poDate">PO Date</span> <span class="e" id="src-po-date">—</span></div>
+          <div><span data-po-i18n="poRev">Rev.</span><span class="e" id="src-po-rev">A</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTIES -->
+    <div class="parties">
+      <div class="party-cell party-supplier">
+        <div class="party-heading" data-po-i18n="supplierCompanyName">Company Name</div>
+        <p class="party-company"><strong><span class="e" id="src-seller">ALHANDISYA ELECTRIC CO.</span></strong></p>
+        <p><strong><span data-po-i18n="attn">Attn:</span></strong> <span class="e" id="src-vendor-attn">Mr Haider</span></p>
+        <p><span data-po-i18n="tel">Tel:</span> <span class="e" id="src-vendor-phone">+964 (7730600063 / 7835957994)</span></p>
+        <p><span data-po-i18n="email">E-Mail:</span> <span class="e" id="src-vendor-email">Customercare@alhandasya-electric.com</span></p>
+        <div><span class="offer-badge"><span data-po-i18n="offer">Offer:</span> <span class="e" id="src-offer-type">By Email</span></span></div>
+      </div>
+      <div class="party-cell party-buyer">
+        <div class="party-heading" data-po-i18n="invoiceShipTo">Invoice &amp; Ship To:</div>
+        <p class="party-company"><strong><span class="e" id="src-buyer">ALBAB COMPANY FOR GENERAL CONTRACTING LTD</span></strong></p>
+        <p><span data-po-i18n="tel">Tel:</span> <span class="e" id="src-buyer-phone">+964 7704007200</span></p>
+        <p><span data-po-i18n="emailAlt">E-mail:</span> <span class="e" id="src-buyer-email-primary">info@albab.com.iq</span></p>
+        <p><span class="e" id="src-buyer-email-secondary">cfo@albab.com.iq</span></p>
+      </div>
+    </div>
+
+    <!-- ITEMS TABLE -->
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th data-po-i18n="thNo">No.</th>
+          <th data-po-i18n="thItem">Item</th>
+          <th data-po-i18n="thDesc">Description</th>
+          <th class="c" data-po-i18n="thQty">Qty.</th>
+          <th class="r" data-po-i18n="thUnitPrice">Unit Price (IQD)</th>
+          <th class="r" data-po-i18n="thTotalPrice">Total Price (IQD)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="no"><span class="item-no">1</span></td>
+          <td class="item"><span class="item-tag e"></span></td>
+          <td class="desc">
+            <div class="e-block" style="white-space:pre-wrap;line-height:1.6;font-size:10px;color:var(--mid);"></div>
+          </td>
+          <td class="qty"><span class="e">1</span></td>
+          <td class="price"><span class="e">0</span></td>
+          <td class="price line-total"><span class="e">0</span></td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5" class="tl"><span class="e"><span data-po-i18n="totalPriceSay">Total Price Say:</span> </span></td>
+          <td class="ta"><span class="e" id="src-items-grand-total">0 IQD</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECTION 1 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">1</span><span class="sec-title e" data-po-i18n="secNote">NOTE:</span></div>
+      <ol class="note-list">
+        <li data-n="1)"><span class="e">The invoice will be based on packing.</span></li>
+        <li data-n="2)"><span class="e">The PO is subject to the terms &amp; conditions stated.</span></li>
+        <li data-n="3)"><span class="e">PO's pages must be signed and stamped by both parties.</span></li>
+        <li data-n="4)"><span class="e">Products should guarantee from defects.</span></li>
+        <li data-n="5)"><span class="e">All the data sheet and specification should comply with attached approval data and specifications.</span></li>
+      </ol>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">2</span><span class="sec-title e" data-po-i18n="secDocList">STANDARD DOCUMENTATION INCLUDED IN VALVE PRICES</span></div>
+      <ul class="doc-list">
+        <li><span class="e">Approved General Assembly Drawing</span></li>
+        <li><span class="e">Installation, operation &amp; maintenance manual</span></li>
+        <li><span class="e">Standard quality control plan</span></li>
+      </ul>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span id="tgt-footer1-po">Purchase Order No.07 &nbsp;|&nbsp; PO Date 29.07.2025 &nbsp;|&nbsp; Rev.B</span>
+    <span id="tgt-footer1-buyer">ALBAB COMPANY FOR GENERAL CONTRACTING LTD. IRAQ</span>
+    <span class="pf-num" data-po-page="1">Page 1 / 2</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2
+══════════════════════════════════════════════ -->
+<div class="page" id="page2">
+  <div class="page-content">
+
+    <div class="mini-header">
+      <span class="mh-title" id="tgt-mini-header">ALBAB COMPANY FOR GENERAL CONTRACTING LTD. → ALHANDASYA ELECTRIC CO.</span>
+      <span class="mh-po" id="tgt-mini-po">Purchase Order No.07 &nbsp;|&nbsp; 29.07.2025 &nbsp;|&nbsp; Rev.B</span>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section" style="margin-top:0;">
+      <div class="section-heading"><span class="num">3</span><span class="sec-title e" data-po-i18n="secPayment">PAYMENT:</span></div>
+      <ul class="payment-list">
+        <li><span class="pct">10%</span><span class="e">of selling price by bank transfer as a down payment against Bank receipt conformity.</span></li>
+        <li><span class="pct">30%</span><span class="e">of selling price by bank transfer after approval on DFA. against Bank receipt conformity.</span></li>
+        <li><span class="pct">60%</span><span class="e">of selling price by bank transfer before delivery each patch and approval 3rd party inspection.</span></li>
+      </ul>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">4</span><span class="sec-title e" data-po-i18n="secDelivery">DELIVERY SCHEDULE:</span></div>
+      <table class="delivery-table">
+        <thead>
+          <tr>
+            <th data-po-i18n="thNo">No.</th>
+            <th data-po-i18n="thItem">Item</th>
+            <th data-po-i18n="thDesc">Description</th>
+            <th class="c" data-po-i18n="thLeadTime">Delivery Lead Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="e">1</span></td>
+            <td rowspan="4" style="vertical-align:middle;font-weight:600;color:#1c4587;"><span class="e">E-House &amp; RMU</span></td>
+            <td><span class="e">3 Set RMU type SM6 with E-House</span></td>
+            <td class="lt"><span class="e">60</span></td>
+          </tr>
+          <tr>
+            <td><span class="e">2</span></td>
+            <td><span class="e">3 Set RMU type SM6 with E-House</span></td>
+            <td class="lt"><span class="e">90</span></td>
+          </tr>
+          <tr>
+            <td><span class="e">3</span></td>
+            <td><span class="e">3 Set RMU type SM6 with E-House</span></td>
+            <td class="lt"><span class="e">120</span></td>
+          </tr>
+          <tr>
+            <td><span class="e">4</span></td>
+            <td><span class="e">3 Set RMU type SM6 with E-House</span></td>
+            <td class="lt"><span class="e">150</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">5</span><span class="sec-title e" data-po-i18n="secPacking">PACKING:</span></div>
+      <p class="e-block" style="padding:0 4px;color:var(--mid);font-size:10px;line-height:1.65;">Packing suitable for land transportation.</p>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">6</span><span class="sec-title e" data-po-i18n="secWarranty">WARRANTY</span></div>
+      <p class="warranty-text e-block">Product Warranty: 12 months after installation or 18 months after shipment, whichever comes first (The warranty for the equipment supplied within this offer includes manufacturing defects and does not include malfunctions resulting from failure to install and connect correctly).</p>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">7</span><span class="sec-title e" data-po-i18n="secInspection">INSPECTION AND TESTS</span></div>
+      <ul class="inspection-list">
+        <li><span class="e">COO for RMU (legalized)</span></li>
+        <li><span class="e">Routine testing of the equipment shall be carried out in accordance with the relevant standards &amp; recommendations.</span></li>
+        <li><span class="e">Inspection made by Al-Handasya Co. and attend by third party, Client and ALBAB Co. staff for witness this test &amp; third party should be by <strong>BV, Lloyd Register, Intertek, ATG, SGS, TUV (The cost of 3rd party inspection will be covered by Albab Co.)</strong></span></li>
+      </ul>
+    </div>
+
+    <!-- SECTION 8 -->
+    <div class="section">
+      <div class="section-heading"><span class="num">8</span><span class="sec-title e" data-po-i18n="secEffective">EFFECTIVE DATE (THE EFFECTIVE DATE)</span></div>
+      <ul class="effective-list">
+        <li><span class="e">From of the date of first down payment or approval on DFA whichever is later.</span></li>
+      </ul>
+    </div>
+
+    <!-- SIGNATURES -->
+    <div class="signatures">
+      <div class="sig-cell">
+        <div class="cname" id="tgt-sig-seller">AL-Handasya Company</div>
+        <div class="sig-line"><span class="sl" data-po-i18n="byDate">By Date:</span><span class="sv"></span></div>
+        <div class="sig-line"><span class="sl" data-po-i18n="signatureStamped">Signature &amp; Stamped:</span><span class="sv"></span></div>
+      </div>
+      <div class="sig-cell">
+        <div class="cname" id="tgt-sig-buyer">Albab Company for General Contracting Ltd.</div>
+        <div class="sig-line"><span class="sl" data-po-i18n="byDate">By Date:</span><span class="sv"></span></div>
+        <div class="sig-line"><span class="sl" data-po-i18n="signatureStamped">Signature &amp; Stamped:</span><span class="sv"></span></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span id="tgt-footer2-po">Purchase Order No.07 &nbsp;|&nbsp; PO Date 29.07.2025 &nbsp;|&nbsp; Rev.B</span>
+    <span id="tgt-footer2-buyer">ALBAB COMPANY FOR GENERAL CONTRACTING LTD. IRAQ</span>
+    <span class="pf-num" data-po-page="2">Page 2 / 2</span>
+  </div>
+</div>
+
+
+<script>
+  let isEditing = false;
+  let savedSnapshot = '';
+  let currentLang = 'en';
+  let currentCurrency = 'IQD';
+  let _tplEn = null;
+  let _tplAr = null;
+
+  const PO007_I18N = {
+    en: {
+      poProject: 'Project:',
+      supplierCompanyName: 'Company Name',
+      buyerCompanyName: 'Buyer Company',
+      poTitle: 'Purchase Order (PO) No.',
+      poDate: 'PO Date',
+      poRev: 'Rev.',
+      poLine: (n, d, r) => `Purchase Order No.${n} \u00a0|\u00a0 PO Date ${d} \u00a0|\u00a0 Rev.${r}`,
+      attn: 'Attn:',
+      email: 'E-Mail:',
+      emailAlt: 'E-mail:',
+      tel: 'Tel:',
+      invoiceShipTo: 'Invoice & Ship To:',
+      offer: 'Offer:',
+      offerByEmail: 'By Email',
+      thNo: 'No.',
+      thItem: 'Item',
+      thDesc: 'Description',
+      thQty: 'Qty.',
+      thUnitPrice: 'Unit Price (IQD)',
+      thTotalPrice: 'Total Price (IQD)',
+      thLeadTime: 'Delivery Lead Time',
+      totalPriceSay: 'Total Price Say:',
+      secNote: 'NOTE:',
+      secDocList: 'STANDARD DOCUMENTATION INCLUDED IN VALVE PRICES',
+      secPayment: 'PAYMENT:',
+      secDelivery: 'DELIVERY SCHEDULE:',
+      secPacking: 'PACKING:',
+      secWarranty: 'WARRANTY',
+      secInspection: 'INSPECTION AND TESTS',
+      secEffective: 'EFFECTIVE DATE (THE EFFECTIVE DATE)',
+      byDate: 'By Date:',
+      signatureStamped: 'Signature & Stamped:',
+      page: (n, total) => `Page ${n} / ${total}`,
+      btnDelete: '\u2715 Delete',
+      btnAddRow: '+ Add Item Row',
+      btnAddItem: '+ Add Item',
+      newItemPlaceholder: 'Item',
+      newItemDescPlaceholder: 'Description',
+      currencyIqd: 'IQD',
+      btnAddPara: '+ Add Paragraph',
+      btnAddSection: '+ Add Section',
+    },
+    ar: {
+      poProject: '\u0627\u0644\u0645\u0634\u0631\u0648\u0639:',
+      supplierCompanyName: '\u0627\u0633\u0645 \u0627\u0644\u0634\u0631\u0643\u0629',
+      buyerCompanyName: '\u0634\u0631\u0643\u0629 \u0627\u0644\u0645\u0634\u062a\u0631\u064a',
+      poTitle: '\u0623\u0645\u0631 \u0634\u0631\u0627\u0621 \u0631\u0642\u0645 ',
+      poDate: '\u062a\u0627\u0631\u064a\u062e \u0623\u0645\u0631 \u0627\u0644\u0634\u0631\u0627\u0621',
+      poRev: '\u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629 ',
+      poLine: (n, d, r) => `\u0623\u0645\u0631 \u0634\u0631\u0627\u0621 \u0631\u0642\u0645 ${n} \u00a0|\u00a0 \u062a\u0627\u0631\u064a\u062e ${d} \u00a0|\u00a0 \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629 ${r}`,
+      attn: '\u0639\u0646\u0627\u064a\u0629:',
+      email: '\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a:',
+      emailAlt: '\u0627\u0644\u0628\u0631\u064a\u062f:',
+      tel: '\u0627\u0644\u0647\u0627\u062a\u0641:',
+      invoiceShipTo: '\u0627\u0644\u0641\u0627\u062a\u0648\u0631\u0629 \u0648\u0627\u0644\u0634\u062d\u0646 \u0625\u0644\u0649:',
+      offer: '\u0627\u0644\u0639\u0631\u0636:',
+      offerByEmail: '\u0639\u0628\u0631 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a',
+      thNo: '\u0645',
+      thItem: '\u0627\u0644\u0635\u0646\u0641',
+      thDesc: '\u0627\u0644\u0648\u0635\u0641',
+      thQty: '\u0627\u0644\u0643\u0645\u064a\u0629',
+      thUnitPrice: '\u0633\u0639\u0631 \u0627\u0644\u0648\u062d\u062f\u0629 (\u062f.\u0639)',
+      thTotalPrice: '\u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a (\u062f.\u0639)',
+      thLeadTime: '\u0645\u062f\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645',
+      totalPriceSay: '\u0627\u0644\u0645\u0628\u0644\u063a \u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a \u0643\u062a\u0627\u0628\u0629\u064b:',
+      secNote: '\u0645\u0644\u0627\u062d\u0638\u0627\u062a:',
+      secDocList: '\u0627\u0644\u0648\u062b\u0627\u0626\u0642 \u0627\u0644\u0645\u0639\u062a\u0627\u062f\u0629 \u0627\u0644\u0645\u0634\u0645\u0648\u0644\u0629 \u0641\u064a \u0627\u0644\u0623\u0633\u0639\u0627\u0631',
+      secPayment: '\u0627\u0644\u062f\u0641\u0639:',
+      secDelivery: '\u062c\u062f\u0648\u0644 \u0627\u0644\u062a\u0633\u0644\u064a\u0645:',
+      secPacking: '\u0627\u0644\u062a\u063a\u0644\u064a\u0641:',
+      secWarranty: '\u0627\u0644\u0636\u0645\u0627\u0646',
+      secInspection: '\u0627\u0644\u0641\u062d\u0635 \u0648\u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a',
+      secEffective: '\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0633\u0631\u064a\u0627\u0646',
+      byDate: '\u0628\u062a\u0627\u0631\u064a\u062e:',
+      signatureStamped: '\u0627\u0644\u062a\u0648\u0642\u064a\u0639 \u0648\u0627\u0644\u062e\u062a\u0645:',
+      page: (n, total) => `\u0635\u0641\u062d\u0629 ${n} / ${total}`,
+      btnDelete: '\u2715 \u062d\u0630\u0641',
+      btnAddRow: '+\u0625\u0636\u0627\u0641\u0629 \u0635\u0641 \u0645\u0627\u062f\u0629',
+      btnAddItem: '+\u0625\u0636\u0627\u0641\u0629 \u0628\u0646\u062f',
+      newItemPlaceholder: '\u0627\u0644\u0635\u0646\u0641',
+      newItemDescPlaceholder: '\u0627\u0644\u0648\u0635\u0641',
+      currencyIqd: '\u062f.\u0639',
+      btnAddPara: '+\u0625\u0636\u0627\u0641\u0629 \u0641\u0642\u0631\u0629',
+      btnAddSection: '+\u0625\u0636\u0627\u0641\u0629 \u0642\u0633\u0645',
+    },
+  };
+
+  const PO007_AR_SAMPLE = [
+    ['The invoice will be based on packing.', '\u0627\u0644\u0641\u0627\u062a\u0648\u0631\u0629 \u062a\u064f\u0635\u062f\u0631 \u0628\u0646\u0627\u0621\u064b \u0639\u0644\u0649 \u0627\u0644\u062a\u063a\u0644\u064a\u0641.'],
+    ['The PO is subject to the terms &amp; conditions stated.', '\u0623\u0645\u0631 \u0627\u0644\u0634\u0631\u0627\u0621 \u062e\u0627\u0636\u0639 \u0644\u0644\u0634\u0631\u0648\u0637 \u0648\u0627\u0644\u0623\u062d\u0643\u0627\u0645 \u0627\u0644\u0645\u0630\u0643\u0648\u0631\u0629.'],
+    ["PO's pages must be signed and stamped by both parties.", '\u064a\u062c\u0628 \u062a\u0648\u0642\u064a\u0639 \u0635\u0641\u062d\u0627\u062a \u0623\u0645\u0631 \u0627\u0644\u0634\u0631\u0627\u0621 \u0648\u062e\u062a\u0645\u0647\u0627 \u0645\u0646 \u0642\u0628\u0644 \u0627\u0644\u0637\u0631\u0641\u064a\u0646.'],
+    ['Products should guarantee from defects.', '\u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0645\u0636\u0645\u0648\u0646\u0629 \u062e\u0644\u0641 \u0639\u064a\u0648\u0628 \u0627\u0644\u0635\u0646\u0627\u0639\u0629.'],
+    ['All the data sheet and specification should comply with attached approval data and specifications.', '\u062c\u0645\u064a\u0639 \u0627\u0644\u0648\u0631\u0642 \u0627\u0644\u0641\u0646\u064a\u0629 \u0648\u0627\u0644\u0645\u0648\u0627\u0635\u0641\u0627\u062a \u064a\u062c\u0628 \u0623\u0646 \u062a\u062a\u0648\u0627\u0641\u0642 \u0645\u0639 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0648\u0627\u0644\u0645\u0648\u0627\u0635\u0641\u0627\u062a \u0627\u0644\u0645\u0639\u062a\u0645\u062f\u0629 \u0627\u0644\u0645\u0631\u0641\u0642\u0629.'],
+    ['Approved General Assembly Drawing', '\u0627\u0644\u0631\u0633\u0645 \u0627\u0644\u062a\u0646\u0633\u064a\u0642\u064a \u0627\u0644\u0645\u0639\u062a\u0645\u062f \u0644\u0644\u062a\u062c\u0645\u064a\u0639 \u0627\u0644\u0639\u0627\u0645'],
+    ['Installation, operation &amp; maintenance manual', '\u062f\u0644\u064a\u0644 \u0627\u0644\u062a\u0631\u0643\u064a\u0628 \u0648\u0627\u0644\u062a\u0634\u063a\u064a\u0644 \u0648\u0627\u0644\u0635\u064a\u0627\u0646\u0629'],
+    ['Standard quality control plan', '\u062e\u0637\u0629 \u0645\u0631\u0627\u0642\u0628\u0629 \u062c\u0648\u062f\u0629 \u0642\u064a\u0627\u0633\u064a\u0629'],
+    ['of selling price by bank transfer as a down payment against Bank receipt conformity.', '\u0645\u0646 \u0633\u0639\u0631 \u0627\u0644\u0628\u064a\u0639 \u0628\u0627\u0644\u062d\u0648\u0627\u0644\u0629 \u0627\u0644\u0628\u0646\u0643\u064a\u0629 \u0643\u062f\u0641\u0639\u0629 \u0645\u0642\u0627\u0628\u0644 \u0625\u064a\u0635\u0627\u0644 \u0627\u0644\u0628\u0646\u0643.'],
+    ['of selling price by bank transfer after approval on DFA. against Bank receipt conformity.', '\u0645\u0646 \u0633\u0639\u0631 \u0627\u0644\u0628\u064a\u0639 \u0628\u0627\u0644\u062d\u0648\u0627\u0644\u0629 \u0627\u0644\u0628\u0646\u0643\u064a\u0629 \u0628\u0639\u062f \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 DFA \u0645\u0642\u0627\u0628\u0644 \u0625\u064a\u0635\u0627\u0644 \u0627\u0644\u0628\u0646\u0643.'],
+    ['of selling price by bank transfer before delivery each patch and approval 3rd party inspection.', '\u0645\u0646 \u0633\u0639\u0631 \u0627\u0644\u0628\u064a\u0639 \u0628\u0627\u0644\u062d\u0648\u0627\u0644\u0629 \u0627\u0644\u0628\u0646\u0643\u064a\u0629 \u0642\u0628\u0644 \u062a\u0633\u0644\u064a\u0645 \u0643\u0644 \u062f\u0641\u0639\u0629 \u0648\u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 \u0641\u062d\u0635 \u0637\u0631\u0641 \u062b\u0627\u0644\u062b.'],
+    ['Packing suitable for land transportation.', '\u062a\u063a\u0644\u064a\u0641 \u0645\u0646\u0627\u0633\u0628 \u0644\u0644\u0646\u0642\u0644 \u0627\u0644\u0628\u0631\u064a.'],
+    ['Product Warranty: 12 months after installation or 18 months after shipment, whichever comes first (The warranty for the equipment supplied within this offer includes manufacturing defects and does not include malfunctions resulting from failure to install and connect correctly).', '\u0636\u0645\u0627\u0646 \u0627\u0644\u0645\u0646\u062a\u062c: 12 \u0634\u0647\u0631\u064b\u0627 \u0628\u0639\u062f \u0627\u0644\u062a\u0631\u0643\u064a\u0628 \u0623\u0648 18 \u0634\u0647\u0631\u064b\u0627 \u0628\u0639\u062f \u0627\u0644\u0634\u062d\u0646\u060c \u0623\u064a\u0651\u0647\u0645\u0627 \u064a\u062d\u062f\u062b \u0623\u0648\u0644\u0627\u064b (\u064a\u0634\u0645\u0644 \u0627\u0644\u0636\u0645\u0627\u0646 \u0639\u064a\u0648\u0628 \u0627\u0644\u0635\u0646\u0627\u0639\u0629 \u0648\u0644\u0627 \u064a\u0634\u0645\u0644 \u0627\u0644\u0623\u0639\u0637\u0627\u0644 \u0627\u0644\u0646\u0627\u062a\u062c\u0629 \u0639\u0646 \u062e\u0637\u0623 \u0627\u0644\u062a\u0631\u0643\u064a\u0628 \u0623\u0648 \u0627\u0644\u062a\u0648\u0635\u064a\u0644).'],
+    ['COO for RMU (legalized)', '\u0634\u0647\u0627\u062f\u0629 \u0645\u0646\u0634\u0623 \u0644\u0640 RMU (\u0645\u0635\u062f\u0642\u0629)'],
+    ['Routine testing of the equipment shall be carried out in accordance with the relevant standards &amp; recommendations.', '\u062a\u064f\u062c\u0631\u0649 \u0627\u0644\u0627\u062e\u062a\u0628\u0627\u0631\u0627\u062a \u0627\u0644\u0631\u0648\u062a\u064a\u0646\u064a\u0629 \u0648\u0641\u0642\u064b\u0627 \u0644\u0644\u0645\u0639\u0627\u064a\u064a\u0631 \u0648\u0627\u0644\u062a\u0648\u0635\u064a\u0627\u062a \u0627\u0644\u0630\u0627\u062a \u0635\u0644\u0629.'],
+    ['From of the date of first down payment or approval on DFA whichever is later.', '\u0645\u0646 \u062a\u0627\u0631\u064a\u062e \u0623\u0648\u0644 \u062f\u0641\u0639\u0629 \u0623\u0648 \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0639\u0644\u0649 DFA \u0623\u064a\u0651\u0647\u0645\u0627 \u064a\u062d\u062f\u062b \u0644\u0627\u062d\u0642\u064b\u0627.'],
+  ];
+
+  function po007L(lang) {
+    return PO007_I18N[lang === 'ar' ? 'ar' : 'en'];
+  }
+
+  function normalizePo007Currency(code) {
+    return code === 'USD' ? 'USD' : 'IQD';
+  }
+
+  function po007CurrencyLabel(code, lang) {
+    const c = normalizePo007Currency(code);
+    if (c === 'USD') return 'USD';
+    return lang === 'ar' ? '\u062f.\u0639' : 'IQD';
+  }
+
+  function updateItemsCurrencyHeaders() {
+    const cur = po007CurrencyLabel(currentCurrency, currentLang);
+    const unitTh = document.querySelector('.items-table thead th[data-po-i18n="thUnitPrice"]');
+    const totalTh = document.querySelector('.items-table thead th[data-po-i18n="thTotalPrice"]');
+    if (unitTh) {
+      unitTh.textContent = currentLang === 'ar'
+        ? `\u0633\u0639\u0631 \u0627\u0644\u0648\u062d\u062f\u0629 (${cur})`
+        : `Unit Price (${cur})`;
+    }
+    if (totalTh) {
+      totalTh.textContent = currentLang === 'ar'
+        ? `\u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a (${cur})`
+        : `Total Price (${cur})`;
+    }
+  }
+
+  function applyPo007Currency(code) {
+    currentCurrency = normalizePo007Currency(code);
+    updateItemsCurrencyHeaders();
+    recalcItemsTable();
+  }
+
+  function initPo007Templates() {
+    if (_tplEn) return;
+    _tplEn = {
+      p1: document.getElementById('page1')?.innerHTML || '',
+      p2: document.getElementById('page2')?.innerHTML || '',
+    };
+    let p1 = _tplEn.p1;
+    let p2 = _tplEn.p2;
+    PO007_AR_SAMPLE.forEach(([en, ar]) => {
+      p1 = p1.split(en).join(ar);
+      p2 = p2.split(en).join(ar);
+    });
+    _tplAr = { p1, p2 };
+  }
+
+  function applyPo007Language(lang) {
+    currentLang = lang === 'ar' ? 'ar' : 'en';
+    const L = po007L(currentLang);
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-po-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-po-i18n');
+      if (!key || !L[key]) return;
+      if (key === 'thUnitPrice' || key === 'thTotalPrice') return;
+      el.textContent = L[key];
+    });
+    updateItemsCurrencyHeaders();
+    document.querySelectorAll('[data-po-page]').forEach((el) => {
+      const n = el.getAttribute('data-po-page') || '1';
+      el.textContent = L.page(n, '2');
+    });
+    document.querySelectorAll('.del-btn').forEach((b) => { b.textContent = L.btnDelete; });
+    document.querySelectorAll('.add-row-btn, .add-item-btn, .add-para-btn, .add-section-btn').forEach((b) => {
+      const cls = [...b.classList].find((c) => c.startsWith('add-'));
+      if (cls === 'add-row-btn') b.textContent = L.btnAddRow;
+      else if (cls === 'add-item-btn') b.textContent = L.btnAddItem;
+      else if (cls === 'add-para-btn') b.textContent = L.btnAddPara;
+      else if (cls === 'add-section-btn') b.textContent = L.btnAddSection;
+    });
+    syncNames();
+    recalcItemsTable();
+  }
+
+  function resetToLanguageTemplate(lang) {
+    initPo007Templates();
+    const t = lang === 'ar' ? _tplAr : _tplEn;
+    const p1 = document.getElementById('page1');
+    const p2 = document.getElementById('page2');
+    if (p1 && t?.p1) p1.innerHTML = t.p1;
+    if (p2 && t?.p2) p2.innerHTML = t.p2;
+    applyPo007Language(lang);
+    recalcItemsTable();
+    if (isEditing) reapplyEditMode();
+    const ot = document.getElementById('src-offer-type');
+    if (ot) ot.textContent = po007L(lang).offerByEmail;
+    if (_syncObs) rebindLiveSync();
+  }
+
+  /* ══════════════════════════════════════════════
+     AUTO-SYNC names: parties → header & signatures
+  ══════════════════════════════════════════════ */
+  /* ══════════════════════════════════════════════
+     LIVE SYNC — always active, reads from sources
+  ══════════════════════════════════════════════ */
+  function syncNames() {
+    const sel = document.getElementById('src-seller');
+    const buy = document.getElementById('src-buyer');
+    const num = document.getElementById('src-po-num');
+    const dat = document.getElementById('src-po-date');
+    const rev = document.getElementById('src-po-rev');
+
+    const sellerName = sel ? sel.textContent.trim() : '';
+    const buyerName  = buy ? buy.textContent.trim() : '';
+    const poNum  = num ? num.textContent.trim() : '';
+    const poDate = dat ? dat.textContent.trim() : '';
+    const poRev  = rev ? rev.textContent.trim() : '';
+
+    const poLine = po007L(currentLang).poLine(poNum, poDate, poRev);
+
+    // Header buyer (top-right)
+    const hb = document.getElementById('tgt-header-buyer');
+    if (hb) hb.textContent = buyerName;
+
+    // Header seller brand
+    const br = document.getElementById('tgt-seller-brand');
+    if (br) br.textContent = sellerName;
+
+    // Mini header
+    const mh = document.getElementById('tgt-mini-header');
+    if (mh) mh.textContent = `${buyerName} \u2192 ${sellerName}`;
+
+    const mp = document.getElementById('tgt-mini-po');
+    if (mp) mp.textContent = poLine;
+
+    // Signatures
+    const ss = document.getElementById('tgt-sig-seller');
+    if (ss) ss.textContent = sellerName;
+    const sb = document.getElementById('tgt-sig-buyer');
+    if (sb) sb.textContent = buyerName;
+
+    // Footers
+    const f1p = document.getElementById('tgt-footer1-po');
+    const f1b = document.getElementById('tgt-footer1-buyer');
+    const f2p = document.getElementById('tgt-footer2-po');
+    const f2b = document.getElementById('tgt-footer2-buyer');
+    if (f1p) f1p.textContent = poLine;
+    if (f1b) f1b.textContent = buyerName;
+    if (f2p) f2p.textContent = poLine;
+    if (f2b) f2b.textContent = buyerName;
+  }
+
+  function notifyParentPoDateChanged() {
+    if (window.parent === window) return;
+    if (new URLSearchParams(location.search).get('embed') !== '1') return;
+    const poDate = (document.getElementById('src-po-date')?.textContent || '').trim();
+    window.parent.postMessage({ type: 'po007-po-date-changed', poDate }, '*');
+  }
+
+  /* Single persistent observer — watches all source fields always */
+  let _syncObs = null;
+
+  function startLiveSync() {
+    if (_syncObs) {
+      rebindLiveSync();
+      return;
+    }
+    bindLiveSyncHandlers();
+    syncNames();
+  }
+
+  function bindLiveSyncHandlers() {
+    const sourceIds = ['src-seller', 'src-buyer', 'src-po-num', 'src-po-date', 'src-po-rev'];
+    _syncObs = new MutationObserver(syncNames);
+    sourceIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) _syncObs.observe(el, { childList: true, characterData: true, subtree: true });
+    });
+    sourceIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', syncNames);
+        el.addEventListener('keyup', syncNames);
+      }
+    });
+    const poDateEl = document.getElementById('src-po-date');
+    if (poDateEl) {
+      poDateEl.addEventListener('input', notifyParentPoDateChanged);
+      poDateEl.addEventListener('keyup', notifyParentPoDateChanged);
+    }
+  }
+
+  function rebindLiveSync() {
+    if (_syncObs) {
+      _syncObs.disconnect();
+      _syncObs = null;
+    }
+    bindLiveSyncHandlers();
+    syncNames();
+  }
+
+  function attachNameSync() { startLiveSync(); }
+  function detachNameSync() { /* keep observer alive — footers always reflect sources */ }
+
+  /* ── UI toggle ─────────────────────────────── */
+  function setEditUI(on) {
+    document.getElementById('btn-edit').style.display   = on ? 'none' : 'flex';
+    document.getElementById('btn-save').style.display   = on ? 'flex' : 'none';
+    document.getElementById('btn-cancel').style.display = on ? 'flex' : 'none';
+    document.getElementById('edit-indicator').style.display = on ? 'flex' : 'none';
+    document.body.classList.toggle('edit-mode', on);
+  }
+
+  /* ── Make element editable ─────────────────── */
+  function makeEditable(el, isBlock) {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    if (isBlock) el.classList.add('editable-block');
+  }
+
+  function shouldMakeEditable(el) {
+    if (el.closest('td.line-total')) return false;
+    if (el.id === 'src-items-grand-total') return false;
+    if (el.closest('td.no')) return false;
+    return true;
+  }
+
+  function applyEditModeToDocument() {
+    document.querySelectorAll('.e').forEach((el) => {
+      if (!shouldMakeEditable(el)) return;
+      makeEditable(el, false);
+    });
+    document.querySelectorAll('.e-block').forEach((el) => makeEditable(el, true));
+    injectItemsTableControls();
+    injectDeliveryTableControls();
+    injectListControls();
+    injectParaControls();
+    injectSectionControls();
+    autoRenumber();
+    attachNameSync();
+  }
+
+  /* ── Build delete button ─────────────────── */
+  function delBtn(onclickFn) {
+    const b = document.createElement('button');
+    b.className = 'del-btn';
+    b.textContent = po007L(currentLang).btnDelete;
+    b.onclick = onclickFn;
+    return b;
+  }
+
+  function parsePo007Num(text) {
+    const s = String(text || '').replace(/[^\d.,-]/g, '').replace(/,/g, '');
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function formatPo007Amount(n) {
+    const x = Number(n) || 0;
+    if (Math.abs(x - Math.round(x)) < 1e-9) return Math.round(x).toLocaleString('en-US');
+    return x.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function itemDataRows() {
+    const tbody = document.querySelector('.items-table tbody');
+    if (!tbody) return [];
+    return [...tbody.querySelectorAll('tr')].filter(
+      (tr) => !tr.classList.contains('total-row') && !tr.querySelector('.add-items-row-btn')
+    );
+  }
+
+  function renumberItemRows() {
+    itemDataRows().forEach((tr, i) => {
+      const noTd = tr.querySelector('td.no');
+      if (!noTd) return;
+      let numEl = noTd.querySelector('.item-no') || noTd.querySelector(':scope > span.e');
+      if (!numEl) {
+        numEl = document.createElement('span');
+        numEl.className = 'item-no';
+        noTd.appendChild(numEl);
+      }
+      numEl.textContent = String(i + 1);
+    });
+  }
+
+  function recalcItemsTable() {
+    const L = po007L(currentLang);
+    let sum = 0;
+    itemDataRows().forEach((tr) => {
+      const tds = tr.querySelectorAll('td');
+      if (tds.length < 6) return;
+      const qty = parsePo007Num(tds[3]?.textContent);
+      const unit = parsePo007Num(tds[4]?.textContent);
+      const lineTotal = qty * unit;
+      sum += lineTotal;
+      tds[5].classList.add('price', 'line-total');
+      let lt = tds[5].querySelector('.e');
+      if (!lt) {
+        lt = document.createElement('span');
+        lt.className = 'e';
+        tds[5].textContent = '';
+        tds[5].appendChild(lt);
+      }
+      lt.textContent = formatPo007Amount(lineTotal);
+    });
+    const grand = document.getElementById('src-items-grand-total');
+    if (grand) grand.textContent = `${formatPo007Amount(sum)} ${po007CurrencyLabel(currentCurrency, currentLang)}`;
+    renumberItemRows();
+  }
+
+  function bindItemsTableRecalc() {
+    const tbody = document.querySelector('.items-table tbody');
+    if (!tbody || tbody.dataset.recalcBound === '1') return;
+    tbody.dataset.recalcBound = '1';
+    const handler = () => recalcItemsTable();
+    tbody.addEventListener('input', handler);
+    tbody.addEventListener('keyup', handler);
+  }
+
+  function removeItemRow(tr) {
+    const tbody = tr?.closest('tbody');
+    if (!tbody) return;
+    if (itemDataRows().length <= 1) {
+      showToast(currentLang === 'ar' ? '\u26a0 \u0644\u0627 \u064a\u0645\u0643\u0646 \u062d\u0630\u0641 \u0622\u062e\u0631 \u0635\u0641' : '\u26a0 Cannot delete the last item row');
+      return;
+    }
+    tr.remove();
+    recalcItemsTable();
+  }
+  window.removeItemRow = removeItemRow;
+
+  /* ══════════════════════════════════════════════
+     ADD ROW — items table
+  ══════════════════════════════════════════════ */
+  function injectItemsTableControls() {
+    const tbody = document.querySelector('.items-table tbody');
+    if (!tbody) return;
+
+    // Add del buttons to existing data rows
+    tbody.querySelectorAll('tr:not(.total-row)').forEach(tr => {
+      if (tr.querySelector('.add-items-row-btn')) return;
+      if (tr.querySelector('.del-btn')) return;
+      const firstTd = tr.querySelector('td');
+      if (firstTd) firstTd.prepend(delBtn(() => removeItemRow(tr)));
+    });
+
+    // Add row button (before total row)
+    if (!tbody.querySelector('.add-items-row-btn')) {
+      const addBtn = document.createElement('tr');
+      addBtn.innerHTML = `<td colspan="6" style="padding:0;">
+        <button type="button" class="add-row-btn add-items-row-btn" onclick="addItemRow()">${po007L(currentLang).btnAddRow}</button>
+      </td>`;
+      const totalRow = tbody.querySelector('.total-row');
+      tbody.insertBefore(addBtn, totalRow);
+    }
+    bindItemsTableRecalc();
+    recalcItemsTable();
+  }
+
+  function addItemRow() {
+    const L = po007L(currentLang);
+    const tbody = document.querySelector('.items-table tbody');
+    const newIdx = itemDataRows().length + 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="no"><button type="button" class="del-btn" onclick="removeItemRow(this.closest('tr'))">${po007L(currentLang).btnDelete}</button><span class="item-no">${newIdx}</span></td>
+      <td class="item"><span class="item-tag e"></span></td>
+      <td class="desc">
+        <div class="e-block" style="white-space:pre-wrap;line-height:1.6;font-size:10px;color:var(--mid);"></div>
+      </td>
+      <td class="qty"><span class="e">1</span></td>
+      <td class="price"><span class="e">0</span></td>
+      <td class="price line-total"><span class="e">0</span></td>`;
+    const addBtnRow = tbody.querySelector(':has(.add-items-row-btn)');
+    tbody.insertBefore(tr, addBtnRow);
+    if (isEditing) {
+      tr.querySelectorAll('.e').forEach((el) => {
+        if (!shouldMakeEditable(el)) return;
+        makeEditable(el, false);
+      });
+      tr.querySelectorAll('.e-block').forEach((el) => makeEditable(el, true));
+    }
+    recalcItemsTable();
+    tr.querySelector('[contenteditable]')?.focus();
+  }
+
+  /* ══════════════════════════════════════════════
+     ADD ROW — delivery table
+  ══════════════════════════════════════════════ */
+  function injectDeliveryTableControls() {
+    const table = document.querySelector('.delivery-table');
+    if (!table) return;
+    const tbody = table.querySelector('tbody');
+
+    // del buttons on each row (only first td since item cell has rowspan)
+    tbody.querySelectorAll('tr').forEach(tr => {
+      if (tr.querySelector('.del-btn')) return;
+      const firstTd = tr.querySelector('td:not([rowspan])') || tr.querySelector('td');
+      if (firstTd) firstTd.prepend(delBtn(() => {
+        if (tbody.querySelectorAll('tr').length > 1) tr.remove();
+        else showToast('⚠ Cannot delete the last delivery row');
+      }));
+    });
+
+    if (tbody.querySelector('.add-delivery-row-btn')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'table-add-wrap';
+    wrap.innerHTML = `<button class="add-row-btn add-delivery-row-btn" onclick="addDeliveryRow()">＋ Add Delivery Row</button>`;
+    table.parentNode.insertBefore(wrap, table.nextSibling);
+  }
+
+  function addDeliveryRow() {
+    const tbody = document.querySelector('.delivery-table tbody');
+    const rowCount = tbody.querySelectorAll('tr').length + 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><button class="del-btn" onclick="this.closest('tr').remove()">✕</button>${rowCount}</td>
+      <td><span class="e" contenteditable="true" spellcheck="false">E-House &amp; RMU</span></td>
+      <td><span class="e" contenteditable="true" spellcheck="false">3 Set RMU type SM6 with E-House</span></td>
+      <td class="lt"><span class="e" contenteditable="true" spellcheck="false">0</span></td>`;
+    tbody.appendChild(tr);
+    tr.querySelector('[contenteditable]').focus();
+  }
+
+  /* ══════════════════════════════════════════════
+     ADD ITEM — note / doc / payment / inspection lists
+  ══════════════════════════════════════════════ */
+  /* ══════════════════════════════════════════════
+     ADD ITEM — all list types (unified)
+  ══════════════════════════════════════════════ */
+  function injectListControls() {
+
+    // Generic helper: inject del buttons + add-item button for any list
+    function setupList(ul, label, buildLi) {
+      // Guard: mark list as injected
+      if (ul.dataset.injected) return;
+      ul.dataset.injected = '1';
+
+      // Del buttons on existing items
+      ul.querySelectorAll('li').forEach(li => {
+        if (li.querySelector('.del-btn')) return;
+        li.prepend(delBtn(() => {
+          if (ul.querySelectorAll('li').length > 1) li.remove();
+          else showToast('⚠ Cannot delete the last item');
+        }));
+      });
+
+      // Add-item button (inserted right after the ul)
+      const btn = document.createElement('button');
+      btn.className = 'add-item-btn';
+      btn.textContent = `＋ ${label}`;
+      btn.onclick = () => {
+        const li = buildLi();
+        // Insert before the add button's row (keep btn at bottom)
+        ul.appendChild(li);
+        const ce = li.querySelector('[contenteditable]');
+        if (ce) ce.focus();
+      };
+      ul.after(btn);
+    }
+
+    // ── Note list ─────────────────────────────
+    document.querySelectorAll('.note-list').forEach(ul => {
+      setupList(ul, 'Add Note Item', () => {
+        const num = ul.querySelectorAll('li').length + 1;
+        const li  = document.createElement('li');
+        li.setAttribute('data-n', num + ')');
+        li.innerHTML = `<button class="del-btn" onclick="if(this.closest('ol').querySelectorAll('li').length>1)this.closest('li').remove();else showToast('⚠ Cannot delete the last item')">✕</button><span class="e" contenteditable="true" spellcheck="false">New note item.</span>`;
+        return li;
+      });
+    });
+
+    // ── Doc list ──────────────────────────────
+    document.querySelectorAll('.doc-list').forEach(ul => {
+      setupList(ul, 'Add Document Item', () => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button class="del-btn" onclick="if(this.closest('ul').querySelectorAll('li').length>1)this.closest('li').remove();else showToast('⚠ Cannot delete the last item')">✕</button><span class="e" contenteditable="true" spellcheck="false">New document item</span>`;
+        return li;
+      });
+    });
+
+    // ── Payment list ──────────────────────────
+    document.querySelectorAll('.payment-list').forEach(ul => {
+      setupList(ul, 'Add Payment Term', () => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button class="del-btn" onclick="if(this.closest('ul').querySelectorAll('li').length>1)this.closest('li').remove();else showToast('⚠ Cannot delete the last item')">✕</button><span class="pct e" contenteditable="true" spellcheck="false">0%</span><span class="e" contenteditable="true" spellcheck="false">Describe payment condition here.</span>`;
+        return li;
+      });
+    });
+
+    // ── Inspection list ───────────────────────
+    document.querySelectorAll('.inspection-list').forEach(ul => {
+      setupList(ul, 'Add Inspection Item', () => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button class="del-btn" onclick="if(this.closest('ul').querySelectorAll('li').length>1)this.closest('li').remove();else showToast('⚠ Cannot delete the last item')">✕</button><span class="e" contenteditable="true" spellcheck="false">New inspection requirement.</span>`;
+        return li;
+      });
+    });
+
+    // ── Effective list ────────────────────────
+    document.querySelectorAll('.effective-list').forEach(ul => {
+      setupList(ul, 'Add Effective Date Item', () => {
+        const li = document.createElement('li');
+        li.innerHTML = `<button class="del-btn" onclick="if(this.closest('ul').querySelectorAll('li').length>1)this.closest('li').remove();else showToast('⚠ Cannot delete the last item')">✕</button><span class="e" contenteditable="true" spellcheck="false">New effective date condition.</span>`;
+        return li;
+      });
+    });
+  }
+
+  /* ══════════════════════════════════════════════
+     ADD / DELETE — main sections
+  ══════════════════════════════════════════════ */
+  /* ══════════════════════════════════════════════
+     AUTO-RENUMBER all sections across both pages
+  ══════════════════════════════════════════════ */
+  function autoRenumber() {
+    const allSections = document.querySelectorAll('#page1 .section, #page2 .section');
+    allSections.forEach((sec, i) => {
+      const numSpan = sec.querySelector('.section-heading .num');
+      if (numSpan) numSpan.textContent = i + 1;
+    });
+  }
+
+  /* ══════════════════════════════════════════════
+     MOVE SECTION up / down
+  ══════════════════════════════════════════════ */
+  function moveSection(sec, dir) {
+    const allSecs = [...document.querySelectorAll('#page1 .section, #page2 .section')];
+    const idx = allSecs.indexOf(sec);
+    const target = allSecs[idx + dir];
+    if (!target) return;
+    if (dir === -1) target.before(sec);
+    else            target.after(sec);
+    autoRenumber();
+  }
+
+  /* ══════════════════════════════════════════════
+     ADD / DELETE — main sections
+  ══════════════════════════════════════════════ */
+  function injectSectionControls() {
+    document.querySelectorAll('#page1 .section, #page2 .section').forEach(sec => {
+      const heading = sec.querySelector('.section-heading');
+      if (!heading) return;
+
+      // Make section title editable
+      const titleSpan = heading.querySelector('.sec-title');
+      if (titleSpan && !titleSpan.hasAttribute('contenteditable')) {
+        titleSpan.contentEditable = 'true';
+        titleSpan.spellcheck = false;
+      }
+
+      // ▲ Move Up
+      if (!heading.querySelector('.move-up-btn')) {
+        const up = document.createElement('button');
+        up.className = 'section-move-btn move-up-btn';
+        up.textContent = '▲';
+        up.title = 'Move section up';
+        up.onclick = () => { moveSection(sec, -1); injectSectionControls(); };
+        heading.insertBefore(up, heading.querySelector('.sec-title'));
+      }
+
+      // ▼ Move Down
+      if (!heading.querySelector('.move-dn-btn')) {
+        const dn = document.createElement('button');
+        dn.className = 'section-move-btn move-dn-btn';
+        dn.textContent = '▼';
+        dn.title = 'Move section down';
+        dn.onclick = () => { moveSection(sec, 1); injectSectionControls(); };
+        const delBtn = heading.querySelector('.section-del-btn');
+        if (delBtn) heading.insertBefore(dn, delBtn);
+        else heading.appendChild(dn);
+      }
+
+      // ✕ Delete
+      if (!heading.querySelector('.section-del-btn')) {
+        const btn = document.createElement('button');
+        btn.className = 'section-del-btn';
+        btn.textContent = '✕ Delete';
+        btn.onclick = () => {
+          if (confirm('Delete this entire section?')) { sec.remove(); autoRenumber(); }
+        };
+        heading.appendChild(btn);
+      }
+    });
+
+    // ＋ Add New Section at end of each page-content
+    document.querySelectorAll('.page-content').forEach(pc => {
+      if (pc.querySelector('.add-section-btn')) return;
+      const btn = document.createElement('button');
+      btn.className = 'add-section-btn';
+      btn.textContent = '＋ Add New Section';
+      btn.onclick = () => addNewSection(pc, btn);
+      pc.appendChild(btn);
+    });
+  }
+
+  /* ── Modal picker ─────────────────────────── */
+  function addNewSection(container, refBtn) {
+    // Remove any existing picker
+    document.querySelector('.sec-picker')?.remove();
+
+    const types = [
+      { label: '• Bullet List',    value: 'bullets'  },
+      { label: '1. Numbered List', value: 'numbered' },
+      { label: '¶ Free Text',      value: 'text'     },
+      { label: '% Payment Terms',  value: 'payment'  },
+    ];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sec-picker';
+    overlay.style.cssText = `
+      position:fixed;inset:0;background:rgba(0,0,0,0.4);
+      display:flex;align-items:center;justify-content:center;z-index:99999;`;
+
+    const box = document.createElement('div');
+    box.style.cssText = `
+      background:#fff;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.3);
+      padding:26px 30px;width:340px;font-family:'IBM Plex Sans',sans-serif;`;
+    box.innerHTML = `
+      <div style="font-weight:700;font-size:13px;color:#1c3557;margin-bottom:4px;">Add New Section</div>
+      <div style="font-size:10px;color:#888;margin-bottom:14px;">Enter a title and choose content type</div>
+      <label style="font-size:10px;font-weight:600;color:#444;display:block;margin-bottom:4px;">Section Title</label>
+      <input id="ps-title" placeholder="e.g. SPECIAL TERMS" style="
+        width:100%;border:1.5px solid #bbb;border-radius:5px;padding:7px 10px;
+        font-family:'IBM Plex Sans',sans-serif;font-size:11px;margin-bottom:14px;
+        outline:none;box-sizing:border-box;"/>
+      <label style="font-size:10px;font-weight:600;color:#444;display:block;margin-bottom:8px;">Content Type</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;" id="ps-types">
+        ${types.map((t,i) => `
+          <button data-val="${t.value}" class="ps-type-btn" style="
+            border:1.5px solid #bbb;background:#f5f7fa;border-radius:5px;
+            padding:8px 6px;font-family:'IBM Plex Sans',sans-serif;font-size:10px;
+            font-weight:600;cursor:pointer;color:#444;transition:all .15s;text-align:left;
+          ">${t.label}</button>`).join('')}
+      </div>
+      <input type="hidden" id="ps-type" value="text"/>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="ps-cancel" style="
+          border:1.5px solid #bbb;background:#fff;border-radius:5px;
+          padding:7px 16px;font-size:11px;font-weight:600;cursor:pointer;
+          color:#555;font-family:'IBM Plex Sans',sans-serif;">Cancel</button>
+        <button id="ps-confirm" style="
+          border:none;background:#1c3557;color:#fff;border-radius:5px;
+          padding:7px 18px;font-size:11px;font-weight:700;cursor:pointer;
+          font-family:'IBM Plex Sans',sans-serif;">＋ Add Section</button>
+      </div>`;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    box.querySelector('#ps-title').focus();
+
+    // Type selection
+    box.querySelectorAll('.ps-type-btn').forEach(b => {
+      b.onclick = () => {
+        box.querySelectorAll('.ps-type-btn').forEach(x => {
+          x.style.background = '#f5f7fa';
+          x.style.borderColor = '#bbb';
+          x.style.color = '#444';
+        });
+        b.style.background = '#d0ddf5';
+        b.style.borderColor = '#1c4587';
+        b.style.color = '#1c4587';
+        box.querySelector('#ps-type').value = b.dataset.val;
+      };
+    });
+
+    // Cancel
+    box.querySelector('#ps-cancel').onclick = () => overlay.remove();
+    overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+
+    // Confirm
+    box.querySelector('#ps-confirm').onclick = () => {
+      const title = box.querySelector('#ps-title').value.trim() || 'NEW SECTION';
+      const type  = box.querySelector('#ps-type').value;
+      overlay.remove();
+      buildAndInsertSection(title.toUpperCase(), type, container, refBtn);
+    };
+
+    // Enter key confirms
+    box.querySelector('#ps-title').onkeydown = e => {
+      if (e.key === 'Enter') box.querySelector('#ps-confirm').click();
+    };
+  }
+
+  /* ── Build & insert section DOM ────────────── */
+  function buildAndInsertSection(title, type, container, refBtn) {
+    const sec = document.createElement('div');
+    sec.className = 'section';
+
+    // Heading
+    const headingDiv = document.createElement('div');
+    headingDiv.className = 'section-heading';
+    headingDiv.innerHTML = `<span class="num">?</span>`;
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'e';
+    titleSpan.contentEditable = 'true';
+    titleSpan.spellcheck = false;
+    titleSpan.style.flex = '1';
+    titleSpan.textContent = title;
+    headingDiv.appendChild(titleSpan);
+
+    const delBtn2 = document.createElement('button');
+    delBtn2.className = 'section-del-btn';
+    delBtn2.textContent = '✕ Delete Section';
+    delBtn2.onclick = () => {
+      if (confirm('Delete this entire section?')) { sec.remove(); autoRenumber(); }
+    };
+    headingDiv.appendChild(delBtn2);
+    sec.appendChild(headingDiv);
+
+    // Body
+    if (type === 'bullets') {
+      const ul = document.createElement('ul');
+      ul.className = 'doc-list';
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="e" contenteditable="true" spellcheck="false">First item</span>`;
+      ul.appendChild(li);
+      sec.appendChild(ul);
+      // wire via setupList after insertion
+    } else if (type === 'numbered') {
+      const ol = document.createElement('ol');
+      ol.className = 'note-list';
+      const li = document.createElement('li');
+      li.setAttribute('data-n', '1)');
+      li.innerHTML = `<span class="e" contenteditable="true" spellcheck="false">First note</span>`;
+      ol.appendChild(li);
+      sec.appendChild(ol);
+    } else if (type === 'payment') {
+      const ul = document.createElement('ul');
+      ul.className = 'payment-list';
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="pct e" contenteditable="true" spellcheck="false">0%</span><span class="e" contenteditable="true" spellcheck="false">Describe payment condition here.</span>`;
+      ul.appendChild(li);
+      sec.appendChild(ul);
+    } else {
+      const p = document.createElement('p');
+      p.className = 'warranty-text e-block editable-block';
+      p.contentEditable = 'true';
+      p.spellcheck = false;
+      p.style.padding = '0 4px';
+      p.textContent = 'Write your section content here.';
+      sec.appendChild(p);
+    }
+
+    container.insertBefore(sec, refBtn);
+
+    // Wire list controls on the new section's lists
+    injectListControls();
+
+    // Renumber all sections
+    autoRenumber();
+
+    // Focus first editable
+    const first = sec.querySelector('[contenteditable]');
+    if (first) first.focus();
+
+    showToast('✓ Section added');
+  }
+
+  /* ══════════════════════════════════════════════
+     ADD PARAGRAPH — warranty, packing, effective
+  ══════════════════════════════════════════════ */
+  function injectParaControls() {
+    ['.warranty-text', '.effective-list'].forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const parent = el.closest('.section') || el.parentNode;
+        if (parent.querySelector('.add-para-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'add-para-btn';
+        btn.textContent = '＋ Add Paragraph';
+        btn.onclick = () => {
+          const p = document.createElement('p');
+          p.className = 'e-block editable-block';
+          p.style.cssText = 'color:var(--mid);font-size:10px;line-height:1.7;padding:0 4px;margin-top:5px;';
+          p.contentEditable = 'true';
+          p.spellcheck = false;
+          p.textContent = 'New paragraph text here.';
+          el.parentNode.insertBefore(p, btn);
+          p.focus();
+        };
+        el.parentNode.insertBefore(btn, el.nextSibling);
+      });
+    });
+  }
+
+  /* ══════════════════════════════════════════════
+     START EDIT
+  ══════════════════════════════════════════════ */
+  function startEdit() {
+    isEditing = true;
+    savedSnapshot = document.getElementById('page1').innerHTML + '|||' + document.getElementById('page2').innerHTML;
+    applyEditModeToDocument();
+    setEditUI(true);
+  }
+
+  function reapplyEditMode() {
+    applyEditModeToDocument();
+    setEditUI(true);
+  }
+
+  /* ── Save ─────────────────────────────────── */
+  function saveEdits() {
+    stopEditable();
+    setEditUI(false);
+    isEditing = false;
+    try {
+      localStorage.setItem('po07v3_page1', document.getElementById('page1').innerHTML);
+      localStorage.setItem('po07v3_page2', document.getElementById('page2').innerHTML);
+    } catch(e) {}
+    showToast('✓ Changes saved successfully');
+  }
+
+  /* ── Cancel ───────────────────────────────── */
+  function cancelEdit() {
+    const parts = savedSnapshot.split('|||');
+    document.getElementById('page1').innerHTML = parts[0];
+    document.getElementById('page2').innerHTML = parts[1];
+    stopEditable();
+    setEditUI(false);
+    isEditing = false;
+    showToast('✗ Changes discarded');
+  }
+
+  /* ── Stop editable ────────────────────────── */
+  function stopEditable() {
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.removeAttribute('contenteditable');
+      el.classList.remove('editable-block');
+    });
+    // Remove injected add/del buttons
+    detachNameSync();
+    document.querySelectorAll('[data-injected]').forEach(el => delete el.dataset.injected);
+    document.querySelectorAll('.add-row-btn, .add-item-btn, .add-para-btn, .table-add-wrap, .add-section-btn').forEach(el => el.remove());
+    document.querySelectorAll('.del-btn, .section-del-btn, .section-move-btn').forEach(el => el.remove());
+    document.querySelectorAll('.sec-title[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  }
+
+  /* ── Download ─────────────────────────────── */
+  function downloadHTML() {
+    if (isEditing) saveEdits();
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelector('#toolbar')?.remove();
+    clone.querySelector('#toast')?.remove();
+    clone.querySelector('script')?.remove();
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    clone.querySelectorAll('.add-row-btn, .add-item-btn, .add-para-btn, .table-add-wrap, .del-btn, .section-del-btn, .section-move-btn, .add-section-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.sec-title[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    const bodyEl = clone.querySelector('body');
+    if (bodyEl) bodyEl.style.paddingTop = '32px';
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'PurchaseOrder_PO07_Rev_B.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('⬇ File downloaded');
+  }
+
+  /* ── Toast ────────────────────────────────── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ── Host app bridge (Purchase order tracking system) ── */
+  window.po007Bridge = {
+    getPages() {
+      return {
+        page1: document.getElementById('page1')?.innerHTML || '',
+        page2: document.getElementById('page2')?.innerHTML || '',
+      };
+    },
+    setPages(page1, page2) {
+      if (page1) document.getElementById('page1').innerHTML = page1;
+      if (page2) document.getElementById('page2').innerHTML = page2;
+      applyPo007Language(currentLang);
+      recalcItemsTable();
+      if (isEditing) reapplyEditMode();
+      if (_syncObs) rebindLiveSync();
+    },
+    getMeta() {
+      const t = (id) => (document.getElementById(id)?.textContent || '').trim();
+      return {
+        poNumber: t('src-po-num'),
+        poDate: t('src-po-date'),
+        poRev: t('src-po-rev'),
+        project: t('src-po-project'),
+        seller: t('src-seller'),
+        vendorAttn: t('src-vendor-attn'),
+        vendorPhone: t('src-vendor-phone'),
+        vendorEmail: t('src-vendor-email'),
+        buyer: t('src-buyer'),
+        buyerPhone: t('src-buyer-phone'),
+        buyerEmailPrimary: t('src-buyer-email-primary'),
+        buyerEmailSecondary: t('src-buyer-email-secondary'),
+        offerType: t('src-offer-type'),
+        currency: currentCurrency,
+      };
+    },
+    getCurrency() {
+      return currentCurrency;
+    },
+    setCurrency(code) {
+      applyPo007Currency(code);
+    },
+    setMeta(meta) {
+      const m = meta || {};
+      const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (!el || val == null) return;
+        const text = String(val);
+        if (el.textContent !== text) el.textContent = text;
+      };
+      set('src-po-num', m.poNumber);
+      set('src-po-date', m.poDate);
+      set('src-po-rev', m.poRev);
+      set('src-po-project', m.project);
+      set('src-seller', m.seller ?? m.vendorCompany);
+      set('src-vendor-attn', m.vendorAttn);
+      set('src-vendor-phone', m.vendorPhone);
+      set('src-vendor-email', m.vendorEmail);
+      set('src-buyer', m.buyer);
+      set('src-buyer-phone', m.buyerPhone);
+      set('src-buyer-email-primary', m.buyerEmailPrimary);
+      set('src-buyer-email-secondary', m.buyerEmailSecondary);
+      set('src-offer-type', m.offerType);
+      if (m.currency != null) applyPo007Currency(m.currency);
+      syncNames();
+    },
+    setLogo(src) {
+      const img = document.querySelector('#page1 .dh-logo img, #page1 .doc-header img');
+      if (!img) return;
+      if (src) {
+        img.src = src;
+        img.style.display = 'block';
+      } else {
+        img.removeAttribute('src');
+        img.style.display = 'none';
+      }
+    },
+    enterEditMode() {
+      if (!isEditing) {
+        isEditing = true;
+        savedSnapshot = document.getElementById('page1').innerHTML + '|||' + document.getElementById('page2').innerHTML;
+      }
+      reapplyEditMode();
+    },
+    getLanguage() {
+      return currentLang;
+    },
+    setLanguage(lang) {
+      applyPo007Language(lang);
+      if (isEditing) reapplyEditMode();
+    },
+    resetTemplate(lang) {
+      resetToLanguageTemplate(lang);
+    },
+    getPrintDocumentHtml() {
+      const pages = document.querySelectorAll('.page');
+      let body = '';
+      pages.forEach((p) => {
+        body += `<div class="page">${p.innerHTML}</div>`;
+      });
+      const styles = [...document.querySelectorAll('style')]
+        .map((s) => s.textContent)
+        .join('\n');
+      const docLang = currentLang === 'ar' ? 'ar' : 'en';
+      const docDir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      return `<!DOCTYPE html><html lang="${docLang}" dir="${docDir}"><head><meta charset="UTF-8"/><style>${styles}
+        body{background:#fff;padding:0;margin:0;display:flex;flex-direction:column;align-items:center;gap:0}
+        #toolbar,#toast,.edit-indicator,.add-row-btn,.add-item-btn,.add-para-btn,.add-section-btn,.del-btn,.section-del-btn,.section-move-btn{display:none!important}
+        [contenteditable]{background:transparent!important;border:none!important}
+        .page{box-shadow:none;page-break-after:always}
+      </style></head><body>${body}</body></html>`;
+    },
+  };
+
+  /* ── Restore on load ──────────────────────── */
+  window.addEventListener('DOMContentLoaded', () => {
+    initPo007Templates();
+    const qs = new URLSearchParams(location.search);
+    const embedLang = qs.get('lang');
+    if (embedLang === 'ar' || embedLang === 'en') {
+      if (qs.get('reset') === '1') resetToLanguageTemplate(embedLang);
+      else applyPo007Language(embedLang);
+    }
+    if (window.parent !== window && qs.get('embed') === '1') {
+      document.getElementById('toolbar')?.remove();
+      document.getElementById('toast')?.remove();
+      document.body.style.paddingTop = '12px';
+      startLiveSync();
+      window.parent.postMessage({ type: 'po007-ready' }, '*');
+      return;
+    }
+    try {
+      const p1 = localStorage.getItem('po07v3_page1');
+      const p2 = localStorage.getItem('po07v3_page2');
+      if (p1) document.getElementById('page1').innerHTML = p1;
+      if (p2) document.getElementById('page2').innerHTML = p2;
+      if (p1 || p2) showToast('📄 Previous edits restored');
+    } catch(e) {}
+    startLiveSync();
+  });
+
+  /* ── Keyboard shortcuts ───────────────────── */
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); if (isEditing) saveEdits(); }
+    if (e.key === 'Escape' && isEditing) cancelEdit();
+  });
+</script>
+
+</body>
+</html>
