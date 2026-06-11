@@ -1640,26 +1640,76 @@
       border-bottom: 2.5px solid #222;
       padding-bottom: 13px;
       margin-bottom: 15px;
+      direction: ltr;
     }
-    .po007-surface .po007-dh-po {
-      text-align: right;
-      font-size: 10px;
-      color: #444;
-      line-height: 1.7;
-      margin-top: 4px;
-    }
-    .po007-surface .po007-dh-po strong { color: #1a1a1a; font-size: 11px; }
-    .po007-surface .po007-logo {
-      height: 72px;
-      width: 72px;
-      object-fit: contain;
-      display: block;
+    .po007-surface .po007-dh-logo { flex-shrink: 0; }
+  /* Header flex is always LTR (logo left); use margin-left not margin-inline-start */
+    .po007-surface .po007-dh-meta {
+      margin-left: auto;
+      margin-right: 0;
+      min-width: 42%;
+      max-width: 58%;
+      flex-shrink: 0;
     }
     .po007-surface .po007-buyer-title {
       font-size: 13px;
       font-weight: 700;
       color: #1a1a1a;
       line-height: 1.3;
+    }
+    .po007-surface .po007-dh-po {
+      font-size: 10px;
+      color: #444;
+      line-height: 1.7;
+      margin-top: 6px;
+    }
+    .po007-surface .po007-dh-po > div { margin: 0; }
+    .po007-surface .po007-dh-po strong { color: #1a1a1a; font-size: 11px; }
+    .po007-doc[dir="rtl"] .po007-dh-meta,
+    .po007-doc[dir="rtl"] .po007-buyer-title,
+    .po007-doc[dir="rtl"] .po007-dh-po {
+      direction: rtl;
+      text-align: right;
+    }
+    .po007-doc[dir="ltr"] .po007-dh-meta,
+    .po007-doc[dir="ltr"] .po007-buyer-title,
+    .po007-doc[dir="ltr"] .po007-dh-po {
+      direction: ltr;
+      text-align: left;
+    }
+    .po007-doc[dir="rtl"] .po007-party-cell {
+      border-right: none;
+      border-left: 1.5px solid #bbb;
+    }
+    .po007-doc[dir="rtl"] .po007-party-cell:last-child { border-left: none; }
+    .po007-doc[dir="rtl"] .po007-sig-cell {
+      border-right: none;
+      border-left: 1.5px solid #bbb;
+    }
+    .po007-doc[dir="rtl"] .po007-sig-cell:last-child { border-left: none; }
+    .po007-doc[dir="rtl"] .po007-note-list li { padding: 3px 22px 3px 0; }
+    .po007-doc[dir="rtl"] .po007-note-list li::before { left: auto; right: 0; }
+    .po007-doc[dir="rtl"] .po007-payment-list li {
+      border-left: none;
+      border-right: 4px solid #1c4587;
+      border-radius: 4px 0 0 4px;
+    }
+    .po007-doc[dir="rtl"] .po007-delivery-table thead th { text-align: right; }
+    .po007-doc[dir="rtl"] .po007-delivery-table thead th:last-child { text-align: center; }
+    .po007-doc[dir="rtl"] .po007-items-table thead th { text-align: right; }
+    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-no,
+    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-qty { text-align: center; }
+    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-price,
+    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-total { text-align: left; }
+    .po007-doc[dir="rtl"] .po007-section-heading,
+    .po007-doc[dir="rtl"] .po007-party-lbl { text-transform: none; letter-spacing: 0; }
+    .po007-doc[dir="rtl"] .po007-mini-header { direction: rtl; }
+    .po007-doc[dir="ltr"] .po007-mini-header { direction: ltr; }
+    .po007-surface .po007-logo {
+      height: 72px;
+      width: 72px;
+      object-fit: contain;
+      display: block;
     }
     .po007-surface .po007-parties {
       display: grid;
@@ -1687,6 +1737,50 @@
       line-height: 1.55;
       color: #444;
       font-size: 10px;
+    }
+    .po007-surface .po007-party-value { color: #444; }
+    .po007-surface .po007-party-extra {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #e0e4ea;
+    }
+    .po007-surface .po007-party-extra-lbl {
+      display: block;
+      font-size: 9px;
+      font-weight: 600;
+      color: #1c4587;
+      margin-bottom: 4px;
+    }
+    .po007-surface .po007-party-extra-text {
+      font-size: 10px;
+      color: #444;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .po007-surface.po007-edit-mode .po007-party-extra-field {
+      display: block;
+      min-height: 2.5em;
+      padding: 6px 8px;
+      font-size: 10px;
+      line-height: 1.55;
+      color: #444;
+      border: 1px dashed #c8d4e8;
+      border-radius: 4px;
+      background: #fafcff;
+      white-space: pre-wrap;
+      outline: none;
+    }
+    .po007-surface.po007-edit-mode .po007-party-extra-field:focus {
+      border-color: #1c4587;
+      background: #f8fbff;
+      box-shadow: 0 0 0 2px rgba(28, 69, 135, 0.12);
+    }
+    .po007-surface.po007-edit-mode .po007-party-extra-field--inline {
+      display: inline-block;
+      min-width: 10em;
+      min-height: 1.6em;
+      vertical-align: middle;
+      margin-top: 0;
     }
     .po007-surface .po007-offer-badge {
       display: inline-block;
@@ -1766,12 +1860,16 @@
     .po007-surface .po007-col-qty,
     .po007-surface .po007-col-price,
     .po007-surface .po007-col-total { font-weight: 600; }
+    .po007-surface .po007-total-num-row td,
     .po007-surface .po007-total-row td {
       background: #1c3557;
       color: #fff;
       font-weight: 700;
       font-size: 10.5px;
       border: none;
+    }
+    .po007-surface .po007-total-num-row .po007-total-num-lbl {
+      text-align: end;
     }
     .po007-surface .po007-section { margin-top: 20px; }
     .po007-surface .po007-section-heading {
@@ -1792,6 +1890,110 @@
       border-radius: 3px;
       padding: 1px 6px;
       font-size: 10.5px;
+      flex-shrink: 0;
+    }
+    .po007-surface.po007-edit-mode .po007-section-heading {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .po007-surface.po007-edit-mode .po007-section-title {
+      flex: 1;
+      min-width: 80px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 11px;
+      color: #1c3557;
+      background: #fff;
+      border: 1px dashed rgba(255, 255, 255, 0.9);
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-weight: 700;
+      line-height: 1.35;
+      -webkit-text-fill-color: #1c3557;
+      caret-color: #1c3557;
+    }
+    .po007-surface.po007-edit-mode .po007-section-heading .po007-section-title:focus {
+      background: #fffef8;
+      border-color: #f0c040;
+      color: #1c3557;
+      -webkit-text-fill-color: #1c3557;
+      box-shadow: 0 0 0 2px rgba(240, 192, 64, 0.35);
+    }
+    .po007-surface.po007-edit-mode .po007-section-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-inline-start: auto;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-tool-btn {
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 7px;
+      font-family: inherit;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-tool-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+    .po007-surface.po007-edit-mode .po007-sec-tool-btn--danger {
+      border-color: #ffb4a8;
+      background: rgba(231, 76, 60, 0.35);
+    }
+    .po007-surface.po007-edit-mode .po007-sec-tool-btn--move {
+      padding: 2px 5px;
+      font-size: 10px;
+      line-height: 1;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-tool-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .po007-surface.po007-edit-mode .po007-section-tools-order {
+      display: inline-flex;
+      gap: 2px;
+      margin-inline-end: 4px;
+    }
+    .po007-surface.po007-edit-mode .po007-section--print-hidden {
+      opacity: 0.72;
+      border: 1px dashed #c8a84a;
+      border-radius: 4px;
+      padding: 4px;
+      background: #fffdf5;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-badge {
+      font-size: 9px;
+      font-weight: 600;
+      background: #f0c040;
+      color: #3d3200;
+      padding: 1px 6px;
+      border-radius: 3px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .po007-surface .po007-add-section-bar {
+      display: none;
+    }
+    .po007-surface.po007-edit-mode .po007-add-section-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 8px 10px;
+      border: 1.5px dashed #b8c4d8;
+      border-radius: 4px;
+      background: #f6f8fc;
+    }
+    .po007-surface.po007-edit-mode .po007-add-section-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      color: #1c3557;
     }
     .po007-surface .po007-note-list { list-style: none; padding: 0 4px; margin: 0; }
     .po007-surface .po007-note-list li {
@@ -1867,6 +2069,37 @@
     }
     .po007-surface .po007-delivery-table tbody tr:nth-child(even) { background: #f5f7fa; }
     .po007-surface .po007-delivery-table td.lt { text-align: center; font-weight: 700; color: #1c4587; }
+    .po007-surface .po007-shipping-docs-intro {
+      font-size: 10px;
+      color: #444;
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+    .po007-surface .po007-shipping-docs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .po007-surface .po007-shipping-docs-table thead tr { background: #1c4587; }
+    .po007-surface .po007-shipping-docs-table thead th {
+      color: #fff;
+      font-size: 9.5px;
+      padding: 5px 6px;
+      text-align: start;
+      font-weight: 700;
+    }
+    .po007-surface .po007-shipping-docs-table thead th.po007-ship-qty { text-align: center; width: 52px; }
+    .po007-surface .po007-shipping-docs-table thead th.po007-ship-sn { width: 36px; text-align: center; }
+    .po007-surface .po007-shipping-docs-table td {
+      border: 1px solid #d0d8e4;
+      padding: 4px 6px;
+      font-size: 9.5px;
+      vertical-align: top;
+      color: #333;
+    }
+    .po007-surface .po007-shipping-docs-table tbody tr:nth-child(even) { background: #f5f7fa; }
+    .po007-surface .po007-shipping-docs-table td.po007-ship-qty { text-align: center; font-weight: 700; color: #1c4587; }
+    .po007-surface .po007-shipping-docs-table td.po007-ship-sn { text-align: center; font-weight: 700; color: #1c4587; }
+    .po007-surface .po007-shipping-docs-table .po007-ship-notes-print { white-space: pre-wrap; line-height: 1.45; }
+    .po007-doc[dir="rtl"] .po007-shipping-docs-table thead th { text-align: right; }
+    .po007-doc[dir="rtl"] .po007-shipping-docs-table thead th.po007-ship-sn,
+    .po007-doc[dir="rtl"] .po007-shipping-docs-table thead th.po007-ship-qty { text-align: center; }
     .po007-surface .po007-bullet-list { list-style: none; padding: 0 4px; margin: 0; }
     .po007-surface .po007-bullet-list li {
       display: flex;
@@ -2005,9 +2238,9 @@
       gap: 22px;
     }
     .po007-surface.po007-edit-mode :not(.po007-items-table) > * [contenteditable],
-    .po007-surface.po007-edit-mode .po007-parties [contenteditable],
+    .po007-surface.po007-edit-mode .po007-parties .po007-party-extra-field[contenteditable],
     .po007-surface.po007-edit-mode .po007-doc-header [contenteditable],
-    .po007-surface.po007-edit-mode .po007-section [contenteditable],
+    .po007-surface.po007-edit-mode .po007-section-body [contenteditable],
     .po007-surface.po007-edit-mode .po007-signatures [contenteditable] {
       outline: none;
       background: #fffbe6;
@@ -2018,9 +2251,9 @@
       min-width: 20px;
     }
     .po007-surface.po007-edit-mode :not(.po007-items-table) > * [contenteditable]:focus,
-    .po007-surface.po007-edit-mode .po007-parties [contenteditable]:focus,
+    .po007-surface.po007-edit-mode .po007-parties .po007-party-extra-field[contenteditable]:focus,
     .po007-surface.po007-edit-mode .po007-doc-header [contenteditable]:focus,
-    .po007-surface.po007-edit-mode .po007-section [contenteditable]:focus,
+    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:focus,
     .po007-surface.po007-edit-mode .po007-signatures [contenteditable]:focus {
       background: #fff9d6;
       border-bottom-color: #c8960a;
@@ -2080,7 +2313,7 @@
       height: 1px;
     }
     .po007-surface.po007-edit-mode .po007-items-table tbody tr[data-po007-line] td {
-      padding: 8px;
+      padding: 4px;
       vertical-align: top;
       height: 100%;
     }
@@ -2089,24 +2322,26 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      gap: 5px;
-      padding-top: 4px;
+      gap: 4px;
+      padding-top: 2px;
     }
     .po007-surface.po007-edit-mode .po007-cell-box {
-      min-height: 56px;
-      height: 100%;
+      min-height: 2.5em;
+      height: auto;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
     }
     .po007-surface.po007-edit-mode .po007-cell-box > .po007-cell-field {
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 2.5em;
     }
     .po007-surface.po007-edit-mode .po007-cell-box--readonly {
       background: #e8eef7;
-      border: 2px solid #b8cce8;
-      border-radius: 6px;
-      padding: 10px 10px;
+      border: 1px solid #b8cce8;
+      border-radius: 4px;
+      padding: 6px 8px;
+      min-height: 2.5em;
       display: flex;
       align-items: center;
     }
@@ -2119,16 +2354,15 @@
     .po007-surface.po007-edit-mode .po007-items-table .po007-cell-field {
       display: block;
       width: 100%;
-      min-height: 56px;
+      min-height: 2.5em;
       box-sizing: border-box;
-      background: #fff;
-      border: 2px solid #7ba3d4;
-      border-radius: 6px;
-      padding: 10px 10px;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #1a1a1a;
-      box-shadow: 0 1px 3px rgba(28, 69, 135, 0.08);
+      background: #fafcff;
+      border: 1px dashed #c8d4e8;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 10px;
+      line-height: 1.55;
+      color: #444;
       cursor: text;
       outline: none;
       white-space: pre-wrap;
@@ -2136,7 +2370,8 @@
     }
     .po007-surface.po007-edit-mode .po007-items-table .po007-cell-field:focus {
       border-color: #1c4587;
-      box-shadow: 0 0 0 3px rgba(28, 69, 135, 0.15);
+      background: #f8fbff;
+      box-shadow: 0 0 0 2px rgba(28, 69, 135, 0.12);
     }
     .po007-surface.po007-edit-mode .po007-items-table .po007-cell-field--text {
       direction: auto;
@@ -2145,19 +2380,17 @@
       font-weight: 500;
     }
     .po007-surface.po007-edit-mode .po007-items-table .po007-cell-field--num {
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
       direction: ltr;
       unicode-bidi: isolate;
       text-align: center;
-      padding-top: 16px;
-      padding-bottom: 16px;
     }
     .po007-surface.po007-edit-mode .po007-items-table .po007-cell-field--price {
       text-align: end;
     }
     .po007-surface.po007-edit-mode .po007-items-table .po007-line-total {
-      font-size: 14px;
+      font-size: 10px;
       font-weight: 700;
       color: #1c4587;
       direction: ltr;
@@ -2197,9 +2430,19 @@
       color: #1c4587;
       line-height: 1;
     }
+    .po007-surface.po007-edit-mode .po007-total-num-row td,
     .po007-surface.po007-edit-mode .po007-total-row td {
-      padding: 12px 10px !important;
+      padding: 8px 10px !important;
       vertical-align: middle;
+    }
+    .po007-surface.po007-edit-mode .po007-total-num-row td {
+      background: #1c3557;
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .po007-surface.po007-edit-mode .po007-total-num-row .po007-total-num-lbl {
+      text-align: end;
     }
     .po007-surface.po007-edit-mode .po007-total-row .po007-total-say {
       display: flex;
@@ -2224,14 +2467,15 @@
       border-color: #1c4587;
       box-shadow: 0 0 0 3px rgba(28, 69, 135, 0.15);
     }
-    .po007-surface.po007-edit-mode .po007-total-row [data-po007="grand-total"] {
-      font-size: 14px;
+    .po007-surface.po007-edit-mode .po007-total-num-row [data-po007="grand-total"] {
+      font-size: 12px;
       font-weight: 700;
       display: block;
       text-align: end;
       direction: ltr;
       unicode-bidi: isolate;
       user-select: none;
+      color: #fff;
     }
     .po007-surface.po007-edit-mode .po007-total-row [data-po007="total-words"][data-po007-manual="1"] {
       border-color: #c8960a;
@@ -2250,6 +2494,19 @@
       border-color: #1c4587;
       background: #f8fbff;
       box-shadow: 0 0 0 2px rgba(28, 69, 135, 0.12);
+    }
+    .po007-surface.po007-edit-mode .po007-section-heading .po007-section-title.po007-sec-field {
+      color: #1c3557;
+      background: #fff;
+      border: 1px dashed rgba(255, 255, 255, 0.9);
+      -webkit-text-fill-color: #1c3557;
+    }
+    .po007-surface.po007-edit-mode .po007-section-heading .po007-section-title.po007-sec-field:focus {
+      color: #1c3557;
+      background: #fffef8;
+      border-color: #f0c040;
+      -webkit-text-fill-color: #1c3557;
+      box-shadow: 0 0 0 2px rgba(240, 192, 64, 0.35);
     }
     .po007-surface.po007-edit-mode .po007-sec-field--pct {
       display: inline-block;
@@ -2285,6 +2542,20 @@
     .po007-surface.po007-edit-mode .po007-delivery-table .del-btn {
       margin-inline-end: 4px;
       vertical-align: middle;
+    }
+    .po007-surface.po007-edit-mode .po007-shipping-docs-table .del-btn {
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+    .po007-surface.po007-edit-mode .po007-shipping-docs-table .po007-col-no {
+      text-align: center;
+      vertical-align: top;
+      width: 36px;
+    }
+    .po007-surface.po007-edit-mode .po007-shipping-docs-table .po007-sec-field--notes {
+      min-height: 2.5em;
+      white-space: pre-wrap;
+      display: block;
     }
     .po007-surface.po007-edit-mode .po007-delivery-table .po007-col-no {
       white-space: nowrap;
@@ -3933,7 +4204,7 @@
     </div>
   </div>
 
-  <!-- محرّر أمر شراء الإدارة العامة (نموذج PO007 — po007.html مرجع تصميم فقط) -->
+  <!-- محرّر أمر شراء الإدارة العامة (نموذج PO007) -->
   <div id="modal-general-po007" class="modal-overlay hidden po007-editing" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide po007-editor-modal">
       <div class="po007-editor-toolbar">
@@ -4403,7 +4674,7 @@
         labelSupplierName: "اسم المورد / الشركة",
         genPoLabelSelectSupplier: "شركة المورّد",
         genPo007ModalSellerCompany: "اسم شركة البائع",
-        genPo007SupplierCompanyName: "اسم الشركة",
+        genPo007SupplierCompanyName: "اسم شركة البائع",
         genPo007BuyerCompanyName: "شركة المشتري",
         genPoVendorFromMasterHint:
           "اختر مورداً من القائمة أو أضف مورداً جديداً؛ تُعبأ الحقول أدناه تلقائياً من بطاقة المورد.",
@@ -4914,18 +5185,33 @@
         genPo007SecDocList: "الوثائق المعتادة المشمولة في الأسعار",
         genPo007SecPayment: "الدفع:",
         genPo007SecDelivery: "جدول التسليم:",
+        genPo007SecShippingDocs: "مستندات الشحن:",
         genPo007SecPacking: "التغليف:",
         genPo007SecWarranty: "الضمان",
         genPo007SecInspection: "الفحص والاختبارات",
         genPo007SecEffective: "تاريخ السريان",
+        genPo007SecHiddenBadge: "مخفي من الطباعة",
+        genPo007AddSection: "إضافة فقرة:",
+        genPo007SecHide: "إخفاء",
+        genPo007SecShow: "إظهار",
+        genPo007SecDelete: "حذف",
+        genPo007SecResetDefault: "استعادة الافتراضي",
+        genPo007SecSaveDefault: "حفظ كافتراضي",
+        genPo007SecMoveUp: "تحريك لأعلى",
+        genPo007SecMoveDown: "تحريك لأسفل",
+        genPo007SecDeleteConfirm: "حذف هذه الفقرة من المستند؟ يمكنك إعادتها لاحقاً من «إضافة فقرة».",
+        genPo007SecDefaultSaved: "تم حفظ المحتوى الحالي كافتراضي لهذه الفقرة.",
         genPo007InvoiceShipTo: "الفاتورة والشحن إلى:",
         genPo007Attn: "عناية:",
         genPo007Email: "البريد الإلكتروني:",
         genPo007EmailLine: "البريد:",
+        genPo007PartyExtra: "معلومات إضافية:",
         genPo007OfferLabel: "العرض:",
+        genPo007TotalNumeric: "المجموع:",
         genPo007TotalPriceSay: "المبلغ الإجمالي كتابةً:",
         genPo007PurchaseOrder: "أمر شراء رقم ",
         genPo007PoDate: "تاريخ أمر الشراء",
+        genPo007PoRef: "المرجع:",
         genPo007Page: "صفحة",
         genPo007EditorTitle: "أمر شراء — نموذج PO007",
         genPoSectionDocs: "المستندات المطلوبة",
@@ -5151,7 +5437,7 @@
         labelSupplierName: "Supplier / company name",
         genPoLabelSelectSupplier: "Supplier company",
         genPo007ModalSellerCompany: "Seller company name",
-        genPo007SupplierCompanyName: "Company Name",
+        genPo007SupplierCompanyName: "Seller Company Name",
         genPo007BuyerCompanyName: "Buyer Company",
         genPoVendorFromMasterHint:
           "Pick a supplier from the list or add a new one; the fields below are filled from the supplier record.",
@@ -5664,18 +5950,33 @@
         genPo007SecDocList: "STANDARD DOCUMENTATION INCLUDED IN PRICES",
         genPo007SecPayment: "PAYMENT:",
         genPo007SecDelivery: "DELIVERY SCHEDULE:",
+        genPo007SecShippingDocs: "SHIPPING DOCUMENTS:",
         genPo007SecPacking: "PACKING:",
         genPo007SecWarranty: "WARRANTY",
         genPo007SecInspection: "INSPECTION AND TESTS",
         genPo007SecEffective: "EFFECTIVE DATE",
+        genPo007SecHiddenBadge: "Hidden from print",
+        genPo007AddSection: "Add section:",
+        genPo007SecHide: "Hide",
+        genPo007SecShow: "Show",
+        genPo007SecDelete: "Delete",
+        genPo007SecResetDefault: "Reset default",
+        genPo007SecSaveDefault: "Save as default",
+        genPo007SecMoveUp: "Move up",
+        genPo007SecMoveDown: "Move down",
+        genPo007SecDeleteConfirm: "Remove this section from the document? You can restore it later via «Add section».",
+        genPo007SecDefaultSaved: "Current content saved as the default for this section.",
         genPo007InvoiceShipTo: "Invoice & Ship To:",
         genPo007Attn: "Attn:",
         genPo007Email: "E-Mail:",
         genPo007EmailLine: "E-mail:",
+        genPo007PartyExtra: "Additional information:",
         genPo007OfferLabel: "Offer:",
+        genPo007TotalNumeric: "Total:",
         genPo007TotalPriceSay: "Total Price Say:",
         genPo007PurchaseOrder: "Purchase Order (PO) No.",
         genPo007PoDate: "PO Date",
+        genPo007PoRef: "Ref:",
         genPo007Page: "Page",
         genPo007EditorTitle: "Purchase order — PO007 template",
         genPoSectionDocs: "Required documents",
@@ -6143,7 +6444,7 @@
 
     function enrichGeneralFormPo007(g) {
       const x = { ...(g || {}) };
-      if (!x.poRev) x.poRev = "A";
+      if (x.poRev == null || x.poRev === undefined) x.poRev = "";
       if (!Array.isArray(x.noteItems)) {
         const legacy = (x.notes || "").trim();
         x.noteItems = legacy ? legacy.split(/\n/).map((s) => s.trim()).filter(Boolean) : [];
@@ -6167,6 +6468,8 @@
         } else x.paymentTerms = [];
       }
       if (!Array.isArray(x.deliveryRows)) x.deliveryRows = [];
+      if (!x.shippingDocsIntro) x.shippingDocsIntro = "";
+      if (!Array.isArray(x.shippingDocsRows)) x.shippingDocsRows = [];
       if (!x.warranty) x.warranty = "";
       if (!Array.isArray(x.inspectionItems)) x.inspectionItems = [];
       if (!Array.isArray(x.effectiveDateItems)) x.effectiveDateItems = [];
@@ -6175,8 +6478,20 @@
       }
       x.currency = x.currency === "USD" ? "USD" : "IQD";
       x.lines = (Array.isArray(x.lines) ? x.lines : []).map(normalizeGeneralLineRow);
-      return x;
+      return normalizePo007SectionMeta(x);
     }
+
+    const PO007_MAIN_SECTIONS = [
+      { id: "note", page: 1, titleKey: "genPo007SecNote" },
+      { id: "doc", page: 1, titleKey: "genPo007SecDocList" },
+      { id: "payment", page: 2, titleKey: "genPo007SecPayment" },
+      { id: "delivery", page: 2, titleKey: "genPo007SecDelivery" },
+      { id: "shippingDocs", page: 2, titleKey: "genPo007SecShippingDocs" },
+      { id: "packing", page: 2, titleKey: "genPo007SecPacking" },
+      { id: "warranty", page: 2, titleKey: "genPo007SecWarranty" },
+      { id: "inspection", page: 2, titleKey: "genPo007SecInspection" },
+      { id: "effective", page: 2, titleKey: "genPo007SecEffective" },
+    ];
 
     function getPo007MetaCurrency() {
       const v = ($("po007-meta-currency")?.value || "").trim();
@@ -6257,6 +6572,8 @@
           docListItems: [],
           paymentTerms: [],
           deliveryRows: [],
+          shippingDocsIntro: "",
+          shippingDocsRows: [],
           termsPayment: "",
           termsDelivery: "",
           termsPacking: "",
@@ -6779,13 +7096,373 @@
       ]);
     }
 
-    function renderPo007Section(num, title, bodyHtml) {
-      if (!bodyHtml) return "";
-      return `<div class="po007-section"><div class="po007-section-heading"><span class="num">${num}</span><span>${escapeHtml(title)}</span></div>${bodyHtml}</div>`;
+    function getDefaultPo007SectionOrder() {
+      return PO007_MAIN_SECTIONS.map((s) => s.id);
+    }
+
+    function normalizePo007SectionOrder(order) {
+      const base = getDefaultPo007SectionOrder();
+      const hadShippingDocs = Array.isArray(order) && order.includes("shippingDocs");
+      const out = [];
+      const seen = new Set();
+      (Array.isArray(order) ? order : []).forEach((id) => {
+        if (base.includes(id) && !seen.has(id)) {
+          out.push(id);
+          seen.add(id);
+        }
+      });
+      base.forEach((id) => {
+        if (!seen.has(id)) out.push(id);
+      });
+      if (!hadShippingDocs && out.includes("shippingDocs") && out.includes("delivery")) {
+        const without = out.filter((id) => id !== "shippingDocs");
+        const delIdx = without.indexOf("delivery");
+        if (delIdx >= 0) without.splice(delIdx + 1, 0, "shippingDocs");
+        return without;
+      }
+      return out;
+    }
+
+    function normalizePo007SectionMeta(g) {
+      const x = { ...(g || {}) };
+      const vis = { ...(x.sectionVisibility || {}) };
+      const titles = { ...(x.sectionTitles || {}) };
+      const custom = { ...(x.sectionCustomDefaults || {}) };
+      PO007_MAIN_SECTIONS.forEach((sec) => {
+        const v = vis[sec.id];
+        if (v === false || v === "deleted") vis[sec.id] = "deleted";
+        else if (v === "hidden") vis[sec.id] = "hidden";
+        else vis[sec.id] = "visible";
+      });
+      x.sectionVisibility = vis;
+      x.sectionTitles = titles;
+      x.sectionCustomDefaults = custom;
+      x.sectionOrder = normalizePo007SectionOrder(x.sectionOrder);
+      return x;
+    }
+
+    function getPo007SectionsForPage(g, page, editorMode) {
+      const gNorm = normalizePo007SectionMeta(g);
+      return gNorm.sectionOrder
+        .map((id) => PO007_MAIN_SECTIONS.find((s) => s.id === id))
+        .filter((s) => s && s.page === page)
+        .filter((s) => {
+          const st = getPo007SectionState(gNorm, s.id);
+          return editorMode ? st !== "deleted" : st === "visible";
+        });
+    }
+
+    function movePo007SectionOrder(g, sectionId, delta) {
+      const gNorm = normalizePo007SectionMeta(g);
+      const sec = PO007_MAIN_SECTIONS.find((s) => s.id === sectionId);
+      if (!sec) return gNorm.sectionOrder;
+      const movable = getPo007SectionsForPage(gNorm, sec.page, true).map((s) => s.id);
+      const idx = movable.indexOf(sectionId);
+      if (idx < 0) return gNorm.sectionOrder;
+      const newIdx = idx + delta;
+      if (newIdx < 0 || newIdx >= movable.length) return gNorm.sectionOrder;
+      const order = [...gNorm.sectionOrder];
+      const idA = movable[idx];
+      const idB = movable[newIdx];
+      const iA = order.indexOf(idA);
+      const iB = order.indexOf(idB);
+      order[iA] = idB;
+      order[iB] = idA;
+      return order;
+    }
+
+    function collectPo007SectionOrderFromMount(mount, existing) {
+      const fallback = normalizePo007SectionOrder(existing?.sectionOrder);
+      if (!mount) return fallback;
+      const pages = mount.querySelectorAll(".po007-page");
+      if (pages.length < 2) return fallback;
+      const p1Dom = [...pages[0].querySelectorAll("[data-po007-section]")].map((el) => el.dataset.po007Section).filter(Boolean);
+      const p2Dom = [...pages[1].querySelectorAll("[data-po007-section]")].map((el) => el.dataset.po007Section).filter(Boolean);
+      if (!p1Dom.length && !p2Dom.length) return fallback;
+      const mergePage = (page, domIds) => {
+        const allPageIds = PO007_MAIN_SECTIONS.filter((s) => s.page === page).map((s) => s.id);
+        const domSet = new Set(domIds);
+        const rest = fallback.filter((id) => allPageIds.includes(id) && !domSet.has(id));
+        return [...domIds, ...rest];
+      };
+      return [...mergePage(1, p1Dom), ...mergePage(2, p2Dom)];
+    }
+
+    function getPo007SectionState(g, id) {
+      const v = g?.sectionVisibility?.[id];
+      if (v === "hidden") return "hidden";
+      if (v === false || v === "deleted") return "deleted";
+      return "visible";
+    }
+
+    function getPo007SectionTitle(g, id, docLang) {
+      const custom = (g?.sectionTitles?.[id] || "").trim();
+      if (custom) return custom;
+      const sec = PO007_MAIN_SECTIONS.find((s) => s.id === id);
+      return sec ? tPo007(docLang, sec.titleKey) : "";
+    }
+
+    function getPo007SectionBuiltinSlice(sectionId, docLang) {
+      const tpl = getPo007DefaultTemplate(docLang);
+      switch (sectionId) {
+        case "note":
+          return { noteItems: [...tpl.noteItems] };
+        case "doc":
+          return { docListItems: [...tpl.docListItems] };
+        case "payment":
+          return { paymentTerms: tpl.paymentTerms.map((p) => ({ ...p })) };
+        case "delivery":
+          return { deliveryRows: tpl.deliveryRows.map((r) => ({ ...r })) };
+        case "shippingDocs":
+          return {
+            shippingDocsIntro: tpl.shippingDocsIntro,
+            shippingDocsRows: tpl.shippingDocsRows.map((r) => ({ ...r })),
+          };
+        case "packing":
+          return { termsPacking: tpl.termsPacking };
+        case "warranty":
+          return { warranty: tpl.warranty };
+        case "inspection":
+          return { inspectionItems: [...tpl.inspectionItems] };
+        case "effective":
+          return { effectiveDateItems: [...tpl.effectiveDateItems] };
+        default:
+          return {};
+      }
+    }
+
+    function getPo007SectionEffectiveSlice(sectionId, docLang, g) {
+      const builtin = getPo007SectionBuiltinSlice(sectionId, docLang);
+      const custom = g?.sectionCustomDefaults?.[sectionId];
+      if (!custom) return builtin;
+      return { ...builtin, ...custom };
+    }
+
+    function applyPo007SectionDefaultsToForm(g, sectionId, docLang) {
+      return { ...g, ...getPo007SectionEffectiveSlice(sectionId, docLang, g) };
+    }
+
+    function capturePo007SectionCustomDefault(g, sectionId, sections) {
+      const custom = { ...(g.sectionCustomDefaults || {}) };
+      switch (sectionId) {
+        case "note":
+          custom.note = { noteItems: [...sections.noteItems] };
+          break;
+        case "doc":
+          custom.doc = { docListItems: [...sections.docListItems] };
+          break;
+        case "payment":
+          custom.payment = { paymentTerms: sections.paymentTerms.map((p) => ({ ...p })) };
+          break;
+        case "delivery":
+          custom.delivery = { deliveryRows: sections.deliveryRows.map((r) => ({ ...r })) };
+          break;
+        case "shippingDocs":
+          custom.shippingDocs = {
+            shippingDocsIntro: sections.shippingDocsIntro,
+            shippingDocsRows: sections.shippingDocsRows.map((r) => ({ ...r })),
+          };
+          break;
+        case "packing":
+          custom.packing = { termsPacking: sections.termsPacking };
+          break;
+        case "warranty":
+          custom.warranty = { warranty: sections.warranty };
+          break;
+        case "inspection":
+          custom.inspection = { inspectionItems: [...sections.inspectionItems] };
+          break;
+        case "effective":
+          custom.effective = { effectiveDateItems: [...sections.effectiveDateItems] };
+          break;
+      }
+      return { ...g, sectionCustomDefaults: custom };
+    }
+
+    function collectPo007SectionTitles(mount) {
+      const titles = {};
+      const docLang = getPo007DocumentLang();
+      mount?.querySelectorAll("[data-po007-section-title]").forEach((el) => {
+        const id = el.getAttribute("data-po007-section-title");
+        const txt = (el.textContent || "").trim();
+        if (!id || !txt) return;
+        const sec = PO007_MAIN_SECTIONS.find((s) => s.id === id);
+        const defaultTitle = sec ? tPo007(docLang, sec.titleKey) : "";
+        if (txt !== defaultTitle) titles[id] = txt;
+      });
+      return titles;
+    }
+
+    function collectPo007SectionVisibility(mount, existing) {
+      const vis = { ...normalizePo007SectionMeta(existing || {}).sectionVisibility };
+      mount?.querySelectorAll("[data-po007-section]").forEach((el) => {
+        const id = el.dataset.po007Section;
+        const st = el.dataset.po007SecState;
+        if (id && st) vis[id] = st;
+      });
+      return vis;
+    }
+
+    function renderPo007SectionTools(sectionId, state, docLang, g) {
+      const sec = PO007_MAIN_SECTIONS.find((s) => s.id === sectionId);
+      const movable = sec ? getPo007SectionsForPage(g, sec.page, true).map((s) => s.id) : [];
+      const idx = movable.indexOf(sectionId);
+      const canUp = idx > 0;
+      const canDown = idx >= 0 && idx < movable.length - 1;
+      const moveBtns = `<span class="po007-section-tools-order">
+        <button type="button" class="po007-sec-tool-btn po007-sec-tool-btn--move" data-po007-sec-action="move-up" title="${escapeAttr(tPo007(docLang, "genPo007SecMoveUp"))}"${canUp ? "" : " disabled"}>↑</button>
+        <button type="button" class="po007-sec-tool-btn po007-sec-tool-btn--move" data-po007-sec-action="move-down" title="${escapeAttr(tPo007(docLang, "genPo007SecMoveDown"))}"${canDown ? "" : " disabled"}>↓</button>
+      </span>`;
+      const hideBtn =
+        state === "hidden"
+          ? `<button type="button" class="po007-sec-tool-btn" data-po007-sec-action="show" title="${escapeAttr(tPo007(docLang, "genPo007SecShow"))}">${escapeHtml(tPo007(docLang, "genPo007SecShow"))}</button>`
+          : `<button type="button" class="po007-sec-tool-btn" data-po007-sec-action="hide" title="${escapeAttr(tPo007(docLang, "genPo007SecHide"))}">${escapeHtml(tPo007(docLang, "genPo007SecHide"))}</button>`;
+      return `${moveBtns}${hideBtn}
+        <button type="button" class="po007-sec-tool-btn po007-sec-tool-btn--danger" data-po007-sec-action="delete" title="${escapeAttr(tPo007(docLang, "genPo007SecDelete"))}">${escapeHtml(tPo007(docLang, "genPo007SecDelete"))}</button>
+        <button type="button" class="po007-sec-tool-btn" data-po007-sec-action="reset" title="${escapeAttr(tPo007(docLang, "genPo007SecResetDefault"))}">${escapeHtml(tPo007(docLang, "genPo007SecResetDefault"))}</button>
+        <button type="button" class="po007-sec-tool-btn" data-po007-sec-action="save-default" title="${escapeAttr(tPo007(docLang, "genPo007SecSaveDefault"))}">${escapeHtml(tPo007(docLang, "genPo007SecSaveDefault"))}</button>`;
+    }
+
+    function renderPo007SectionShell(sectionId, num, title, bodyHtml, editorMode, state, docLang, g) {
+      if (!editorMode) {
+        if (state !== "visible" || !bodyHtml) return "";
+        return `<div class="po007-section" data-po007-section="${sectionId}"><div class="po007-section-heading"><span class="num">${num}</span><span>${escapeHtml(title)}</span></div>${bodyHtml}</div>`;
+      }
+      if (state === "deleted") return "";
+      const hiddenClass = state === "hidden" ? " po007-section--print-hidden" : "";
+      const badge =
+        state === "hidden"
+          ? `<span class="po007-sec-badge">${escapeHtml(tPo007(docLang, "genPo007SecHiddenBadge"))}</span>`
+          : "";
+      return `<div class="po007-section${hiddenClass}" data-po007-section="${sectionId}" data-po007-sec-state="${state}">
+        <div class="po007-section-heading">
+          <span class="num">${num}</span>
+          <span class="po007-section-title po007-sec-field" contenteditable="true" spellcheck="false" data-po007-section-title="${sectionId}">${escapeHtml(title)}</span>
+          ${badge}
+          <div class="po007-section-tools">${renderPo007SectionTools(sectionId, state, docLang, g)}</div>
+        </div>
+        <div class="po007-section-body">${bodyHtml || ""}</div>
+      </div>`;
+    }
+
+    function renderPo007AddSectionBar(page, g, docLang) {
+      const gNorm = normalizePo007SectionMeta(g);
+      const deleted = gNorm.sectionOrder
+        .map((id) => PO007_MAIN_SECTIONS.find((s) => s.id === id))
+        .filter((s) => s && s.page === page && getPo007SectionState(gNorm, s.id) === "deleted");
+      if (!deleted.length) return "";
+      const btns = deleted
+        .map(
+          (s) =>
+            `<button type="button" class="btn btn-secondary btn-sm po007-restore-section" data-po007-section="${s.id}">${escapeHtml(
+              getPo007SectionTitle(g, s.id, docLang)
+            )}</button>`
+        )
+        .join("");
+      return `<div class="po007-add-section-bar" data-po007-page="${page}">
+        <span class="po007-add-section-lbl">${escapeHtml(tPo007(docLang, "genPo007AddSection"))}</span>
+        ${btns}
+      </div>`;
+    }
+
+    function getPo007ShippingDocsBuiltin(docLang) {
+      const ar = docLang === "ar";
+      const intro = ar
+        ? "يجب على البائع توفير مستندات الشحن المطلوبة وفق المعايير أدناه (تُسلَّم المستندات الأصلية إلى شركة الباب قبل وصول البضاعة إلى ميناء أم قصر، العراق)."
+        : "Vendor must to provide the required shipping documents as below standards (Original Documents to be delivered to ALBAB company Before the arrival of goods at Umm Qasar port, Iraq)";
+      const rows = ar
+        ? [
+            { sn: "3", description: "قائمة التعبئة (Packing List)", original: "2", copy: "0", notes: "نسخة باللغة الإنجليزية" },
+            {
+              sn: "4",
+              description: "الفاتورة التجارية (Commercial Invoice)",
+              original: "2",
+              copy: "0",
+              notes:
+                "أربع (4) نسخ بالإنجليزية مختومة\nيجب تصديق نسخة إنجليزية واحدة (1) على الأقل من سفارة العراق في بلد التصدير أو التخزين أو المنشأ.\nيجب ذكر بلد المنشأ الفعلي في شهادة المنشأ.\nيجب إظهار Incoterms® 2010 وشروط التجارة بوضوح على الفاتورة.\nالمطلوب إظهاره:\n→ سيُزوَّد لاحقاً\nنوع الاستيراد:",
+            },
+            {
+              sn: "5",
+              description: "شهادة المنشأ (COO)",
+              original: "1",
+              copy: "1",
+              notes:
+                "النسخة: الإنجليزية\nيجب تصديق نسختين أصليتين من سفارة العراق في بلد المنشأ.\nتتضمن الشهادة جميع المعلومات اللازمة عن البضاعة (النوع، الكميات، الشركة المنتجة، مكان الإنتاج، الشركة المصدّرة، المستفيد وشركة الشحن).\nالمطلوب إظهاره:\n→ سيُزوَّد لاحقاً\nرقم الفاتورة التجارية وتاريخ إصدارها،\nرمز النظام المنسق (H.S Code) لجميع المواد والمعدات",
+            },
+            {
+              sn: "6",
+              description: "تقرير فحص طرف ثالث وشهادات أخرى",
+              original: "1",
+              copy: "1",
+              notes:
+                "(نسخة بالإنجليزية)\nوفق المتطلبات الفنية في أمر الشراء والمواصفات والشروط والأحكام.\nيجب أن تكون شركة الطرف الثالث معتمدة من EBS Petroleum Company وتُحمَّل تكلفة كل دفعة على البائع.",
+            },
+            {
+              sn: "7",
+              description: "شهادة الاختبارات الروتينية من المصنع",
+              original: "1",
+              copy: "1",
+              notes:
+                "(نسخة بالإنجليزية)\nوفق المتطلبات الفنية في أمر الشراء والمواصفات والشروط والأحكام.",
+            },
+          ]
+        : [
+            { sn: "3", description: "Packing List", original: "2", copy: "0", notes: "English Version" },
+            {
+              sn: "4",
+              description: "Commercial Invoice",
+              original: "2",
+              copy: "0",
+              notes:
+                "Four (4) English Version Stamped\nLocal Iraq Embassy in either the last exporting, storage or the original country must legalize at least One (1) English Version. However, the actual country of origin should be mentioned in COO.\nIncoterms® 2010 and term of trade should be clearly showed on the invoice\nRequired to show:\n→ Will provide you later\nImport Type:",
+            },
+            {
+              sn: "5",
+              description: "Certificate of Origin (COO)",
+              original: "1",
+              copy: "1",
+              notes:
+                "Version: English\nTwo original must be legalized by local Iraq embassy in the country of origin.\nThe certificate of origin should include all necessary information about goods (Type, quantities, producing company, production place, exporting company, beneficiary party & the shipping company)\nRequired to show:\n→ Will provide you later\nCommercial invoice No. and Issuing date,\nHarmonized System Code (H.S Code) for all Materials & Equipment",
+            },
+            {
+              sn: "6",
+              description: "Third Party Inspection Report and other certification",
+              original: "1",
+              copy: "1",
+              notes:
+                "(English version)\nAs per the technical part requirement in PO and specification, terms and conditions\n3rd party company should be one of those approved by EBS Petroleum Company; charges for each lot on vendor.",
+            },
+            {
+              sn: "7",
+              description: "Factory Routine test certificate",
+              original: "1",
+              copy: "1",
+              notes:
+                "(English version)\nAs per the technical part requirement in PO and specification, terms and conditions",
+            },
+          ];
+      return { shippingDocsIntro: intro, shippingDocsRows: rows.map((r) => ({ ...r })) };
+    }
+
+    function normalizeShippingDocRow(r, i) {
+      const x = r || {};
+      const sn = x.sn != null && String(x.sn).trim() !== "" ? String(x.sn).trim() : String(i + 1);
+      return {
+        sn,
+        description: (x.description || "").trim(),
+        original: x.original != null ? String(x.original).trim() : "",
+        copy: x.copy != null ? String(x.copy).trim() : "",
+        notes: (x.notes || "").trim(),
+      };
+    }
+
+    function po007MultilineHtml(text) {
+      return escapeHtml(text || "").replace(/\n/g, "<br/>");
     }
 
     function getPo007DefaultTemplate(docLang) {
       const ar = docLang === "ar";
+      const shippingDocs = getPo007ShippingDocsBuiltin(docLang);
       if (ar) {
         return {
           noteItems: [
@@ -6820,6 +7497,7 @@
             "الفحص من قبل شركة الهندسية بحضور طرف ثالث والعميل وموظفي شركة الباب، ويجب أن يكون الطرف الثالث من BV أو Lloyd Register أو Intertek أو ATG أو SGS أو TUV (تكلفة فحص الطرف الثالث على شركة الباب).",
           ],
           effectiveDateItems: ["من تاريخ أول دفعة أو الموافقة على DFA أيهما يحدث لاحقاً."],
+          ...shippingDocs,
         };
       }
       return {
@@ -6855,20 +7533,37 @@
           "Inspection made by Al-Handasya Co. and attend by third party, Client and ALBAB Co. staff for witness this test & third party should be by BV, Lloyd Register, Intertek, ATG, SGS, TUV (The cost of 3rd party inspection will be covered by Albab Co.)",
         ],
         effectiveDateItems: ["From of the date of first down payment or approval on DFA whichever is later."],
+        ...shippingDocs,
       };
     }
 
     function mergePo007TemplateIntoForm(g, docLang) {
-      const tpl = getPo007DefaultTemplate(docLang);
-      const x = { ...g };
-      if (!x.noteItems?.length) x.noteItems = [...tpl.noteItems];
-      if (!x.docListItems?.length) x.docListItems = [...tpl.docListItems];
-      if (!x.paymentTerms?.length) x.paymentTerms = tpl.paymentTerms.map((p) => ({ ...p }));
-      if (!x.deliveryRows?.length) x.deliveryRows = tpl.deliveryRows.map((r) => ({ ...r }));
-      if (!(x.termsPacking || "").trim()) x.termsPacking = tpl.termsPacking;
-      if (!(x.warranty || "").trim()) x.warranty = tpl.warranty;
-      if (!x.inspectionItems?.length) x.inspectionItems = [...tpl.inspectionItems];
-      if (!x.effectiveDateItems?.length) x.effectiveDateItems = [...tpl.effectiveDateItems];
+      const x = normalizePo007SectionMeta(g);
+      PO007_MAIN_SECTIONS.forEach((sec) => {
+        const slice = getPo007SectionEffectiveSlice(sec.id, docLang, x);
+        if (sec.id === "note" && !x.noteItems?.length) x.noteItems = [...slice.noteItems];
+        if (sec.id === "doc" && !x.docListItems?.length) x.docListItems = [...slice.docListItems];
+        if (sec.id === "payment" && !x.paymentTerms?.length) {
+          x.paymentTerms = slice.paymentTerms.map((p) => ({ ...p }));
+        }
+        if (sec.id === "delivery" && !x.deliveryRows?.length) {
+          x.deliveryRows = slice.deliveryRows.map((r) => ({ ...r }));
+        }
+        if (sec.id === "shippingDocs") {
+          if (!(x.shippingDocsIntro || "").trim()) x.shippingDocsIntro = slice.shippingDocsIntro;
+          if (!x.shippingDocsRows?.length) {
+            x.shippingDocsRows = slice.shippingDocsRows.map((r) => ({ ...r }));
+          }
+        }
+        if (sec.id === "packing" && !(x.termsPacking || "").trim()) x.termsPacking = slice.termsPacking;
+        if (sec.id === "warranty" && !(x.warranty || "").trim()) x.warranty = slice.warranty;
+        if (sec.id === "inspection" && !x.inspectionItems?.length) {
+          x.inspectionItems = [...slice.inspectionItems];
+        }
+        if (sec.id === "effective" && !x.effectiveDateItems?.length) {
+          x.effectiveDateItems = [...slice.effectiveDateItems];
+        }
+      });
       return x;
     }
 
@@ -6960,107 +7655,329 @@
         doc: ar ? "+ إضافة وثيقة" : "+ Add Document",
         pay: ar ? "+ إضافة بند دفع" : "+ Add Payment Term",
         del: ar ? "+ إضافة صف تسليم" : "+ Add Delivery Row",
+        shipDoc: ar ? "+ إضافة صف مستند" : "+ Add Document Row",
         bullet: ar ? "+ إضافة بند" : "+ Add Item",
       };
       return m[kind] || (ar ? "+ إضافة" : "+ Add");
     }
 
-    function renderPo007EditorNoteSection(g, docLang) {
-      const items = g.noteItems?.length ? g.noteItems : [""];
-      const rows = items
-        .map(
-          (n, i) =>
-            `<li data-po007-note-item data-n="${i + 1})"><button type="button" class="del-btn po007-del-note-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(n)}</span></li>`
-        )
-        .join("");
-      return `${renderPo007Section(
-        1,
-        tPo007(docLang, "genPo007SecNote"),
-        `<ol class="po007-note-list" data-po007="note-list">${rows}</ol>
-         <button type="button" class="add-row-btn po007-add-note-item">${escapeHtml(po007SecAddLbl(docLang, "note"))}</button>`
-      )}`;
+    function renderPo007NoteSectionBody(g, docLang, editorMode) {
+      const items = g.noteItems?.length ? g.noteItems : editorMode ? [""] : [];
+      if (!items.length) return "";
+      if (editorMode) {
+        const rows = items
+          .map(
+            (n, i) =>
+              `<li data-po007-note-item data-n="${i + 1})"><button type="button" class="del-btn po007-del-note-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(n)}</span></li>`
+          )
+          .join("");
+        return `<ol class="po007-note-list" data-po007="note-list">${rows}</ol>
+         <button type="button" class="add-row-btn po007-add-note-item">${escapeHtml(po007SecAddLbl(docLang, "note"))}</button>`;
+      }
+      return `<ol class="po007-note-list">${items
+        .map((n, i) => `<li data-n="${i + 1})">${escapeHtml(n)}</li>`)
+        .join("")}</ol>`;
     }
 
-    function renderPo007EditorDocSection(g, docLang) {
-      const items = g.docListItems?.length ? g.docListItems : [""];
-      const rows = items
-        .map(
-          (d) =>
-            `<li data-po007-doc-item><button type="button" class="del-btn po007-del-doc-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(d)}</span></li>`
-        )
-        .join("");
-      return `${renderPo007Section(
-        2,
-        tPo007(docLang, "genPo007SecDocList"),
-        `<ul class="po007-doc-list" data-po007="doc-list">${rows}</ul>
-         <button type="button" class="add-row-btn po007-add-doc-item">${escapeHtml(po007SecAddLbl(docLang, "doc"))}</button>`
-      )}`;
+    function renderPo007DocSectionBody(g, docLang, editorMode) {
+      const items = g.docListItems?.length ? g.docListItems : editorMode ? [""] : [];
+      if (!items.length) return "";
+      if (editorMode) {
+        const rows = items
+          .map(
+            (d) =>
+              `<li data-po007-doc-item><button type="button" class="del-btn po007-del-doc-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(d)}</span></li>`
+          )
+          .join("");
+        return `<ul class="po007-doc-list" data-po007="doc-list">${rows}</ul>
+         <button type="button" class="add-row-btn po007-add-doc-item">${escapeHtml(po007SecAddLbl(docLang, "doc"))}</button>`;
+      }
+      return `<ul class="po007-doc-list">${items.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`;
     }
 
-    function renderPo007EditorPaymentSection(g, docLang) {
-      const terms = g.paymentTerms?.length ? g.paymentTerms : [{ pct: "", text: "" }];
-      const rows = terms
-        .map(
-          (p) =>
-            `<li data-po007-pay-item><button type="button" class="del-btn po007-del-pay-item">✕</button>
+    function renderPo007PaymentSectionBody(g, docLang, editorMode) {
+      const terms = g.paymentTerms?.length ? g.paymentTerms : editorMode ? [{ pct: "", text: "" }] : [];
+      if (!terms.length) {
+        if (!editorMode && (g.termsPayment || "").trim()) {
+          return `<p class="po007-text-block">${escapeHtml(g.termsPayment)}</p>`;
+        }
+        return "";
+      }
+      if (editorMode) {
+        const rows = terms
+          .map(
+            (p) =>
+              `<li data-po007-pay-item><button type="button" class="del-btn po007-del-pay-item">✕</button>
               <span class="pct po007-sec-field po007-sec-field--pct" contenteditable="true" spellcheck="false">${escapeHtml(p.pct || "")}</span>
               <span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(p.text || "")}</span></li>`
-        )
-        .join("");
-      return `${renderPo007Section(
-        3,
-        tPo007(docLang, "genPo007SecPayment"),
-        `<ul class="po007-payment-list" data-po007="payment-list">${rows}</ul>
-         <button type="button" class="add-row-btn po007-add-pay-item">${escapeHtml(po007SecAddLbl(docLang, "pay"))}</button>`
-      )}`;
+          )
+          .join("");
+        return `<ul class="po007-payment-list" data-po007="payment-list">${rows}</ul>
+         <button type="button" class="add-row-btn po007-add-pay-item">${escapeHtml(po007SecAddLbl(docLang, "pay"))}</button>`;
+      }
+      return `<ul class="po007-payment-list">${terms
+        .map((p) => `<li><span class="pct">${escapeHtml(p.pct || "")}</span><span>${escapeHtml(p.text || "")}</span></li>`)
+        .join("")}</ul>`;
     }
 
-    function renderPo007EditorDeliverySection(g, docLang) {
-      const rows = g.deliveryRows?.length ? g.deliveryRows : [{ item: "", description: "", leadTime: "" }];
+    function renderPo007DeliverySectionBody(g, docLang, editorMode) {
+      const rows = g.deliveryRows?.length ? g.deliveryRows : [];
+      if (!rows.length) {
+        if (!editorMode && (g.termsDelivery || "").trim()) {
+          return `<p class="po007-text-block">${escapeHtml(g.termsDelivery)}</p>`;
+        }
+        if (!editorMode) return "";
+        return renderPo007DeliverySectionBody(
+          { ...g, deliveryRows: [{ item: "", description: "", leadTime: "" }] },
+          docLang,
+          true
+        );
+      }
+      const thLead = docLang === "ar" ? "مدة التسليم" : "Delivery Lead Time";
       const body = rows
         .map((r, i) => {
-          return `<tr data-po007-delivery-row>
+          if (editorMode) {
+            return `<tr data-po007-delivery-row>
             <td class="po007-col-no"><button type="button" class="del-btn po007-del-delivery-row">✕</button><span class="po007-line-no">${i + 1}</span></td>
             <td><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(r.item || "")}</span></td>
             <td><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(r.description || "")}</span></td>
             <td class="lt"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(r.leadTime != null ? String(r.leadTime) : "")}</span></td>
           </tr>`;
+          }
+          return `<tr><td>${i + 1}</td><td>${escapeHtml(r.item || "")}</td><td>${escapeHtml(r.description || "")}</td><td class="lt">${escapeHtml(
+            r.leadTime != null ? String(r.leadTime) : ""
+          )}</td></tr>`;
         })
         .join("");
-      const thLead = docLang === "ar" ? "مدة التسليم" : "Delivery Lead Time";
-      return `${renderPo007Section(
-        4,
-        tPo007(docLang, "genPo007SecDelivery"),
-        `<table class="po007-delivery-table" data-po007="delivery-table"><thead><tr>
+      const table = `<table class="po007-delivery-table" data-po007="delivery-table"><thead><tr>
           <th>${docLang === "ar" ? "م" : "No."}</th><th>${docLang === "ar" ? "الصنف" : "Item"}</th>
           <th>${docLang === "ar" ? "الوصف" : "Description"}</th><th style="text-align:center">${escapeHtml(thLead)}</th>
-        </tr></thead><tbody>${body}</tbody></table>
-        <button type="button" class="add-row-btn po007-add-delivery-row">${escapeHtml(po007SecAddLbl(docLang, "del"))}</button>`
-      )}`;
+        </tr></thead><tbody>${body}</tbody></table>`;
+      if (editorMode) {
+        return `${table}<button type="button" class="add-row-btn po007-add-delivery-row">${escapeHtml(po007SecAddLbl(docLang, "del"))}</button>`;
+      }
+      return table;
     }
 
-    function renderPo007EditorTextSection(num, titleKey, fieldKey, text, docLang) {
-      return renderPo007Section(
-        num,
-        tPo007(docLang, titleKey),
-        `<div class="po007-sec-field po007-sec-field--block" data-po007="${fieldKey}" contenteditable="true" spellcheck="false">${escapeHtml(text || "")}</div>`
-      );
-    }
-
-    function renderPo007EditorBulletSection(num, titleKey, listKey, items, docLang) {
-      const arr = items?.length ? items : [""];
-      const rows = arr
-        .map(
-          (x) =>
-            `<li data-po007-${listKey}-item><button type="button" class="del-btn po007-del-${listKey}-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(x)}</span></li>`
-        )
+    function renderPo007ShippingDocsSectionBody(g, docLang, editorMode) {
+      const intro = (g.shippingDocsIntro || "").trim();
+      const rows = (g.shippingDocsRows || []).map(normalizeShippingDocRow);
+      if (!editorMode && !intro && !rows.length) return "";
+      if (editorMode && !rows.length) {
+        return renderPo007ShippingDocsSectionBody(
+          { ...g, shippingDocsIntro: g.shippingDocsIntro || getPo007ShippingDocsBuiltin(docLang).shippingDocsIntro, shippingDocsRows: [{ sn: "", description: "", original: "", copy: "", notes: "" }] },
+          docLang,
+          true
+        );
+      }
+      const thSn = docLang === "ar" ? "م" : "S/N";
+      const thDesc = docLang === "ar" ? "وصف المستند" : "Document Description";
+      const thOrig = docLang === "ar" ? "أصل" : "Original";
+      const thCopy = docLang === "ar" ? "نسخة" : "Copy";
+      const thNotes = docLang === "ar" ? "ملاحظات" : "Notes";
+      const introHtml = editorMode
+        ? `<div class="po007-shipping-docs-intro po007-sec-field po007-sec-field--block" data-po007="shipping-docs-intro" contenteditable="true" spellcheck="false">${escapeHtml(g.shippingDocsIntro || "")}</div>`
+        : intro
+          ? `<p class="po007-shipping-docs-intro">${escapeHtml(intro)}</p>`
+          : "";
+      const body = rows
+        .map((r, i) => {
+          const row = normalizeShippingDocRow(r, i);
+          if (editorMode) {
+            return `<tr data-po007-shipping-doc-row>
+            <td class="po007-col-no po007-ship-sn"><button type="button" class="del-btn po007-del-shipping-doc-row">✕</button><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(row.sn)}</span></td>
+            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(row.description)}</span></td>
+            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(row.original)}</span></td>
+            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(row.copy)}</span></td>
+            <td><div class="po007-sec-field po007-sec-field--block po007-sec-field--notes" contenteditable="true" spellcheck="false">${escapeHtml(row.notes)}</div></td>
+          </tr>`;
+          }
+          return `<tr>
+            <td class="po007-ship-sn">${escapeHtml(row.sn)}</td>
+            <td>${escapeHtml(row.description)}</td>
+            <td class="po007-ship-qty">${escapeHtml(row.original)}</td>
+            <td class="po007-ship-qty">${escapeHtml(row.copy)}</td>
+            <td><div class="po007-ship-notes-print">${po007MultilineHtml(row.notes)}</div></td>
+          </tr>`;
+        })
         .join("");
-      return `${renderPo007Section(
-        num,
-        tPo007(docLang, titleKey),
-        `<ul class="po007-bullet-list" data-po007="${listKey}-list">${rows}</ul>
-         <button type="button" class="add-row-btn po007-add-${listKey}-item">${escapeHtml(po007SecAddLbl(docLang, "bullet"))}</button>`
-      )}`;
+      const table = `<table class="po007-shipping-docs-table" data-po007="shipping-docs-table"><thead><tr>
+          <th class="po007-ship-sn">${escapeHtml(thSn)}</th>
+          <th>${escapeHtml(thDesc)}</th>
+          <th class="po007-ship-qty">${escapeHtml(thOrig)}</th>
+          <th class="po007-ship-qty">${escapeHtml(thCopy)}</th>
+          <th>${escapeHtml(thNotes)}</th>
+        </tr></thead><tbody>${body}</tbody></table>`;
+      if (editorMode) {
+        return `${introHtml}${table}<button type="button" class="add-row-btn po007-add-shipping-doc-row">${escapeHtml(po007SecAddLbl(docLang, "shipDoc"))}</button>`;
+      }
+      return `${introHtml}${table}`;
+    }
+
+    function renderPo007TextSectionBody(fieldKey, text, editorMode) {
+      const val = (text || "").trim();
+      if (!editorMode && !val) return "";
+      if (editorMode) {
+        return `<div class="po007-sec-field po007-sec-field--block" data-po007="${fieldKey}" contenteditable="true" spellcheck="false">${escapeHtml(text || "")}</div>`;
+      }
+      return `<p class="po007-text-block">${escapeHtml(val)}</p>`;
+    }
+
+    function renderPo007BulletSectionBody(listKey, items, docLang, editorMode) {
+      const arr = items?.length ? items : editorMode ? [""] : [];
+      if (!arr.length) return "";
+      if (editorMode) {
+        const rows = arr
+          .map(
+            (x) =>
+              `<li data-po007-${listKey}-item><button type="button" class="del-btn po007-del-${listKey}-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(x)}</span></li>`
+          )
+          .join("");
+        return `<ul class="po007-bullet-list" data-po007="${listKey}-list">${rows}</ul>
+         <button type="button" class="add-row-btn po007-add-${listKey}-item">${escapeHtml(po007SecAddLbl(docLang, "bullet"))}</button>`;
+      }
+      return `<ul class="po007-bullet-list">${arr.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul>`;
+    }
+
+    function renderPo007MainSectionBody(sectionId, g, docLang, editorMode) {
+      switch (sectionId) {
+        case "note":
+          return renderPo007NoteSectionBody(g, docLang, editorMode);
+        case "doc":
+          return renderPo007DocSectionBody(g, docLang, editorMode);
+        case "payment":
+          return renderPo007PaymentSectionBody(g, docLang, editorMode);
+        case "delivery":
+          return renderPo007DeliverySectionBody(g, docLang, editorMode);
+        case "shippingDocs":
+          return renderPo007ShippingDocsSectionBody(g, docLang, editorMode);
+        case "packing":
+          return renderPo007TextSectionBody("terms-packing", g.termsPacking, editorMode);
+        case "warranty":
+          return renderPo007TextSectionBody("warranty", g.warranty, editorMode);
+        case "inspection":
+          return renderPo007BulletSectionBody("inspection", g.inspectionItems, docLang, editorMode);
+        case "effective":
+          return renderPo007BulletSectionBody("effective", g.effectiveDateItems, docLang, editorMode);
+        default:
+          return "";
+      }
+    }
+
+    function buildPo007PageSectionsHtml(g, docLang, page, editorMode) {
+      const gNorm = normalizePo007SectionMeta(g);
+      const gSec = editorMode ? mergePo007TemplateIntoForm(gNorm, docLang) : gNorm;
+      const secs = getPo007SectionsForPage(gNorm, page, editorMode);
+      let html = "";
+      let num = 0;
+      secs.forEach((sec) => {
+        num += 1;
+        const body = renderPo007MainSectionBody(sec.id, gSec, docLang, editorMode);
+        const title = getPo007SectionTitle(gNorm, sec.id, docLang);
+        const state = getPo007SectionState(gNorm, sec.id);
+        html += renderPo007SectionShell(sec.id, num, title, body, editorMode, state, docLang, gNorm);
+      });
+      if (editorMode) html += renderPo007AddSectionBar(page, gNorm, docLang);
+      return html;
+    }
+
+    function renderPo007DocHeaderBlock(docLang, opts) {
+      const {
+        logoHtml,
+        buyerName,
+        projectName,
+        refText,
+        poDateDisp,
+        poRev,
+        revLbl,
+        editorMode,
+      } = opts;
+      const dash = tPo007(docLang, "dash");
+      const projectLine = editorMode
+        ? `${tPo007(docLang, "genPo007PoProject")} <span data-po007="project">${escapeHtml(projectName)}</span>`
+        : `${tPo007(docLang, "genPo007PoProject")} ${escapeHtml(projectName)}`;
+      const poLine = editorMode
+        ? `<strong>${tPo007(docLang, "genPo007PurchaseOrder")}<span data-po007="po-number">${escapeHtml(refText)}</span></strong>`
+        : `<strong>${tPo007(docLang, "genPo007PurchaseOrder")}${escapeHtml(refText)}</strong>`;
+      const dateLine = editorMode
+        ? `${tPo007(docLang, "genPo007PoDate")} <span data-po007="po-date">${escapeHtml(poDateDisp)}</span>`
+        : `${tPo007(docLang, "genPo007PoDate")} ${escapeHtml(poDateDisp)}`;
+      const revLine = editorMode
+        ? `${escapeHtml(revLbl)} <span data-po007="po-rev" contenteditable="true" spellcheck="false">${escapeHtml(poRev)}</span>`
+        : `${escapeHtml(revLbl)} ${escapeHtml(poRev)}`;
+      const buyerEl = editorMode
+        ? `<div class="po007-buyer-title" data-po007="buyer-name">${escapeHtml(buyerName || dash)}</div>`
+        : `<div class="po007-buyer-title">${escapeHtml(buyerName || dash)}</div>`;
+      return `<div class="po007-doc-header">
+        <div class="po007-dh-logo">${logoHtml}</div>
+        <div class="po007-dh-meta">
+          ${buyerEl}
+          <div class="po007-dh-po">
+            <div>${projectLine}</div>
+            <div>${poLine}</div>
+            <div>${dateLine}</div>
+            <div>${revLine}</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderPo007PartyExtraBlock(docLang, fieldKey, text, editorMode) {
+      const lbl = tPo007(docLang, "genPo007PartyExtra");
+      const val = (text || "").trim();
+      if (editorMode) {
+        return `<div class="po007-party-extra">
+          <span class="po007-party-extra-lbl">${escapeHtml(lbl)}</span>
+          <div class="po007-party-extra-field" data-po007="${fieldKey}" contenteditable="true" spellcheck="false">${escapeHtml(val)}</div>
+        </div>`;
+      }
+      if (!val) return "";
+      return `<div class="po007-party-extra"><div class="po007-party-extra-text">${escapeHtml(val)}</div></div>`;
+    }
+
+    function renderPo007PartiesBlock(docLang, v, buyerName, be, buyerEmails, editorMode) {
+      const dash = tPo007(docLang, "dash");
+      const vendorExtra = (v.extraNotes || "").trim();
+      const buyerExtra = (be.extraNotes || "").trim();
+      if (editorMode) {
+        return `<div class="po007-parties">
+          <div class="po007-party-cell">
+            <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007SupplierCompanyName"))}</div>
+            <p><strong><span class="po007-party-value" data-po007="seller">${escapeHtml(v.name || dash)}</span></strong></p>
+            <p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> <span class="po007-party-value" data-po007="vendor-attn">${escapeHtml(v.attn || "")}</span></p>
+            <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: <span class="po007-party-value" data-po007="vendor-phone">${escapeHtml(v.phone || "")}</span></p>
+            <p>${escapeHtml(tPo007(docLang, "genPo007Email"))} <span class="po007-party-value" data-po007="vendor-email">${escapeHtml(v.email || "")}</span></p>
+            ${renderPo007PartyExtraBlock(docLang, "vendor-extra", vendorExtra, true)}
+          </div>
+          <div class="po007-party-cell">
+            <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007InvoiceShipTo"))}</div>
+            <p><strong><span class="po007-party-value" data-po007="buyer-name-party">${escapeHtml(buyerName || dash)}</span></strong></p>
+            <p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> <span class="po007-party-extra-field po007-party-extra-field--inline" data-po007="buyer-attn" contenteditable="true" spellcheck="false">${escapeHtml(be.attn || "")}</span></p>
+            <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: <span class="po007-party-value" data-po007="buyer-phone">${escapeHtml(be.phone || "")}</span></p>
+            <p>${escapeHtml(tPo007(docLang, "genPo007EmailLine"))} <span class="po007-party-value" data-po007="buyer-email-primary">${escapeHtml(buyerEmails[0] || "")}</span></p>
+            <p><span class="po007-party-value" data-po007="buyer-email-secondary">${escapeHtml(buyerEmails[1] || "")}</span></p>
+            ${renderPo007PartyExtraBlock(docLang, "buyer-extra", buyerExtra, true)}
+          </div>
+        </div>`;
+      }
+      return `<div class="po007-parties">
+        <div class="po007-party-cell">
+          <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007SupplierCompanyName"))}</div>
+          <p><strong>${escapeHtml(v.name || dash)}</strong></p>
+          ${v.attn ? `<p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> ${escapeHtml(v.attn)}</p>` : ""}
+          ${v.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${escapeHtml(v.phone)}</p>` : ""}
+          ${v.email ? `<p>${escapeHtml(tPo007(docLang, "genPo007Email"))} ${escapeHtml(v.email)}</p>` : ""}
+          ${renderPo007PartyExtraBlock(docLang, "vendor-extra", vendorExtra, false)}
+        </div>
+        <div class="po007-party-cell">
+          <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007InvoiceShipTo"))}</div>
+          <p><strong>${escapeHtml(buyerName || dash)}</strong></p>
+          ${(be.attn || "").trim() ? `<p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> ${escapeHtml(be.attn)}</p>` : ""}
+          ${be.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${escapeHtml(be.phone)}</p>` : ""}
+          ${buyerEmails.map((em, i) => `<p>${i === 0 ? escapeHtml(tPo007(docLang, "genPo007EmailLine")) + " " : ""}${escapeHtml(em)}</p>`).join("")}
+          ${renderPo007PartyExtraBlock(docLang, "buyer-extra", buyerExtra, false)}
+        </div>
+      </div>`;
     }
 
     function renderPo007EditorSignatures(g, buyerName, vendorName, docLang) {
@@ -7103,6 +8020,22 @@
           };
         })
         .filter((r) => r.item || r.description || r.leadTime);
+      const shippingDocsIntro = (mount?.querySelector('[data-po007="shipping-docs-intro"]')?.textContent || "").trim();
+      const shippingDocsRows = [...(mount?.querySelectorAll("[data-po007-shipping-doc-row]") || [])]
+        .map((tr, i) => {
+          const fields = tr.querySelectorAll(".po007-sec-field");
+          return normalizeShippingDocRow(
+            {
+              sn: (fields[0]?.textContent || "").trim(),
+              description: (fields[1]?.textContent || "").trim(),
+              original: (fields[2]?.textContent || "").trim(),
+              copy: (fields[3]?.textContent || "").trim(),
+              notes: (fields[4]?.textContent || "").trim(),
+            },
+            i
+          );
+        })
+        .filter((r) => r.description || r.notes || r.original || r.copy || r.sn);
       const termsPacking = (mount?.querySelector('[data-po007="terms-packing"]')?.textContent || "").trim();
       const warranty = (mount?.querySelector('[data-po007="warranty"]')?.textContent || "").trim();
       const inspectionItems = readList('[data-po007="inspection-list"] [data-po007-inspection-item] .po007-sec-field');
@@ -7114,6 +8047,8 @@
         docListItems,
         paymentTerms,
         deliveryRows,
+        shippingDocsIntro,
+        shippingDocsRows,
         termsPacking,
         warranty,
         inspectionItems,
@@ -7139,6 +8074,8 @@
     }
 
     let generalPo007EditorLogo = "";
+    let generalPo007EditorPo = null;
+    let generalPo007EditorCachedMeta = null;
 
     function getGeneralPo007Mount() {
       return $("general-po007-mount");
@@ -7150,10 +8087,24 @@
       return Number.isFinite(n) ? n : 0;
     }
 
-    function formatPo007EditorAmount(n) {
+    function formatPo007EditorAmount(n, docLang) {
       const x = Number(n) || 0;
-      if (Math.abs(x - Math.round(x)) < 1e-9) return Math.round(x).toLocaleString("en-US");
-      return x.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      const loc = docLang ? po007LocaleTag(docLang) : "en-US";
+      if (Math.abs(x - Math.round(x)) < 1e-9) return Math.round(x).toLocaleString(loc);
+      return x.toLocaleString(loc, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    }
+
+    function formatPo007AmountText(textOrNum, docLang) {
+      const n =
+        typeof textOrNum === "number" && Number.isFinite(textOrNum)
+          ? textOrNum
+          : parsePo007EditorNum(textOrNum);
+      return formatPo007EditorAmount(n, docLang);
+    }
+
+    function applyPo007AmountFieldFormat(el, docLang) {
+      if (!el) return;
+      el.textContent = formatPo007AmountText(el.textContent, docLang);
     }
 
     function generalFormForEditor(g, po) {
@@ -7192,19 +8143,21 @@
         enrichGeneralFormPo007({
           documentLang: docLang,
           currency: "IQD",
-          poRev: "A",
+          poRev: "",
           poNumber: "—",
           lines: [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }],
           noteItems: [],
           docListItems: [],
           paymentTerms: [],
           deliveryRows: [],
+          shippingDocsIntro: "",
+          shippingDocsRows: [],
           termsPacking: "",
           warranty: "",
           inspectionItems: [],
           effectiveDateItems: [],
-          vendor: { name: "", attn: "", phone: "", email: "" },
-          buyerExtra: { phone: "", emails: "" },
+          vendor: { name: "", attn: "", phone: "", email: "", extraNotes: "" },
+          buyerExtra: { attn: "", phone: "", emails: "", extraNotes: "" },
           offerType: "",
           totalWords: "",
         }),
@@ -7231,7 +8184,8 @@
       const tag = (l.itemTag || l.item || "").trim();
       const desc = (l.description || l.remark || "").trim();
       const qty = l.qty != null ? String(l.qty) : "1";
-      const price = (l.priceText || (l.price != null ? String(l.price) : "0")).trim() || "0";
+      const priceRaw = (l.priceText || (l.price != null ? String(l.price) : "0")).trim() || "0";
+      const price = formatPo007AmountText(priceRaw, docLang);
       return `<tr data-po007-line>
         <td class="po007-col-no">
           <div class="po007-line-no-cell">
@@ -7293,14 +8247,17 @@
             <tr class="po007-items-add-row"><td colspan="6">
               <button type="button" class="add-row-btn po007-add-item-row">${escapeHtml(lbl.addRow)}</button>
             </td></tr>
+            <tr class="po007-total-num-row">
+              <td colspan="5" class="po007-col-desc po007-total-num-lbl">${escapeHtml(tPo007(docLang, "genPo007TotalNumeric"))}</td>
+              <td class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>
+            </tr>
             <tr class="po007-total-row">
-              <td colspan="5" class="po007-col-desc">
+              <td colspan="6" class="po007-col-desc">
                 <div class="po007-total-say">
-                  <span>${escapeHtml(tPo007(docLang, "genPo007TotalPriceSay"))}:</span>
+                  <span>${escapeHtml(tPo007(docLang, "genPo007TotalPriceSay"))}</span>
                   <span data-po007="total-words" contenteditable="true" spellcheck="false">${escapeHtml((g.totalWords || "").trim())}</span>
                 </div>
               </td>
-              <td class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>
             </tr>
           </tbody>
         </table>
@@ -7313,14 +8270,14 @@
       return [...mount.querySelectorAll("[data-po007-line]")]
         .map((tr) => {
           const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
-          const priceText = (tr.querySelector(".po007-unit-price")?.textContent || "").trim();
-          const unit = parsePo007EditorNum(priceText);
+          const unit = parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
           const lineTotal = qty * unit;
+          const docLang = getPo007DocumentLang();
           return normalizeGeneralLineRow({
             itemTag: (tr.querySelector(".po007-item-tag")?.textContent || "").trim(),
             description: (tr.querySelector(".po007-desc")?.textContent || "").trim(),
             qty,
-            priceText,
+            priceText: formatPo007EditorAmount(unit, docLang),
             lineTotal,
           });
         })
@@ -7336,9 +8293,134 @@
       });
     }
 
-    function formatPo007GrandTotalDisplay(sum, curSuffix) {
+    function formatPo007GrandTotalDisplay(sum, curSuffix, docLang) {
       const n = Number(sum) || 0;
-      return n > 0 ? `${formatPo007EditorAmount(n)} ${curSuffix}` : `0 ${curSuffix}`;
+      const lang = docLang || getPo007DocumentLang();
+      return n > 0 ? `${formatPo007EditorAmount(n, lang)} ${curSuffix}` : `0 ${curSuffix}`;
+    }
+
+    function numberToEnglishWords(n) {
+      n = Math.floor(Number(n) || 0);
+      if (n === 0) return "Zero";
+      const ones = [
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen",
+      ];
+      const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+      const chunk = (num) => {
+        if (num < 20) return ones[num];
+        if (num < 100) {
+          const t = Math.floor(num / 10);
+          const u = num % 10;
+          return tens[t] + (u ? " " + ones[u] : "");
+        }
+        const h = Math.floor(num / 100);
+        const r = num % 100;
+        return ones[h] + " Hundred" + (r ? " " + chunk(r) : "");
+      };
+      const parts = [];
+      let x = n;
+      const billion = Math.floor(x / 1e9);
+      x %= 1e9;
+      const million = Math.floor(x / 1e6);
+      x %= 1e6;
+      const thousand = Math.floor(x / 1e3);
+      x %= 1e3;
+      if (billion) parts.push(chunk(billion) + " Billion");
+      if (million) parts.push(chunk(million) + " Million");
+      if (thousand) parts.push(chunk(thousand) + " Thousand");
+      if (x) parts.push(chunk(x));
+      return parts.join(" ");
+    }
+
+    function numberToArabicWords(n) {
+      n = Math.floor(Number(n) || 0);
+      if (n === 0) return "صفر";
+      const ones = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
+      const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
+      const teens = [
+        "عشرة",
+        "أحد عشر",
+        "اثنا عشر",
+        "ثلاثة عشر",
+        "أربعة عشر",
+        "خمسة عشر",
+        "ستة عشر",
+        "سبعة عشر",
+        "ثمانية عشر",
+        "تسعة عشر",
+      ];
+      const below100 = (x) => {
+        if (x < 10) return ones[x];
+        if (x < 20) return teens[x - 10];
+        const u = x % 10;
+        const t = Math.floor(x / 10);
+        return u ? ones[u] + " و" + tens[t] : tens[t];
+      };
+      const below1000 = (x) => {
+        if (x < 100) return below100(x);
+        const h = Math.floor(x / 100);
+        const r = x % 100;
+        let hw;
+        if (h === 1) hw = "مائة";
+        else if (h === 2) hw = "مائتان";
+        else hw = ones[h] + "مائة";
+        return r ? hw + " و" + below100(r) : hw;
+      };
+      const scale = (x, sing, dual, plural) => {
+        if (!x) return "";
+        if (x === 1) return sing;
+        if (x === 2) return dual;
+        if (x >= 3 && x <= 10) return below1000(x) + " " + plural;
+        return below1000(x) + " " + sing;
+      };
+      const parts = [];
+      let rem = n;
+      const billion = Math.floor(rem / 1e9);
+      rem %= 1e9;
+      const million = Math.floor(rem / 1e6);
+      rem %= 1e6;
+      const thousand = Math.floor(rem / 1e3);
+      rem %= 1e3;
+      if (billion) parts.push(scale(billion, "مليار", "ملياران", "مليارات"));
+      if (million) parts.push(scale(million, "مليون", "مليونان", "ملايين"));
+      if (thousand) parts.push(scale(thousand, "ألف", "ألفان", "آلاف"));
+      if (rem) parts.push(below1000(rem));
+      return parts.join(" و");
+    }
+
+    function formatPo007TotalWordsDisplay(sum, currency, docLang) {
+      const n = Number(sum) || 0;
+      const cur = currency === "USD" ? "USD" : "IQD";
+      if (n <= 0) return docLang === "ar" ? "صفر" : "Zero";
+      const intPart = Math.floor(n);
+      const frac = Math.round((n - intPart) * 100);
+      if (docLang === "ar") {
+        let w = numberToArabicWords(intPart) + (cur === "USD" ? " دولار أمريكي" : " دينار عراقي");
+        if (frac > 0) w += " و" + numberToArabicWords(frac) + (cur === "USD" ? " سنت" : " فلس");
+        return w;
+      }
+      let w = numberToEnglishWords(intPart) + (cur === "USD" ? " US Dollars" : " Iraqi Dinars");
+      if (frac > 0) w += " and " + numberToEnglishWords(frac) + " Cents";
+      return w;
     }
 
     function recalcGeneralPo007ItemsTable() {
@@ -7349,18 +8431,22 @@
       let sum = 0;
       mount.querySelectorAll("[data-po007-line]").forEach((tr) => {
         const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
-        const unit = parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
+        const priceEl = tr.querySelector(".po007-unit-price");
+        const unit = parsePo007EditorNum(priceEl?.textContent);
+        if (priceEl && document.activeElement !== priceEl) {
+          applyPo007AmountFieldFormat(priceEl, docLang);
+        }
         const lineTotal = qty * unit;
         sum += lineTotal;
         const lt = tr.querySelector(".po007-line-total");
-        if (lt) lt.textContent = formatPo007EditorAmount(lineTotal);
+        if (lt) lt.textContent = formatPo007EditorAmount(lineTotal, docLang);
       });
-      const grandDisp = formatPo007GrandTotalDisplay(sum, curSuffix);
+      const grandDisp = formatPo007GrandTotalDisplay(sum, curSuffix, docLang);
       const grand = mount.querySelector('[data-po007="grand-total"]');
       if (grand) grand.textContent = grandDisp;
       const totalWordsEl = mount.querySelector('[data-po007="total-words"]');
       if (totalWordsEl && totalWordsEl.dataset.po007Manual !== "1") {
-        totalWordsEl.textContent = grandDisp;
+        totalWordsEl.textContent = formatPo007TotalWordsDisplay(sum, getPo007MetaCurrency(), docLang);
       }
       renumberGeneralPo007ItemRows();
     }
@@ -7426,10 +8512,68 @@
       return li;
     }
 
+    function handlePo007SectionAction(action, sectionId) {
+      const docLang = getPo007DocumentLang();
+      let g = buildGeneralFormFromEditor();
+      const vis = { ...(g.sectionVisibility || {}) };
+      if (action === "hide") vis[sectionId] = "hidden";
+      else if (action === "show") vis[sectionId] = "visible";
+      else if (action === "delete") {
+        if (!confirm(tPo007(docLang, "genPo007SecDeleteConfirm"))) return;
+        vis[sectionId] = "deleted";
+        reloadGeneralPo007Editor({ sectionVisibility: vis });
+        return;
+      } else if (action === "reset") {
+        g = applyPo007SectionDefaultsToForm(g, sectionId, docLang);
+        reloadGeneralPo007Editor({ ...g, sectionVisibility: vis });
+        return;
+      } else if (action === "save-default") {
+        const mount = getGeneralPo007Mount();
+        const sections = collectPo007EditorSections(mount);
+        const withDef = capturePo007SectionCustomDefault(g, sectionId, sections);
+        alert(tPo007(docLang, "genPo007SecDefaultSaved"));
+        reloadGeneralPo007Editor(withDef);
+        return;
+      } else if (action === "move-up") {
+        reloadGeneralPo007Editor({ sectionOrder: movePo007SectionOrder(g, sectionId, -1) });
+        return;
+      } else if (action === "move-down") {
+        reloadGeneralPo007Editor({ sectionOrder: movePo007SectionOrder(g, sectionId, 1) });
+        return;
+      }
+      reloadGeneralPo007Editor({ sectionVisibility: vis });
+    }
+
+    function reloadGeneralPo007Editor(patch) {
+      const mount = getGeneralPo007Mount();
+      const scrollEl = mount?.closest(".po007-editor-scroll");
+      const scrollTop = scrollEl?.scrollTop || 0;
+      const g = { ...buildGeneralFormFromEditor(), ...(patch || {}) };
+      mountGeneralPo007Editor(g, generalPo007EditorPo || {});
+      if (scrollEl) scrollEl.scrollTop = scrollTop;
+    }
+
     function bindGeneralPo007EditorEvents() {
       const mount = getGeneralPo007Mount();
       if (!mount) return;
       mount.onclick = (e) => {
+        const secActionBtn = e.target.closest("[data-po007-sec-action]");
+        if (secActionBtn) {
+          e.preventDefault();
+          const sectionId = secActionBtn.closest("[data-po007-section]")?.dataset.po007Section;
+          if (sectionId) handlePo007SectionAction(secActionBtn.dataset.po007SecAction, sectionId);
+          return;
+        }
+        const restoreBtn = e.target.closest(".po007-restore-section");
+        if (restoreBtn) {
+          e.preventDefault();
+          const sectionId = restoreBtn.dataset.po007Section;
+          if (!sectionId) return;
+          const g = buildGeneralFormFromEditor();
+          const vis = { ...(g.sectionVisibility || {}), [sectionId]: "visible" };
+          reloadGeneralPo007Editor({ sectionVisibility: vis });
+          return;
+        }
         const addBtn = e.target.closest(".po007-add-item-row");
         if (addBtn) {
           e.preventDefault();
@@ -7515,6 +8659,28 @@
           }
           return;
         }
+        if (e.target.closest(".po007-add-shipping-doc-row")) {
+          e.preventDefault();
+          const tbody = mount.querySelector('[data-po007="shipping-docs-table"] tbody');
+          if (!tbody) return;
+          const tr = document.createElement("tr");
+          tr.setAttribute("data-po007-shipping-doc-row", "");
+          tr.innerHTML = `<td class="po007-col-no po007-ship-sn"><button type="button" class="del-btn po007-del-shipping-doc-row">✕</button><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>
+            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false"></span></td>
+            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>
+            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>
+            <td><div class="po007-sec-field po007-sec-field--block po007-sec-field--notes" contenteditable="true" spellcheck="false"></div></td>`;
+          tbody.appendChild(tr);
+          tr.querySelector(".po007-sec-field")?.focus();
+          return;
+        }
+        if (e.target.closest(".po007-del-shipping-doc-row")) {
+          e.preventDefault();
+          const tr = e.target.closest("[data-po007-shipping-doc-row]");
+          const tbody = mount.querySelector('[data-po007="shipping-docs-table"] tbody');
+          if (tbody && tbody.querySelectorAll("[data-po007-shipping-doc-row]").length > 1) tr?.remove();
+          return;
+        }
         const addBullet = e.target.closest(".po007-add-inspection-item, .po007-add-effective-item");
         if (addBullet) {
           e.preventDefault();
@@ -7562,6 +8728,16 @@
         },
         true
       );
+      mount.addEventListener(
+        "focusout",
+        (e) => {
+          const priceEl = e.target.closest(".po007-unit-price");
+          if (!priceEl) return;
+          applyPo007AmountFieldFormat(priceEl, getPo007DocumentLang());
+          recalcGeneralPo007ItemsTable();
+        },
+        true
+      );
     }
 
     function patchGeneralPo007EditorMeta(partial) {
@@ -7585,7 +8761,6 @@
       set("sig-buyer-name", partial.buyer);
       set("sig-vendor-name", partial.seller);
       set("buyer-phone", partial.buyerPhone);
-      set("offer-type", partial.offerType);
       if (partial.buyerEmailPrimary != null) {
         const el = mount.querySelector('[data-po007="buyer-email-primary"]');
         if (el) el.textContent = partial.buyerEmailPrimary;
@@ -7612,7 +8787,14 @@
     function mountGeneralPo007Editor(g, po) {
       const mount = getGeneralPo007Mount();
       if (!mount) return;
+      generalPo007EditorPo = po || {};
       const model = generalFormForEditor(g, po);
+      generalPo007EditorCachedMeta = {
+        sectionVisibility: { ...(model.sectionVisibility || {}) },
+        sectionTitles: { ...(model.sectionTitles || {}) },
+        sectionCustomDefaults: { ...(model.sectionCustomDefaults || {}) },
+        sectionOrder: [...(model.sectionOrder || getDefaultPo007SectionOrder())],
+      };
       model.documentLang = getPo007DocumentLang();
       model.currency = getPo007MetaCurrency();
       model.poDate = getPo007MetaPoDateIso();
@@ -7627,9 +8809,10 @@
       if (savedTotalWords) {
         const el = mount.querySelector('[data-po007="total-words"]');
         const sum = (model.lines || []).reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
-        const auto = formatPo007GrandTotalDisplay(
+        const auto = formatPo007TotalWordsDisplay(
           sum,
-          po007CurrencySuffix(model.currency, model.documentLang === "en" ? "en" : "ar")
+          model.currency,
+          model.documentLang === "en" ? "en" : "ar"
         );
         if (el && savedTotalWords !== auto) {
           el.dataset.po007Manual = "1";
@@ -7643,6 +8826,10 @@
       const read = (key) => (mount?.querySelector(`[data-po007="${key}"]`)?.textContent || "").trim();
       const lines = readGeneralPo007LinesFromMount();
       const sections = collectPo007EditorSections(mount);
+      const sectionTitles = collectPo007SectionTitles(mount);
+      const sectionVisibility = collectPo007SectionVisibility(mount, generalPo007EditorCachedMeta);
+      const sectionOrder = collectPo007SectionOrderFromMount(mount, generalPo007EditorCachedMeta);
+      const sectionCustomDefaults = generalPo007EditorCachedMeta?.sectionCustomDefaults || {};
       const companyId = ($("po007-meta-company")?.value || "").trim();
       const supplierId = ($("po007-meta-supplier")?.value || "").trim();
       const projectId = ($("po007-meta-project")?.value || "").trim();
@@ -7657,30 +8844,40 @@
         const txt = read("total-words");
         if (txt && manual?.dataset.po007Manual === "1") return txt;
         const sum = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
-        const curSuffix = po007CurrencySuffix(getPo007MetaCurrency(), getPo007DocumentLang());
-        return formatPo007GrandTotalDisplay(sum, curSuffix);
+        return formatPo007TotalWordsDisplay(sum, getPo007MetaCurrency(), getPo007DocumentLang());
       })();
       const printForm = enrichGeneralFormPo007({
         lines,
         documentLang: getPo007DocumentLang(),
         currency: getPo007MetaCurrency(),
         poNumber: read("po-number"),
-        poRev: read("po-rev") || "A",
+        poRev: read("po-rev"),
         projectName: read("project"),
         poDate: getPo007MetaPoDateIso(),
-        offerType: read("offer-type"),
-        vendor: { name: read("seller"), attn: read("vendor-attn"), phone: read("vendor-phone"), email: read("vendor-email") },
+        vendor: {
+          name: read("seller"),
+          attn: read("vendor-attn"),
+          phone: read("vendor-phone"),
+          email: read("vendor-email"),
+          extraNotes: read("vendor-extra"),
+        },
         buyerExtra: {
+          attn: read("buyer-attn"),
           phone: read("buyer-phone"),
           emails: [read("buyer-email-primary"), read("buyer-email-secondary")].filter(Boolean).join("\n"),
+          extraNotes: read("buyer-extra"),
         },
         totalWords,
         ...sections,
+        sectionTitles,
+        sectionVisibility,
+        sectionOrder,
+        sectionCustomDefaults,
       });
-      return enrichGeneralFormPo007({
+      const saved = enrichGeneralFormPo007({
         poNumber: read("po-number"),
         poDate: getPo007MetaPoDateIso(),
-        poRev: read("po-rev") || "A",
+        poRev: read("po-rev"),
         projectId,
         projectName: read("project"),
         documentLang: getPo007DocumentLang(),
@@ -7693,18 +8890,31 @@
           attn: read("vendor-attn"),
           phone: read("vendor-phone"),
           email: read("vendor-email"),
+          extraNotes: read("vendor-extra"),
         },
-        offerType: read("offer-type"),
         buyerExtra: {
           contact: "",
+          attn: read("buyer-attn"),
           phone: read("buyer-phone"),
           emails: [read("buyer-email-primary"), read("buyer-email-secondary")].filter(Boolean).join("\n"),
+          extraNotes: read("buyer-extra"),
         },
         lines,
         totalWords,
         ...sections,
+        sectionTitles,
+        sectionVisibility,
+        sectionOrder,
+        sectionCustomDefaults,
         po007PrintHtml: renderGeneralPo007Html(poStub, printForm),
       });
+      generalPo007EditorCachedMeta = {
+        sectionVisibility: saved.sectionVisibility,
+        sectionTitles: saved.sectionTitles,
+        sectionOrder: saved.sectionOrder,
+        sectionCustomDefaults: saved.sectionCustomDefaults,
+      };
+      return saved;
     }
 
     function renderGeneralPo007Html(po, gIn, opts) {
@@ -7722,24 +8932,18 @@
       const docLang = g.documentLang === "en" ? "en" : "ar";
       const refText = (g.poNumber || po.title || "").trim() || tPo007(docLang, "dash");
       const poDateDisp = formatPo007DisplayDate(g.poDate) || poRowDisplayDate(po);
-      const poRev = (g.poRev || "A").trim();
+      const poRev = (g.poRev ?? "").trim();
       const projectName = (g.projectName || po.projectNameSnapshot || "").trim() || tPo007(docLang, "dash");
       const curCode = g.currency === "USD" ? "USD" : "IQD";
       const curSuffix = po007CurrencySuffix(curCode, docLang);
-      const revLbl = docLang === "ar" ? "المراجعة " : "Rev.";
-      const poLine = `${tPo007(docLang, "genPo007PurchaseOrder")}${escapeHtml(refText)} &nbsp;|&nbsp; ${tPo007(docLang, "genPo007PoDate")} ${escapeHtml(poDateDisp)} &nbsp;|&nbsp; ${revLbl}${escapeHtml(poRev)}`;
+      const revLbl = tPo007(docLang, "genPo007PoRef");
+      const poLine = `${tPo007(docLang, "genPo007PurchaseOrder")}${escapeHtml(refText)} &nbsp;|&nbsp; ${tPo007(docLang, "genPo007PoDate")} ${escapeHtml(poDateDisp)} &nbsp;|&nbsp; ${escapeHtml(revLbl)} ${escapeHtml(poRev)}`;
       const v = g.vendor || {};
       const be = g.buyerExtra || {};
       const buyerEmails = (be.emails || "")
         .split(/\n/)
         .map((e) => e.trim())
         .filter(Boolean);
-      const offerBadge = editorMode
-        ? `<div><span class="po007-offer-badge">${escapeHtml(tPo007(docLang, "genPo007OfferLabel"))} <span data-po007="offer-type" contenteditable="true" spellcheck="false">${escapeHtml(g.offerType || "")}</span></span></div>`
-        : g.offerType
-          ? `<div><span class="po007-offer-badge">${escapeHtml(tPo007(docLang, "genPo007OfferLabel"))} ${escapeHtml(g.offerType)}</span></div>`
-          : "";
-
       const lineRows = lines.length
         ? lines
             .map((l, i) => {
@@ -7751,10 +8955,10 @@
                     .join("<br/>")
                 : "";
               const desc = (l.description || l.remark || "").trim();
-              const priceDisp = l.priceText || (l.price != null ? String(l.price) : "");
+              const priceDisp = formatPo007AmountText(l.priceText || l.price, docLang);
               const totalDisp =
                 l.lineTotal != null && l.lineTotal !== ""
-                  ? Number(l.lineTotal).toLocaleString(po007LocaleTag(docLang))
+                  ? formatPo007EditorAmount(Number(l.lineTotal), docLang)
                   : "";
               return `<tr data-po007-line>
                 <td class="po007-col-no"><span class="po007-line-no">${i + 1}</span></td>
@@ -7770,88 +8974,29 @@
 
       const totalNum = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
       const totalWords = (g.totalWords || "").trim();
-      const totalSay = totalWords || (totalNum > 0 ? totalNum.toLocaleString(po007LocaleTag(docLang)) + " " + curSuffix : "");
+      const totalSay =
+        totalWords ||
+        (totalNum > 0 ? formatPo007TotalWordsDisplay(totalNum, curCode, docLang) : docLang === "ar" ? "صفر" : "Zero");
       const unitPriceTh =
         docLang === "ar" ? `سعر الوحدة (${curSuffix})` : `Unit Price (${curSuffix})`;
       const totalPriceTh =
         docLang === "ar" ? `الإجمالي (${curSuffix})` : `Total Price (${curSuffix})`;
-      const totalRow = `<tr class="po007-total-row"><td colspan="5" class="po007-col-desc">${escapeHtml(
+      const numericTotalDisp = formatPo007GrandTotalDisplay(totalNum, curSuffix, docLang);
+      const totalNumRow = `<tr class="po007-total-num-row"><td colspan="5" class="po007-col-desc po007-total-num-lbl">${escapeHtml(
+        tPo007(docLang, "genPo007TotalNumeric")
+      )}</td><td class="po007-col-total">${escapeHtml(numericTotalDisp)}</td></tr>`;
+      const totalSayRow = `<tr class="po007-total-row"><td colspan="6" class="po007-col-desc">${escapeHtml(
         tPo007(docLang, "genPo007TotalPriceSay")
-      )}: ${escapeHtml(totalSay)}</td><td class="po007-col-total">${escapeHtml(
-        totalNum > 0 ? totalNum.toLocaleString(po007LocaleTag(docLang)) + " " + curSuffix : ""
-      )}</td></tr>`;
+      )} ${escapeHtml(totalSay)}</td></tr>`;
+      const totalRow = totalNumRow + totalSayRow;
 
       const gSec = editorMode ? mergePo007TemplateIntoForm(g, docLang) : g;
-      let page1Sections;
-      let page2Sections;
+      const page1Sections = [buildPo007PageSectionsHtml(gSec, docLang, 1, editorMode)];
+      const page2Sections = [buildPo007PageSectionsHtml(gSec, docLang, 2, editorMode)];
       let signaturesBlock;
       if (editorMode) {
-        page1Sections = [renderPo007EditorNoteSection(gSec, docLang), renderPo007EditorDocSection(gSec, docLang)].filter(
-          Boolean
-        );
-        page2Sections = [
-          renderPo007EditorPaymentSection(gSec, docLang),
-          renderPo007EditorDeliverySection(gSec, docLang),
-          renderPo007EditorTextSection(5, "genPo007SecPacking", "terms-packing", gSec.termsPacking, docLang),
-          renderPo007EditorTextSection(6, "genPo007SecWarranty", "warranty", gSec.warranty, docLang),
-          renderPo007EditorBulletSection(7, "genPo007SecInspection", "inspection", gSec.inspectionItems, docLang),
-          renderPo007EditorBulletSection(8, "genPo007SecEffective", "effective", gSec.effectiveDateItems, docLang),
-        ].filter(Boolean);
         signaturesBlock = renderPo007EditorSignatures(gSec, buyerName, v.name, docLang);
       } else {
-        const noteHtml = g.noteItems.length
-          ? `<ol class="po007-note-list">${g.noteItems
-              .map((n, i) => `<li data-n="${i + 1})">${escapeHtml(n)}</li>`)
-              .join("")}</ol>`
-          : "";
-        const docListHtml = g.docListItems.length
-          ? `<ul class="po007-doc-list">${g.docListItems.map((d) => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`
-          : "";
-        const payHtml = g.paymentTerms.length
-          ? `<ul class="po007-payment-list">${g.paymentTerms
-              .map((p) => `<li><span class="pct">${escapeHtml(p.pct || "")}</span><span>${escapeHtml(p.text || "")}</span></li>`)
-              .join("")}</ul>`
-          : g.termsPayment
-            ? `<p class="po007-text-block">${escapeHtml(g.termsPayment)}</p>`
-            : "";
-        let delHtml = "";
-        if (g.deliveryRows.length) {
-          const thLead = docLang === "ar" ? "مدة التسليم" : "Delivery Lead Time";
-          delHtml = `<table class="po007-delivery-table"><thead><tr><th>${docLang === "ar" ? "م" : "No."}</th><th>${
-            docLang === "ar" ? "الصنف" : "Item"
-          }</th><th>${docLang === "ar" ? "الوصف" : "Description"}</th><th style="text-align:center">${escapeHtml(
-            thLead
-          )}</th></tr></thead><tbody>${g.deliveryRows
-            .map(
-              (r, i) =>
-                `<tr><td>${i + 1}</td><td>${escapeHtml(r.item || "")}</td><td>${escapeHtml(r.description || "")}</td><td class="lt">${escapeHtml(
-                  r.leadTime != null ? String(r.leadTime) : ""
-                )}</td></tr>`
-            )
-            .join("")}</tbody></table>`;
-        } else if (g.termsDelivery) {
-          delHtml = `<p class="po007-text-block">${escapeHtml(g.termsDelivery)}</p>`;
-        }
-        const packHtml = g.termsPacking ? `<p class="po007-text-block">${escapeHtml(g.termsPacking)}</p>` : "";
-        const warrantyHtml = g.warranty ? `<p class="po007-text-block">${escapeHtml(g.warranty)}</p>` : "";
-        const inspHtml = g.inspectionItems.length
-          ? `<ul class="po007-bullet-list">${g.inspectionItems.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul>`
-          : "";
-        const effHtml = g.effectiveDateItems.length
-          ? `<ul class="po007-bullet-list">${g.effectiveDateItems.map((x) => `<li>${escapeHtml(x)}</li>`).join("")}</ul>`
-          : "";
-        page1Sections = [
-          renderPo007Section(1, tPo007(docLang, "genPo007SecNote"), noteHtml),
-          renderPo007Section(2, tPo007(docLang, "genPo007SecDocList"), docListHtml),
-        ].filter(Boolean);
-        page2Sections = [
-          renderPo007Section(3, tPo007(docLang, "genPo007SecPayment"), payHtml),
-          renderPo007Section(4, tPo007(docLang, "genPo007SecDelivery"), delHtml),
-          renderPo007Section(5, tPo007(docLang, "genPo007SecPacking"), packHtml),
-          renderPo007Section(6, tPo007(docLang, "genPo007SecWarranty"), warrantyHtml),
-          renderPo007Section(7, tPo007(docLang, "genPo007SecInspection"), inspHtml),
-          renderPo007Section(8, tPo007(docLang, "genPo007SecEffective"), effHtml),
-        ].filter(Boolean);
         const vendorSig = (v.name || "").trim();
         const buyerSig = (buyerName || "").trim();
         const byDateLbl = docLang === "ar" ? "بتاريخ:" : "By Date:";
@@ -7890,66 +9035,18 @@
               <tbody>${lineRows}${totalRow}</tbody>
             </table></div>`;
 
-      const headerBlock = editorMode
-        ? `<div class="po007-doc-header" style="direction:ltr">
-              <div style="display:flex;align-items:center">${logoHtml}</div>
-              <div style="text-align:right;margin-left:auto;min-width:42%">
-                <div class="po007-buyer-title" data-po007="buyer-name">${escapeHtml(buyerName || tPo007(docLang, "dash"))}</div>
-                <div class="po007-dh-po" style="margin-top:6px">
-                  ${tPo007(docLang, "genPo007PoProject")} <span data-po007="project">${escapeHtml(projectName)}</span><br/>
-                  <strong>${tPo007(docLang, "genPo007PurchaseOrder")}<span data-po007="po-number">${escapeHtml(refText)}</span></strong><br/>
-                  ${tPo007(docLang, "genPo007PoDate")} <span data-po007="po-date">${escapeHtml(poDateDisp)}</span><br/>
-                  ${revLbl}<span data-po007="po-rev" contenteditable="true" spellcheck="false">${escapeHtml(poRev)}</span>
-                </div>
-              </div>
-            </div>`
-        : `<div class="po007-doc-header" style="direction:ltr">
-              <div style="display:flex;align-items:center">${logoHtml}</div>
-              <div style="text-align:right;margin-left:auto;min-width:42%">
-                <div class="po007-buyer-title">${escapeHtml(buyerName || tPo007(docLang, "dash"))}</div>
-                <div class="po007-dh-po" style="margin-top:6px">
-                  ${tPo007(docLang, "genPo007PoProject")} ${escapeHtml(projectName)}<br/>
-                  <strong>${tPo007(docLang, "genPo007PurchaseOrder")}${escapeHtml(refText)}</strong><br/>
-                  ${tPo007(docLang, "genPo007PoDate")} ${escapeHtml(poDateDisp)}<br/>
-                  ${revLbl}${escapeHtml(poRev)}
-                </div>
-              </div>
-            </div>`;
+      const headerBlock = renderPo007DocHeaderBlock(docLang, {
+        logoHtml,
+        buyerName,
+        projectName,
+        refText,
+        poDateDisp,
+        poRev,
+        revLbl,
+        editorMode,
+      });
 
-      const partiesBlock = editorMode
-        ? `<div class="po007-parties">
-              <div class="po007-party-cell">
-                <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007SupplierCompanyName"))}</div>
-                <p><strong data-po007="seller">${escapeHtml(v.name || tPo007(docLang, "dash"))}</strong></p>
-                <p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> <span data-po007="vendor-attn" contenteditable="true" spellcheck="false">${escapeHtml(v.attn || "")}</span></p>
-                <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: <span data-po007="vendor-phone" contenteditable="true" spellcheck="false">${escapeHtml(v.phone || "")}</span></p>
-                <p>${escapeHtml(tPo007(docLang, "genPo007Email"))} <span data-po007="vendor-email" contenteditable="true" spellcheck="false">${escapeHtml(v.email || "")}</span></p>
-                ${offerBadge}
-              </div>
-              <div class="po007-party-cell">
-                <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007InvoiceShipTo"))}</div>
-                <p><strong data-po007="buyer-name-party">${escapeHtml(buyerName || tPo007(docLang, "dash"))}</strong></p>
-                <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: <span data-po007="buyer-phone" contenteditable="true" spellcheck="false">${escapeHtml(be.phone || "")}</span></p>
-                <p>${escapeHtml(tPo007(docLang, "genPo007EmailLine"))} <span data-po007="buyer-email-primary" contenteditable="true" spellcheck="false">${escapeHtml(buyerEmails[0] || "")}</span></p>
-                <p><span data-po007="buyer-email-secondary" contenteditable="true" spellcheck="false">${escapeHtml(buyerEmails[1] || "")}</span></p>
-              </div>
-            </div>`
-        : `<div class="po007-parties">
-              <div class="po007-party-cell">
-                <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007SupplierCompanyName"))}</div>
-                <p><strong>${escapeHtml(v.name || tPo007(docLang, "dash"))}</strong></p>
-                ${v.attn ? `<p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> ${escapeHtml(v.attn)}</p>` : ""}
-                ${v.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${escapeHtml(v.phone)}</p>` : ""}
-                ${v.email ? `<p>${escapeHtml(tPo007(docLang, "genPo007Email"))} ${escapeHtml(v.email)}</p>` : ""}
-                ${offerBadge}
-              </div>
-              <div class="po007-party-cell">
-                <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007InvoiceShipTo"))}</div>
-                <p><strong>${escapeHtml(buyerName || tPo007(docLang, "dash"))}</strong></p>
-                ${be.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${escapeHtml(be.phone)}</p>` : ""}
-                ${buyerEmails.map((em, i) => `<p>${i === 0 ? escapeHtml(tPo007(docLang, "genPo007EmailLine")) + " " : ""}${escapeHtml(em)}</p>`).join("")}
-              </div>
-            </div>`;
+      const partiesBlock = renderPo007PartiesBlock(docLang, v, buyerName, be, buyerEmails, editorMode);
 
       const docDir = docLang === "ar" ? "rtl" : "ltr";
       const docHtml = `<div class="po007-doc" dir="${docDir}">
