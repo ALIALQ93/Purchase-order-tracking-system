@@ -1601,14 +1601,92 @@
       #modal-po-print-view .po007-page {
         box-shadow: none !important;
         page-break-after: always;
+        break-after: page;
+      }
+      #modal-po-print-view .po007-page:last-of-type {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      #modal-po-print-view .po-print-sheet:has(.po007-print-mode) {
+        padding: 0 !important;
+        background: #fff !important;
+        border: none !important;
+        max-width: none !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-mode {
+        padding: 0 !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-mode .po007-doc {
+        gap: 0 !important;
+        padding: 0 !important;
+        align-items: stretch !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-mode .po007-page {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #modal-po-print-view .po007-items-table thead,
+      #modal-po-print-view .po007-sec-data-table thead {
+        display: table-header-group;
+      }
+      #modal-po-print-view .po007-items-table-wrap {
+        overflow: visible !important;
+      }
+      #modal-po-print-view .po007-section,
+      #modal-po-print-view .po007-signatures,
+      #modal-po-print-view .po007-doc-header,
+      #modal-po-print-view .po007-parties {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      #modal-po-print-view .po007-section-heading {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      #modal-po-print-view .po007-items-table thead tr,
+      #modal-po-print-view .po007-sec-data-table thead tr,
+      #modal-po-print-view .po007-section-heading,
+      #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-total-row td,
+      #modal-po-print-view .po007-items-table tbody tr:nth-child(even),
+      #modal-po-print-view .po007-sec-data-table tbody tr:nth-child(even) {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
     }
 
     /* General PO — PO007 layout (print / preview) */
-    #modal-po-print-view .po-print-sheet:has(.po007-surface) {
+    #modal-po-print-view .po-print-sheet:has(.po007-print-mode) {
       max-width: min(860px, calc(100vw - 1.25rem));
-      padding: 0.5rem;
+      padding: 0.65rem;
       background: #e9eef5;
+      border: none;
+    }
+    .po007-surface.po007-print-mode {
+      width: 100%;
+    }
+    .po007-surface.po007-print-mode .po007-doc {
+      gap: 18px;
+      padding: 0;
+    }
+    .po007-surface.po007-print-mode .po007-page {
+      margin: 0 auto;
+      min-height: auto;
+    }
+    .po007-surface .po007-section-body {
+      padding: 0 2px;
+    }
+    .po007-surface.po007-print-mode .po007-section {
+      margin-top: 14px;
+    }
+    .po007-surface.po007-print-mode .po007-section:first-of-type {
+      margin-top: 12px;
+    }
+    .po007-surface.po007-print-mode .po007-items-table-wrap {
+      margin: 10px 0 6px;
     }
 
     .po007-surface .po007-doc {
@@ -1995,6 +2073,50 @@
       font-weight: 700;
       color: #1c3557;
     }
+    .po007-surface .po007-sec-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .po007-surface .po007-sec-data-table thead tr { background: #1c3557; color: #fff; }
+    .po007-surface .po007-sec-data-table thead th {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 8px 6px;
+      text-align: start;
+      vertical-align: middle;
+    }
+    .po007-surface .po007-sec-data-table tbody tr { border-bottom: 1px solid #e0e4ea; }
+    .po007-surface .po007-sec-data-table tbody tr:nth-child(odd) { background: #fff; }
+    .po007-surface .po007-sec-data-table tbody tr:nth-child(even) { background: #f5f7fa; }
+    .po007-surface .po007-sec-data-table td {
+      font-size: 10px;
+      color: #444;
+      vertical-align: top;
+    }
+    .po007-surface .po007-shipping-docs-table col.po007-ship-sn-col { width: 52px; }
+    .po007-surface .po007-shipping-docs-table col.po007-ship-qty-col { width: 56px; }
+    .po007-surface .po007-shipping-docs-table col.po007-ship-desc-col { width: 22%; }
+    .po007-surface .po007-shipping-docs-table .po007-ship-sn,
+    .po007-surface .po007-shipping-docs-table .po007-ship-qty { text-align: center; }
+    .po007-surface .po007-shipping-docs-table .po007-ship-notes-print { white-space: pre-wrap; line-height: 1.45; }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-custom-col-actions,
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-custom-row-actions {
+      width: 44px;
+      text-align: center;
+      vertical-align: top;
+    }
+    .po007-surface .po007-custom-list { list-style: none; padding: 0 4px; margin: 0; }
+    .po007-surface .po007-custom-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 3px 0;
+      border-bottom: 1px dashed #e5e8ee;
+      font-size: 10px;
+      color: #444;
+      line-height: 1.55;
+    }
     .po007-surface .po007-note-list { list-style: none; padding: 0 4px; margin: 0; }
     .po007-surface .po007-note-list li {
       padding: 3px 0 3px 22px;
@@ -2075,31 +2197,11 @@
       line-height: 1.55;
       margin-bottom: 8px;
     }
-    .po007-surface .po007-shipping-docs-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .po007-surface .po007-shipping-docs-table thead tr { background: #1c4587; }
-    .po007-surface .po007-shipping-docs-table thead th {
-      color: #fff;
-      font-size: 9.5px;
-      padding: 5px 6px;
-      text-align: start;
-      font-weight: 700;
-    }
-    .po007-surface .po007-shipping-docs-table thead th.po007-ship-qty { text-align: center; width: 52px; }
-    .po007-surface .po007-shipping-docs-table thead th.po007-ship-sn { width: 36px; text-align: center; }
-    .po007-surface .po007-shipping-docs-table td {
-      border: 1px solid #d0d8e4;
-      padding: 4px 6px;
-      font-size: 9.5px;
-      vertical-align: top;
-      color: #333;
-    }
-    .po007-surface .po007-shipping-docs-table tbody tr:nth-child(even) { background: #f5f7fa; }
-    .po007-surface .po007-shipping-docs-table td.po007-ship-qty { text-align: center; font-weight: 700; color: #1c4587; }
-    .po007-surface .po007-shipping-docs-table td.po007-ship-sn { text-align: center; font-weight: 700; color: #1c4587; }
-    .po007-surface .po007-shipping-docs-table .po007-ship-notes-print { white-space: pre-wrap; line-height: 1.45; }
-    .po007-doc[dir="rtl"] .po007-shipping-docs-table thead th { text-align: right; }
-    .po007-doc[dir="rtl"] .po007-shipping-docs-table thead th.po007-ship-sn,
-    .po007-doc[dir="rtl"] .po007-shipping-docs-table thead th.po007-ship-qty { text-align: center; }
+    .po007-doc[dir="rtl"] .po007-sec-data-table thead th { text-align: right; }
+    .po007-doc[dir="rtl"] .po007-sec-data-table thead th.po007-col-no,
+    .po007-doc[dir="rtl"] .po007-sec-data-table thead th.po007-ship-sn,
+    .po007-doc[dir="rtl"] .po007-sec-data-table thead th.po007-ship-qty,
+    .po007-doc[dir="rtl"] .po007-sec-data-table thead th.lt { text-align: center; }
     .po007-surface .po007-bullet-list { list-style: none; padding: 0 4px; margin: 0; }
     .po007-surface .po007-bullet-list li {
       display: flex;
@@ -2240,7 +2342,7 @@
     .po007-surface.po007-edit-mode :not(.po007-items-table) > * [contenteditable],
     .po007-surface.po007-edit-mode .po007-parties .po007-party-extra-field[contenteditable],
     .po007-surface.po007-edit-mode .po007-doc-header [contenteditable],
-    .po007-surface.po007-edit-mode .po007-section-body [contenteditable],
+    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:not(.po007-cell-field):not(.po007-sec-table-th-field),
     .po007-surface.po007-edit-mode .po007-signatures [contenteditable] {
       outline: none;
       background: #fffbe6;
@@ -2253,7 +2355,7 @@
     .po007-surface.po007-edit-mode :not(.po007-items-table) > * [contenteditable]:focus,
     .po007-surface.po007-edit-mode .po007-parties .po007-party-extra-field[contenteditable]:focus,
     .po007-surface.po007-edit-mode .po007-doc-header [contenteditable]:focus,
-    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:focus,
+    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:not(.po007-cell-field):not(.po007-sec-table-th-field):focus,
     .po007-surface.po007-edit-mode .po007-signatures [contenteditable]:focus {
       background: #fff9d6;
       border-bottom-color: #c8960a;
@@ -2417,12 +2519,99 @@
     .po007-surface.po007-edit-mode .po007-add-item-row:hover {
       background: #d0ddf5;
     }
-    .po007-surface.po007-edit-mode .po007-items-table .del-btn {
+    .po007-surface.po007-edit-mode .po007-items-table .del-btn,
+    .po007-surface.po007-edit-mode .po007-sec-data-table .del-btn {
       font-size: 10px;
       padding: 4px 8px;
       border-radius: 4px;
       display: inline-block;
       margin: 0;
+    }
+    /* جداول الأقسام — نفس أسلوب جدول المواد */
+    .po007-surface.po007-edit-mode .po007-sec-data-table thead th {
+      padding: 10px 8px;
+      font-size: 11px;
+      text-transform: none;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-delivery-row],
+    .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-shipping-doc-row],
+    .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-custom-table-row] {
+      border-bottom: 1px solid #d0d8e4;
+      height: 1px;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-delivery-row] td,
+    .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-shipping-doc-row] td,
+    .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-custom-table-row] td {
+      padding: 4px;
+      vertical-align: top;
+      height: 100%;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-cell-field {
+      display: block;
+      width: 100%;
+      min-height: 2.5em;
+      box-sizing: border-box;
+      background: #fafcff;
+      border: 1px dashed #c8d4e8;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 10px;
+      line-height: 1.55;
+      color: #444;
+      cursor: text;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-cell-field:focus {
+      border-color: #1c4587;
+      background: #f8fbff;
+      box-shadow: 0 0 0 2px rgba(28, 69, 135, 0.12);
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-cell-field--text {
+      direction: auto;
+      unicode-bidi: plaintext;
+      text-align: start;
+      font-weight: 500;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-cell-field--num {
+      font-size: 10px;
+      font-weight: 700;
+      direction: ltr;
+      unicode-bidi: isolate;
+      text-align: center;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-sec-th-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-table-th-field {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px dashed rgba(255, 255, 255, 0.45);
+      border-radius: 4px;
+      padding: 4px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      cursor: text;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-table-th-field:focus {
+      background: rgba(255, 255, 255, 0.24);
+      border-color: #f0c040;
+    }
+    .po007-surface.po007-edit-mode .po007-sec-data-table .po007-add-custom-col {
+      font-size: 9px;
+      padding: 3px 6px;
+      white-space: nowrap;
     }
     .po007-surface.po007-edit-mode .po007-line-no {
       font-size: 13px;
@@ -2538,27 +2727,6 @@
       position: absolute;
       inset-inline-start: 0;
       top: 4px;
-    }
-    .po007-surface.po007-edit-mode .po007-delivery-table .del-btn {
-      margin-inline-end: 4px;
-      vertical-align: middle;
-    }
-    .po007-surface.po007-edit-mode .po007-shipping-docs-table .del-btn {
-      display: inline-block;
-      margin-bottom: 2px;
-    }
-    .po007-surface.po007-edit-mode .po007-shipping-docs-table .po007-col-no {
-      text-align: center;
-      vertical-align: top;
-      width: 36px;
-    }
-    .po007-surface.po007-edit-mode .po007-shipping-docs-table .po007-sec-field--notes {
-      min-height: 2.5em;
-      white-space: pre-wrap;
-      display: block;
-    }
-    .po007-surface.po007-edit-mode .po007-delivery-table .po007-col-no {
-      white-space: nowrap;
     }
 
     /* Admin tabs */
@@ -5192,6 +5360,13 @@
         genPo007SecEffective: "تاريخ السريان",
         genPo007SecHiddenBadge: "مخفي من الطباعة",
         genPo007AddSection: "إضافة فقرة:",
+        genPo007AddListSection: "+ فقرة بفقرات فرعية",
+        genPo007AddTableSection: "+ جدول",
+        genPo007AddSubItem: "+ إضافة بند فرعي",
+        genPo007AddTableRow: "+ إضافة صف",
+        genPo007AddTableCol: "+ عمود",
+        genPo007CustomListDefault: "فقرة جديدة",
+        genPo007CustomTableDefault: "جدول جديد",
         genPo007SecHide: "إخفاء",
         genPo007SecShow: "إظهار",
         genPo007SecDelete: "حذف",
@@ -5957,6 +6132,13 @@
         genPo007SecEffective: "EFFECTIVE DATE",
         genPo007SecHiddenBadge: "Hidden from print",
         genPo007AddSection: "Add section:",
+        genPo007AddListSection: "+ List section",
+        genPo007AddTableSection: "+ Table section",
+        genPo007AddSubItem: "+ Add sub-item",
+        genPo007AddTableRow: "+ Add row",
+        genPo007AddTableCol: "+ Column",
+        genPo007CustomListDefault: "New section",
+        genPo007CustomTableDefault: "New table",
         genPo007SecHide: "Hide",
         genPo007SecShow: "Show",
         genPo007SecDelete: "Delete",
@@ -6470,6 +6652,7 @@
       if (!Array.isArray(x.deliveryRows)) x.deliveryRows = [];
       if (!x.shippingDocsIntro) x.shippingDocsIntro = "";
       if (!Array.isArray(x.shippingDocsRows)) x.shippingDocsRows = [];
+      if (!Array.isArray(x.customSections)) x.customSections = [];
       if (!x.warranty) x.warranty = "";
       if (!Array.isArray(x.inspectionItems)) x.inspectionItems = [];
       if (!Array.isArray(x.effectiveDateItems)) x.effectiveDateItems = [];
@@ -6574,6 +6757,7 @@
           deliveryRows: [],
           shippingDocsIntro: "",
           shippingDocsRows: [],
+          customSections: [],
           termsPayment: "",
           termsDelivery: "",
           termsPacking: "",
@@ -7096,12 +7280,31 @@
       ]);
     }
 
-    function getDefaultPo007SectionOrder() {
-      return PO007_MAIN_SECTIONS.map((s) => s.id);
+    function isPo007CustomSectionId(id) {
+      return typeof id === "string" && id.startsWith("c-");
     }
 
-    function normalizePo007SectionOrder(order) {
-      const base = getDefaultPo007SectionOrder();
+    function getPo007CustomSection(g, id) {
+      return (g?.customSections || []).find((s) => s.id === id) || null;
+    }
+
+    function getPo007SectionPage(id, g) {
+      if (isPo007CustomSectionId(id)) return getPo007CustomSection(g, id)?.page || 2;
+      return PO007_MAIN_SECTIONS.find((s) => s.id === id)?.page || 1;
+    }
+
+    function newPo007CustomSectionId() {
+      return `c-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+    }
+
+    function getDefaultPo007SectionOrder(g) {
+      const builtin = PO007_MAIN_SECTIONS.map((s) => s.id);
+      const custom = (g?.customSections || []).map((s) => s.id);
+      return [...builtin, ...custom];
+    }
+
+    function normalizePo007SectionOrder(order, g) {
+      const base = getDefaultPo007SectionOrder(g);
       const hadShippingDocs = Array.isArray(order) && order.includes("shippingDocs");
       const out = [];
       const seen = new Set();
@@ -7134,29 +7337,35 @@
         else if (v === "hidden") vis[sec.id] = "hidden";
         else vis[sec.id] = "visible";
       });
+      (x.customSections || []).forEach((cs) => {
+        const v = vis[cs.id];
+        if (v === false || v === "deleted") vis[cs.id] = "deleted";
+        else if (v === "hidden") vis[cs.id] = "hidden";
+        else if (!v) vis[cs.id] = "visible";
+      });
       x.sectionVisibility = vis;
       x.sectionTitles = titles;
       x.sectionCustomDefaults = custom;
-      x.sectionOrder = normalizePo007SectionOrder(x.sectionOrder);
+      x.sectionOrder = normalizePo007SectionOrder(x.sectionOrder, x);
       return x;
     }
 
     function getPo007SectionsForPage(g, page, editorMode) {
       const gNorm = normalizePo007SectionMeta(g);
       return gNorm.sectionOrder
-        .map((id) => PO007_MAIN_SECTIONS.find((s) => s.id === id))
-        .filter((s) => s && s.page === page)
-        .filter((s) => {
-          const st = getPo007SectionState(gNorm, s.id);
+        .filter((id) => getPo007SectionPage(id, gNorm) === page)
+        .map((id) => ({ id }))
+        .filter((sec) => {
+          const st = getPo007SectionState(gNorm, sec.id);
           return editorMode ? st !== "deleted" : st === "visible";
         });
     }
 
     function movePo007SectionOrder(g, sectionId, delta) {
       const gNorm = normalizePo007SectionMeta(g);
-      const sec = PO007_MAIN_SECTIONS.find((s) => s.id === sectionId);
-      if (!sec) return gNorm.sectionOrder;
-      const movable = getPo007SectionsForPage(gNorm, sec.page, true).map((s) => s.id);
+      const page = getPo007SectionPage(sectionId, gNorm);
+      if (!page) return gNorm.sectionOrder;
+      const movable = getPo007SectionsForPage(gNorm, page, true).map((s) => s.id);
       const idx = movable.indexOf(sectionId);
       if (idx < 0) return gNorm.sectionOrder;
       const newIdx = idx + delta;
@@ -7172,7 +7381,8 @@
     }
 
     function collectPo007SectionOrderFromMount(mount, existing) {
-      const fallback = normalizePo007SectionOrder(existing?.sectionOrder);
+      const g = existing || {};
+      const fallback = normalizePo007SectionOrder(g.sectionOrder, g);
       if (!mount) return fallback;
       const pages = mount.querySelectorAll(".po007-page");
       if (pages.length < 2) return fallback;
@@ -7180,9 +7390,9 @@
       const p2Dom = [...pages[1].querySelectorAll("[data-po007-section]")].map((el) => el.dataset.po007Section).filter(Boolean);
       if (!p1Dom.length && !p2Dom.length) return fallback;
       const mergePage = (page, domIds) => {
-        const allPageIds = PO007_MAIN_SECTIONS.filter((s) => s.page === page).map((s) => s.id);
+        const allPageIds = fallback.filter((id) => getPo007SectionPage(id, g) === page);
         const domSet = new Set(domIds);
-        const rest = fallback.filter((id) => allPageIds.includes(id) && !domSet.has(id));
+        const rest = allPageIds.filter((id) => !domSet.has(id));
         return [...domIds, ...rest];
       };
       return [...mergePage(1, p1Dom), ...mergePage(2, p2Dom)];
@@ -7198,6 +7408,9 @@
     function getPo007SectionTitle(g, id, docLang) {
       const custom = (g?.sectionTitles?.[id] || "").trim();
       if (custom) return custom;
+      if (isPo007CustomSectionId(id)) {
+        return (getPo007CustomSection(g, id)?.title || "").trim() || tPo007(docLang, "genPo007CustomListDefault");
+      }
       const sec = PO007_MAIN_SECTIONS.find((s) => s.id === id);
       return sec ? tPo007(docLang, sec.titleKey) : "";
     }
@@ -7239,11 +7452,24 @@
     }
 
     function applyPo007SectionDefaultsToForm(g, sectionId, docLang) {
+      if (isPo007CustomSectionId(sectionId)) {
+        const def = g.sectionCustomDefaults?.[sectionId];
+        if (!def) return g;
+        const customSections = (g.customSections || []).map((cs) =>
+          cs.id === sectionId ? { ...cs, ...def } : cs
+        );
+        return { ...g, customSections };
+      }
       return { ...g, ...getPo007SectionEffectiveSlice(sectionId, docLang, g) };
     }
 
     function capturePo007SectionCustomDefault(g, sectionId, sections) {
       const custom = { ...(g.sectionCustomDefaults || {}) };
+      if (isPo007CustomSectionId(sectionId)) {
+        const cs = (sections.customSections || []).find((s) => s.id === sectionId);
+        if (cs) custom[sectionId] = JSON.parse(JSON.stringify(cs));
+        return { ...g, sectionCustomDefaults: custom };
+      }
       switch (sectionId) {
         case "note":
           custom.note = { noteItems: [...sections.noteItems] };
@@ -7279,15 +7505,19 @@
       return { ...g, sectionCustomDefaults: custom };
     }
 
-    function collectPo007SectionTitles(mount) {
+    function collectPo007SectionTitles(mount, existing) {
       const titles = {};
       const docLang = getPo007DocumentLang();
+      const base = existing || generalPo007EditorCachedMeta || {};
       mount?.querySelectorAll("[data-po007-section-title]").forEach((el) => {
         const id = el.getAttribute("data-po007-section-title");
         const txt = (el.textContent || "").trim();
         if (!id || !txt) return;
-        const sec = PO007_MAIN_SECTIONS.find((s) => s.id === id);
-        const defaultTitle = sec ? tPo007(docLang, sec.titleKey) : "";
+        const defaultTitle = getPo007SectionTitle(
+          { sectionTitles: {}, customSections: base.customSections },
+          id,
+          docLang
+        );
         if (txt !== defaultTitle) titles[id] = txt;
       });
       return titles;
@@ -7304,8 +7534,8 @@
     }
 
     function renderPo007SectionTools(sectionId, state, docLang, g) {
-      const sec = PO007_MAIN_SECTIONS.find((s) => s.id === sectionId);
-      const movable = sec ? getPo007SectionsForPage(g, sec.page, true).map((s) => s.id) : [];
+      const page = getPo007SectionPage(sectionId, g);
+      const movable = page ? getPo007SectionsForPage(g, page, true).map((s) => s.id) : [];
       const idx = movable.indexOf(sectionId);
       const canUp = idx > 0;
       const canDown = idx >= 0 && idx < movable.length - 1;
@@ -7326,7 +7556,7 @@
     function renderPo007SectionShell(sectionId, num, title, bodyHtml, editorMode, state, docLang, g) {
       if (!editorMode) {
         if (state !== "visible" || !bodyHtml) return "";
-        return `<div class="po007-section" data-po007-section="${sectionId}"><div class="po007-section-heading"><span class="num">${num}</span><span>${escapeHtml(title)}</span></div>${bodyHtml}</div>`;
+        return `<div class="po007-section" data-po007-section="${sectionId}"><div class="po007-section-heading"><span class="num">${num}</span><span>${escapeHtml(title)}</span></div><div class="po007-section-body">${bodyHtml}</div></div>`;
       }
       if (state === "deleted") return "";
       const hiddenClass = state === "hidden" ? " po007-section--print-hidden" : "";
@@ -7345,23 +7575,181 @@
       </div>`;
     }
 
+    function po007SecTableFieldHtml(value, opts) {
+      opts = opts || {};
+      const type = opts.type || "text";
+      const fieldClass = opts.fieldClass || "";
+      const multiline = !!opts.multiline;
+      const val = value != null ? String(value) : "";
+      const typeCls = type === "num" ? "po007-cell-field--num" : "po007-cell-field--text";
+      const fieldTag = multiline ? "div" : "span";
+      const fCls = `po007-cell-field ${typeCls}${fieldClass ? " " + fieldClass : ""}`;
+      return `<div class="po007-cell-box"><${fieldTag} class="${fCls}" contenteditable="true" spellcheck="false">${escapeHtml(val)}</${fieldTag}></div>`;
+    }
+
+    function po007SecTableCellHtml(value, opts) {
+      opts = opts || {};
+      const tdClass = opts.tdClass || "";
+      return `<td${tdClass ? ` class="${tdClass}"` : ""}>${po007SecTableFieldHtml(value, opts)}</td>`;
+    }
+
+    function po007SecTableCustomThHtml(col, ci) {
+      return `<th><div class="po007-sec-th-cell"><button type="button" class="del-btn po007-del-custom-col" data-po007-col-idx="${ci}" title="✕">✕</button><span class="po007-sec-table-th-field" data-po007-custom-col-head contenteditable="true" spellcheck="false">${escapeHtml(col)}</span></div></th>`;
+    }
+
+    function renderPo007CustomListSectionBody(cs, docLang, editorMode) {
+      const items = cs.items?.length ? cs.items : editorMode ? [""] : [];
+      const intro = (cs.intro || "").trim();
+      const wrapStart = `<div data-po007-custom-section="${escapeAttr(cs.id)}" data-po007-custom-type="list" data-po007-custom-page="${cs.page || 2}">`;
+      const introHtml = editorMode
+        ? `<div class="po007-shipping-docs-intro po007-sec-field po007-sec-field--block" data-po007-custom-intro contenteditable="true" spellcheck="false">${escapeHtml(cs.intro || "")}</div>`
+        : intro
+          ? `<p class="po007-shipping-docs-intro">${escapeHtml(intro)}</p>`
+          : "";
+      if (!items.length && !editorMode) return introHtml ? `${wrapStart}${introHtml}</div>` : "";
+      if (editorMode) {
+        const rows = items
+          .map(
+            (n) =>
+              `<li data-po007-custom-list-item><button type="button" class="del-btn po007-del-custom-list-item">✕</button><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(n)}</span></li>`
+          )
+          .join("");
+        return `${wrapStart}${introHtml}<ul class="po007-custom-list" data-po007-custom-list="${escapeAttr(cs.id)}">${rows}</ul>
+         <button type="button" class="add-row-btn po007-add-custom-list-item" data-po007-custom-id="${escapeAttr(cs.id)}">${escapeHtml(tPo007(docLang, "genPo007AddSubItem"))}</button></div>`;
+      }
+      return `${wrapStart}${introHtml}<ul class="po007-custom-list">${items.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}</ul></div>`;
+    }
+
+    function renderPo007CustomTableSectionBody(cs, docLang, editorMode) {
+      const columns = cs.columns?.length ? cs.columns : editorMode ? [docLang === "ar" ? "العمود 1" : "Column 1"] : [];
+      const rows = cs.rows?.length ? cs.rows : editorMode ? [columns.map(() => "")] : [];
+      const intro = (cs.intro || "").trim();
+      const wrapStart = `<div data-po007-custom-section="${escapeAttr(cs.id)}" data-po007-custom-type="table" data-po007-custom-page="${cs.page || 2}">`;
+      const introHtml = editorMode
+        ? `<div class="po007-shipping-docs-intro po007-sec-field po007-sec-field--block" data-po007-custom-intro contenteditable="true" spellcheck="false">${escapeHtml(cs.intro || "")}</div>`
+        : intro
+          ? `<p class="po007-shipping-docs-intro">${escapeHtml(intro)}</p>`
+          : "";
+      if (!columns.length && !editorMode) return introHtml ? `${wrapStart}${introHtml}</div>` : "";
+      const normRows = rows.map((row) => {
+        const cells = Array.isArray(row) ? row : [];
+        return columns.map((_, ci) => (cells[ci] != null ? String(cells[ci]) : ""));
+      });
+      const headCells = columns
+        .map((col, ci) => (editorMode ? po007SecTableCustomThHtml(col, ci) : `<th>${escapeHtml(col)}</th>`))
+        .join("");
+      const headExtra = editorMode
+        ? `<th class="po007-custom-col-actions"><button type="button" class="po007-sec-tool-btn po007-add-custom-col" data-po007-custom-id="${escapeAttr(cs.id)}" style="color:#1c3557;border-color:#c8d4e8;background:#fff">${escapeHtml(tPo007(docLang, "genPo007AddTableCol"))}</button></th><th class="po007-custom-row-actions"></th>`
+        : "";
+      const body = normRows
+        .map((row) => {
+          const cells = row
+            .map((cell) =>
+              editorMode
+                ? po007SecTableCellHtml(cell, { type: "text", multiline: true })
+                : `<td><div class="po007-ship-notes-print">${po007MultilineHtml(cell)}</div></td>`
+            )
+            .join("");
+          const rowDel = editorMode
+            ? `<td class="po007-custom-row-actions"><button type="button" class="del-btn po007-del-custom-table-row">✕</button></td>`
+            : "";
+          return editorMode
+            ? `<tr data-po007-custom-table-row>${cells}${rowDel}</tr>`
+            : `<tr>${cells}</tr>`;
+        })
+        .join("");
+      const table = `<div class="po007-items-table-wrap"><table class="po007-sec-data-table" data-po007-custom-table="${escapeAttr(cs.id)}"><thead><tr>${headCells}${headExtra}</tr></thead><tbody>${body}</tbody></table></div>`;
+      if (editorMode) {
+        return `${wrapStart}${introHtml}${table}<button type="button" class="add-row-btn po007-add-custom-table-row" data-po007-custom-id="${escapeAttr(cs.id)}">${escapeHtml(tPo007(docLang, "genPo007AddTableRow"))}</button></div>`;
+      }
+      return `${wrapStart}${introHtml}${table}</div>`;
+    }
+
+    function collectPo007CustomSectionsFromMount(mount, existing) {
+      const map = new Map((existing || []).map((s) => [s.id, { ...s }]));
+      mount?.querySelectorAll("[data-po007-custom-section]").forEach((block) => {
+        const id = block.dataset.po007CustomSection;
+        const type = block.dataset.po007CustomType;
+        if (!id || !type) return;
+        const page = Number(block.dataset.po007CustomPage) || 2;
+        const prev = map.get(id) || { id, type, page };
+        const intro = (block.querySelector("[data-po007-custom-intro]")?.textContent || "").trim();
+        if (type === "list") {
+          const items = [...block.querySelectorAll("[data-po007-custom-list-item] .po007-sec-field")]
+            .map((el) => (el.textContent || "").trim())
+            .filter(Boolean);
+          map.set(id, { ...prev, type: "list", page, intro, items: items.length ? items : [""], title: prev.title });
+        } else if (type === "table") {
+          const columns = [...block.querySelectorAll("[data-po007-custom-col-head]")].map((el) =>
+            (el.textContent || "").trim()
+          );
+          const rows = [...block.querySelectorAll("[data-po007-custom-table-row]")].map((tr) =>
+            [...tr.querySelectorAll("td:not(.po007-custom-row-actions) .po007-cell-field")].map((el) =>
+              (el.textContent || "").trim()
+            )
+          );
+          map.set(id, {
+            ...prev,
+            type: "table",
+            page,
+            intro,
+            columns: columns.length ? columns : [""],
+            rows: rows.length ? rows : [columns.map(() => "")],
+            title: prev.title,
+          });
+        }
+      });
+      return [...map.values()];
+    }
+
+    function addPo007CustomSection(type, page) {
+      const docLang = getPo007DocumentLang();
+      const g = buildGeneralFormFromEditor();
+      const id = newPo007CustomSectionId();
+      const section =
+        type === "table"
+          ? {
+              id,
+              type: "table",
+              page,
+              title: tPo007(docLang, "genPo007CustomTableDefault"),
+              intro: "",
+              columns: [docLang === "ar" ? "العمود 1" : "Column 1", docLang === "ar" ? "العمود 2" : "Column 2"],
+              rows: [["", ""]],
+            }
+          : {
+              id,
+              type: "list",
+              page,
+              title: tPo007(docLang, "genPo007CustomListDefault"),
+              intro: "",
+              items: [""],
+            };
+      reloadGeneralPo007Editor({
+        customSections: [...(g.customSections || []), section],
+        sectionOrder: [...(g.sectionOrder || getDefaultPo007SectionOrder(g)), id],
+        sectionVisibility: { ...(g.sectionVisibility || {}), [id]: "visible" },
+      });
+    }
+
     function renderPo007AddSectionBar(page, g, docLang) {
       const gNorm = normalizePo007SectionMeta(g);
-      const deleted = gNorm.sectionOrder
-        .map((id) => PO007_MAIN_SECTIONS.find((s) => s.id === id))
-        .filter((s) => s && s.page === page && getPo007SectionState(gNorm, s.id) === "deleted");
-      if (!deleted.length) return "";
-      const btns = deleted
+      const deleted = gNorm.sectionOrder.filter(
+        (id) => getPo007SectionPage(id, gNorm) === page && getPo007SectionState(gNorm, id) === "deleted"
+      );
+      const restoreBtns = deleted
         .map(
-          (s) =>
-            `<button type="button" class="btn btn-secondary btn-sm po007-restore-section" data-po007-section="${s.id}">${escapeHtml(
-              getPo007SectionTitle(g, s.id, docLang)
+          (id) =>
+            `<button type="button" class="btn btn-secondary btn-sm po007-restore-section" data-po007-section="${escapeAttr(id)}">${escapeHtml(
+              getPo007SectionTitle(gNorm, id, docLang)
             )}</button>`
         )
         .join("");
+      const addBtns = `<button type="button" class="btn btn-secondary btn-sm po007-add-custom-list" data-po007-page="${page}">${escapeHtml(tPo007(docLang, "genPo007AddListSection"))}</button>
+        <button type="button" class="btn btn-secondary btn-sm po007-add-custom-table" data-po007-page="${page}">${escapeHtml(tPo007(docLang, "genPo007AddTableSection"))}</button>`;
       return `<div class="po007-add-section-bar" data-po007-page="${page}">
-        <span class="po007-add-section-lbl">${escapeHtml(tPo007(docLang, "genPo007AddSection"))}</span>
-        ${btns}
+        ${restoreBtns ? `<span class="po007-add-section-lbl">${escapeHtml(tPo007(docLang, "genPo007AddSection"))}</span>${restoreBtns}` : ""}
+        ${addBtns}
       </div>`;
     }
 
@@ -7738,10 +8126,10 @@
         .map((r, i) => {
           if (editorMode) {
             return `<tr data-po007-delivery-row>
-            <td class="po007-col-no"><button type="button" class="del-btn po007-del-delivery-row">✕</button><span class="po007-line-no">${i + 1}</span></td>
-            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(r.item || "")}</span></td>
-            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(r.description || "")}</span></td>
-            <td class="lt"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(r.leadTime != null ? String(r.leadTime) : "")}</span></td>
+            <td class="po007-col-no"><div class="po007-line-no-cell"><button type="button" class="del-btn po007-del-delivery-row">✕</button><span class="po007-line-no">${i + 1}</span></div></td>
+            ${po007SecTableCellHtml(r.item || "", { type: "text" })}
+            ${po007SecTableCellHtml(r.description || "", { type: "text", multiline: true })}
+            ${po007SecTableCellHtml(r.leadTime != null ? String(r.leadTime) : "", { type: "num", tdClass: "lt" })}
           </tr>`;
           }
           return `<tr><td>${i + 1}</td><td>${escapeHtml(r.item || "")}</td><td>${escapeHtml(r.description || "")}</td><td class="lt">${escapeHtml(
@@ -7749,10 +8137,10 @@
           )}</td></tr>`;
         })
         .join("");
-      const table = `<table class="po007-delivery-table" data-po007="delivery-table"><thead><tr>
-          <th>${docLang === "ar" ? "م" : "No."}</th><th>${docLang === "ar" ? "الصنف" : "Item"}</th>
-          <th>${docLang === "ar" ? "الوصف" : "Description"}</th><th style="text-align:center">${escapeHtml(thLead)}</th>
-        </tr></thead><tbody>${body}</tbody></table>`;
+      const table = `<div class="po007-items-table-wrap"><table class="po007-sec-data-table po007-delivery-table" data-po007="delivery-table"><thead><tr>
+          <th class="po007-col-no">${docLang === "ar" ? "م" : "No."}</th><th>${docLang === "ar" ? "الصنف" : "Item"}</th>
+          <th>${docLang === "ar" ? "الوصف" : "Description"}</th><th class="lt" style="text-align:center">${escapeHtml(thLead)}</th>
+        </tr></thead><tbody>${body}</tbody></table></div>`;
       if (editorMode) {
         return `${table}<button type="button" class="add-row-btn po007-add-delivery-row">${escapeHtml(po007SecAddLbl(docLang, "del"))}</button>`;
       }
@@ -7785,11 +8173,11 @@
           const row = normalizeShippingDocRow(r, i);
           if (editorMode) {
             return `<tr data-po007-shipping-doc-row>
-            <td class="po007-col-no po007-ship-sn"><button type="button" class="del-btn po007-del-shipping-doc-row">✕</button><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(row.sn)}</span></td>
-            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(row.description)}</span></td>
-            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(row.original)}</span></td>
-            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false">${escapeHtml(row.copy)}</span></td>
-            <td><div class="po007-sec-field po007-sec-field--block po007-sec-field--notes" contenteditable="true" spellcheck="false">${escapeHtml(row.notes)}</div></td>
+            <td class="po007-col-no po007-ship-sn"><div class="po007-line-no-cell"><button type="button" class="del-btn po007-del-shipping-doc-row">✕</button></div>${po007SecTableFieldHtml(row.sn, { type: "num" })}</td>
+            ${po007SecTableCellHtml(row.description, { type: "text" })}
+            ${po007SecTableCellHtml(row.original, { type: "num", tdClass: "po007-ship-qty" })}
+            ${po007SecTableCellHtml(row.copy, { type: "num", tdClass: "po007-ship-qty" })}
+            ${po007SecTableCellHtml(row.notes, { type: "text", multiline: true })}
           </tr>`;
           }
           return `<tr>
@@ -7801,13 +8189,18 @@
           </tr>`;
         })
         .join("");
-      const table = `<table class="po007-shipping-docs-table" data-po007="shipping-docs-table"><thead><tr>
+      const table = `<div class="po007-items-table-wrap"><table class="po007-sec-data-table po007-shipping-docs-table" data-po007="shipping-docs-table">
+        <colgroup>
+          <col class="po007-ship-sn-col" /><col class="po007-ship-desc-col" />
+          <col class="po007-ship-qty-col" /><col class="po007-ship-qty-col" /><col />
+        </colgroup>
+        <thead><tr>
           <th class="po007-ship-sn">${escapeHtml(thSn)}</th>
           <th>${escapeHtml(thDesc)}</th>
           <th class="po007-ship-qty">${escapeHtml(thOrig)}</th>
           <th class="po007-ship-qty">${escapeHtml(thCopy)}</th>
           <th>${escapeHtml(thNotes)}</th>
-        </tr></thead><tbody>${body}</tbody></table>`;
+        </tr></thead><tbody>${body}</tbody></table></div>`;
       if (editorMode) {
         return `${introHtml}${table}<button type="button" class="add-row-btn po007-add-shipping-doc-row">${escapeHtml(po007SecAddLbl(docLang, "shipDoc"))}</button>`;
       }
@@ -7860,6 +8253,12 @@
         case "effective":
           return renderPo007BulletSectionBody("effective", g.effectiveDateItems, docLang, editorMode);
         default:
+          if (isPo007CustomSectionId(sectionId)) {
+            const cs = getPo007CustomSection(g, sectionId);
+            if (!cs) return "";
+            if (cs.type === "table") return renderPo007CustomTableSectionBody(cs, docLang, editorMode);
+            return renderPo007CustomListSectionBody(cs, docLang, editorMode);
+          }
           return "";
       }
     }
@@ -8012,7 +8411,7 @@
         .filter((p) => p.pct || p.text);
       const deliveryRows = [...(mount?.querySelectorAll("[data-po007-delivery-row]") || [])]
         .map((tr) => {
-          const fields = tr.querySelectorAll(".po007-sec-field");
+          const fields = tr.querySelectorAll(".po007-cell-field");
           return {
             item: (fields[0]?.textContent || "").trim(),
             description: (fields[1]?.textContent || "").trim(),
@@ -8023,7 +8422,7 @@
       const shippingDocsIntro = (mount?.querySelector('[data-po007="shipping-docs-intro"]')?.textContent || "").trim();
       const shippingDocsRows = [...(mount?.querySelectorAll("[data-po007-shipping-doc-row]") || [])]
         .map((tr, i) => {
-          const fields = tr.querySelectorAll(".po007-sec-field");
+          const fields = tr.querySelectorAll(".po007-cell-field");
           return normalizeShippingDocRow(
             {
               sn: (fields[0]?.textContent || "").trim(),
@@ -8042,6 +8441,10 @@
       const effectiveDateItems = readList('[data-po007="effective-list"] [data-po007-effective-item] .po007-sec-field');
       const signVendor = (mount?.querySelector('[data-po007="sign-vendor"]')?.textContent || "").trim();
       const signBuyer = (mount?.querySelector('[data-po007="sign-buyer"]')?.textContent || "").trim();
+      const customSections = collectPo007CustomSectionsFromMount(
+        mount,
+        generalPo007EditorCachedMeta?.customSections
+      );
       return {
         noteItems,
         docListItems,
@@ -8053,6 +8456,7 @@
         warranty,
         inspectionItems,
         effectiveDateItems,
+        customSections,
         signVendor,
         signBuyer,
       };
@@ -8152,6 +8556,7 @@
           deliveryRows: [],
           shippingDocsIntro: "",
           shippingDocsRows: [],
+          customSections: [],
           termsPacking: "",
           warranty: "",
           inspectionItems: [],
@@ -8520,6 +8925,15 @@
       else if (action === "show") vis[sectionId] = "visible";
       else if (action === "delete") {
         if (!confirm(tPo007(docLang, "genPo007SecDeleteConfirm"))) return;
+        if (isPo007CustomSectionId(sectionId)) {
+          const customSections = (g.customSections || []).filter((s) => s.id !== sectionId);
+          const sectionOrder = (g.sectionOrder || []).filter((id) => id !== sectionId);
+          const sectionCustomDefaults = { ...(g.sectionCustomDefaults || {}) };
+          delete sectionCustomDefaults[sectionId];
+          delete vis[sectionId];
+          reloadGeneralPo007Editor({ customSections, sectionOrder, sectionVisibility: vis, sectionCustomDefaults });
+          return;
+        }
         vis[sectionId] = "deleted";
         reloadGeneralPo007Editor({ sectionVisibility: vis });
         return;
@@ -8572,6 +8986,97 @@
           const g = buildGeneralFormFromEditor();
           const vis = { ...(g.sectionVisibility || {}), [sectionId]: "visible" };
           reloadGeneralPo007Editor({ sectionVisibility: vis });
+          return;
+        }
+        const addCustomList = e.target.closest(".po007-add-custom-list");
+        if (addCustomList) {
+          e.preventDefault();
+          addPo007CustomSection("list", Number(addCustomList.dataset.po007Page) || 2);
+          return;
+        }
+        const addCustomTable = e.target.closest(".po007-add-custom-table");
+        if (addCustomTable) {
+          e.preventDefault();
+          addPo007CustomSection("table", Number(addCustomTable.dataset.po007Page) || 2);
+          return;
+        }
+        if (e.target.closest(".po007-add-custom-list-item")) {
+          e.preventDefault();
+          const block = e.target.closest("[data-po007-custom-section]");
+          appendPo007ListItem(
+            block?.querySelector("[data-po007-custom-list]"),
+            { "data-po007-custom-list-item": "" },
+            "po007-del-custom-list-item"
+          );
+          return;
+        }
+        if (e.target.closest(".po007-del-custom-list-item")) {
+          e.preventDefault();
+          const li = e.target.closest("[data-po007-custom-list-item]");
+          const list = li?.parentElement;
+          if (list && list.querySelectorAll("[data-po007-custom-list-item]").length > 1) li?.remove();
+          return;
+        }
+        if (e.target.closest(".po007-add-custom-table-row")) {
+          e.preventDefault();
+          const block = e.target.closest("[data-po007-custom-section]");
+          const table = block?.querySelector("[data-po007-custom-table]");
+          const tbody = table?.querySelector("tbody");
+          if (!tbody) return;
+          const colCount = table.querySelectorAll("[data-po007-custom-col-head]").length || 1;
+          const tr = document.createElement("tr");
+          tr.setAttribute("data-po007-custom-table-row", "");
+          tr.innerHTML = `${Array.from({ length: colCount })
+            .map(() => po007SecTableCellHtml("", { type: "text", multiline: true }))
+            .join("")}<td class="po007-custom-row-actions"><button type="button" class="del-btn po007-del-custom-table-row">✕</button></td>`;
+          tbody.appendChild(tr);
+          tr.querySelector(".po007-cell-field")?.focus();
+          return;
+        }
+        if (e.target.closest(".po007-del-custom-table-row")) {
+          e.preventDefault();
+          const tr = e.target.closest("[data-po007-custom-table-row]");
+          const tbody = tr?.parentElement;
+          if (tbody && tbody.querySelectorAll("[data-po007-custom-table-row]").length > 1) tr?.remove();
+          return;
+        }
+        if (e.target.closest(".po007-add-custom-col")) {
+          e.preventDefault();
+          const table = e.target.closest("[data-po007-custom-table]");
+          const headRow = table?.querySelector("thead tr");
+          const tbody = table?.querySelector("tbody");
+          if (!headRow || !tbody) return;
+          const docLang = getPo007DocumentLang();
+          const colIdx = headRow.querySelectorAll("[data-po007-custom-col-head]").length;
+          const th = document.createElement("th");
+          th.innerHTML = `<div class="po007-sec-th-cell"><button type="button" class="del-btn po007-del-custom-col" data-po007-col-idx="${colIdx}" title="✕">✕</button><span class="po007-sec-table-th-field" data-po007-custom-col-head contenteditable="true" spellcheck="false">${escapeHtml(docLang === "ar" ? "عمود" : "Column")}</span></div>`;
+          const actionsTh = headRow.querySelector(".po007-custom-col-actions");
+          if (actionsTh) headRow.insertBefore(th, actionsTh);
+          else headRow.appendChild(th);
+          tbody.querySelectorAll("[data-po007-custom-table-row]").forEach((tr) => {
+            const rowActions = tr.querySelector(".po007-custom-row-actions");
+            const td = document.createElement("td");
+            td.innerHTML = po007SecTableFieldHtml("", { type: "text", multiline: true });
+            if (rowActions) tr.insertBefore(td, rowActions);
+            else tr.appendChild(td);
+          });
+          th.querySelector(".po007-sec-table-th-field")?.focus();
+          return;
+        }
+        if (e.target.closest(".po007-del-custom-col")) {
+          e.preventDefault();
+          const btn = e.target.closest(".po007-del-custom-col");
+          const th = btn?.closest("th");
+          const table = e.target.closest("[data-po007-custom-table]");
+          const headRow = table?.querySelector("thead tr");
+          const colHeads = headRow?.querySelectorAll("[data-po007-custom-col-head]");
+          if (!th || !colHeads || colHeads.length <= 1) return;
+          const colIdx = [...headRow.querySelectorAll("th")].indexOf(th);
+          th.remove();
+          table.querySelectorAll("[data-po007-custom-table-row]").forEach((tr) => {
+            const tds = tr.querySelectorAll("td:not(.po007-custom-row-actions)");
+            if (tds[colIdx]) tds[colIdx].remove();
+          });
           return;
         }
         const addBtn = e.target.closest(".po007-add-item-row");
@@ -8641,12 +9146,12 @@
           const idx = tbody.querySelectorAll("[data-po007-delivery-row]").length;
           const tr = document.createElement("tr");
           tr.setAttribute("data-po007-delivery-row", "");
-          tr.innerHTML = `<td class="po007-col-no"><button type="button" class="del-btn po007-del-delivery-row">✕</button><span class="po007-line-no">${idx + 1}</span></td>
-            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false"></span></td>
-            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false"></span></td>
-            <td class="lt"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>`;
+          tr.innerHTML = `<td class="po007-col-no"><div class="po007-line-no-cell"><button type="button" class="del-btn po007-del-delivery-row">✕</button><span class="po007-line-no">${idx + 1}</span></div></td>
+            ${po007SecTableCellHtml("", { type: "text" })}
+            ${po007SecTableCellHtml("", { type: "text", multiline: true })}
+            ${po007SecTableCellHtml("", { type: "num", tdClass: "lt" })}`;
           tbody.appendChild(tr);
-          tr.querySelector(".po007-sec-field")?.focus();
+          tr.querySelector(".po007-cell-field")?.focus();
           return;
         }
         if (e.target.closest(".po007-del-delivery-row")) {
@@ -8665,13 +9170,13 @@
           if (!tbody) return;
           const tr = document.createElement("tr");
           tr.setAttribute("data-po007-shipping-doc-row", "");
-          tr.innerHTML = `<td class="po007-col-no po007-ship-sn"><button type="button" class="del-btn po007-del-shipping-doc-row">✕</button><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>
-            <td><span class="po007-sec-field" contenteditable="true" spellcheck="false"></span></td>
-            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>
-            <td class="po007-ship-qty"><span class="po007-sec-field po007-sec-field--num" contenteditable="true" spellcheck="false"></span></td>
-            <td><div class="po007-sec-field po007-sec-field--block po007-sec-field--notes" contenteditable="true" spellcheck="false"></div></td>`;
+          tr.innerHTML = `<td class="po007-col-no po007-ship-sn"><div class="po007-line-no-cell"><button type="button" class="del-btn po007-del-shipping-doc-row">✕</button></div>${po007SecTableFieldHtml("", { type: "num" })}</td>
+            ${po007SecTableCellHtml("", { type: "text" })}
+            ${po007SecTableCellHtml("", { type: "num", tdClass: "po007-ship-qty" })}
+            ${po007SecTableCellHtml("", { type: "num", tdClass: "po007-ship-qty" })}
+            ${po007SecTableCellHtml("", { type: "text", multiline: true })}`;
           tbody.appendChild(tr);
-          tr.querySelector(".po007-sec-field")?.focus();
+          tr.querySelector(".po007-cell-field")?.focus();
           return;
         }
         if (e.target.closest(".po007-del-shipping-doc-row")) {
@@ -8705,6 +9210,11 @@
         if (e.target.closest(".po007-items-table [data-po007-line]")) recalcGeneralPo007ItemsTable();
       };
       mount.oninput = (e) => {
+        if (
+          e.target.matches('[data-po007="po-number"], [data-po007="po-date"], [data-po007="po-rev"], [data-po007="buyer-name"], [data-po007="buyer-name-party"], [data-po007="seller"]')
+        ) {
+          patchPo007FootersAndMiniHeader();
+        }
         if (e.target.matches('[data-po007="total-words"]')) {
           const el = e.target;
           const txt = (el.textContent || "").trim();
@@ -8738,6 +9248,48 @@
         },
         true
       );
+    }
+
+    function readPo007EditorMetaForFooter() {
+      const mount = getGeneralPo007Mount();
+      const read = (key) => (mount?.querySelector(`[data-po007="${key}"]`)?.textContent || "").trim();
+      return {
+        poNumber: read("po-number"),
+        poDate: read("po-date"),
+        poRev: read("po-rev"),
+        buyer: read("buyer-name-party") || read("buyer-name"),
+        seller: read("seller"),
+      };
+    }
+
+    function formatPo007FooterPoLineHtml(docLang, meta) {
+      const refText = meta.poNumber || tPo007(docLang, "dash");
+      const poDateDisp = meta.poDate || formatPo007DisplayDate(getPo007MetaPoDateIso());
+      const poRev = meta.poRev ?? "";
+      const revLbl = tPo007(docLang, "genPo007PoRef");
+      return `${tPo007(docLang, "genPo007PurchaseOrder")}${escapeHtml(refText)} &nbsp;|&nbsp; ${tPo007(docLang, "genPo007PoDate")} ${escapeHtml(poDateDisp)} &nbsp;|&nbsp; ${escapeHtml(revLbl)} ${escapeHtml(poRev)}`;
+    }
+
+    function patchPo007FootersAndMiniHeader() {
+      const mount = getGeneralPo007Mount();
+      if (!mount) return;
+      const docLang = getPo007DocumentLang();
+      const meta = readPo007EditorMetaForFooter();
+      const poLine = formatPo007FooterPoLineHtml(docLang, meta);
+      const buyerDisp = meta.buyer || tPo007(docLang, "dash");
+      const miniTitle = `${buyerDisp} → ${meta.seller || tPo007(docLang, "dash")}`;
+      mount.querySelectorAll('[data-po007-footer="po-line"]').forEach((el) => {
+        el.innerHTML = poLine;
+      });
+      mount.querySelectorAll('[data-po007-footer="buyer"]').forEach((el) => {
+        el.textContent = buyerDisp;
+      });
+      mount.querySelectorAll('[data-po007-mini="title"]').forEach((el) => {
+        el.textContent = miniTitle;
+      });
+      mount.querySelectorAll('[data-po007-mini="po-line"]').forEach((el) => {
+        el.innerHTML = poLine;
+      });
     }
 
     function patchGeneralPo007EditorMeta(partial) {
@@ -8782,6 +9334,7 @@
           }
         }
       }
+      patchPo007FootersAndMiniHeader();
     }
 
     function mountGeneralPo007Editor(g, po) {
@@ -8793,7 +9346,8 @@
         sectionVisibility: { ...(model.sectionVisibility || {}) },
         sectionTitles: { ...(model.sectionTitles || {}) },
         sectionCustomDefaults: { ...(model.sectionCustomDefaults || {}) },
-        sectionOrder: [...(model.sectionOrder || getDefaultPo007SectionOrder())],
+        sectionOrder: [...(model.sectionOrder || getDefaultPo007SectionOrder(model))],
+        customSections: JSON.parse(JSON.stringify(model.customSections || [])),
       };
       model.documentLang = getPo007DocumentLang();
       model.currency = getPo007MetaCurrency();
@@ -8819,6 +9373,7 @@
           el.textContent = savedTotalWords;
         }
       }
+      patchPo007FootersAndMiniHeader();
     }
 
     function buildGeneralFormFromEditor() {
@@ -8826,10 +9381,18 @@
       const read = (key) => (mount?.querySelector(`[data-po007="${key}"]`)?.textContent || "").trim();
       const lines = readGeneralPo007LinesFromMount();
       const sections = collectPo007EditorSections(mount);
-      const sectionTitles = collectPo007SectionTitles(mount);
+      const sectionTitles = collectPo007SectionTitles(mount, generalPo007EditorCachedMeta);
       const sectionVisibility = collectPo007SectionVisibility(mount, generalPo007EditorCachedMeta);
-      const sectionOrder = collectPo007SectionOrderFromMount(mount, generalPo007EditorCachedMeta);
+      const sectionOrder = collectPo007SectionOrderFromMount(mount, {
+        ...generalPo007EditorCachedMeta,
+        customSections: collectPo007CustomSectionsFromMount(mount, generalPo007EditorCachedMeta?.customSections),
+      });
       const sectionCustomDefaults = generalPo007EditorCachedMeta?.sectionCustomDefaults || {};
+      const customSectionsRaw = collectPo007CustomSectionsFromMount(mount, generalPo007EditorCachedMeta?.customSections);
+      const customSections = customSectionsRaw.map((cs) => ({
+        ...cs,
+        title: sectionTitles[cs.id] || cs.title,
+      }));
       const companyId = ($("po007-meta-company")?.value || "").trim();
       const supplierId = ($("po007-meta-supplier")?.value || "").trim();
       const projectId = ($("po007-meta-project")?.value || "").trim();
@@ -8873,6 +9436,7 @@
         sectionVisibility,
         sectionOrder,
         sectionCustomDefaults,
+        customSections,
       });
       const saved = enrichGeneralFormPo007({
         poNumber: read("po-number"),
@@ -8906,6 +9470,7 @@
         sectionVisibility,
         sectionOrder,
         sectionCustomDefaults,
+        customSections,
         po007PrintHtml: renderGeneralPo007Html(poStub, printForm),
       });
       generalPo007EditorCachedMeta = {
@@ -8913,6 +9478,7 @@
         sectionTitles: saved.sectionTitles,
         sectionOrder: saved.sectionOrder,
         sectionCustomDefaults: saved.sectionCustomDefaults,
+        customSections: JSON.parse(JSON.stringify(saved.customSections || [])),
       };
       return saved;
     }
@@ -9058,28 +9624,30 @@
             ${page1Sections.join("")}
           </div>
           <div class="po007-page-footer">
-            <span>${poLine}</span>
-            <span>${escapeHtml(buyerName)}</span>
+            <span data-po007-footer="po-line">${poLine}</span>
+            <span data-po007-footer="buyer">${escapeHtml(buyerName)}</span>
             <span class="po007-pf-num">${tPo007(docLang, "genPo007Page")} 1 / 2</span>
           </div>
         </div>
         <div class="po007-page">
           <div class="po007-page-content">
             <div class="po007-mini-header">
-              <span class="po007-mh-title">${miniHeader}</span>
-              <span class="po007-mh-po">${poLine}</span>
+              <span class="po007-mh-title" data-po007-mini="title">${miniHeader}</span>
+              <span class="po007-mh-po" data-po007-mini="po-line">${poLine}</span>
             </div>
             ${page2Sections.join("")}
             ${signaturesBlock}
           </div>
           <div class="po007-page-footer">
-            <span>${poLine}</span>
-            <span>${escapeHtml(buyerName)}</span>
+            <span data-po007-footer="po-line">${poLine}</span>
+            <span data-po007-footer="buyer">${escapeHtml(buyerName)}</span>
             <span class="po007-pf-num">${tPo007(docLang, "genPo007Page")} 2 / 2</span>
           </div>
         </div>
       </div>`;
-      return editorMode ? `<div class="po007-surface po007-edit-mode">${docHtml}</div>` : docHtml;
+      return editorMode
+        ? `<div class="po007-surface po007-edit-mode">${docHtml}</div>`
+        : `<div class="po007-surface po007-print-mode">${docHtml}</div>`;
     }
 
     let generalPo007PendingLoad = null;
@@ -9401,18 +9969,9 @@
       const refText = (g.poNumber || po.title || "").trim() || t("docTitle");
       const el = $("po-print-content");
       if (!el) return;
-      if ((g.po007PrintHtml || "").trim()) {
-        const blob = new Blob([g.po007PrintHtml], { type: "text/html;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        el.innerHTML = `<iframe class="po007-print-iframe" title="${escapeAttr(refText)}" src="${escapeAttr(
-          url
-        )}" style="width:100%;min-height:1150px;border:0;background:#fff"></iframe>`;
-        lastPoPrintDoc = { title: refText, html: g.po007PrintHtml };
-      } else {
-        const html = renderGeneralPo007Html(po, g);
-        el.innerHTML = html;
-        lastPoPrintDoc = { title: refText, html };
-      }
+      const html = renderGeneralPo007Html(po, g);
+      el.innerHTML = html;
+      lastPoPrintDoc = { title: refText, html };
       $("modal-po-print-view")?.classList.remove("hidden");
     }
 
