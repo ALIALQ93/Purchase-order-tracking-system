@@ -4348,9 +4348,16 @@
                   <label for="po-requester-display" data-i18n="poRequesterLabel">مقدم الطلب</label>
                   <input type="text" id="po-requester-display" readonly />
                 </div>
-                <div class="field" style="margin:0">
+                <div class="field" style="margin:0" id="po-region-field-single">
                   <label for="po-region-display" data-i18n="poRegionLabel">المنطقة</label>
                   <input type="text" id="po-region-display" readonly />
+                </div>
+                <div class="field hidden" style="margin:0" id="po-region-field-select">
+                  <label for="po-region-select" data-i18n="poPoRegionSelectLabel">منطقة تنفيذ الطلب</label>
+                  <select id="po-region-select"></select>
+                  <p class="user-form-hint" style="margin:0.25rem 0 0" data-i18n="poPoRegionSelectHint">
+                    اختر المنطقة التي يُنفَّذ فيها هذا الطلب.
+                  </p>
                 </div>
                 <div class="field" style="margin:0">
                   <label for="po-warehouses-display" data-i18n="poWarehousesCoveredLabel">المستودعات المغطاة</label>
@@ -4883,6 +4890,12 @@
         poContractNumberLabel: "رقم العقد",
         poRequesterLabel: "مقدم الطلب",
         poRegionLabel: "المنطقة",
+        poPoRegionSelectLabel: "منطقة تنفيذ الطلب",
+        poPoRegionSelectHint: "المشروع مرتبط بأكثر من منطقة — اختر المنطقة التي يُنفَّذ فيها هذا الطلب.",
+        alertPoRegionRequired: "اختر منطقة تنفيذ الطلب.",
+        labelProjectRegions: "مناطق المشروع",
+        projectRegionsHint: "أضف منطقة واحدة أو أكثر. عند إنشاء الطلب يختار المستخدم منطقة التنفيذ إن وُجد أكثر من واحدة.",
+        alertProjectRegionsRequired: "أضف منطقة واحدة على الأقل للمشروع.",
         poWarehousesCoveredLabel: "المستودعات المغطاة",
         poReasonLabel: "سبب الطلب",
         poUsageLabel: "الاستخدام",
@@ -5079,9 +5092,10 @@
         btnSubmitWarehouseReview: "إرسال المراجعة",
         btnOpenWarehouseReview: "مراجعة التوفر",
         colWorkflow: "مسار العمل",
-        colAssignedRegion: "المنطقة المسندة",
-        labelAssignedRegionClerk: "المنطقة المسندة (أمين المستودع)",
-        assignedRegionClerkHint: "يُعرض لأمين المستودع طلبات المشاريع التابعة لهذه المنطقة فقط.",
+        colAssignedRegion: "المناطق المسندة",
+        labelAssignedRegionClerk: "مناطق أمين المستودع",
+        assignedRegionClerkHint: "يُعرض لأمين المستودع طلبات المشاريع في هذه المناطق فقط.",
+        alertClerkRegionsRequired: "حدّد منطقة واحدة على الأقل لأمين المستودع من الإدارة.",
         workflowStatus_warehouse_review: "بانتظار المستودع",
         workflowStatus_pending_engineer_first: "بانتظار مهندس أول",
         workflowStatus_pending_project_manager: "بانتظار مدير المشروع",
@@ -5208,7 +5222,7 @@
         emptyWarehouseQueue: "لا توجد طلبات بانتظار المراجعة في منطقتك.",
         alertWarehouseRegionRequired: "حدّد المنطقة المسندة لهذا الحساب (أمين مستودع) من الإدارة.",
         alertWarehouseClerkNoPoEdit: "حساب أمين المستودع لا يعدّل أوامر الشراء من هذه الشاشة. استخدم «مراجعة المستودع».",
-        alertWarehouseWrongRegion: "هذا الطلب لا يتبع منطقتك المسندة.",
+        alertWarehouseWrongRegion: "هذا الطلب لا يتبع إحدى مناطقك المسندة.",
         alertWarehouseReviewStale: "تمت معالجة هذا الطلب أو تغيّر وضعه. حدّث القائمة.",
         labelVisibleSections: "الأقسام الظاهرة في القائمة",
         userFormSectionIdentity: "البيانات الأساسية",
@@ -5654,6 +5668,12 @@
         poContractNumberLabel: "Contract number",
         poRequesterLabel: "Requester",
         poRegionLabel: "Region",
+        poPoRegionSelectLabel: "Execution region",
+        poPoRegionSelectHint: "This project spans multiple regions — choose where this request will be executed.",
+        alertPoRegionRequired: "Select the execution region for this request.",
+        labelProjectRegions: "Project regions",
+        projectRegionsHint: "Add one or more regions. When creating a request, the user picks the execution region if more than one applies.",
+        alertProjectRegionsRequired: "Add at least one region for the project.",
         poWarehousesCoveredLabel: "Warehouses covered",
         poReasonLabel: "Reason for request",
         poUsageLabel: "Usage",
@@ -5851,9 +5871,10 @@
         btnSubmitWarehouseReview: "Submit review",
         btnOpenWarehouseReview: "Review availability",
         colWorkflow: "Workflow",
-        colAssignedRegion: "Assigned region",
-        labelAssignedRegionClerk: "Assigned region (warehouse clerk)",
-        assignedRegionClerkHint: "The clerk only sees project requests for projects in this region.",
+        colAssignedRegion: "Assigned regions",
+        labelAssignedRegionClerk: "Warehouse clerk regions",
+        assignedRegionClerkHint: "The clerk only sees project requests for projects in these regions.",
+        alertClerkRegionsRequired: "Assign at least one region for this warehouse clerk in Administration.",
         workflowStatus_warehouse_review: "Awaiting warehouse",
         workflowStatus_pending_engineer_first: "Awaiting engineer first",
         workflowStatus_pending_project_manager: "Awaiting project manager",
@@ -5980,7 +6001,7 @@
         emptyWarehouseQueue: "No requests awaiting review in your region.",
         alertWarehouseRegionRequired: "Assign a region to this warehouse clerk account in Administration.",
         alertWarehouseClerkNoPoEdit: "Warehouse clerk accounts cannot edit purchase orders here. Use «Warehouse review».",
-        alertWarehouseWrongRegion: "This request is not in your assigned region.",
+        alertWarehouseWrongRegion: "This request is not in any of your assigned regions.",
         alertWarehouseReviewStale: "This request was already processed or its status changed. Refresh the list.",
         labelVisibleSections: "Visible menu sections",
         userFormSectionIdentity: "Account details",
@@ -6573,6 +6594,9 @@
     let userProjectAssign = null;
     let userPmProjectAssign = null;
     let userGmRegionAssign = null;
+    let userClerkRegionAssign = null;
+    let projectRegionAssign = null;
+    let poFormProjectRegionIds = [];
     let workflowBypassCallback = null;
     let wfPoEditContext = null;
     let accPoEditBaseLines = null;
@@ -6645,7 +6669,9 @@
           const regions = currentUserProfile?.managedRegionIds || [];
           if (!regions.length) rows = [];
           else
-            rows = rows.filter((row) => row.projectId && regions.includes(projectRegion[row.projectId]));
+            rows = rows.filter((row) =>
+              row.projectId && poMatchesAnyManagedRegion(row, projectRegion[row.projectId], regions)
+            );
         }
       }
       rows.sort((a, b) => {
@@ -10408,7 +10434,49 @@
         .join(sep);
     }
 
-    async function loadProjectContext(projectId) {
+    function projectRegionIdsFromDoc(project) {
+      const ids = Array.isArray(project?.regionIds) ? project.regionIds.map((x) => String(x || "").trim()).filter(Boolean) : [];
+      if (ids.length) return [...new Set(ids)];
+      const legacy = String(project?.regionId || "").trim();
+      return legacy ? [legacy] : [];
+    }
+
+    function projectPrimaryRegionId(project) {
+      const ids = projectRegionIdsFromDoc(project);
+      return ids[0] || String(project?.regionId || "").trim() || null;
+    }
+
+    function poEffectiveRegionId(po, projectRegionFallback) {
+      return String(po?.regionId || "").trim() || String(projectRegionFallback || "").trim() || null;
+    }
+
+    function clerkAssignedRegionIds(profile) {
+      const ids = Array.isArray(profile?.assignedRegionIds)
+        ? profile.assignedRegionIds.map((x) => String(x || "").trim()).filter(Boolean)
+        : [];
+      if (ids.length) return [...new Set(ids)];
+      const legacy = String(profile?.assignedRegionId || "").trim();
+      return legacy ? [legacy] : [];
+    }
+
+    function clerkAssignedRegionsDisplayLabels(profile, regionsMap) {
+      const ids = clerkAssignedRegionIds(profile);
+      if (!ids.length) return t("dash");
+      return ids.map((id) => regionsMap[id] || id).join(" · ");
+    }
+
+    function poMatchesAnyManagedRegion(po, projectRegionFallback, managedRegionIds) {
+      const reg = poEffectiveRegionId(po, projectRegionFallback);
+      return !!(reg && Array.isArray(managedRegionIds) && managedRegionIds.includes(reg));
+    }
+
+    function projectRegionsDisplayLabels(project, regionsMap) {
+      const ids = projectRegionIdsFromDoc(project);
+      if (!ids.length) return t("dash");
+      return ids.map((id) => regionsMap[id] || id).join(" · ");
+    }
+
+    async function loadProjectContext(projectId, selectedRegionId) {
       if (!projectId) return null;
       const psnap = await getDoc(doc(db, "projects", projectId));
       if (!psnap.exists()) return null;
@@ -10418,19 +10486,21 @@
         const cs = await getDoc(doc(db, "companies", project.companyId));
         if (cs.exists()) company = { id: cs.id, ...cs.data() };
       }
+      const regionIds = projectRegionIdsFromDoc(project);
+      const rid = String(selectedRegionId || "").trim() || projectPrimaryRegionId(project);
       let regionRow = null;
-      if (project.regionId) {
-        const rs = await getDoc(doc(db, "regions", project.regionId));
+      if (rid) {
+        const rs = await getDoc(doc(db, "regions", rid));
         if (rs.exists()) regionRow = { id: rs.id, ...rs.data() };
       }
       const warehouses = [];
-      if (project.regionId) {
-        const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", project.regionId)));
+      if (rid) {
+        const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", rid)));
         whSnap.forEach((d) => warehouses.push({ id: d.id, ...d.data() }));
       }
       sortWarehousesByCode(warehouses);
       const contractSeg = contractSegmentForRef(project.contractNumber, project.code);
-      return { project, company, regionRow, warehouses, contractSeg };
+      return { project, company, regionRow, warehouses, contractSeg, regionIds };
     }
 
     function clearPoLinesTable() {
@@ -10630,7 +10700,7 @@
       }
       const role = currentUserProfile?.role || userRole;
       const pr = await getDoc(doc(db, "projects", po.projectId));
-      const regId = pr.exists() ? pr.data().regionId || null : null;
+      const regId = pr.exists() ? poEffectiveRegionId(po, projectPrimaryRegionId(pr.data())) : poEffectiveRegionId(po, null);
       if (mode === "pm") {
         const managed = currentUserProfile?.managedProjectIds || [];
         return (
@@ -12329,7 +12399,58 @@
       }
     }
 
-    async function hydrateProjectPoFromProjectSelect(preserveReference) {
+    function getSelectedPoRegionId() {
+      if (poFormProjectRegionIds.length > 1) return ($("po-region-select")?.value || "").trim();
+      return poFormProjectRegionIds[0] || "";
+    }
+
+    function syncPoRegionFieldUi(regionRows, preferredRegionId) {
+      const regionIds = regionRows.map((r) => r.id);
+      poFormProjectRegionIds = regionIds;
+      const multi = regionIds.length > 1;
+      const singleWrap = $("po-region-field-single");
+      const selectWrap = $("po-region-field-select");
+      const sel = $("po-region-select");
+      const disp = $("po-region-display");
+      if (singleWrap) singleWrap.classList.toggle("hidden", multi);
+      if (selectWrap) selectWrap.classList.toggle("hidden", !multi);
+      if (multi && sel) {
+        const pref = String(preferredRegionId || "").trim();
+        sel.innerHTML =
+          `<option value="">${escapeHtml(t("selectRegionDash"))}</option>` +
+          regionRows
+            .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml(regionOptionLabel(r))}</option>`)
+            .join("");
+        sel.value = pref && regionIds.includes(pref) ? pref : "";
+        sel.required = true;
+      } else if (sel) {
+        sel.required = false;
+        sel.innerHTML = "";
+      } else if (disp) {
+        const row = regionRows[0];
+        disp.value = row ? regionOptionLabel(row) : t("dash");
+      }
+    }
+
+    async function hydrateProjectPoRegionDetails(regionId) {
+      if (!regionId) {
+        if ($("po-warehouses-display")) $("po-warehouses-display").value = "";
+        if ($("po-region-display")) $("po-region-display").value = "";
+        return;
+      }
+      const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", regionId)));
+      const warehouses = [];
+      whSnap.forEach((d) => warehouses.push({ id: d.id, ...d.data() }));
+      sortWarehousesByCode(warehouses);
+      if ($("po-warehouses-display")) $("po-warehouses-display").value = warehouseListSummary(warehouses);
+      if (poFormProjectRegionIds.length <= 1) {
+        const rs = await getDoc(doc(db, "regions", regionId));
+        if ($("po-region-display"))
+          $("po-region-display").value = rs.exists() ? regionOptionLabel({ id: rs.id, ...rs.data() }) : t("dash");
+      }
+    }
+
+    async function hydrateProjectPoFromProjectSelect(preserveReference, preferredRegionId) {
       const pid = $("po-project").value;
       const existingId = $("po-id").value;
       const refHint = $("po-reference-hint");
@@ -12337,6 +12458,7 @@
       const logo = $("po-company-logo");
       const cname = $("po-company-name");
       if (!pid) {
+        poFormProjectRegionIds = [];
         banner.classList.add("hidden");
         logo.classList.add("hidden");
         logo.removeAttribute("src");
@@ -12345,17 +12467,25 @@
         $("po-contract-display").value = "";
         $("po-region-display").value = "";
         $("po-warehouses-display").value = "";
+        syncPoRegionFieldUi([], "");
         if (refHint) refHint.classList.add("hidden");
         if (!existingId) $("po-requester-display").value = requesterDisplayName();
         return;
       }
       const ctx = await loadProjectContext(pid);
       if (!ctx) {
+        poFormProjectRegionIds = [];
         banner.classList.add("hidden");
         if (refHint) refHint.classList.add("hidden");
         return;
       }
-      const { project, company, regionRow, warehouses, contractSeg } = ctx;
+      const { project, company, contractSeg, regionIds } = ctx;
+      const regionRows = [];
+      for (const rid of regionIds) {
+        const rs = await getDoc(doc(db, "regions", rid));
+        if (rs.exists()) regionRows.push({ id: rs.id, ...rs.data() });
+      }
+      sortRegionsByCode(regionRows);
       if (company) {
         banner.classList.remove("hidden");
         cname.textContent = companyDisplayName(company);
@@ -12374,8 +12504,8 @@
         logo.removeAttribute("src");
       }
       $("po-contract-display").value = (project.contractNumber || "").trim() || t("dash");
-      $("po-region-display").value = regionRow ? regionOptionLabel(regionRow) : t("dash");
-      $("po-warehouses-display").value = warehouseListSummary(warehouses);
+      syncPoRegionFieldUi(regionRows, preferredRegionId);
+      await hydrateProjectPoRegionDetails(getSelectedPoRegionId());
       if (!existingId) $("po-requester-display").value = requesterDisplayName();
       if (refHint) {
         if (!existingId) {
@@ -12447,6 +12577,7 @@
           canBypassLowerApprovals: false,
           assignedProjectIds: [],
           assignedRegionId: null,
+          assignedRegionIds: [],
           managedProjectIds: [],
           managedRegionIds: [],
           createdAt: serverTimestamp(),
@@ -12458,6 +12589,7 @@
           canBypassLowerApprovals: false,
           assignedProjectIds: [],
           assignedRegionId: null,
+          assignedRegionIds: [],
           managedProjectIds: [],
           managedRegionIds: [],
         };
@@ -12479,13 +12611,15 @@
       const assignedProjectIds = Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [];
       const managedProjectIds = Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [];
       const managedRegionIds = Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [];
+      const assignedRegionIds = clerkAssignedRegionIds(d);
       return {
         role: d.role || "user",
         displayName: d.displayName || u.email || "",
         visibleSections,
         canBypassLowerApprovals: d.canBypassLowerApprovals === true,
         assignedProjectIds,
-        assignedRegionId: d.assignedRegionId || null,
+        assignedRegionId: assignedRegionIds[0] || null,
+        assignedRegionIds,
         managedProjectIds,
         managedRegionIds,
       };
@@ -12549,7 +12683,8 @@
         const out = [];
         snap.forEach((d) => {
           const pd = d.data();
-          if (pd.regionId && regions.includes(pd.regionId)) out.push(d.id);
+          const pRegions = projectRegionIdsFromDoc(pd);
+          if (pRegions.some((rid) => regions.includes(rid))) out.push(d.id);
         });
         return out;
       }
@@ -12731,7 +12866,7 @@
       );
       const whLabelById = {};
       if (pr?.exists()) {
-        const regId = pr.data().regionId;
+        const regId = poEffectiveRegionId(po, projectPrimaryRegionId(pr.data()));
         if (regId) {
           const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", regId)));
           const whRows = [];
@@ -13669,8 +13804,8 @@
       const wrap = $("warehouse-queue-wrap");
       if (!wrap) return;
       const role = currentUserProfile?.role || userRole;
-      const rid = currentUserProfile?.assignedRegionId;
-      if (role === "warehouse_clerk" && !rid) {
+      const clerkRegions = clerkAssignedRegionIds(currentUserProfile);
+      if (role === "warehouse_clerk" && !clerkRegions.length) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertWarehouseRegionRequired"))}</p>`;
         return;
       }
@@ -13702,9 +13837,15 @@
           projectRegion[d.id] = pd.regionId || null;
           projectNames[d.id] = projectDisplayName(pd);
         });
-        if (role === "warehouse_clerk" && rid) {
-          rowsAction = rowsAction.filter((r) => r.projectId && projectRegion[r.projectId] === rid);
-          rowsTrack = rowsTrack.filter((r) => r.projectId && projectRegion[r.projectId] === rid);
+        if (role === "warehouse_clerk" && clerkRegions.length) {
+          rowsAction = rowsAction.filter((r) => {
+            const poReg = poEffectiveRegionId(r, projectRegion[r.projectId]);
+            return poReg && clerkRegions.includes(poReg);
+          });
+          rowsTrack = rowsTrack.filter((r) => {
+            const poReg = poEffectiveRegionId(r, projectRegion[r.projectId]);
+            return poReg && clerkRegions.includes(poReg);
+          });
         } else if (!hasAdminAccess()) {
           rowsAction = [];
           rowsTrack = [];
@@ -14077,8 +14218,8 @@
         return;
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
-      const regId = pr.exists() ? pr.data().regionId || null : null;
-      if (role === "group_manager" && regions.length && (!regId || !regions.includes(regId))) {
+      const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
+      if (role === "group_manager" && regions.length && (!poReg || !regions.includes(poReg))) {
         alert(t("alertWarehouseWrongRegion"));
         return;
       }
@@ -14141,8 +14282,8 @@
         return;
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
-      const regId = pr.exists() ? pr.data().regionId || null : null;
-      if (role === "group_manager" && regions.length && (!regId || !regions.includes(regId))) {
+      const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
+      if (role === "group_manager" && regions.length && (!poReg || !regions.includes(poReg))) {
         alert(t("alertWarehouseWrongRegion"));
         return;
       }
@@ -14296,7 +14437,7 @@
           projectRegion[d.id] = pd.regionId || null;
         });
         if (role === "group_manager" && regions.length) {
-          rows = rows.filter((r) => r.projectId && regions.includes(projectRegion[r.projectId]));
+          rows = rows.filter((r) => r.projectId && poMatchesAnyManagedRegion(r, projectRegion[r.projectId], regions));
         } else if (!hasAdminAccess()) {
           rows = [];
         }
@@ -14371,7 +14512,7 @@
       if (rStake === "group_manager") {
         const regions = currentUserProfile?.managedRegionIds || [];
         if (!regions.length) return [];
-        return rows.filter((row) => row.projectId && regions.includes(projectRegion[row.projectId]));
+        return rows.filter((row) => row.projectId && poMatchesAnyManagedRegion(row, projectRegion[row.projectId], regions));
       }
       return [];
     }
@@ -14662,7 +14803,7 @@
 
     function filterWarehouseReceiptRowsByRegion(rows, projectRegion, regions, role) {
       if (role === "warehouse_supervisor" && regions.length) {
-        return rows.filter((r) => r.projectId && regions.includes(projectRegion[r.projectId]));
+        return rows.filter((r) => r.projectId && poMatchesAnyManagedRegion(r, projectRegion[r.projectId], regions));
       }
       if (hasAdminAccess()) return rows;
       return [];
@@ -15350,8 +15491,8 @@
       }
       if (role === "warehouse_supervisor" && regions.length) {
         const pr = await getDoc(doc(db, "projects", po.projectId));
-        const regId = pr.exists() ? pr.data().regionId || null : null;
-        if (!regId || !regions.includes(regId)) {
+        const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
+        if (!poReg || !regions.includes(poReg)) {
           alert(t("alertWarehouseWrongRegion"));
           return;
         }
@@ -15397,8 +15538,8 @@
       }
       if (role === "warehouse_supervisor" && regions.length) {
         const pr = await getDoc(doc(db, "projects", po.projectId));
-        const regId = pr.exists() ? pr.data().regionId || null : null;
-        if (!regId || !regions.includes(regId)) {
+        const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
+        if (!poReg || !regions.includes(poReg)) {
           alert(t("alertWarehouseWrongRegion"));
           return;
         }
@@ -15482,8 +15623,8 @@
     async function openWarehouseReviewModal(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      const rid = currentUserProfile?.assignedRegionId;
-      if (role === "warehouse_clerk" && !rid) {
+      const clerkRegions = clerkAssignedRegionIds(currentUserProfile);
+      if (role === "warehouse_clerk" && !clerkRegions.length) {
         alert(t("alertWarehouseRegionRequired"));
         return;
       }
@@ -15497,13 +15638,14 @@
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const prData = pr.exists() ? pr.data() : {};
-      if (role === "warehouse_clerk" && rid) {
-        if ((prData.regionId || null) !== rid) {
+      const poRegionId = poEffectiveRegionId(po, projectPrimaryRegionId(prData));
+      if (role === "warehouse_clerk" && clerkRegions.length) {
+        if (!poRegionId || !clerkRegions.includes(poRegionId)) {
           alert(t("alertWarehouseWrongRegion"));
           return;
         }
       }
-      const regionId = prData.regionId || null;
+      const regionId = poRegionId;
       const whAccum = [];
       if (regionId) {
         const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", regionId)));
@@ -15942,7 +16084,7 @@
           const lines = Array.isArray(poData.lines) ? poData.lines : [];
           if (lines.length) lines.forEach((l) => addPoLineRow(l.item, l.unit, l.qty));
           else addPoLineRow();
-          await hydrateProjectPoFromProjectSelect(true);
+          await hydrateProjectPoFromProjectSelect(true, (poData.regionId || "").trim());
           syncProjectPoRequestTypeUi();
         } else {
           $("po-id").value = "";
@@ -16072,9 +16214,18 @@
             return;
           }
         }
-        const ctx = await loadProjectContext(pid);
+        const selectedRegionId = getSelectedPoRegionId();
+        if (!selectedRegionId) {
+          alert(t("alertPoRegionRequired"));
+          return;
+        }
+        const ctx = await loadProjectContext(pid, selectedRegionId);
         if (!ctx) {
           alert(t("alertSelectProject"));
+          return;
+        }
+        if (!ctx.regionIds.includes(selectedRegionId)) {
+          alert(t("alertPoRegionRequired"));
           return;
         }
         const lines = okLines.map((l) => ({
@@ -16090,7 +16241,7 @@
           requestDate,
           requesterName: ($("po-requester-display").value || "").trim() || requesterDisplayName(),
           contractNumberSnapshot: (ctx.project.contractNumber || "").trim() || null,
-          regionId: ctx.project.regionId || null,
+          regionId: selectedRegionId,
           regionName: ctx.regionRow ? regionOptionLabel(ctx.regionRow) : null,
           companyNameSnapshot: ctx.company ? companyDisplayName(ctx.company) : null,
           ...(() => {
@@ -16190,8 +16341,9 @@
     $("modal-po-cancel").addEventListener("click", closePoModal);
     $("po-project")?.addEventListener("change", async () => {
       if ($("po-scope").value !== "project") return;
-      await hydrateProjectPoFromProjectSelect(!!$("po-id").value);
+      await hydrateProjectPoFromProjectSelect(!!$("po-id").value, ($("po-id").value ? getSelectedPoRegionId() : ""));
     });
+    $("po-region-select")?.addEventListener("change", () => void hydrateProjectPoRegionDetails(getSelectedPoRegionId()));
     $("po-request-type")?.addEventListener("change", () => syncProjectPoRequestTypeUi());
     $("po-request-date")?.addEventListener("change", async () => {
       if ($("po-scope").value !== "project") return;
@@ -16701,7 +16853,7 @@
                 <td>${escapeHtml((r.nameEn || "").trim())}</td>
                 <td>${escapeHtml((r.contractNumber || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(companies[r.companyId] || r.companyId || t("dash"))}</td>
-                <td>${escapeHtml(regions[r.regionId] || r.regionId || t("dash"))}</td>
+                <td>${escapeHtml(projectRegionsDisplayLabels(r, regions))}</td>
                 <td>${r.active !== false ? t("yes") : t("no")}</td>
                 <td>
                   <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="projects" data-id="${r.id}">${t("edit")}</button>
@@ -16891,7 +17043,7 @@
             const managedPmCnt = Array.isArray(r.managedProjectIds) ? r.managedProjectIds.length : 0;
             const managedGmCnt = Array.isArray(r.managedRegionIds) ? r.managedRegionIds.length : 0;
             const regText =
-              r.role === "warehouse_clerk" ? rmap[r.assignedRegionId] || t("dash") : t("dash");
+              r.role === "warehouse_clerk" ? clerkAssignedRegionsDisplayLabels(r, rmap) : t("dash");
             return `
               <tr>
                 <td>${escapeHtml(r.displayName || r.email || "")}</td>
@@ -17102,12 +17254,82 @@
         );
         addField("companyId", t("labelCompanySelect"), "select", opts);
         const rSnap = await getDocs(collection(db, "regions"));
-        const rRows = [];
-        rSnap.forEach((d) => rRows.push({ id: d.id, ...d.data() }));
-        sortRegionsByCode(rRows);
-        const rOpts = [{ value: "", label: t("selectRegionDash") }];
-        rRows.forEach((row) => rOpts.push({ value: row.id, label: regionOptionLabel({ ...row, id: row.id }) }));
-        addField("regionId", t("labelRegionSelect"), "select", rOpts);
+        const allRegionsForProject = [];
+        rSnap.forEach((d) => allRegionsForProject.push({ id: d.id, ...d.data() }));
+        sortRegionsByCode(allRegionsForProject);
+        const projRegBlock = document.createElement("div");
+        projRegBlock.className = "field";
+        projRegBlock.innerHTML = `
+          <label for="project-region-search">${escapeHtml(t("labelProjectRegions"))}</label>
+          <p class="user-form-hint" style="margin-top:0.25rem">${escapeHtml(t("projectRegionsHint"))}</p>
+          <div id="project-region-chips" class="assign-chips"></div>
+          <input type="search" id="project-region-search" autocomplete="off" placeholder="${escapeHtml(t("assignRegionSearchPlaceholder"))}" />
+          <ul id="project-region-results" class="assign-search-results" role="listbox"></ul>`;
+        fields.appendChild(projRegBlock);
+        const projRegChipsEl = fields.querySelector("#project-region-chips");
+        const projRegResultsUl = fields.querySelector("#project-region-results");
+        const projRegSearchInp = fields.querySelector("#project-region-search");
+        projectRegionAssign = {
+          ids: [],
+          allRegions: allRegionsForProject,
+          chipsEl: projRegChipsEl,
+          resultsUl: projRegResultsUl,
+          searchInp: projRegSearchInp,
+        };
+        projectRegionAssign.renderAssignChips = function renderProjectRegionChips() {
+          if (!projectRegionAssign) return;
+          const { ids, allRegions: ar } = projectRegionAssign;
+          projectRegionAssign.chipsEl.innerHTML = ids
+            .map((id) => {
+              const row = ar.find((r) => r.id === id);
+              const label = row ? regionOptionLabel({ ...row, id }) : id;
+              return `<span class="assign-chip"><span>${escapeHtml(label)}</span><button type="button" class="assign-chip-remove" data-remove-project-region="${escapeHtml(id)}">×</button></span>`;
+            })
+            .join("");
+        };
+        projectRegionAssign.renderAssignResults = function renderProjectRegionResults(q) {
+          if (!projectRegionAssign) return;
+          const query = (q || "").trim().toLowerCase();
+          const { ids, allRegions: ar } = projectRegionAssign;
+          let pool = ar.filter((row) => !ids.includes(row.id));
+          if (query) {
+            pool = pool.filter((row) => {
+              const blob = [row.code, row.name, regionOptionLabel({ ...row, id: row.id })].filter(Boolean).join(" ").toLowerCase();
+              return blob.includes(query);
+            });
+          }
+          pool = pool.slice(0, 12);
+          if (!pool.length) {
+            projectRegionAssign.resultsUl.innerHTML = `<li class="empty-hint">${escapeHtml(t("assignRegionNoResults"))}</li>`;
+            return;
+          }
+          projectRegionAssign.resultsUl.innerHTML = pool
+            .map(
+              (row) =>
+                `<li><button type="button" data-add-project-region="${escapeHtml(row.id)}">${escapeHtml(regionOptionLabel({ ...row, id: row.id }))}</button></li>`
+            )
+            .join("");
+        };
+        projRegChipsEl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-remove-project-region]");
+          if (!btn || !projectRegionAssign) return;
+          const id = btn.getAttribute("data-remove-project-region");
+          projectRegionAssign.ids = projectRegionAssign.ids.filter((x) => x !== id);
+          projectRegionAssign.renderAssignChips();
+          projectRegionAssign.renderAssignResults(projRegSearchInp.value);
+        });
+        projRegResultsUl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-add-project-region]");
+          if (!btn || !projectRegionAssign) return;
+          const id = btn.getAttribute("data-add-project-region");
+          if (!projectRegionAssign.ids.includes(id)) projectRegionAssign.ids.push(id);
+          projectRegionAssign.renderAssignChips();
+          projectRegionAssign.renderAssignResults(projRegSearchInp.value);
+          projRegSearchInp.value = "";
+        });
+        projRegSearchInp.addEventListener("input", () => projectRegionAssign.renderAssignResults(projRegSearchInp.value));
+        projectRegionAssign.renderAssignChips();
+        projectRegionAssign.renderAssignResults("");
         addField("active", t("labelActive"), "checkbox");
       } else if (collectionName === "regions") {
         $("modal-entity-title").textContent = existingId ? t("modalEditRegion") : t("modalNewRegion");
@@ -17216,33 +17438,15 @@
         scopeIntro.textContent = t("userFormScopeHint");
         scopeBody.appendChild(scopeIntro);
 
-        const regSnapClerk = await getDocs(collection(db, "regions"));
-        const regRowsClerk = [];
-        regSnapClerk.forEach((d) => regRowsClerk.push({ id: d.id, ...d.data() }));
-        sortRegionsByCode(regRowsClerk);
-        const clerkRegOpts = [{ value: "", label: t("selectRegionDash") }];
-        regRowsClerk.forEach((row) =>
-          clerkRegOpts.push({ value: row.id, label: regionOptionLabel({ ...row, id: row.id }) })
-        );
         const clerkRegionWrap = document.createElement("div");
         clerkRegionWrap.id = "user-clerk-region-wrap";
         clerkRegionWrap.className = "field hidden";
-        const clerkSel = document.createElement("select");
-        clerkSel.id = "ef-assignedRegionId";
-        clerkSel.dataset.field = "assignedRegionId";
-        clerkRegOpts.forEach((o) => {
-          const opt = document.createElement("option");
-          opt.value = o.value;
-          opt.textContent = o.label;
-          clerkSel.appendChild(opt);
-        });
-        clerkRegionWrap.innerHTML = `<label for="ef-assignedRegionId">${escapeHtml(t("labelAssignedRegionClerk"))}</label>`;
-        clerkRegionWrap.appendChild(clerkSel);
-        const clerkHint = document.createElement("p");
-        clerkHint.className = "user-form-hint";
-        clerkHint.style.marginTop = "0.25rem";
-        clerkHint.textContent = t("assignedRegionClerkHint");
-        clerkRegionWrap.appendChild(clerkHint);
+        clerkRegionWrap.innerHTML = `
+          <label for="user-clerk-search">${escapeHtml(t("labelAssignedRegionClerk"))}</label>
+          <p class="user-form-hint" style="margin-top:0.25rem">${escapeHtml(t("assignedRegionClerkHint"))}</p>
+          <div id="user-clerk-assign-chips" class="assign-chips"></div>
+          <input type="search" id="user-clerk-search" autocomplete="off" placeholder="${escapeHtml(t("assignRegionSearchPlaceholder"))}" />
+          <ul id="user-clerk-results" class="assign-search-results" role="listbox"></ul>`;
         scopeBody.appendChild(clerkRegionWrap);
 
         const projBlock = document.createElement("div");
@@ -17355,6 +17559,10 @@
           }, 200);
         });
 
+        const regSnapClerk = await getDocs(collection(db, "regions"));
+        const regRowsClerk = [];
+        regSnapClerk.forEach((d) => regRowsClerk.push({ id: d.id, ...d.data() }));
+        sortRegionsByCode(regRowsClerk);
         const allRegionsForGm = regRowsClerk.map((row) => ({ ...row, id: row.id }));
         const pmChipsEl = fields.querySelector("#user-pm-assign-chips");
         const pmResultsUl = fields.querySelector("#user-pm-results");
@@ -17485,6 +17693,75 @@
           }, 200);
         });
 
+        const clerkChipsEl = fields.querySelector("#user-clerk-assign-chips");
+        const clerkResultsUl = fields.querySelector("#user-clerk-results");
+        const clerkSearchInp = fields.querySelector("#user-clerk-search");
+        userClerkRegionAssign = {
+          ids: [],
+          allRegions: allRegionsForGm,
+          chipsEl: clerkChipsEl,
+          resultsUl: clerkResultsUl,
+          searchInp: clerkSearchInp,
+        };
+        userClerkRegionAssign.renderAssignChips = function renderClerkChips() {
+          if (!userClerkRegionAssign) return;
+          const { ids, allRegions: ar } = userClerkRegionAssign;
+          userClerkRegionAssign.chipsEl.innerHTML = ids
+            .map((id) => {
+              const row = ar.find((r) => r.id === id);
+              const label = row ? regionOptionLabel({ ...row, id }) : id;
+              return `<span class="assign-chip"><span>${escapeHtml(label)}</span><button type="button" class="assign-chip-remove" data-remove-clerk="${escapeHtml(id)}">×</button></span>`;
+            })
+            .join("");
+        };
+        userClerkRegionAssign.renderAssignResults = function renderClerkRes(q) {
+          if (!userClerkRegionAssign) return;
+          const query = (q || "").trim().toLowerCase();
+          const { ids, allRegions: ar } = userClerkRegionAssign;
+          let pool = ar.filter((row) => !ids.includes(row.id));
+          if (query) {
+            pool = pool.filter((row) => {
+              const blob = [row.code, row.name, regionOptionLabel({ ...row, id: row.id })].filter(Boolean).join(" ").toLowerCase();
+              return blob.includes(query);
+            });
+          }
+          pool = pool.slice(0, 12);
+          if (!pool.length) {
+            userClerkRegionAssign.resultsUl.innerHTML = `<li class="empty-hint">${escapeHtml(t("assignRegionNoResults"))}</li>`;
+            return;
+          }
+          userClerkRegionAssign.resultsUl.innerHTML = pool
+            .map(
+              (row) =>
+                `<li><button type="button" data-add-clerk="${escapeHtml(row.id)}">${escapeHtml(regionOptionLabel({ ...row, id: row.id }))}</button></li>`
+            )
+            .join("");
+        };
+        clerkChipsEl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-remove-clerk]");
+          if (!btn || !userClerkRegionAssign) return;
+          const id = btn.getAttribute("data-remove-clerk");
+          userClerkRegionAssign.ids = userClerkRegionAssign.ids.filter((x) => x !== id);
+          userClerkRegionAssign.renderAssignChips();
+          userClerkRegionAssign.renderAssignResults(clerkSearchInp.value);
+        });
+        clerkResultsUl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-add-clerk]");
+          if (!btn || !userClerkRegionAssign) return;
+          const id = btn.getAttribute("data-add-clerk");
+          if (userClerkRegionAssign.ids.includes(id)) return;
+          userClerkRegionAssign.ids.push(id);
+          userClerkRegionAssign.renderAssignChips();
+          userClerkRegionAssign.renderAssignResults(clerkSearchInp.value);
+        });
+        let clerkSearchTimer;
+        clerkSearchInp.addEventListener("input", () => {
+          clearTimeout(clerkSearchTimer);
+          clerkSearchTimer = setTimeout(() => {
+            if (userClerkRegionAssign) userClerkRegionAssign.renderAssignResults(clerkSearchInp.value);
+          }, 200);
+        });
+
         if (!existingId) {
           fields.querySelectorAll("[data-section-check]").forEach((cb) => {
             cb.checked = ["dashboard", "po-projects", "po-projects-rejected", "po-general"].includes(cb.dataset.sectionCheck);
@@ -17495,6 +17772,8 @@
           userPmProjectAssign.renderAssignResults("");
           userGmRegionAssign.renderAssignChips();
           userGmRegionAssign.renderAssignResults("");
+          userClerkRegionAssign.renderAssignChips();
+          userClerkRegionAssign.renderAssignResults("");
         }
 
         const roleSelU = fields.querySelector('[data-field="role"]');
@@ -17549,6 +17828,13 @@
             if (nen) nen.value = (d.nameEn || "").trim();
             const codeInp = fields.querySelector("#ef-project-code");
             if (codeInp) codeInp.value = (d.code || "").trim();
+            if (projectRegionAssign) {
+              projectRegionAssign.ids = projectRegionIdsFromDoc(d);
+              projectRegionAssign.renderAssignChips();
+              const sInp = fields.querySelector("#project-region-search");
+              if (sInp) sInp.value = "";
+              projectRegionAssign.renderAssignResults("");
+            }
           }
           if (collectionName === "warehouses") {
             const d = snap.data();
@@ -17584,8 +17870,13 @@
               if (gmS) gmS.value = "";
               userGmRegionAssign.renderAssignResults("");
             }
-            const arSel = fields.querySelector('[data-field="assignedRegionId"]');
-            if (arSel) arSel.value = d.assignedRegionId || "";
+            if (userClerkRegionAssign) {
+              userClerkRegionAssign.ids = clerkAssignedRegionIds(d);
+              userClerkRegionAssign.renderAssignChips();
+              const clerkS = fields.querySelector("#user-clerk-search");
+              if (clerkS) clerkS.value = "";
+              userClerkRegionAssign.renderAssignResults("");
+            }
             syncUserProfileRoleFields(fields);
           }
         }
@@ -17598,6 +17889,8 @@
       userProjectAssign = null;
       userPmProjectAssign = null;
       userGmRegionAssign = null;
+      userClerkRegionAssign = null;
+      projectRegionAssign = null;
       $("entity-fields")?.classList.remove("user-profile-form");
       document.querySelector("#modal-entity .modal")?.classList.remove("modal-entity-user");
       $("modal-entity").classList.add("hidden");
@@ -17667,8 +17960,8 @@
           const assignedProjectIds = userProjectAssign?.ids ? [...userProjectAssign.ids] : [];
           const managedProjectIds = userPmProjectAssign?.ids ? [...userPmProjectAssign.ids] : [];
           const managedRegionIds = userGmRegionAssign?.ids ? [...userGmRegionAssign.ids] : [];
+          const assignedRegionIds = userClerkRegionAssign?.ids ? [...userClerkRegionAssign.ids] : [];
           const roleVal = data.role || "user";
-          const arEl = $("entity-fields")?.querySelector('[data-field="assignedRegionId"]');
           const payload = {
             email: (data.email || "").trim(),
             displayName: (data.displayName || "").trim(),
@@ -17684,18 +17977,26 @@
             payload.managedProjectIds = deleteField();
             payload.managedRegionIds = deleteField();
             payload.assignedRegionId = deleteField();
+            payload.assignedRegionIds = deleteField();
           } else if (roleVal === "project_manager") {
             payload.managedProjectIds = managedProjectIds;
             payload.assignedProjectIds = deleteField();
             payload.managedRegionIds = deleteField();
             payload.assignedRegionId = deleteField();
+            payload.assignedRegionIds = deleteField();
           } else if (roleVal === "group_manager" || roleVal === "warehouse_supervisor") {
             payload.managedRegionIds = managedRegionIds;
             payload.assignedProjectIds = deleteField();
             payload.managedProjectIds = deleteField();
             payload.assignedRegionId = deleteField();
+            payload.assignedRegionIds = deleteField();
           } else if (roleVal === "warehouse_clerk") {
-            payload.assignedRegionId = (arEl?.value || "").trim() || null;
+            if (!assignedRegionIds.length) {
+              alert(t("alertClerkRegionsRequired"));
+              return;
+            }
+            payload.assignedRegionIds = assignedRegionIds;
+            payload.assignedRegionId = assignedRegionIds[0] || null;
             payload.assignedProjectIds = deleteField();
             payload.managedProjectIds = deleteField();
             payload.managedRegionIds = deleteField();
@@ -17704,6 +18005,7 @@
             payload.managedProjectIds = deleteField();
             payload.managedRegionIds = deleteField();
             payload.assignedRegionId = deleteField();
+            payload.assignedRegionIds = deleteField();
           }
           if (!existingId) payload.createdAt = serverTimestamp();
           await setDoc(doc(db, "userProfiles", uid), payload, { merge: true });
@@ -17713,12 +18015,14 @@
             const s = await getDoc(doc(db, "userProfiles", uid));
             if (s.exists()) {
               const d = s.data();
+              const clerkRegions = clerkAssignedRegionIds(d);
               currentUserProfile = {
                 role: d.role || "user",
                 visibleSections: normalizeVisibleSectionsFromDoc(d),
                 canBypassLowerApprovals: d.canBypassLowerApprovals === true,
                 assignedProjectIds: Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [],
-                assignedRegionId: d.assignedRegionId || null,
+                assignedRegionId: clerkRegions[0] || null,
+                assignedRegionIds: clerkRegions,
                 managedProjectIds: Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [],
                 managedRegionIds: Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [],
                 displayName: d.displayName || "",
@@ -17773,8 +18077,9 @@
             alert(t("alertSelectCompany"));
             return;
           }
-          if (!data.regionId) {
-            alert(t("alertSelectRegion"));
+          const regionIds = projectRegionAssign?.ids ? [...projectRegionAssign.ids] : [];
+          if (!regionIds.length) {
+            alert(t("alertProjectRegionsRequired"));
             return;
           }
           let code;
@@ -17793,7 +18098,8 @@
             name: nameAr || nameEn,
             contractNumber,
             companyId: data.companyId,
-            regionId: data.regionId,
+            regionIds,
+            regionId: regionIds[0],
             code,
             active,
             updatedAt: serverTimestamp(),
@@ -18041,7 +18347,7 @@
       if (!regionId) return;
       const profiles = await getUserProfilesForNotify();
       const uids = profiles
-        .filter((p) => p.role === "warehouse_clerk" && p.assignedRegionId === regionId)
+        .filter((p) => p.role === "warehouse_clerk" && clerkAssignedRegionIds(p).includes(regionId))
         .map((p) => p.uid);
       await pushInAppNotifications(uids, {
         poId,
@@ -18144,7 +18450,7 @@
       const projectId = po?.projectId;
       if (!regionId && projectId) {
         const pr = await getDoc(doc(db, "projects", projectId));
-        regionId = pr.exists() ? pr.data().regionId || null : null;
+        regionId = pr.exists() ? projectPrimaryRegionId(pr.data()) : null;
       }
       return regionId;
     }
