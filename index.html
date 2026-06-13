@@ -873,11 +873,23 @@
     }
 
     #modal-accounting-po .acc-line-desc {
+      background: var(--surface2);
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      opacity: 1;
       border-radius: 8px;
       border: 1px solid var(--border);
       padding: 0.35rem 0.45rem;
       font-size: 0.9rem;
-      line-height: 1.25;
+      line-height: 1.35;
+      cursor: default;
+    }
+
+    #modal-accounting-po .acc-line-qty[readonly] {
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      opacity: 1;
+      cursor: default;
     }
 
     #modal-accounting-po .acc-line-total {
