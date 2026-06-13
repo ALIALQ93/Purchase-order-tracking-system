@@ -6,21 +6,60 @@
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Tajawal:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --surface2: #243044;
-      --border: #2d3a4f;
-      --text: #e8edf4;
-      --muted: #8b9cb3;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --radius: 10px;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      /* Precision Procurement — DESIGN.md tokens */
+      --ds-background: #f6f9ff;
+      --ds-surface: #ffffff;
+      --ds-surface-container: #e9eef5;
+      --ds-surface-container-low: #eff4fb;
+      --ds-surface-container-high: #e4e9f0;
+      --ds-surface-sidebar: #1a2332;
+      --ds-on-surface: #171c21;
+      --ds-on-surface-variant: #45474c;
+      --ds-text-main: #0f1419;
+      --ds-text-muted: #8b9cb3;
+      --ds-outline: #75777d;
+      --ds-outline-variant: #c5c6cc;
+      --ds-primary: #040d1b;
+      --ds-secondary: #0058be;
+      --ds-secondary-hover: #004395;
+      --ds-secondary-container: #2170e4;
+      --ds-on-secondary: #ffffff;
+      --ds-inverse-on-surface: #ecf1f8;
+      --ds-status-success: #10b981;
+      --ds-status-warning: #f59e0b;
+      --ds-status-error: #ef4444;
+      --ds-status-pending: #6366f1;
+      --ds-error-container: #ffdad6;
+      --ds-on-error-container: #93000a;
+
+      /* Legacy aliases used across the app */
+      --bg: var(--ds-background);
+      --surface: var(--ds-surface);
+      --surface2: var(--ds-surface-container-low);
+      --border: var(--ds-outline-variant);
+      --text: var(--ds-text-main);
+      --muted: var(--ds-text-muted);
+      --accent: var(--ds-secondary);
+      --accent-hover: var(--ds-secondary-hover);
+      --success: var(--ds-status-success);
+      --danger: var(--ds-status-error);
+      --sidebar-bg: var(--ds-surface-sidebar);
+      --sidebar-text: var(--ds-inverse-on-surface);
+      --sidebar-muted: #818a9d;
+      --radius: 0.5rem;
+      --radius-lg: 1rem;
+      --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-elevated: 0 10px 20px rgba(0, 0, 0, 0.1);
+      --focus-ring: 0 0 0 2px rgba(0, 88, 190, 0.22);
+      --sidebar-width: 280px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
     }
 
     * {
@@ -29,13 +68,20 @@
 
     body {
       margin: 0;
-      font-family: "Tajawal", "Inter", system-ui, sans-serif;
+      font-family: "Inter", "Tajawal", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.43;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       min-height: 100dvh;
-      line-height: 1.6;
       -webkit-text-size-adjust: 100%;
+    }
+
+    h1, h2, h3, .page-title, .login-card h1, .card h2, .modal h3 {
+      font-family: "Manrope", "Tajawal", system-ui, sans-serif;
+      color: var(--ds-on-surface);
+      letter-spacing: -0.01em;
     }
 
     a {
@@ -52,7 +98,7 @@
     }
 
     .lang-en body {
-      font-family: "Inter", "Tajawal", system-ui, sans-serif;
+      font-family: "Inter", "Manrope", system-ui, sans-serif;
     }
 
     .lang-switch {
@@ -63,11 +109,11 @@
     }
 
     .btn-lang {
-      background: var(--surface2);
+      background: var(--surface);
       border: 1px solid var(--border);
       color: var(--muted);
       padding: 0.4rem 0.75rem;
-      border-radius: 8px;
+      border-radius: var(--radius);
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: 500;
@@ -76,6 +122,7 @@
     .btn-lang:hover {
       color: var(--text);
       border-color: var(--accent);
+      background: var(--ds-surface-container-low);
     }
 
     .header-lang {
@@ -96,16 +143,16 @@
       width: 44px;
       height: 44px;
       padding: 0;
-      border: none;
-      border-radius: 8px;
-      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
       color: var(--text);
       cursor: pointer;
       flex-shrink: 0;
     }
 
     .nav-toggle:hover {
-      background: var(--border);
+      background: var(--ds-surface-container-low);
     }
 
     .nav-toggle-bars {
@@ -121,8 +168,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 95;
-      background: rgba(0, 0, 0, 0.45);
+      z-index: 105;
+      background: rgba(15, 20, 25, 0.45);
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -136,12 +183,53 @@
       margin-inline: 0;
       padding-inline: 0;
       width: 100%;
+      max-width: none;
     }
 
     .table-scroll .data-table {
       width: 100%;
       min-width: 100%;
       table-layout: auto;
+    }
+
+    /* Tables inside cards: edge-to-edge for maximum screen use */
+    .card .table-scroll,
+    .card > [id$="-wrap"] .table-scroll,
+    .card > [class$="-wrap"] .table-scroll {
+      margin-inline: calc(-1 * var(--card-padding-x));
+      width: calc(100% + 2 * var(--card-padding-x));
+    }
+
+    .card > [id$="-wrap"]:last-child,
+    .card > [class$="-wrap"]:last-child {
+      margin-bottom: calc(-1 * var(--card-padding-y));
+    }
+
+    .card .table-scroll .data-table thead th:first-child,
+    .card .table-scroll .data-table tbody td:first-child {
+      padding-inline-start: calc(var(--card-padding-x) + 0.35rem);
+    }
+
+    .card .table-scroll .data-table thead th:last-child,
+    .card .table-scroll .data-table tbody td:last-child {
+      padding-inline-end: calc(var(--card-padding-x) + 0.35rem);
+    }
+
+    @media (min-width: 901px) {
+      .data-table th,
+      .data-table td {
+        padding: 0.5rem 0.55rem;
+      }
+
+      .card .table-scroll .data-table thead th:first-child,
+      .card .table-scroll .data-table tbody td:first-child {
+        padding-inline-start: calc(var(--card-padding-x) + 0.15rem);
+      }
+
+      .card .table-scroll .data-table thead th:last-child,
+      .card .table-scroll .data-table tbody td:last-child {
+        padding-inline-end: calc(var(--card-padding-x) + 0.15rem);
+      }
     }
 
     .companies-toolbar-compact {
@@ -208,9 +296,10 @@
       gap: 0.5rem 0.75rem;
       margin-bottom: 0.85rem;
       padding: 0.65rem 0.75rem;
-      background: var(--surface2);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
 
     .po-projects-toolbar-strip .po-projects-new-btn {
@@ -306,8 +395,8 @@
       padding-right: 0;
     }
 
-    html[dir="ltr"] .app-header .brand {
-      margin-right: 0.5rem;
+    html[dir="ltr"] .app-sidebar .brand {
+      margin-right: 0;
       margin-left: 0;
     }
 
@@ -318,8 +407,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
-      background: linear-gradient(160deg, #0f1419 0%, #1a2744 50%, #0f1419 100%);
+      padding: var(--space-lg);
+      background: linear-gradient(160deg, #eff4fb 0%, #f6f9ff 45%, #e9eef5 100%);
     }
 
     .login-card {
@@ -327,14 +416,14 @@
       max-width: 400px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-elevated);
     }
 
     .login-card h1 {
       margin: 0 0 0.5rem;
-      font-size: 1.35rem;
+      font-size: 1.5rem;
       font-weight: 700;
     }
 
@@ -348,34 +437,42 @@
       margin-bottom: 1rem;
     }
 
-    .field label {
-      display: block;
-      margin-bottom: 0.35rem;
-      font-weight: 500;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
+    .field label,
     .field .field-label-like {
       display: block;
-      margin-bottom: 0.35rem;
-      font-weight: 500;
-      color: var(--muted);
-      font-size: 0.9rem;
+      margin-bottom: var(--space-sm);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ds-on-surface-variant);
     }
 
     .field input {
       width: 100%;
       padding: 0.65rem 0.85rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--surface2);
+      border-radius: var(--radius);
+      background: var(--surface);
       color: var(--text);
+    }
+
+    .field input:focus,
+    textarea:focus,
+    select:focus,
+    .companies-toolbar-compact .companies-filter-search:focus,
+    .companies-toolbar-compact .companies-filter-status:focus,
+    .po-projects-filter-fields .po-projects-filter-search:focus,
+    .po-projects-filter-fields select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--focus-ring);
     }
 
     .field input:focus {
       outline: none;
       border-color: var(--accent);
+      box-shadow: var(--focus-ring);
     }
 
     .btn {
@@ -397,7 +494,10 @@
 
     .btn-primary {
       background: var(--accent);
-      color: #fff;
+      color: var(--ds-on-secondary);
+    }
+
+    .login-card .btn-primary {
       width: 100%;
       padding: 0.75rem;
     }
@@ -407,19 +507,19 @@
     }
 
     .btn-secondary {
-      background: var(--surface2);
-      color: var(--text);
+      background: var(--ds-surface-container);
+      color: var(--ds-primary);
       border: 1px solid var(--border);
     }
 
     .btn-secondary:hover {
-      background: var(--border);
+      background: var(--ds-surface-container-high);
     }
 
     .btn-danger {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      border: 1px solid var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--ds-on-error-container);
+      border: 1px solid rgba(186, 26, 26, 0.25);
     }
 
     .btn-sm {
@@ -430,71 +530,108 @@
     .error-msg {
       margin-top: 1rem;
       padding: 0.65rem;
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid var(--danger);
-      border-radius: 8px;
-      color: #fca5a5;
+      background: var(--ds-error-container);
+      border: 1px solid rgba(186, 26, 26, 0.2);
+      border-radius: var(--radius);
+      color: var(--ds-on-error-container);
       font-size: 0.9rem;
     }
 
-    /* App shell */
+    /* App shell — sidebar + workspace */
     #view-app {
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
-      flex-direction: column;
+      background: var(--bg);
     }
 
-    .app-header {
+    .app-sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset-block: 0;
+      inset-inline-start: 0;
+      z-index: 110;
+      overflow-y: auto;
+      padding: var(--space-lg) var(--space-md);
+      border-inline-end: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .app-sidebar .brand {
+      font-family: "Manrope", "Tajawal", system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.125rem;
+      padding: 0 0.5rem var(--space-md);
+      margin: 0 0 var(--space-sm);
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .app-shell {
+      flex: 1;
+      min-width: 0;
+      margin-inline-start: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .app-topbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 max(1rem, env(safe-area-inset-right)) 0 max(1rem, env(safe-area-inset-left));
-      padding-top: max(0.35rem, env(safe-area-inset-top));
-      padding-bottom: 0.35rem;
+      padding: var(--space-sm) max(var(--space-md), env(safe-area-inset-right)) var(--space-sm)
+        max(var(--space-md), env(safe-area-inset-left));
+      padding-top: max(var(--space-sm), env(safe-area-inset-top));
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+      justify-content: space-between;
+      gap: var(--space-sm);
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: var(--shadow);
     }
 
-    .app-header .brand {
-      font-weight: 700;
-      font-size: 1.05rem;
-      padding: 0.5rem 0;
-      margin-left: 0.5rem;
-      color: var(--text);
+    .app-topbar .header-end {
+      margin-inline-start: auto;
     }
 
     .nav-links {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.25rem;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.15rem;
       flex: 1;
     }
 
     .nav-links button {
       background: transparent;
       border: none;
-      color: var(--muted);
-      padding: 0.65rem 0.85rem;
-      border-radius: 8px;
+      color: var(--sidebar-muted);
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--radius);
       cursor: pointer;
       font-weight: 500;
+      font-size: 0.875rem;
+      text-align: inherit;
       -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s, color 0.15s;
     }
 
     .nav-links button:hover {
-      color: var(--text);
-      background: var(--surface2);
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .nav-links button.active {
-      color: var(--accent);
-      background: rgba(59, 130, 246, 0.12);
+      color: #fff;
+      background: rgba(0, 88, 190, 0.35);
+      font-weight: 600;
     }
 
     .nav-links button.nav-admin-only.hidden-role {
@@ -535,9 +672,10 @@
 
     .user-form-section {
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface2);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
       padding: 0.85rem 1rem;
+      box-shadow: var(--shadow);
     }
 
     .user-form-section-title {
@@ -667,34 +805,52 @@
 
     .main-content {
       flex: 1;
-      padding: max(0.6rem, env(safe-area-inset-top))
-        max(clamp(0.45rem, 1.8vw, 1.5rem), env(safe-area-inset-right))
-        max(0.6rem, env(safe-area-inset-bottom))
-        max(clamp(0.45rem, 1.8vw, 1.5rem), env(safe-area-inset-left));
+      padding: var(--space-md)
+        max(var(--space-md), env(safe-area-inset-right))
+        var(--space-md)
+        max(var(--space-md), env(safe-area-inset-left));
+      width: 100%;
       max-width: none;
       margin: 0;
-      width: 100%;
       box-sizing: border-box;
     }
 
+    @media (min-width: 901px) {
+      .main-content {
+        padding-inline: max(var(--space-md), env(safe-area-inset-right))
+          max(var(--space-md), env(safe-area-inset-left));
+      }
+    }
+
+    .app-screen {
+      width: 100%;
+      max-width: none;
+    }
+
     .page-title {
-      margin: 0 0 0.7rem;
-      font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+      margin: 0 0 var(--space-md);
+      font-size: clamp(1.25rem, 2.2vw, 1.75rem);
       font-weight: 700;
+      line-height: 1.25;
     }
 
     .card {
+      --card-padding-x: clamp(0.65rem, 1.2vw, 0.85rem);
+      --card-padding-y: clamp(0.65rem, 1.2vw, 0.85rem);
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(0, 0, 0, 0.04);
       border-radius: var(--radius);
-      padding: clamp(0.85rem, 1.8vw, 1.2rem);
-      margin-bottom: 0.85rem;
+      padding: var(--card-padding-y) var(--card-padding-x);
+      margin-bottom: var(--space-md);
       box-shadow: var(--shadow);
+      width: 100%;
+      max-width: none;
+      box-sizing: border-box;
     }
 
     .card h2 {
-      margin: 0 0 1rem;
-      font-size: 1.1rem;
+      margin: 0 0 var(--space-md);
+      font-size: 1.125rem;
       font-weight: 600;
     }
 
@@ -709,58 +865,81 @@
     table.data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.92rem;
+      font-size: 0.875rem;
     }
 
     .data-table th,
     .data-table td {
       text-align: right;
-      padding: 0.5rem 0.45rem;
+      padding: 0.65rem 0.75rem;
       border-bottom: 1px solid var(--border);
+      vertical-align: top;
     }
 
     .data-table th {
-      color: var(--muted);
+      color: var(--ds-on-surface-variant);
       font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--ds-surface-container-low);
+      border-bottom-color: var(--border);
     }
 
     .data-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(0, 88, 190, 0.04);
     }
 
     .data-table td.po-table-reason-cell {
-      max-width: 12rem;
+      max-width: min(18rem, 22vw);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       vertical-align: top;
     }
 
-    .badge {
-      display: inline-block;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
+    .data-table .num {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
-    .badge-draft { background: #374151; color: #d1d5db; }
-    .badge-pending { background: #854d0e; color: #fef08a; }
-    .badge-approved { background: #14532d; color: #86efac; }
-    .badge-sent { background: #1e3a5f; color: #93c5fd; }
-    .badge-received { background: #134e4a; color: #5eead4; }
-    .badge-cancelled { background: #450a0a; color: #fca5a5; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .badge-draft { background: rgba(99, 102, 241, 0.12); color: #4338ca; }
+    .badge-pending { background: rgba(245, 158, 11, 0.12); color: #b45309; }
+    .badge-approved { background: rgba(16, 185, 129, 0.12); color: #047857; }
+    .badge-sent { background: rgba(0, 88, 190, 0.12); color: #0058be; }
+    .badge-received { background: rgba(16, 185, 129, 0.12); color: #059669; }
+    .badge-cancelled { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
 
     .badge-priority-urgent {
-      background: #7c2d12;
-      color: #fed7aa;
-      border: 1px solid rgba(234, 88, 12, 0.45);
+      background: rgba(245, 158, 11, 0.14);
+      color: #b45309;
+      border: 1px solid rgba(245, 158, 11, 0.25);
     }
 
     .badge-priority-normal {
-      background: var(--surface2);
-      color: var(--muted);
+      background: var(--ds-surface-container);
+      color: var(--ds-on-surface-variant);
       font-weight: 500;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(99, 102, 241, 0.1);
+      color: #4338ca;
     }
 
     .po-priority-options {
@@ -917,27 +1096,38 @@
     }
 
     #screen-reports .data-table tr.report-subtotal-row td {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--ds-surface-container-low);
+    }
+
+    .workflow-cell {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--ds-surface-container);
+      color: var(--ds-on-surface-variant);
     }
 
     .workflow-cell-in-progress {
-      color: #fbbf24;
-      font-weight: 600;
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
     }
 
     .workflow-cell-pending-purchasing {
-      color: #93c5fd;
-      font-weight: 500;
+      background: rgba(0, 88, 190, 0.12);
+      color: #0058be;
     }
 
     .workflow-cell-pending-advance {
-      color: #c4b5fd;
-      font-weight: 600;
+      background: rgba(99, 102, 241, 0.12);
+      color: #4338ca;
     }
 
     .workflow-cell-warehouse-stock {
-      color: #4ade80;
-      font-weight: 600;
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
     }
 
     .wh-wb-inp {
@@ -2768,25 +2958,25 @@
     }
 
     .admin-tabs button {
-      background: var(--surface2);
+      background: var(--ds-surface-container);
       border: 1px solid var(--border);
-      color: var(--muted);
+      color: var(--ds-on-surface-variant);
       padding: 0.45rem 0.85rem;
-      border-radius: 8px;
+      border-radius: var(--radius);
       cursor: pointer;
       font-weight: 500;
     }
 
     .admin-tabs button.active {
       background: var(--accent);
-      color: #fff;
+      color: var(--ds-on-secondary);
       border-color: var(--accent);
     }
 
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.65);
+      background: rgba(15, 20, 25, 0.42);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2830,13 +3020,13 @@
     .modal {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--radius-lg);
       width: 100%;
       max-width: min(560px, calc(100vw - 1.25rem));
       max-height: min(90vh, 100dvh - 2rem);
       overflow-y: auto;
       padding: clamp(1rem, 2.5vw, 1.35rem);
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-elevated);
       -webkit-overflow-scrolling: touch;
     }
 
@@ -3069,8 +3259,8 @@
       min-height: 80px;
       padding: 0.65rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--surface2);
+      border-radius: var(--radius);
+      background: var(--surface);
       color: var(--text);
       resize: vertical;
     }
@@ -3079,184 +3269,140 @@
       width: 100%;
       padding: 0.65rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--surface2);
+      border-radius: var(--radius);
+      background: var(--surface);
       color: var(--text);
     }
 
-    @media (min-width: 901px) {
-      .app-header {
-        display: flex !important;
-        flex-wrap: wrap;
-        align-items: center;
-      }
+    .notifications-wrap {
+      position: relative;
+      margin-inline-end: 0.5rem;
+    }
 
+    .btn-notifications {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .btn-notifications:hover {
+      background: var(--ds-surface-container-low);
+    }
+
+    .notifications-bell {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .notifications-badge {
+      position: absolute;
+      top: -0.2rem;
+      inset-inline-end: -0.2rem;
+      min-width: 1.1rem;
+      height: 1.1rem;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--ds-status-error);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      line-height: 1.1rem;
+      text-align: center;
+    }
+
+    .notifications-badge.hidden {
+      display: none;
+    }
+
+    .notifications-panel {
+      position: absolute;
+      top: calc(100% + 6px);
+      inset-inline-end: 0;
+      width: min(22rem, calc(100vw - 1.5rem));
+      max-height: min(24rem, 70vh);
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-elevated);
+      z-index: 3000;
+      overflow: hidden;
+    }
+
+    .notifications-panel.hidden {
+      display: none;
+    }
+
+    .notifications-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .notifications-list {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .notif-item {
+      display: block;
+      width: 100%;
+      text-align: inherit;
+      padding: 0.65rem 0.75rem;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1.35;
+    }
+
+    .notif-item:hover {
+      background: var(--ds-surface-container-low);
+    }
+
+    .notif-item.unread {
+      background: rgba(0, 88, 190, 0.06);
+    }
+
+    .notif-item-time {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .notif-empty {
+      padding: 1rem 0.75rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    @media (min-width: 901px) {
       .nav-toggle {
         display: none !important;
       }
 
-      .app-header .nav-links {
-        display: flex !important;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        width: auto;
-        flex: 1;
-        max-height: none;
-        overflow: visible;
-        border-top: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .app-header .header-end {
-        margin-inline-start: auto;
-      }
-
-      .header-user {
-        margin-inline-start: 0;
-      }
-
-      .notifications-wrap {
-        position: relative;
-        margin-inline-end: 0.5rem;
-      }
-
-      .btn-notifications {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        padding: 0;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--surface2);
-        color: var(--text);
-        cursor: pointer;
-      }
-
-      .btn-notifications:hover {
-        background: var(--surface);
-      }
-
-      .notifications-bell {
-        font-size: 1.15rem;
-        line-height: 1;
-      }
-
-      .notifications-badge {
-        position: absolute;
-        top: -0.2rem;
-        inset-inline-end: -0.2rem;
-        min-width: 1.1rem;
-        height: 1.1rem;
-        padding: 0 4px;
-        border-radius: 999px;
-        background: #dc2626;
-        color: #fff;
-        font-size: 0.65rem;
-        font-weight: 700;
-        line-height: 1.1rem;
-        text-align: center;
-      }
-
-      .notifications-badge.hidden {
-        display: none;
-      }
-
-      .notifications-panel {
-        position: absolute;
-        top: calc(100% + 6px);
-        inset-inline-end: 0;
-        width: min(22rem, calc(100vw - 1.5rem));
-        max-height: min(24rem, 70vh);
-        display: flex;
-        flex-direction: column;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
-        z-index: 3000;
-        overflow: hidden;
-      }
-
-      .notifications-panel.hidden {
-        display: none;
-      }
-
-      .notifications-panel-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        padding: 0.65rem 0.75rem;
-        border-bottom: 1px solid var(--border);
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-
-      .notifications-panel-head .btn-link {
-        font-size: 0.78rem;
-        padding: 0.2rem 0.35rem;
-        white-space: nowrap;
-      }
-
-      .notifications-list {
-        overflow-y: auto;
-        flex: 1;
-        min-height: 0;
-      }
-
-      .notif-item {
-        display: block;
-        width: 100%;
-        text-align: inherit;
-        padding: 0.65rem 0.75rem;
-        border: none;
-        border-bottom: 1px solid var(--border);
-        background: transparent;
-        color: var(--text);
-        cursor: pointer;
-        font-size: 0.85rem;
-        line-height: 1.35;
-      }
-
-      .notif-item:hover {
-        background: var(--surface2);
-      }
-
-      .notif-item.unread {
-        background: rgba(59, 130, 246, 0.08);
-      }
-
-      .notif-item-time {
-        display: block;
-        margin-top: 0.25rem;
-        font-size: 0.72rem;
-        color: var(--muted);
-      }
-
-      .notif-empty {
-        padding: 1rem 0.75rem;
-        color: var(--muted);
-        font-size: 0.85rem;
-        text-align: center;
-      }
-
       .nav-backdrop {
         display: none !important;
-      }
-
-      .modal-overlay {
-        align-items: center;
-      }
-
-      .modal {
-        align-self: center;
-        border-radius: var(--radius);
-        max-height: min(90vh, 100dvh - 2rem);
       }
 
       #screen-dashboard > .card:nth-of-type(2) .toolbar {
@@ -3274,64 +3420,35 @@
     }
 
     @media (max-width: 900px) {
-      .app-header {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        grid-template-areas:
-          "toggle brand end"
-          "nav nav nav";
-        align-items: center;
-        column-gap: 0.5rem;
-        row-gap: 0;
+      .app-sidebar {
+        transform: translateX(100%);
+        transition: transform 0.22s ease;
+        box-shadow: var(--shadow-elevated);
+      }
+
+      html[dir="ltr"] .app-sidebar {
+        transform: translateX(-100%);
+      }
+
+      #view-app.nav-open .app-sidebar {
+        transform: translateX(0);
+      }
+
+      .app-shell {
+        margin-inline-start: 0;
       }
 
       .nav-toggle {
         display: flex;
-        grid-area: toggle;
       }
 
-      .app-header .brand {
-        grid-area: brand;
-        margin-left: 0;
-        margin-right: 0;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 1rem;
-        padding: 0.35rem 0;
-      }
-
-      .header-end {
-        grid-area: end;
-        margin-inline-start: 0;
-      }
-
-      .app-header .nav-links {
-        grid-area: nav;
-        display: none;
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-        flex: none;
-        gap: 0.15rem;
-        padding: 0.5rem 0 0.65rem;
-        margin: 0.35rem 0 0;
-        border-top: 1px solid var(--border);
-        max-height: min(65dvh, 380px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      #view-app.nav-open .app-header .nav-links {
-        display: flex;
+      .main-content {
+        padding: var(--space-md);
       }
 
       .nav-links button {
         min-height: 48px;
         padding: 0.65rem 0.75rem;
-        text-align: inherit;
-        border-radius: 8px;
         width: 100%;
         justify-content: flex-start;
       }
@@ -3440,10 +3557,7 @@
 
   <!-- التطبيق -->
   <div id="view-app" class="hidden">
-    <header class="app-header">
-      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="">
-        <span class="nav-toggle-bars" aria-hidden="true"></span>
-      </button>
+    <aside class="app-sidebar" id="app-sidebar" aria-label="">
       <span class="brand" data-i18n="brand">أوامر الشراء</span>
       <nav class="nav-links" id="main-nav">
         <button type="button" data-view="dashboard" data-nav-section="dashboard" data-i18n="navDashboard">لوحة التحكم</button>
@@ -3461,39 +3575,46 @@
         <button type="button" class="nav-admin-only" data-view="admin" data-nav-section="admin" data-i18n="navAdmin">الإدارة</button>
         <button type="button" data-view="help" data-i18n="navHelp">المساعدة</button>
       </nav>
-      <div class="header-end">
-        <div class="notifications-wrap" id="notifications-wrap">
-          <button
-            type="button"
-            class="btn-notifications"
-            id="btn-notifications"
-            aria-expanded="false"
-            aria-haspopup="true"
-            data-i18n-aria="notificationsBellAria"
-          >
-            <span class="notifications-bell" aria-hidden="true">🔔</span>
-            <span class="notifications-badge hidden" id="notifications-badge" aria-hidden="true">0</span>
-          </button>
-          <div class="notifications-panel hidden" id="notifications-panel" role="menu">
-            <div class="notifications-panel-head">
-              <span data-i18n="notificationsTitle">الإشعارات</span>
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-notifications-mark-all" data-i18n="notificationsMarkAllRead">
-                تعليم الكل كمقروء
-              </button>
+    </aside>
+    <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="app-topbar">
+        <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="">
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+        </button>
+        <div class="header-end">
+          <div class="notifications-wrap" id="notifications-wrap">
+            <button
+              type="button"
+              class="btn-notifications"
+              id="btn-notifications"
+              aria-expanded="false"
+              aria-haspopup="true"
+              data-i18n-aria="notificationsBellAria"
+            >
+              <span class="notifications-bell" aria-hidden="true">🔔</span>
+              <span class="notifications-badge hidden" id="notifications-badge" aria-hidden="true">0</span>
+            </button>
+            <div class="notifications-panel hidden" id="notifications-panel" role="menu">
+              <div class="notifications-panel-head">
+                <span data-i18n="notificationsTitle">الإشعارات</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-notifications-mark-all" data-i18n="notificationsMarkAllRead">
+                  تعليم الكل كمقروء
+                </button>
+              </div>
+              <div class="notifications-list" id="notifications-list"></div>
             </div>
-            <div class="notifications-list" id="notifications-list"></div>
+          </div>
+          <div class="header-lang">
+            <button type="button" class="btn-lang" id="btn-lang-app" aria-label="Language"></button>
+          </div>
+          <div class="header-user">
+            <span id="header-email"></span>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" data-i18n="logout">خروج</button>
           </div>
         </div>
-        <div class="header-lang">
-          <button type="button" class="btn-lang" id="btn-lang-app" aria-label="Language"></button>
-        </div>
-        <div class="header-user">
-          <span id="header-email"></span>
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" data-i18n="logout">خروج</button>
-        </div>
-      </div>
-    </header>
-    <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
+      </header>
 
     <main class="main-content">
       <!-- لوحة التحكم -->
@@ -3926,6 +4047,7 @@
         </div>
       </section>
     </main>
+    </div>
   </div>
 
   <!-- نموذج طلب شراء -->
