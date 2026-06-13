@@ -839,6 +839,7 @@
 
     #modal-accounting-po .acc-line-qty,
     #modal-accounting-po .acc-line-price,
+    #modal-accounting-po .acc-line-total-inp,
     #modal-accounting-po .acc-line-cur {
       background: var(--surface2);
       color: var(--text);
@@ -851,9 +852,24 @@
 
     #modal-accounting-po td .acc-line-qty,
     #modal-accounting-po td .acc-line-price,
+    #modal-accounting-po td .acc-line-total-inp,
     #modal-accounting-po td .acc-line-cur {
       width: 100%;
       min-width: 5.5rem;
+    }
+
+    #modal-accounting-po .acc-line-note {
+      width: 100%;
+      min-width: 8rem;
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem 0.45rem;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      resize: vertical;
+      min-height: 2.25rem;
     }
 
     #modal-accounting-po .acc-line-desc {
@@ -4479,6 +4495,7 @@
               <th data-i18n="reportBaseCurrencyLabel">العملة</th>
               <th data-i18n="accUnitPriceCol">سعر الوحدة</th>
               <th data-i18n="accLineTotalCol">مجموع البند</th>
+              <th data-i18n="accLineNoteCol">ملاحظة البند</th>
             </tr>
           </thead>
           <tbody id="acc-po-lines-tbody"></tbody>
@@ -5254,11 +5271,13 @@
         confirmAccountingCloseNoValues:
           "لم تُسجَّل أسعار للبنود بعد. هل تريد إغلاق المسار بدون قيم محاسبية؟",
         accountingPoModalTitle: "تسجيل قيم الشراء",
-        accountingPoModalHint: "أدخل سعر الوحدة لكل بند؛ يُحسب المجموع تلقائياً. احفظ القيم ثم يمكنك إغلاق المسار من هنا أو من القائمة.",
+        accountingPoModalHint:
+          "أدخل سعر الوحدة أو مجموع البند لكل بند؛ يُحسب الحقل الآخر تلقائياً. يمكنك إضافة ملاحظة لكل بند. احفظ القيم ثم يمكنك إغلاق المسار من هنا أو من القائمة.",
         accountingPoModalHintPurchasing:
-          "أدخل سعر الوحدة لكل بند؛ يُحسب المجموع تلقائياً. احفظ القيم ثم اعتمد الأسعار عند الانتهاء.",
+          "أدخل سعر الوحدة أو مجموع البند لكل بند؛ يُحسب الحقل الآخر تلقائياً. يمكنك إضافة ملاحظة لكل بند. احفظ القيم ثم اعتماد الأسعار عند الانتهاء.",
         accUnitPriceCol: "سعر الوحدة",
         accLineTotalCol: "مجموع البند",
+        accLineNoteCol: "ملاحظة البند",
         accGrandTotalLabel: "الإجمالي",
         btnSaveAccountingValues: "حفظ القيم",
         btnCompleteAccountingWorkflow: "حفظ وإغلاق المسار",
@@ -6026,11 +6045,12 @@
           "No unit prices recorded on lines yet. Close the workflow without accounting values?",
         accountingPoModalTitle: "Record purchase values",
         accountingPoModalHint:
-          "Enter a unit price per line; line totals update automatically. Save values, then close the workflow from here or the list.",
+          "Enter a unit price or line total per line; the other field updates automatically. You may add a note per line. Save values, then close the workflow from here or the list.",
         accountingPoModalHintPurchasing:
-          "Enter a unit price per line; line totals update automatically. Save values, then verify prices when done.",
+          "Enter a unit price or line total per line; the other field updates automatically. You may add a note per line. Save values, then verify prices when done.",
         accUnitPriceCol: "Unit price",
         accLineTotalCol: "Line total",
+        accLineNoteCol: "Line note",
         accGrandTotalLabel: "Grand total",
         btnSaveAccountingValues: "Save values",
         btnCompleteAccountingWorkflow: "Save & close workflow",
@@ -10589,20 +10609,53 @@
       if (tb) tb.innerHTML = "";
     }
 
+    function accLineQtyFromRow(tr) {
+      return parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || 0;
+    }
+
+    function accLineCurFromRow(tr) {
+      return (tr.querySelector(".acc-line-cur")?.value || "IQD").trim() || "IQD";
+    }
+
+    function syncAccLineTotalFromPrice(tr) {
+      const qty = accLineQtyFromRow(tr);
+      const totalInp = tr.querySelector(".acc-line-total-inp");
+      const priceInp = tr.querySelector(".acc-line-price");
+      if (!totalInp || !priceInp || document.activeElement === totalInp) return;
+      const price = parseFloat(String(priceInp.value)) || 0;
+      const lt = qty * price;
+      totalInp.value = lt > 0 ? String(lt) : "";
+    }
+
+    function syncAccLinePriceFromTotal(tr) {
+      const qty = accLineQtyFromRow(tr);
+      const totalInp = tr.querySelector(".acc-line-total-inp");
+      const priceInp = tr.querySelector(".acc-line-price");
+      if (!totalInp || !priceInp || document.activeElement === priceInp) return;
+      const total = parseFloat(String(totalInp.value)) || 0;
+      if (qty > 0) priceInp.value = total > 0 ? String(total / qty) : "";
+      else priceInp.value = "";
+    }
+
+    function accLineAmountFromRow(tr) {
+      const qty = accLineQtyFromRow(tr);
+      const totalInp = tr.querySelector(".acc-line-total-inp");
+      const total = parseFloat(String(totalInp?.value)) || 0;
+      if (total > 0) return total;
+      const price = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
+      return qty * price;
+    }
+
     function recalcAccountingModalTotals() {
       const tbody = $("acc-po-lines-tbody");
       if (!tbody) return;
       let totIqd = 0;
       let totUsd = 0;
       tbody.querySelectorAll("tr").forEach((tr) => {
-        const qty = parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || 0;
-        const price = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
-        const cur = (tr.querySelector(".acc-line-cur")?.value || "IQD").trim() || "IQD";
-        const lt = qty * price;
+        const cur = accLineCurFromRow(tr);
+        const lt = accLineAmountFromRow(tr);
         if (cur === "USD") totUsd += lt;
         else totIqd += lt;
-        const cell = tr.querySelector(".acc-line-total");
-        if (cell) cell.textContent = `${cur} ${lt.toLocaleString(localeTag())}`;
       });
       const gEl = $("acc-po-grand-total");
       if (gEl) gEl.textContent = `IQD ${totIqd.toLocaleString(localeTag())}  |  USD ${totUsd.toLocaleString(localeTag())}`;
@@ -10614,6 +10667,11 @@
       const item = (line?.item || "").trim();
       const qty = Number(line?.qty) || 0;
       const price = line?.price != null && !Number.isNaN(Number(line.price)) ? Number(line.price) : 0;
+      const lineTotal =
+        line?.lineTotal != null && !Number.isNaN(Number(line.lineTotal))
+          ? Number(line.lineTotal)
+          : qty * price;
+      const lineNote = (line?.lineNote || "").trim();
       const tr = document.createElement("tr");
       const td1 = document.createElement("td");
       const inpDesc = document.createElement("input");
@@ -10631,8 +10689,6 @@
       inpQty.step = "any";
       inpQty.value = String(qty);
       td2.appendChild(inpQty);
-      // Column order must match the table head:
-      // desc, qty, currency, unit price, line total
       const td3 = document.createElement("td");
       const curSel = document.createElement("select");
       curSel.className = "acc-line-cur";
@@ -10650,18 +10706,41 @@
       inpPrice.min = "0";
       inpPrice.step = "any";
       inpPrice.value = price > 0 ? String(price) : "";
-      inpPrice.addEventListener("input", () => recalcAccountingModalTotals());
+      inpPrice.addEventListener("input", () => {
+        syncAccLineTotalFromPrice(tr);
+        recalcAccountingModalTotals();
+      });
       if (accPoReadOnlyMode) inpPrice.readOnly = true;
       td4.appendChild(inpPrice);
 
       const td5 = document.createElement("td");
-      td5.className = "acc-line-total";
-      td5.textContent = (qty * price).toLocaleString(localeTag());
+      const inpTotal = document.createElement("input");
+      inpTotal.type = "number";
+      inpTotal.className = "acc-line-total-inp";
+      inpTotal.min = "0";
+      inpTotal.step = "any";
+      inpTotal.value = lineTotal > 0 ? String(lineTotal) : "";
+      inpTotal.addEventListener("input", () => {
+        syncAccLinePriceFromTotal(tr);
+        recalcAccountingModalTotals();
+      });
+      if (accPoReadOnlyMode) inpTotal.readOnly = true;
+      td5.appendChild(inpTotal);
+
+      const td6 = document.createElement("td");
+      const inpNote = document.createElement("textarea");
+      inpNote.className = "acc-line-note";
+      inpNote.rows = 1;
+      inpNote.value = lineNote;
+      if (accPoReadOnlyMode) inpNote.readOnly = true;
+      td6.appendChild(inpNote);
+
       tr.appendChild(td1);
       tr.appendChild(td2);
       tr.appendChild(td3);
       tr.appendChild(td4);
       tr.appendChild(td5);
+      tr.appendChild(td6);
       tbody.appendChild(tr);
     }
 
@@ -10674,16 +10753,23 @@
           const item = tr.querySelector(".acc-line-desc")?.value?.trim() || base.item || "";
           const unit = (base.unit || "").trim() || null;
           const qty = parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || Number(base.qty) || 0;
-          const price = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
+          const priceRaw = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
+          const totalRaw = parseFloat(String(tr.querySelector(".acc-line-total-inp")?.value)) || 0;
+          let lineTotal = totalRaw > 0 ? totalRaw : qty * priceRaw;
+          let price = priceRaw;
+          if (qty > 0 && totalRaw > 0) price = totalRaw / qty;
+          else if (qty > 0 && lineTotal > 0 && priceRaw <= 0) price = lineTotal / qty;
           const currency = (tr.querySelector(".acc-line-cur")?.value || base.currency || "IQD").trim() || "IQD";
+          const lineNote = (tr.querySelector(".acc-line-note")?.value || "").trim();
           const line = {
             item,
             unit,
             qty,
             currency: currency === "USD" ? "USD" : "IQD",
             price,
-            lineTotal: qty * price,
+            lineTotal,
           };
+          if (lineNote) line.lineNote = lineNote;
           if (base.availableQty != null && base.availableQty !== "")
             line.availableQty = Number(base.availableQty);
           if (
@@ -10729,12 +10815,15 @@
         return;
       }
       const isPurchasingOfficer = role === "purchasing_officer" && !hasAdminAccess();
-      accPoReadOnlyMode = false;
       accPoAllowVerifyMode = (isPurchasingOfficer || hasAdminAccess()) && po.workflowStatus === "pending_accounting";
       const isComplete = po.workflowStatus === "workflow_complete";
       const isAdmin = hasAdminAccess();
-      const canSavePrices = (role === "accountant" || isPurchasingOfficer || hasAdminAccess()) && !isComplete;
-      const canCloseFromModal = (role === "accountant" || hasAdminAccess()) && !isComplete;
+      const canEditAmended =
+        isComplete && !!po.pricesAmendmentApproved && (role === "accountant" || isAdmin);
+      accPoReadOnlyMode = isComplete && !canEditAmended;
+      const canSavePrices =
+        (role === "accountant" || isPurchasingOfficer || isAdmin) && (!isComplete || canEditAmended);
+      const canCloseFromModal = (role === "accountant" || isAdmin) && !isComplete;
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const pname = pr.exists() ? projectDisplayName(pr.data()) : po.projectId || t("dash");
       const snapLines = Array.isArray(po.lines) ? po.lines : [];
@@ -10745,6 +10834,7 @@
         price: l.price != null ? Number(l.price) : 0,
         currency: (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD",
         lineTotal: l.lineTotal != null ? Number(l.lineTotal) : 0,
+        lineNote: (l.lineNote || "").trim(),
         availableQty: l.availableQty,
         warehouseAvailability:
           l.warehouseAvailability && typeof l.warehouseAvailability === "object"
@@ -10835,9 +10925,12 @@
         });
         accPoEditBaseLines = newLines.map((l) => ({
           item: l.item,
+          unit: (l.unit || "").trim(),
           qty: l.qty,
           price: l.price,
+          currency: l.currency,
           lineTotal: l.lineTotal,
+          lineNote: (l.lineNote || "").trim(),
           availableQty: l.availableQty,
           warehouseAvailability:
             l.warehouseAvailability && typeof l.warehouseAvailability === "object"
