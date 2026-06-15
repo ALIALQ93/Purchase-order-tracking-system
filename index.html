@@ -4059,17 +4059,17 @@
               <button type="button" class="btn btn-secondary btn-sm" id="btn-export-mat-report" data-i18n="btnExportCsv">
                 تصدير CSV
               </button>
-              <button type="button" class="btn btn-primary btn-sm" id="btn-mat-report-link-analyze" data-i18n="btnMatLinkAnalyze">
-                تحليل وربط المواد
-              </button>
             </div>
           </div>
-          <p class="sub" style="margin-top:0.35rem;color:var(--muted)" data-i18n="reportFxHint">
+          <p class="sub" style="margin-top:0.35rem;color:var(--muted)" data-i18n="reportMatLinkAutoHint">
+            بعد «عرض التقرير» يُحلَّل ربط المواد المتشابهة تلقائياً من بيانات التقرير نفسها — دون رفع ملف.
+          </p>
+          <p class="sub" style="margin-top:0.25rem;color:var(--muted)" data-i18n="reportFxHint">
             يتم تحويل العملات تلقائياً حسب آخر سعر صرف مُسجّل بتاريخ يساوي أو يسبق تاريخ الطلب.
           </p>
           <div id="reports-materials-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات ضمن الفترة.</p></div>
           <div id="reports-mat-link-wrap" class="hidden"></div>
-          <details id="mat-link-advanced" style="margin-top:0.75rem">
+          <details id="mat-link-advanced" class="hidden" style="margin-top:0.75rem" hidden>
             <summary style="cursor:pointer;color:var(--muted);font-size:0.9rem" data-i18n="reportMatLinkAdvancedToggle">إعدادات متقدمة (اختياري)</summary>
             <div class="po-projects-filter-fields" style="margin-top:0.5rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
               <label class="po-filter-field">
@@ -4080,13 +4080,6 @@
                 <span data-i18n="reportMatLinkThresholdLabel">درجة التشابه (٥٠–١٠٠)</span>
                 <input type="number" id="mat-link-threshold" min="50" max="100" value="85" step="1" />
               </label>
-              <label class="po-filter-field">
-                <span data-i18n="reportMatLinkCsvLabel">تحليل من ملف CSV</span>
-                <input type="file" id="mat-link-csv" accept=".csv,text/csv" />
-              </label>
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-mat-link-csv-analyze" data-i18n="btnMatLinkAnalyzeCsv">
-                تحليل CSV
-              </button>
             </div>
           </details>
         </div>
@@ -5491,6 +5484,8 @@
         reportMaterialsPricesTitle: "تقرير المواد وأسعارها",
         reportMaterialsPricesHint:
           "يعرض بنود طلبات الشراء (المواد) مع الكميات والأسعار لكل طلب ضمن الفترة المحددة أدناه.",
+        reportMatLinkAutoHint:
+          "بعد «عرض التقرير» يُحلَّل ربط المواد المتشابهة تلقائياً من بيانات التقرير نفسها — دون رفع ملف.",
         reportMaterialSearchLabel: "بحث في المادة",
         reportMaterialSearchPlaceholder: "مثال: أسمنت، حديد…",
         reportMaterialGroupByLabel: "تجميع حسب",
@@ -5506,12 +5501,8 @@
         reportMatLinkAdvancedToggle: "إعدادات متقدمة (اختياري)",
         reportMatLinkAgentUrlLabel: "عنوان خدمة التحليل",
         reportMatLinkThresholdLabel: "درجة التشابه (٥٠–١٠٠)",
-        reportMatLinkCsvLabel: "تحليل من ملف CSV",
-        btnMatLinkAnalyze: "تحليل وربط المواد",
-        btnMatLinkAnalyzeCsv: "تحليل CSV",
         reportMatLinkAnalyzing: "جاري تحليل وربط المواد…",
         reportMatLinkNeedLines: "لا توجد بنود للتحليل. اضغط «عرض التقرير» أولاً.",
-        reportMatLinkNeedCsv: "اختر ملف CSV أولاً.",
         reportMatLinkAgentError: "تعذّر الاتصال بخدمة التحليل. حاول مرة أخرى بعد قليل.",
         reportMatLinkSummaryIntro: "تم توحيد {clusters} مادة من {raw} اسماً مختلفاً ({lines} بنداً).",
         reportMatLinkColCanonical: "المادة الموحّدة",
@@ -6304,6 +6295,8 @@
         reportMaterialsPricesTitle: "Materials & prices report",
         reportMaterialsPricesHint:
           "Shows purchase order line items (materials) with quantities and prices for each request within the period selected below.",
+        reportMatLinkAutoHint:
+          "After Run report, similar materials are linked automatically from the report data — no file upload.",
         reportMaterialSearchLabel: "Search material",
         reportMaterialSearchPlaceholder: "e.g. cement, steel…",
         reportMaterialGroupByLabel: "Group by",
@@ -6319,12 +6312,8 @@
         reportMatLinkAdvancedToggle: "Advanced settings (optional)",
         reportMatLinkAgentUrlLabel: "Analysis service URL",
         reportMatLinkThresholdLabel: "Similarity (50–100)",
-        reportMatLinkCsvLabel: "Analyze from CSV file",
-        btnMatLinkAnalyze: "Link materials",
-        btnMatLinkAnalyzeCsv: "Analyze CSV",
         reportMatLinkAnalyzing: "Analyzing and linking materials…",
         reportMatLinkNeedLines: "No lines to analyze. Click Run report first.",
-        reportMatLinkNeedCsv: "Choose a CSV file first.",
         reportMatLinkAgentError: "Could not reach the analysis service. Try again in a moment.",
         reportMatLinkSummaryIntro: "Unified {clusters} materials from {raw} different names ({lines} lines).",
         reportMatLinkColCanonical: "Canonical material",
@@ -12874,6 +12863,7 @@
             </div>
           </div>
           <div class="table-scroll"><table class="data-table">${tableHead}<tbody>${bodyHtml.join("")}</tbody></table></div>`;
+        void runMaterialLinkAnalysis({ auto: true });
       } catch (e) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
       }
@@ -13094,27 +13084,6 @@
       return res.json();
     }
 
-    async function postMaterialLinkCsv(file) {
-      const base = materialAgentBaseUrl();
-      localStorage.setItem(MATERIAL_AGENT_URL_KEY, base);
-      const threshold = materialLinkThreshold();
-      const fd = new FormData();
-      fd.append("file", file);
-      const url = `${base}/api/v1/analyze/csv?similarity_threshold=${encodeURIComponent(String(threshold))}`;
-      const res = await fetch(url, { method: "POST", body: fd });
-      if (!res.ok) {
-        let detail = res.statusText;
-        try {
-          const err = await res.json();
-          detail = err.detail || detail;
-        } catch (_) {
-          /* ignore */
-        }
-        throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
-      }
-      return res.json();
-    }
-
     function collectLinesForMaterialLink() {
       const snap = lastMaterialsReportSnapshot;
       if (snap && Array.isArray(snap.lineRows) && snap.lineRows.length) {
@@ -13149,36 +13118,19 @@
       return [];
     }
 
-    async function runMaterialLinkAnalysis() {
+    async function runMaterialLinkAnalysis(opts) {
+      const auto = !!(opts && opts.auto);
       const wrap = $("reports-mat-link-wrap");
       if (!wrap) return;
       const lines = collectLinesForMaterialLink();
       if (!lines.length) {
-        alert(t("reportMatLinkNeedLines"));
+        if (!auto) alert(t("reportMatLinkNeedLines"));
         return;
       }
       wrap.classList.remove("hidden");
       wrap.innerHTML = `<p class="loading">${escapeHtml(t("reportMatLinkAnalyzing"))}</p>`;
       try {
         const data = await postMaterialLinkAnalysis({ lines });
-        renderMaterialLinkReport(data);
-      } catch (e) {
-        console.error(e);
-        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("reportMatLinkAgentError"))}<br>${escapeHtml(e.message || "")}</p>`;
-      }
-    }
-
-    async function runMaterialLinkCsvAnalysis() {
-      const wrap = $("reports-mat-link-wrap");
-      const inp = $("mat-link-csv");
-      if (!wrap || !inp?.files?.length) {
-        alert(t("reportMatLinkNeedCsv"));
-        return;
-      }
-      wrap.classList.remove("hidden");
-      wrap.innerHTML = `<p class="loading">${escapeHtml(t("reportMatLinkAnalyzing"))}</p>`;
-      try {
-        const data = await postMaterialLinkCsv(inp.files[0]);
         renderMaterialLinkReport(data);
       } catch (e) {
         console.error(e);
@@ -13200,23 +13152,8 @@
       }
     }
 
-    function wireMaterialLinkButtons(root) {
-      const scope = root || document;
-      const analyzeBtn = scope.querySelector("#btn-mat-report-link-analyze");
-      if (analyzeBtn && !analyzeBtn.dataset.wired) {
-        analyzeBtn.dataset.wired = "1";
-        analyzeBtn.addEventListener("click", () => void runMaterialLinkAnalysis());
-      }
-      const csvBtn = scope.querySelector("#btn-mat-link-csv-analyze");
-      if (csvBtn && !csvBtn.dataset.wired) {
-        csvBtn.dataset.wired = "1";
-        csvBtn.addEventListener("click", () => void runMaterialLinkCsvAnalysis());
-      }
-    }
-
     async function loadMaterialLinkScreen() {
       initMaterialAgentUrlField();
-      wireMaterialLinkButtons();
     }
 
     function exportMaterialsReportCsv() {
