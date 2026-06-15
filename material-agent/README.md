@@ -43,20 +43,28 @@ Health check: `GET /api/v1/health`
 
 Form field: `file` — export from **تقرير المواد** or **تصدير بنود CSV**.
 
-## Deploy for GitHub Pages (HTTPS) — Render
+## Deploy for GitHub Pages (HTTPS) — Render (free)
 
-Use this when the app runs at `https://alialq93.github.io/Purchase-order-tracking-system/`.
+Use when the app runs at `https://alialq93.github.io/Purchase-order-tracking-system/`.
 
-1. Push this repo to GitHub (must include `material-agent/` and updated `index.html`).
-2. Sign in at [Render](https://render.com) → **New** → **Blueprint**.
-3. Connect repo `alialq93/Purchase-order-tracking-system` → apply `render.yaml`.
-4. Wait for deploy; copy the service URL, e.g. `https://po-material-agent.onrender.com`.
-5. Open the app → **التقارير** → **ربط المواد المتشابهة** → paste that URL (HTTPS, no trailing slash).
-6. Run **تقرير المواد وأسعارها**, then **تحليل البنود الحالية**.
+**Blueprint requires a paid Render plan.** Use **Web Service** instead (free tier):
 
-Health check: `https://YOUR-SERVICE.onrender.com/api/v1/health`
+1. [Render](https://render.com) → sign in with GitHub.
+2. **New +** → **Web Service** (not Blueprint).
+3. Connect repo `alialq93/Purchase-order-tracking-system`.
+4. Settings:
+   - **Name:** `po-material-agent`
+   - **Branch:** `main`
+   - **Root Directory:** `material-agent`
+   - **Runtime:** **Docker**
+   - **Instance Type:** **Free**
+5. **Create Web Service** → wait until **Live**.
+6. Copy URL, e.g. `https://po-material-agent.onrender.com`.
+7. Test: `https://YOUR-URL.onrender.com/api/v1/health`
+8. In the app → **التقارير** → **ربط المواد المتشابهة** → paste HTTPS URL.
+9. Run **تقرير المواد وأسعارها** → **تحليل البنود الحالية**.
 
-**Note:** Free Render services sleep after ~15 min idle; first request may take ~30s to wake.
+**Note:** Free services sleep after ~15 min idle; first request may take ~30s.
 
 ## App integration
 
