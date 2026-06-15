@@ -3956,15 +3956,111 @@
           <div id="reports-purchasing-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
         <div class="card">
+          <h3 data-i18n="reportMaterialsPricesTitle">تقرير المواد وأسعارها</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportMaterialsPricesHint">
+            يعرض بنود طلبات الشراء (المواد) مع الكميات والأسعار لكل طلب ضمن الفترة المحددة أدناه.
+          </p>
+          <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-mat-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-mat-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportBaseCurrencyLabel">عملة التقرير</span>
+                <select id="rep-mat-base">
+                  <option value="IQD">IQD</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label class="po-filter-field" style="grid-column:1/-1">
+                <span data-i18n="reportMaterialSearchLabel">بحث في المادة</span>
+                <input type="search" id="rep-mat-search" data-i18n-placeholder="reportMaterialSearchPlaceholder" placeholder="مثال: أسمنت، حديد…" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportCompanyLabel">الشركة</span>
+                <select id="rep-mat-company"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportProjectLabel">المشروع</span>
+                <select id="rep-mat-project"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportRepresentativeLabel">مندوب المشتريات</span>
+                <select id="rep-mat-rep"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportWorkflowLabel">حالة المسار</span>
+                <select id="rep-mat-workflow"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportRequestTypeFilterLabel">نوع الطلب</span>
+                <select id="rep-mat-request-type">
+                  <option value="" data-i18n="reportAllOpt">الكل</option>
+                  <option value="materials" selected data-i18n="poRequestType_materials">شراء مواد</option>
+                  <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">صيانة آلية - سيارة</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportFilterHasPrices">وجود أسعار</span>
+                <select id="rep-mat-has-prices">
+                  <option value="" data-i18n="reportAllOpt">الكل</option>
+                  <option value="yes" data-i18n="reportFilterHasPricesYes">نعم</option>
+                  <option value="no" data-i18n="reportFilterHasPricesNo">لا</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportFilterPricesVerified">اعتماد أسعار المشتريات</span>
+                <select id="rep-mat-prices-verified">
+                  <option value="" data-i18n="reportAllOpt">الكل</option>
+                  <option value="yes" data-i18n="reportFilterVerifiedYes">معتمد</option>
+                  <option value="no" data-i18n="reportFilterVerifiedNo">غير معتمد</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportMaterialGroupByLabel">تجميع حسب</span>
+                <select id="rep-mat-group">
+                  <option value="" data-i18n="reportGroupNone">بدون</option>
+                  <option value="item" data-i18n="reportMaterialGroupItem">المادة</option>
+                  <option value="project" data-i18n="reportGroupProject">المشروع</option>
+                  <option value="rep" data-i18n="reportGroupRep">مندوب المشتريات</option>
+                </select>
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-run-mat-report" data-i18n="btnRunReport">
+                عرض التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-print-mat-report" data-i18n="btnPrintReport">
+                طباعة التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-export-mat-report" data-i18n="btnExportCsv">
+                تصدير CSV
+              </button>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:0.35rem;color:var(--muted)" data-i18n="reportFxHint">
+            يتم تحويل العملات تلقائياً حسب آخر سعر صرف مُسجّل بتاريخ يساوي أو يسبق تاريخ الطلب.
+          </p>
+          <div id="reports-materials-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات ضمن الفترة.</p></div>
+        </div>
+        <div class="card">
           <h3 data-i18n="reportDeptAchievementsTitle">إنجاز الأقسام (طلبات المشاريع)</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportDeptAchievementsHint">
             يعتمد هذا التقرير على تواريخ الانتقال بين مراحل المسار (المسجلة تلقائياً عند كل إجراء). يعرض عدد الإنجازات ضمن الفترة ومتوسط زمن الانتقال من المرحلة السابقة.
           </p>
-          <p class="sub" style="margin-top:0.25rem;color:var(--muted);font-size:0.88rem" data-i18n="reportDeptDateRangeHint">
-            يستخدم نفس «من تاريخ / إلى تاريخ» الموجودين في تقرير المشتريات أعلاه.
-          </p>
           <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
             <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-dept-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-dept-to" />
+              </label>
               <label class="po-filter-field">
                 <span data-i18n="reportCompanyLabel">الشركة</span>
                 <select id="rep-dept-company"></select>
@@ -5279,7 +5375,7 @@
         helpNavItem11:
           "<strong>الحسابات:</strong> سلفة ثم إقفال؛ وقسم «متابعة المسار» يبقي ظاهراً الطلبات بعد إطلاق السلفة (بانتظار المستودع) والمكتملة بعد إقفالكم.",
         helpNavItem12:
-          "<strong>التقارير:</strong> تقرير مشتريات حسب الفترة مع فلاتر (تاريخ/مشروع/مندوب/حالة مسار) وتحويل عملات تلقائي حسب آخر سعر صرف بتاريخ الطلب.",
+          "<strong>التقارير:</strong> تقرير مشتريات حسب الفترة مع فلاتر (تاريخ/مشروع/مندوب/حالة مسار) وتحويل عملات تلقائي؛ وتقرير المواد وأسعارها يعرض بنود الطلبات مع الكميات والأسعار؛ وإنجاز الأقسام لمتابعة زمن المراحل.",
         navPurchasingQueue: "المشتريات",
         navWarehouseReceiptQueue: "استلام المستودع",
         navAccountingQueue: "الحسابات",
@@ -5300,12 +5396,11 @@
         reportDeptColDetails: "تفاصيل",
         reportDeptDetailsToggle: "عرض الطلبات",
         reportDeptNoData: "لا توجد إنجازات ضمن الفترة.",
-        reportDeptDateRangeHint: "يستخدم نفس «من تاريخ / إلى تاريخ» الموجودين في تقرير المشتريات أعلاه.",
         reportRegionFilterLabel: "المنطقة",
         reportDeptSummaryUniquePos: "طلبات مميّزة ضمن الفترة",
         reportDeptSummaryTotalEvents: "إجمالي أحداث المراحل",
         reportDeptFooterTotal: "الإجمالي",
-        alertDeptReportNeedDates: "حدّد من تاريخ وإلى تاريخ في تقرير المشتريات أعلاه.",
+        alertDeptReportNeedDates: "حدّد من تاريخ وإلى تاريخ.",
         reportFromDateLabel: "من تاريخ",
         reportToDateLabel: "إلى تاريخ",
         reportBaseCurrencyLabel: "عملة التقرير",
@@ -5349,6 +5444,18 @@
         reportGeneratedByLabel: "المستخدم",
         btnExportLinesCsv: "تصدير بنود CSV",
         reportLinesCsvLineNo: "رقم البند",
+        reportMaterialsPricesTitle: "تقرير المواد وأسعارها",
+        reportMaterialsPricesHint:
+          "يعرض بنود طلبات الشراء (المواد) مع الكميات والأسعار لكل طلب ضمن الفترة المحددة أدناه.",
+        reportMaterialSearchLabel: "بحث في المادة",
+        reportMaterialSearchPlaceholder: "مثال: أسمنت، حديد…",
+        reportMaterialGroupByLabel: "تجميع حسب",
+        reportMaterialGroupItem: "المادة",
+        reportMatSummaryLines: "عدد البنود",
+        reportMatSummaryUniqueItems: "مواد مميّزة",
+        reportMatSummaryTotalConverted: "إجمالي البنود (محوّل)",
+        reportMatColConvertedLine: "مجموع البند (محوّل)",
+        alertMatReportNeedDates: "حدّد من تاريخ وإلى تاريخ.",
         tabFxRates: "أسعار الصرف",
         addFxRate: "إضافة سعر",
         modalNewFxRate: "سعر صرف جديد",
@@ -6059,7 +6166,7 @@
         helpNavItem11:
           "<strong>Accounting:</strong> Advance and closure; Pipeline follow-up keeps requests visible after advance release (awaiting warehouse) and after you close them.",
         helpNavItem12:
-          "<strong>Reports:</strong> Purchasing report by period with filters (date/project/representative/workflow) and automatic currency conversion using the latest FX rate on or before the request date.",
+          "<strong>Reports:</strong> Purchasing report by period with filters and automatic FX conversion; Materials & prices report shows line items with quantities and prices; Department achievements tracks stage timing.",
         navPurchasingQueue: "Purchasing",
         navWarehouseReceiptQueue: "Warehouse receipt",
         navAccountingQueue: "Accounting",
@@ -6080,12 +6187,11 @@
         reportDeptColDetails: "Details",
         reportDeptDetailsToggle: "View POs",
         reportDeptNoData: "No achievements in the selected period.",
-        reportDeptDateRangeHint: "Uses the same From / To dates as the purchasing report above.",
         reportRegionFilterLabel: "Region",
         reportDeptSummaryUniquePos: "Distinct POs in period",
         reportDeptSummaryTotalEvents: "Total stage events",
         reportDeptFooterTotal: "Total",
-        alertDeptReportNeedDates: "Select From and To dates in the purchasing report filters above.",
+        alertDeptReportNeedDates: "Select From and To dates.",
         reportFromDateLabel: "From date",
         reportToDateLabel: "To date",
         reportBaseCurrencyLabel: "Report currency",
@@ -6129,6 +6235,18 @@
         reportGeneratedByLabel: "User",
         btnExportLinesCsv: "Export line items (CSV)",
         reportLinesCsvLineNo: "Line #",
+        reportMaterialsPricesTitle: "Materials & prices report",
+        reportMaterialsPricesHint:
+          "Shows purchase order line items (materials) with quantities and prices for each request within the period selected below.",
+        reportMaterialSearchLabel: "Search material",
+        reportMaterialSearchPlaceholder: "e.g. cement, steel…",
+        reportMaterialGroupByLabel: "Group by",
+        reportMaterialGroupItem: "Material",
+        reportMatSummaryLines: "Line count",
+        reportMatSummaryUniqueItems: "Distinct materials",
+        reportMatSummaryTotalConverted: "Total lines (converted)",
+        reportMatColConvertedLine: "Line total (converted)",
+        alertMatReportNeedDates: "Select From and To dates.",
         tabFxRates: "FX rates",
         addFxRate: "Add rate",
         modalNewFxRate: "New FX rate",
@@ -11360,6 +11478,11 @@
         exportBtn.dataset.wired = "1";
         exportBtn.addEventListener("click", () => exportDeptAchievementsCsv());
       }
+      const today = formatTodayYmd();
+      const fromInp = $("rep-dept-from");
+      const toInp = $("rep-dept-to");
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
       const coSel = $("rep-dept-company");
       const projSel = $("rep-dept-project");
       const regSel = $("rep-dept-region");
@@ -11401,6 +11524,7 @@
 
     async function loadReportsScreen() {
       await loadPurchasingReportScreen();
+      await loadMaterialsReportScreen();
       await loadDeptAchievementsReportScreen();
     }
 
@@ -11540,8 +11664,8 @@
       if (!wrap) return;
       const html = wrap.innerHTML || "";
       if (!html.trim()) return;
-      const fromYmd = ($("rep-purch-from")?.value || "").slice(0, 10);
-      const toYmd = ($("rep-purch-to")?.value || "").slice(0, 10);
+      const fromYmd = ($("rep-dept-from")?.value || "").slice(0, 10);
+      const toYmd = ($("rep-dept-to")?.value || "").slice(0, 10);
       const coText = $("rep-dept-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
       const projText = $("rep-dept-project")?.selectedOptions?.[0]?.textContent?.trim() || "";
       const regText = $("rep-dept-region")?.selectedOptions?.[0]?.textContent?.trim() || "";
@@ -11667,8 +11791,8 @@
       if (!wrap) return;
       wrap.innerHTML = `<p class="loading">${escapeHtml(t("loading"))}</p>`;
 
-      const fromYmd = ($("rep-purch-from")?.value || "").slice(0, 10);
-      const toYmd = ($("rep-purch-to")?.value || "").slice(0, 10);
+      const fromYmd = ($("rep-dept-from")?.value || "").slice(0, 10);
+      const toYmd = ($("rep-dept-to")?.value || "").slice(0, 10);
       if (!fromYmd || !toYmd) {
         wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("alertDeptReportNeedDates"))}</p>`;
         return;
@@ -11912,7 +12036,209 @@
     }
 
     let lastPurchasingReportSnapshot = null;
+    let lastMaterialsReportSnapshot = null;
     let lastDeptAchievementsSnapshot = null;
+
+    async function buildPurchasingReportSnapshot(filters) {
+      const from = (filters.from || "").slice(0, 10);
+      const to = (filters.to || "").slice(0, 10);
+      const base = (filters.base || "IQD").trim() || "IQD";
+      const fCompany = (filters.fCompany || "").trim();
+      const fProject = (filters.fProject || "").trim();
+      const fRep = (filters.fRep || "").trim();
+      const fWf = (filters.fWf || "").trim();
+      const fReqType = (filters.fReqType || "").trim();
+      const fHasPrices = (filters.fHasPrices || "").trim();
+      const fPv = (filters.fPv || "").trim();
+      if (!from || !to) return { error: "dates" };
+
+      const [poSnap, fxSnap] = await Promise.all([
+        getDocs(query(collection(db, "purchaseOrders"), where("scope", "==", "project"))),
+        getDocs(query(collection(db, "fxRates"), orderBy("dateTs", "asc"))),
+      ]);
+      const fxRows = [];
+      fxSnap.forEach((d) => {
+        const x = d.data();
+        fxRows.push({
+          date: (x.date || "").trim(),
+          dateMs: x.dateTs?.seconds ? x.dateTs.seconds * 1000 : new Date(x.dateTs || 0).getTime(),
+          usdToIqd: Number(x.usdToIqd) || 0,
+        });
+      });
+      fxRows.sort((a, b) => (a.dateMs || 0) - (b.dateMs || 0));
+      const fxAvailable = fxRows.filter((r) => r.dateMs && r.usdToIqd > 0);
+      if (!fxAvailable.length) return { error: "noFx" };
+
+      const pickFxForMs = (ms) => {
+        let best = null;
+        for (const r of fxAvailable) {
+          if (r.dateMs <= ms) best = r;
+          else break;
+        }
+        return best;
+      };
+
+      const rows = [];
+      poSnap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      const inRange = rows.filter((po) => {
+        const rd = (po.requestDate || "").slice(0, 10);
+        if (rd && /^\d{4}-\d{2}-\d{2}$/.test(rd)) return rd >= from && rd <= to;
+        const cd = po.createdAt?.seconds ? formatYmdFromFirestore(po.createdAt) : "";
+        return cd >= from && cd <= to;
+      });
+      if (!inRange.length) return { error: "noRows", from, to, base };
+
+      const [pSnap, cSnap] = await Promise.all([
+        getDocs(collection(db, "projects")),
+        getDocs(collection(db, "companies")),
+      ]);
+      const projectNames = {};
+      const projectCompanyId = {};
+      pSnap.forEach((d) => {
+        const pd = d.data();
+        projectNames[d.id] = projectDisplayName(pd);
+        projectCompanyId[d.id] = pd.companyId || null;
+      });
+      const companyNameById = {};
+      cSnap.forEach((d) => {
+        companyNameById[d.id] = companyDisplayName(d.data());
+      });
+
+      const convLabel = base === "USD" ? "USD" : "IQD";
+      const lineRowsRaw = [];
+      const reportRowsRaw = inRange.map((po) => {
+        const rd = (po.requestDate || "").slice(0, 10) || formatYmdFromFirestore(po.createdAt);
+        const [yy, mm, dd] = rd.split("-").map((x) => parseInt(x, 10));
+        const ms = Date.UTC(yy, (mm || 1) - 1, dd || 1, 0, 0, 0);
+        const fx = pickFxForMs(ms);
+        const rate = fx ? fx.usdToIqd : 0;
+        const lines = Array.isArray(po.lines) ? po.lines : [];
+        let totIqd = 0;
+        let totUsd = 0;
+        lines.forEach((l) => {
+          const qty = Number(l.qty) || 0;
+          const price = Number(l.price) || 0;
+          const cur = (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD";
+          const lt = qty * price;
+          if (cur === "USD") totUsd += lt;
+          else totIqd += lt;
+        });
+        let converted = 0;
+        if (base === "USD") {
+          converted = totUsd + (rate > 0 ? totIqd / rate : 0);
+        } else {
+          converted = totIqd + totUsd * rate;
+        }
+        const cid = po.projectId ? projectCompanyId[po.projectId] : null;
+        const company = cid ? (companyNameById[cid] || cid) : t("dash");
+        const ref = (po.poReference || po.title || "").trim() || t("dash");
+        const projectLabel = projectNames[po.projectId] || po.projectId || t("dash");
+        const region = (po.regionName || "").trim() || t("dash");
+        const rep = (po.purchasingRepresentativeName || "").trim() || t("dash");
+        const hasLinePrices = lines.some((l) => Number(l.price) > 0);
+        const pricesVerified = !!po.pricesVerified;
+        const requestType = (po.requestType || "").trim();
+        const requestTypeLabel = projectPoRequestTypeLabel(requestType);
+        const vehicleInfo = projectPoVehicleInfoLabel(po);
+        lines.forEach((l, idx) => {
+          const qty = Number(l.qty) || 0;
+          const price = Number(l.price) || 0;
+          const cur = (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD";
+          const lineTotal = qty * price;
+          let lineConverted = 0;
+          if (base === "USD") {
+            lineConverted = cur === "USD" ? lineTotal : rate > 0 ? lineTotal / rate : 0;
+          } else {
+            lineConverted = cur === "IQD" ? lineTotal : lineTotal * rate;
+          }
+          lineRowsRaw.push({
+            poId: po.id,
+            ref,
+            requestDate: rd || t("dash"),
+            company,
+            project: projectLabel,
+            region,
+            workflowStatus: (po.workflowStatus || "").trim() || null,
+            rep,
+            requestTypeLabel,
+            pricesVerified,
+            pricesVerifiedLabel: pricesVerified ? t("reportFilterVerifiedYes") : t("reportFilterVerifiedNo"),
+            lineNo: idx + 1,
+            item: (l.item || "").trim(),
+            unit: (l.unit || "").trim(),
+            qty,
+            currency: cur,
+            price,
+            lineTotal,
+            lineConverted,
+            fxRate: rate > 0 ? rate : null,
+          });
+        });
+        return {
+          id: po.id,
+          projectId: po.projectId || null,
+          companyId: cid || null,
+          repId: (po.purchasingRepresentativeId || "").trim() || null,
+          workflowStatus: (po.workflowStatus || "").trim() || null,
+          ref,
+          requestDate: rd || t("dash"),
+          company,
+          project: projectLabel,
+          region,
+          rep,
+          requestType,
+          requestTypeLabel,
+          vehicleInfo,
+          hasLinePrices,
+          pricesVerified,
+          pricesEnteredLabel: hasLinePrices ? t("reportFilterHasPricesYes") : t("reportFilterHasPricesNo"),
+          pricesVerifiedLabel: pricesVerified ? t("reportFilterVerifiedYes") : t("reportFilterVerifiedNo"),
+          totIqd,
+          totUsd,
+          converted,
+          fxRate: rate > 0 ? rate : null,
+        };
+      });
+      const reportRows = reportRowsRaw.filter((r) => {
+        if (fCompany && r.companyId !== fCompany) return false;
+        if (fProject && r.projectId !== fProject) return false;
+        if (fRep && r.repId !== fRep) return false;
+        if (fWf && r.workflowStatus !== fWf) return false;
+        if (fReqType && r.requestType !== fReqType) return false;
+        if (fHasPrices === "yes" && !r.hasLinePrices) return false;
+        if (fHasPrices === "no" && r.hasLinePrices) return false;
+        if (fPv === "yes" && !r.pricesVerified) return false;
+        if (fPv === "no" && r.pricesVerified) return false;
+        return true;
+      });
+      const allowedPoIds = new Set(reportRows.map((r) => r.id));
+      const lineRows = lineRowsRaw.filter((lr) => allowedPoIds.has(lr.poId));
+
+      let sumIqd = 0;
+      let sumUsd = 0;
+      let sumConverted = 0;
+      let fxRateDisp = null;
+      reportRows.forEach((r) => {
+        sumIqd += r.totIqd;
+        sumUsd += r.totUsd;
+        sumConverted += r.converted;
+        if (r.fxRate != null) fxRateDisp = r.fxRate;
+      });
+
+      return {
+        from,
+        to,
+        base,
+        convLabel,
+        rows: reportRows.map((x) => ({ ...x })),
+        lineRows: lineRows.map((x) => ({ ...x })),
+        sumIqd,
+        sumUsd,
+        sumConverted,
+        fxRateDisp: fxRateDisp != null ? fxRateDisp : null,
+        generatedAt: new Date().toISOString(),
+      };
+    }
 
     function exportPurchasingReportCsv() {
       const snap = lastPurchasingReportSnapshot;
@@ -12058,191 +12384,33 @@
       if (!from || !to) return;
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
-        const [poSnap, fxSnap] = await Promise.all([
-          getDocs(query(collection(db, "purchaseOrders"), where("scope", "==", "project"))),
-          getDocs(query(collection(db, "fxRates"), orderBy("dateTs", "asc"))),
-        ]);
-        const fxRows = [];
-        fxSnap.forEach((d) => {
-          const x = d.data();
-          fxRows.push({
-            date: (x.date || "").trim(),
-            dateMs: x.dateTs?.seconds ? x.dateTs.seconds * 1000 : new Date(x.dateTs || 0).getTime(),
-            usdToIqd: Number(x.usdToIqd) || 0,
-          });
-        });
-        fxRows.sort((a, b) => (a.dateMs || 0) - (b.dateMs || 0));
-        const fxAvailable = fxRows.filter((r) => r.dateMs && r.usdToIqd > 0);
-        if (!fxAvailable.length) {
-          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoFxRates"))}</p>`;
-          return;
-        }
-        const pickFxForMs = (ms) => {
-          let best = null;
-          for (const r of fxAvailable) {
-            if (r.dateMs <= ms) best = r;
-            else break;
-          }
-          return best;
-        };
-
-        const rows = [];
-        poSnap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
-        const inRange = rows.filter((po) => {
-          const rd = (po.requestDate || "").slice(0, 10);
-          if (rd && /^\d{4}-\d{2}-\d{2}$/.test(rd)) return rd >= from && rd <= to;
-          const cd = po.createdAt?.seconds ? formatYmdFromFirestore(po.createdAt) : "";
-          return cd >= from && cd <= to;
-        });
-        if (!inRange.length) {
-          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
-          return;
-        }
-
-        const [pSnap, cSnap] = await Promise.all([
-          getDocs(collection(db, "projects")),
-          getDocs(collection(db, "companies")),
-        ]);
-        const projectNames = {};
-        const projectCompanyId = {};
-        pSnap.forEach((d) => {
-          const pd = d.data();
-          projectNames[d.id] = projectDisplayName(pd);
-          projectCompanyId[d.id] = pd.companyId || null;
-        });
-        const companyNameById = {};
-        cSnap.forEach((d) => {
-          companyNameById[d.id] = companyDisplayName(d.data());
-        });
-
-        const lineRowsRaw = [];
-        const reportRowsRaw = inRange.map((po) => {
-          const rd = (po.requestDate || "").slice(0, 10) || formatYmdFromFirestore(po.createdAt);
-          const [yy, mm, dd] = rd.split("-").map((x) => parseInt(x, 10));
-          const ms = Date.UTC(yy, (mm || 1) - 1, dd || 1, 0, 0, 0);
-          const fx = pickFxForMs(ms);
-          const rate = fx ? fx.usdToIqd : 0;
-          const lines = Array.isArray(po.lines) ? po.lines : [];
-          let totIqd = 0;
-          let totUsd = 0;
-          lines.forEach((l) => {
-            const qty = Number(l.qty) || 0;
-            const price = Number(l.price) || 0;
-            const cur = (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD";
-            const lt = qty * price;
-            if (cur === "USD") totUsd += lt;
-            else totIqd += lt;
-          });
-          let converted = 0;
-          if (base === "USD") {
-            converted = totUsd + (rate > 0 ? totIqd / rate : 0);
-          } else {
-            converted = totIqd + totUsd * rate;
-          }
-          const cid = po.projectId ? projectCompanyId[po.projectId] : null;
-          const company = cid ? (companyNameById[cid] || cid) : t("dash");
-          const ref = (po.poReference || po.title || "").trim() || t("dash");
-          const projectLabel = projectNames[po.projectId] || po.projectId || t("dash");
-          const region = (po.regionName || "").trim() || t("dash");
-          const rep = (po.purchasingRepresentativeName || "").trim() || t("dash");
-          const hasLinePrices = lines.some((l) => Number(l.price) > 0);
-          const pricesVerified = !!po.pricesVerified;
-          const requestType = (po.requestType || "").trim();
-          const requestTypeLabel = projectPoRequestTypeLabel(requestType);
-          const vehicleInfo = projectPoVehicleInfoLabel(po);
-          lines.forEach((l, idx) => {
-            const qty = Number(l.qty) || 0;
-            const price = Number(l.price) || 0;
-            const cur = (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD";
-            lineRowsRaw.push({
-              poId: po.id,
-              ref,
-              requestDate: rd || t("dash"),
-              company,
-              project: projectLabel,
-              region,
-              workflowStatus: (po.workflowStatus || "").trim() || null,
-              rep,
-              requestTypeLabel,
-              lineNo: idx + 1,
-              item: (l.item || "").trim(),
-              unit: (l.unit || "").trim(),
-              qty,
-              currency: cur,
-              price,
-              lineTotal: qty * price,
-            });
-          });
-          return {
-            id: po.id,
-            projectId: po.projectId || null,
-            companyId: cid || null,
-            repId: (po.purchasingRepresentativeId || "").trim() || null,
-            workflowStatus: (po.workflowStatus || "").trim() || null,
-            ref,
-            requestDate: rd || t("dash"),
-            company,
-            project: projectLabel,
-            region,
-            rep,
-            requestType,
-            requestTypeLabel,
-            vehicleInfo,
-            hasLinePrices,
-            pricesVerified,
-            pricesEnteredLabel: hasLinePrices ? t("reportFilterHasPricesYes") : t("reportFilterHasPricesNo"),
-            pricesVerifiedLabel: pricesVerified ? t("reportFilterVerifiedYes") : t("reportFilterVerifiedNo"),
-            totIqd,
-            totUsd,
-            converted,
-            fxRate: rate > 0 ? rate : null,
-          };
-        });
-        const fCompany = ($("rep-purch-company")?.value || "").trim();
-        const fProject = ($("rep-purch-project")?.value || "").trim();
-        const fRep = ($("rep-purch-rep")?.value || "").trim();
-        const fWf = ($("rep-purch-workflow")?.value || "").trim();
-        const fReqType = ($("rep-purch-request-type")?.value || "").trim();
-        const fHasPrices = ($("rep-purch-has-prices")?.value || "").trim();
-        const fPv = ($("rep-purch-prices-verified")?.value || "").trim();
-        const reportRows = reportRowsRaw.filter((r) => {
-          if (fCompany && r.companyId !== fCompany) return false;
-          if (fProject && r.projectId !== fProject) return false;
-          if (fRep && r.repId !== fRep) return false;
-          if (fWf && r.workflowStatus !== fWf) return false;
-          if (fReqType && r.requestType !== fReqType) return false;
-          if (fHasPrices === "yes" && !r.hasLinePrices) return false;
-          if (fHasPrices === "no" && r.hasLinePrices) return false;
-          if (fPv === "yes" && !r.pricesVerified) return false;
-          if (fPv === "no" && r.pricesVerified) return false;
-          return true;
-        });
-        const allowedPoIds = new Set(reportRows.map((r) => r.id));
-        const lineRows = lineRowsRaw.filter((lr) => allowedPoIds.has(lr.poId));
-
-        let sumIqd = 0;
-        let sumUsd = 0;
-        let sumConverted = 0;
-        let fxRateDisp = null;
-        reportRows.forEach((r) => {
-          sumIqd += r.totIqd;
-          sumUsd += r.totUsd;
-          sumConverted += r.converted;
-          if (r.fxRate != null) fxRateDisp = r.fxRate;
-        });
-
-        const fxDisp = fxRateDisp != null ? String(fxRateDisp) : t("dash");
-        const convLabel = base === "USD" ? "USD" : "IQD";
-        const generatedAtIso = new Date().toISOString();
-        lastPurchasingReportSnapshot = {
+        const snap = await buildPurchasingReportSnapshot({
           from,
           to,
           base,
-          convLabel,
-          rows: reportRows.map((x) => ({ ...x })),
-          lineRows: lineRows.map((x) => ({ ...x })),
-          generatedAt: generatedAtIso,
-        };
+          fCompany: ($("rep-purch-company")?.value || "").trim(),
+          fProject: ($("rep-purch-project")?.value || "").trim(),
+          fRep: ($("rep-purch-rep")?.value || "").trim(),
+          fWf: ($("rep-purch-workflow")?.value || "").trim(),
+          fReqType: ($("rep-purch-request-type")?.value || "").trim(),
+          fHasPrices: ($("rep-purch-has-prices")?.value || "").trim(),
+          fPv: ($("rep-purch-prices-verified")?.value || "").trim(),
+        });
+        if (snap.error === "noFx") {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoFxRates"))}</p>`;
+          return;
+        }
+        if (snap.error === "noRows") {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        const reportRows = snap.rows;
+        const sumIqd = snap.sumIqd;
+        const sumUsd = snap.sumUsd;
+        const sumConverted = snap.sumConverted;
+        const convLabel = snap.convLabel;
+        const fxDisp = snap.fxRateDisp != null ? String(snap.fxRateDisp) : t("dash");
+        lastPurchasingReportSnapshot = snap;
         const tableHead = `<thead><tr>
             <th>${escapeHtml(t("colPoReference"))}</th>
             <th>${escapeHtml(t("colRequestDate"))}</th>
@@ -12358,6 +12526,418 @@
       } catch (e) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
       }
+    }
+
+    async function loadMaterialsReportScreen() {
+      const wrap = $("reports-materials-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+      const btn = $("btn-run-mat-report");
+      const printBtn = $("btn-print-mat-report");
+      const exportBtn = $("btn-export-mat-report");
+      if (btn && !btn.dataset.wired) {
+        btn.dataset.wired = "1";
+        btn.addEventListener("click", () => void runMaterialsReport());
+      }
+      if (printBtn && !printBtn.dataset.wired) {
+        printBtn.dataset.wired = "1";
+        printBtn.addEventListener("click", () => void printMaterialsReport());
+      }
+      if (exportBtn && !exportBtn.dataset.wired) {
+        exportBtn.dataset.wired = "1";
+        exportBtn.addEventListener("click", () => exportMaterialsReportCsv());
+      }
+      const searchInp = $("rep-mat-search");
+      if (searchInp && !searchInp.dataset.wired) {
+        searchInp.dataset.wired = "1";
+        searchInp.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") void runMaterialsReport();
+        });
+      }
+      const today = formatTodayYmd();
+      const fromInp = $("rep-mat-from");
+      const toInp = $("rep-mat-to");
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
+      try {
+        const [pSnap, rSnap, cSnap] = await Promise.all([
+          getDocs(collection(db, "projects")),
+          getDocs(collection(db, "purchasingRepresentatives")),
+          getDocs(collection(db, "companies")),
+        ]);
+        const companies = [];
+        cSnap.forEach((d) => companies.push({ id: d.id, ...d.data() }));
+        const loc = lang === "ar" ? "ar" : "en";
+        companies.sort((a, b) => companyDisplayName(a).localeCompare(companyDisplayName(b), loc));
+        const coSel = $("rep-mat-company");
+        if (coSel) {
+          coSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(companyDisplayName(c))}</option>`).join("");
+        }
+        const projects = [];
+        pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
+        sortProjectsByCode(projects);
+        const projSel = $("rep-mat-project");
+        if (projSel) {
+          projSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            projects.map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(projectOptionLabel(p))}</option>`).join("");
+        }
+        const reps = [];
+        rSnap.forEach((d) => reps.push({ id: d.id, ...d.data() }));
+        const activeReps = reps.filter((x) => x.active !== false);
+        activeReps.sort((a, b) => (a.name || "").trim().localeCompare((b.name || "").trim(), loc));
+        const repSel = $("rep-mat-rep");
+        if (repSel) {
+          repSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            activeReps.map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`).join("");
+        }
+        const wfValues = [
+          "warehouse_review",
+          "pending_engineer_first",
+          "pending_project_manager",
+          "pending_group_manager",
+          "pending_purchasing",
+          "in_progress_purchasing",
+          "pending_advance_accounting",
+          "pending_warehouse_receipt",
+          "pending_accounting",
+          "workflow_complete",
+        ];
+        const wfSel = $("rep-mat-workflow");
+        if (wfSel) {
+          wfSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            wfValues.map((v) => `<option value="${escapeAttr(v)}">${escapeHtml(workflowLabel(v))}</option>`).join("");
+        }
+      } catch (_) {
+        // ignore filter fill errors
+      }
+    }
+
+    function matReportGroupKey(r, groupBy) {
+      if (groupBy === "item") return (r.item || "").trim() || t("dash");
+      if (groupBy === "project") return r.project || t("dash");
+      if (groupBy === "rep") return r.rep || t("dash");
+      return "";
+    }
+
+    async function runMaterialsReport() {
+      const wrap = $("reports-materials-wrap");
+      if (!wrap) return;
+      const from = ($("rep-mat-from")?.value || "").slice(0, 10);
+      const to = ($("rep-mat-to")?.value || "").slice(0, 10);
+      const base = ($("rep-mat-base")?.value || "IQD").trim() || "IQD";
+      const groupBy = ($("rep-mat-group")?.value || "").trim();
+      const searchQ = ($("rep-mat-search")?.value || "").trim().toLowerCase();
+      if (!from || !to) {
+        alert(t("alertMatReportNeedDates"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const snap = await buildPurchasingReportSnapshot({
+          from,
+          to,
+          base,
+          fCompany: ($("rep-mat-company")?.value || "").trim(),
+          fProject: ($("rep-mat-project")?.value || "").trim(),
+          fRep: ($("rep-mat-rep")?.value || "").trim(),
+          fWf: ($("rep-mat-workflow")?.value || "").trim(),
+          fReqType: ($("rep-mat-request-type")?.value || "").trim(),
+          fHasPrices: ($("rep-mat-has-prices")?.value || "").trim(),
+          fPv: ($("rep-mat-prices-verified")?.value || "").trim(),
+        });
+        if (snap.error === "noFx") {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoFxRates"))}</p>`;
+          return;
+        }
+        if (snap.error === "noRows") {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        let lineRows = snap.lineRows || [];
+        if (searchQ) {
+          lineRows = lineRows.filter((r) => (r.item || "").toLowerCase().includes(searchQ));
+        }
+        if (!lineRows.length) {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        const convLabel = snap.convLabel;
+        let sumConverted = 0;
+        const uniqueItems = new Set();
+        lineRows.forEach((r) => {
+          sumConverted += Number(r.lineConverted) || 0;
+          const it = (r.item || "").trim();
+          if (it) uniqueItems.add(it.toLowerCase());
+        });
+        lastMaterialsReportSnapshot = {
+          ...snap,
+          lineRows: lineRows.map((x) => ({ ...x })),
+          searchQ,
+          groupBy,
+          sumLineConverted: sumConverted,
+          uniqueItemCount: uniqueItems.size,
+        };
+        const loc = lang === "ar" ? "ar" : "en";
+        const sortedRows = [...lineRows].sort((a, b) => {
+          const ga = groupBy ? matReportGroupKey(a, groupBy) : "";
+          const gb = groupBy ? matReportGroupKey(b, groupBy) : "";
+          if (ga && gb && ga !== gb) return ga.localeCompare(gb, loc);
+          if (ga && !gb) return -1;
+          if (!ga && gb) return 1;
+          const da = (a.requestDate || "").localeCompare(b.requestDate || "", loc);
+          if (da !== 0) return da;
+          const ra = (a.ref || "").localeCompare(b.ref || "", loc);
+          if (ra !== 0) return ra;
+          return (a.lineNo || 0) - (b.lineNo || 0);
+        });
+        const tableHead = `<thead><tr>
+            <th>${escapeHtml(t("colPoReference"))}</th>
+            <th>${escapeHtml(t("colRequestDate"))}</th>
+            <th>${escapeHtml(t("reportCompanyLabel"))}</th>
+            <th>${escapeHtml(t("colProject"))}</th>
+            <th>${escapeHtml(t("colRegion"))}</th>
+            <th>${escapeHtml(t("colWorkflow"))}</th>
+            <th>${escapeHtml(t("colPurchasingRepresentative"))}</th>
+            <th>${escapeHtml(t("reportLinesCsvLineNo"))}</th>
+            <th>${escapeHtml(t("poLineDescCol"))}</th>
+            <th>${escapeHtml(t("poLineUnitCol"))}</th>
+            <th>${escapeHtml(t("poLineQtyCol"))}</th>
+            <th>${escapeHtml(t("accUnitPriceCol"))}</th>
+            <th>${escapeHtml(t("reportBaseCurrencyLabel"))}</th>
+            <th>${escapeHtml(t("accLineTotalCol"))}</th>
+            <th>${escapeHtml(t("reportMatColConvertedLine"))} (${escapeHtml(convLabel)})</th>
+            <th>${escapeHtml(t("reportColPurchasingVerified"))}</th>
+          </tr></thead>`;
+        let curGroup = null;
+        let gConv = 0;
+        const flushGroup = () => {
+          if (!curGroup) return "";
+          const html = `<tr class="report-subtotal-row">
+            <td colspan="14" style="font-weight:700">${escapeHtml(t("reportGroupSubtotal"))} — ${escapeHtml(curGroup)}</td>
+            <td>${escapeHtml(convLabel + " " + gConv.toLocaleString(localeTag()))}</td>
+            <td></td>
+          </tr>`;
+          gConv = 0;
+          return html;
+        };
+        const bodyHtml = [];
+        sortedRows.forEach((r) => {
+          const gk = groupBy ? matReportGroupKey(r, groupBy) : null;
+          if (groupBy && gk !== curGroup) {
+            if (curGroup != null) bodyHtml.push(flushGroup());
+            curGroup = gk;
+            bodyHtml.push(
+              `<tr class="report-group-row"><td colspan="16" style="font-weight:800">${escapeHtml(
+                t("reportGroupHeader")
+              )}: ${escapeHtml(curGroup || t("dash"))}</td></tr>`
+            );
+          }
+          gConv += Number(r.lineConverted) || 0;
+          const priceDisp = r.price > 0 ? r.price.toLocaleString(localeTag()) : t("dash");
+          const lineTotalDisp = r.lineTotal > 0 ? r.currency + " " + r.lineTotal.toLocaleString(localeTag()) : t("dash");
+          const convDisp =
+            r.lineConverted > 0 ? convLabel + " " + r.lineConverted.toLocaleString(localeTag()) : t("dash");
+          bodyHtml.push(`<tr>
+            <td>${escapeHtml(r.ref)}</td>
+            <td>${escapeHtml(r.requestDate)}</td>
+            <td>${escapeHtml(r.company)}</td>
+            <td>${escapeHtml(r.project)}</td>
+            <td>${escapeHtml(r.region)}</td>
+            <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
+            <td>${escapeHtml(r.rep)}</td>
+            <td>${escapeHtml(String(r.lineNo))}</td>
+            <td>${escapeHtml(r.item || t("dash"))}</td>
+            <td>${escapeHtml(r.unit || t("dash"))}</td>
+            <td>${escapeHtml(r.qty ? String(r.qty) : t("dash"))}</td>
+            <td>${escapeHtml(priceDisp)}</td>
+            <td>${escapeHtml(r.currency)}</td>
+            <td>${escapeHtml(lineTotalDisp)}</td>
+            <td>${escapeHtml(convDisp)}</td>
+            <td>${escapeHtml(r.pricesVerifiedLabel)}</td>
+          </tr>`);
+        });
+        if (groupBy && curGroup != null) bodyHtml.push(flushGroup());
+        wrap.innerHTML = `
+          <div class="detail-panel" style="margin-bottom:0.75rem">
+            <div class="wf-po-meta-grid">
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatSummaryLines"))}</span><span>${escapeHtml(
+                String(lineRows.length)
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatSummaryUniqueItems"))}</span><span>${escapeHtml(
+                String(uniqueItems.size)
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportFxUsedLabel"))}</span><span>${escapeHtml(
+                snap.fxRateDisp != null ? String(snap.fxRateDisp) : t("dash")
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatSummaryTotalConverted"))}</span><span>${escapeHtml(
+                convLabel + " " + sumConverted.toLocaleString(localeTag())
+              )}</span></div>
+            </div>
+          </div>
+          <div class="table-scroll"><table class="data-table">${tableHead}<tbody>${bodyHtml.join("")}</tbody></table></div>`;
+      } catch (e) {
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    function printMaterialsReport() {
+      const wrap = $("reports-materials-wrap");
+      if (!wrap) return;
+      const html = wrap.innerHTML || "";
+      if (!html.trim()) return;
+      const from = ($("rep-mat-from")?.value || "").slice(0, 10);
+      const to = ($("rep-mat-to")?.value || "").slice(0, 10);
+      const base = ($("rep-mat-base")?.value || "IQD").trim() || "IQD";
+      const searchText = ($("rep-mat-search")?.value || "").trim();
+      const coText = $("rep-mat-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const projText = $("rep-mat-project")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const repText = $("rep-mat-rep")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const wfText = $("rep-mat-workflow")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const rtText = $("rep-mat-request-type")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const hpText = $("rep-mat-has-prices")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const pvText = $("rep-mat-prices-verified")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const groupText = $("rep-mat-group")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const genAtSrc = lastMaterialsReportSnapshot?.generatedAt || new Date().toISOString();
+      const genAt = new Date(genAtSrc).toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+      const title = t("reportMaterialsPricesTitle");
+      const dir = document.documentElement.getAttribute("dir") || "rtl";
+      const head = `
+        <style>
+          :root { --border:#e5e7eb; --muted:#6b7280; --bg:#f3f4f6; --ink:#111827; }
+          * { box-sizing: border-box; }
+          html, body { margin:0; padding:0; color:var(--ink); }
+          body {
+            font-family: "Tajawal", Tahoma, Arial, sans-serif;
+            padding: 14mm 10mm;
+            line-height: 1.35;
+            text-rendering: optimizeLegibility;
+          }
+          @page { size: A4 landscape; margin: 10mm; }
+          .report-head {
+            display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+            padding-bottom:10px; border-bottom:2px solid #111827; margin-bottom:10px;
+          }
+          .report-title { margin:0; font-size:18px; font-weight:800; }
+          .report-sub { margin:4px 0 0; color:var(--muted); font-size:12px; line-height:1.35; }
+          .report-meta { text-align:end; font-size:12px; color:var(--muted); white-space:pre-line; }
+          .detail-panel { border:1px solid var(--border); border-radius:10px; background:#fff; padding:10px 12px; margin-bottom:10px; }
+          .wf-po-meta-grid { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:8px; }
+          .wf-po-meta-block { border:1px solid var(--border); border-radius:10px; padding:8px 10px; background:#fff; }
+          .wf-po-meta-label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+          table { width:100%; border-collapse: collapse; table-layout: fixed; font-size:10px; }
+          thead { display: table-header-group; }
+          th, td { border:1px solid var(--border); padding:5px 6px; vertical-align:top; word-break:break-word; }
+          th { background: var(--bg); font-weight:800; text-align:start; }
+          tr { break-inside: avoid; }
+          button, .btn { display:none !important; }
+          .table-scroll { overflow: visible !important; }
+          html[dir="rtl"] body { direction: rtl; }
+          html[dir="rtl"] .report-meta { text-align:start; }
+        </style>
+      `;
+      const metaLines = [
+        `${from} → ${to} · ${base}`,
+        `${t("reportGeneratedAtLabel")}: ${genAt}`,
+        currentUser?.email ? `${t("reportGeneratedByLabel")}: ${currentUser.email}` : "",
+        searchText ? `${t("reportMaterialSearchLabel")}: ${searchText}` : "",
+        coText ? `${t("reportCompanyLabel")}: ${coText}` : "",
+        projText ? `${t("reportProjectLabel")}: ${projText}` : "",
+        repText ? `${t("reportRepresentativeLabel")}: ${repText}` : "",
+        wfText ? `${t("reportWorkflowLabel")}: ${wfText}` : "",
+        rtText ? `${t("reportRequestTypeFilterLabel")}: ${rtText}` : "",
+        hpText ? `${t("reportFilterHasPrices")}: ${hpText}` : "",
+        pvText ? `${t("reportFilterPricesVerified")}: ${pvText}` : "",
+        groupText ? `${t("reportMaterialGroupByLabel")}: ${groupText}` : "",
+      ].filter(Boolean);
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        `<!doctype html><html dir="${escapeAttr(dir)}"><head><meta charset="utf-8" />${head}<title>${escapeHtml(title)}</title></head><body>` +
+          `<header class="report-head">` +
+          `<div><h1 class="report-title">${escapeHtml(title)}</h1><p class="report-sub">${escapeHtml(t("reportFxHint"))}</p></div>` +
+          `<div class="report-meta">${escapeHtml(metaLines.join("\n"))}</div>` +
+          `</header>` +
+          html +
+          `</body></html>`
+      );
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    function exportMaterialsReportCsv() {
+      const snap = lastMaterialsReportSnapshot;
+      if (!snap || !Array.isArray(snap.lineRows) || !snap.lineRows.length) {
+        alert(t("reportNoRows"));
+        return;
+      }
+      const sep = ",";
+      const q = (v) => {
+        const s = String(v ?? "");
+        if (/["\n,]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
+        return s;
+      };
+      const head = [
+        t("colPoReference"),
+        t("colRequestDate"),
+        t("reportCompanyLabel"),
+        t("colProject"),
+        t("colRegion"),
+        t("colWorkflow"),
+        t("colPurchasingRepresentative"),
+        t("reportLinesCsvLineNo"),
+        t("poLineDescCol"),
+        t("poLineUnitCol"),
+        t("poLineQtyCol"),
+        t("accUnitPriceCol"),
+        t("reportBaseCurrencyLabel"),
+        t("accLineTotalCol"),
+        `${t("reportMatColConvertedLine")} (${snap.convLabel})`,
+        t("reportColPurchasingVerified"),
+      ];
+      const lines = [head.map(q).join(sep)];
+      snap.lineRows.forEach((r) => {
+        lines.push(
+          [
+            r.ref,
+            r.requestDate,
+            r.company,
+            r.project,
+            r.region,
+            workflowLabel(r.workflowStatus),
+            r.rep,
+            r.lineNo,
+            r.item,
+            r.unit,
+            r.qty,
+            r.price,
+            r.currency,
+            r.lineTotal,
+            r.lineConverted,
+            r.pricesVerifiedLabel,
+          ]
+            .map(q)
+            .join(sep)
+        );
+      });
+      const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      const from = (snap.from || "").slice(0, 10);
+      const to = (snap.to || "").slice(0, 10);
+      a.href = URL.createObjectURL(blob);
+      a.download = `materials_prices_${from}_${to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 0);
     }
 
     async function completeAccountingWorkflowFromModal() {
