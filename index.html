@@ -2134,8 +2134,10 @@
     .po007-surface .po007-items-table col.po007-col-item { width: 15%; }
     .po007-surface .po007-items-table col.po007-col-desc { width: 34%; }
     .po007-surface .po007-items-table col.po007-col-qty { width: 72px; }
-    .po007-surface .po007-items-table col.po007-col-price { width: 17%; }
-    .po007-surface .po007-items-table col.po007-col-total { width: 17%; }
+    .po007-surface .po007-items-table col.po007-col-included { width: 108px; }
+    .po007-surface .po007-items-table col.po007-col-price { width: 15%; }
+    .po007-surface .po007-items-table col.po007-col-total { width: 15%; }
+    .po007-surface .po007-items-table thead th.po007-col-included { text-align: center; font-size: 9px; }
     .po007-surface .po007-items-table thead th.po007-col-no { text-align: center; }
     .po007-surface .po007-items-table thead th.po007-col-qty { text-align: center; }
     .po007-surface .po007-items-table thead th.po007-col-price,
@@ -2323,6 +2325,7 @@
       padding: 8px 6px;
       text-align: start;
       vertical-align: middle;
+      color: #fff;
     }
     .po007-surface .po007-sec-data-table tbody tr { border-bottom: 1px solid #e0e4ea; }
     .po007-surface .po007-sec-data-table tbody tr:nth-child(odd) { background: #fff; }
@@ -2512,6 +2515,23 @@
     .po-gen-list-table input,
     .po-gen-list-table textarea { width: 100%; font: inherit; }
     .po-gen-line-desc { min-height: 3.5rem; resize: vertical; }
+    .gen-line-included-lbl {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .gen-line-included-lbl input { margin: 0; flex-shrink: 0; }
+    tr.gen-line-included-row td { color: #5a6478; }
+    tr.gen-line-included-row .po007-unit-price,
+    tr.gen-line-included-row .po007-line-total {
+      font-style: italic;
+      color: #5a6478;
+    }
+    .gen-line-included-readonly .po007-cell-field { color: #5a6478; font-style: italic; }
 
     #modal-general-po007.modal-overlay {
       align-items: flex-start;
@@ -2537,6 +2557,7 @@
     }
     .po007-editor-toolbar-title { font-weight: 700; font-size: 0.95rem; }
     .po007-editor-toolbar-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    #modal-general-po007.template-mode .po007-meta-po-only { display: none !important; }
     .po007-meta-bar {
       display: flex;
       flex-wrap: wrap;
@@ -2580,7 +2601,7 @@
     .po007-surface.po007-edit-mode :not(.po007-items-table) > * [contenteditable],
     .po007-surface.po007-edit-mode .po007-parties .po007-party-extra-field[contenteditable],
     .po007-surface.po007-edit-mode .po007-doc-header [contenteditable],
-    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:not(.po007-cell-field):not(.po007-sec-table-th-field),
+    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:not(.po007-cell-field):not(.po007-sec-table-th-field):not([data-po007-custom-col-head]),
     .po007-surface.po007-edit-mode .po007-signatures [contenteditable] {
       outline: none;
       background: #fffbe6;
@@ -2593,7 +2614,7 @@
     .po007-surface.po007-edit-mode :not(.po007-items-table) > * [contenteditable]:focus,
     .po007-surface.po007-edit-mode .po007-parties .po007-party-extra-field[contenteditable]:focus,
     .po007-surface.po007-edit-mode .po007-doc-header [contenteditable]:focus,
-    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:not(.po007-cell-field):not(.po007-sec-table-th-field):focus,
+    .po007-surface.po007-edit-mode .po007-section-body [contenteditable]:not(.po007-cell-field):not(.po007-sec-table-th-field):not([data-po007-custom-col-head]):focus,
     .po007-surface.po007-edit-mode .po007-signatures [contenteditable]:focus {
       background: #fff9d6;
       border-bottom-color: #c8960a;
@@ -2645,6 +2666,7 @@
       padding: 10px 8px;
       font-size: 11px;
       text-transform: none;
+      color: #fff;
     }
     .po007-surface.po007-edit-mode .po007-items-table tbody tr[data-po007-line] {
       border-bottom: 1px solid #d0d8e4;
@@ -2770,6 +2792,7 @@
       padding: 10px 8px;
       font-size: 11px;
       text-transform: none;
+      color: #fff;
     }
     .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-delivery-row],
     .po007-surface.po007-edit-mode .po007-sec-data-table tbody tr[data-po007-shipping-doc-row],
@@ -2825,26 +2848,31 @@
       align-items: center;
       gap: 4px;
     }
-    .po007-surface.po007-edit-mode .po007-sec-table-th-field {
+    .po007-surface.po007-edit-mode .po007-sec-data-table thead .po007-sec-table-th-field {
       display: block;
       width: 100%;
       box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px dashed rgba(255, 255, 255, 0.45);
+      background: #fff;
+      border: 1px dashed rgba(255, 255, 255, 0.9);
       border-radius: 4px;
       padding: 4px 6px;
       font-size: 10px;
       font-weight: 700;
-      color: #fff;
+      color: #1c3557;
+      -webkit-text-fill-color: #1c3557;
+      caret-color: #1c3557;
       text-align: center;
       outline: none;
       white-space: pre-wrap;
       word-break: break-word;
       cursor: text;
     }
-    .po007-surface.po007-edit-mode .po007-sec-table-th-field:focus {
-      background: rgba(255, 255, 255, 0.24);
+    .po007-surface.po007-edit-mode .po007-sec-data-table thead .po007-sec-table-th-field:focus {
+      background: #fffef8;
       border-color: #f0c040;
+      color: #1c3557;
+      -webkit-text-fill-color: #1c3557;
+      box-shadow: 0 0 0 2px rgba(240, 192, 64, 0.35);
     }
     .po007-surface.po007-edit-mode .po007-sec-data-table .po007-add-custom-col {
       font-size: 9px;
@@ -3881,6 +3909,7 @@
         <div class="card">
           <div class="toolbar">
             <button type="button" class="btn btn-primary btn-sm" id="btn-new-po-general" data-i18n="newPoRequest">طلب شراء جديد</button>
+            <button type="button" class="btn btn-secondary btn-sm hidden" id="btn-edit-general-po-template" data-i18n="btnEditGeneralPoTemplate">تعديل القالب الافتراضي</button>
           </div>
           <div id="po-general-table-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
@@ -4288,6 +4317,7 @@
                     <th data-i18n="genPoColItemTag">البند (Item)</th>
                     <th data-i18n="genPoColDescription">الوصف التفصيلي</th>
                     <th data-i18n="genPoColQty">الكمية</th>
+                    <th data-i18n="genPoColIncluded" title="genPoLinesIncludedHint">مشمول بالسعر</th>
                     <th data-i18n="genPoColUnitPrice">سعر الوحدة (IQD)</th>
                     <th data-i18n="genPoColLineTotal">الإجمالي</th>
                     <th aria-hidden="true"></th>
@@ -4666,27 +4696,30 @@
   <div id="modal-general-po007" class="modal-overlay hidden po007-editing" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide po007-editor-modal">
       <div class="po007-editor-toolbar">
-        <div class="po007-editor-toolbar-title" data-i18n="genPo007EditorTitle">أمر شراء — نموذج PO007</div>
+        <div class="po007-editor-toolbar-title" data-i18n="genPo007EditorTitle">أمر شراء ادارة عامة</div>
         <div class="po007-editor-toolbar-actions">
           <button type="button" class="btn btn-secondary btn-sm" id="po007-editor-preview" data-i18n="view">معاينة</button>
           <button type="button" class="btn btn-secondary btn-sm" id="po007-editor-cancel" data-i18n="cancel">إلغاء</button>
           <button type="button" class="btn btn-primary btn-sm" id="po007-editor-save" data-i18n="save">حفظ</button>
         </div>
       </div>
+      <p id="po007-template-hint" class="sub hidden" style="margin:0 1rem 0.5rem;color:var(--muted);font-size:0.82rem" data-i18n="genPoTemplateEditorHint">
+        عدّل أقسام القالب الافتراضي ثم اضغط «حفظ القالب» — يُطبَّق على أوامر الشراء الجديدة (حسب لغة المستند).
+      </p>
       <div class="po007-meta-bar">
-        <label class="po007-meta-field">
+        <label class="po007-meta-field po007-meta-po-only">
           <span data-i18n="genPoLabelProject">المشروع</span>
           <select id="po007-meta-project"><option value="">—</option></select>
         </label>
-        <label class="po007-meta-field">
+        <label class="po007-meta-field po007-meta-po-only">
           <span data-i18n="genPoLabelBuyerCompany">شركة المشتري</span>
           <select id="po007-meta-company"><option value="">—</option></select>
         </label>
-        <label class="po007-meta-field">
+        <label class="po007-meta-field po007-meta-po-only">
           <span data-i18n="genPo007ModalSellerCompany">اسم شركة البائع</span>
           <select id="po007-meta-supplier"><option value="">—</option></select>
         </label>
-        <label class="po007-meta-field">
+        <label class="po007-meta-field po007-meta-po-only">
           <span data-i18n="genPoLabelPoDate">تاريخ أمر الشراء</span>
           <input type="date" id="po007-meta-po-date" />
         </label>
@@ -4697,7 +4730,7 @@
             <option value="USD">USD</option>
           </select>
         </label>
-        <label class="po007-meta-field">
+        <label class="po007-meta-field po007-meta-po-only">
           <span data-i18n="poStatusLabel">الحالة</span>
           <select id="po007-meta-status"></select>
         </label>
@@ -4708,7 +4741,7 @@
             <option value="en" data-i18n="genPoLangEn">English</option>
           </select>
         </label>
-        <button type="button" class="btn btn-secondary btn-sm" id="po007-meta-add-supplier" data-i18n="btnAddSupplier">إضافة مورد</button>
+        <button type="button" class="btn btn-secondary btn-sm po007-meta-po-only" id="po007-meta-add-supplier" data-i18n="btnAddSupplier">إضافة مورد</button>
       </div>
       <input type="hidden" id="po007-editor-id" />
       <div class="po007-editor-scroll">
@@ -5639,6 +5672,10 @@
         genPoColDesc: "الوصف",
         genPoColUnit: "الوحدة",
         genPoColQty: "الكمية",
+        genPoColIncluded: "مشمول بالسعر",
+        genPoLinesIncludedHint:
+          "بنود مشمولة ضمن أسعار المواد الأساسية (مثل قطع الغيار) — تُعرض في الطلب ولا تُحسب في الإجمالي.",
+        genPoLineIncludedInBasePrice: "مشمول بسعر المواد الأساسية",
         genPoColUnitPrice: "سعر الوحدة (IQD)",
         genPoColPrice: "السعر / ملاحظة",
         genPoColLineTotal: "الإجمالي",
@@ -5719,7 +5756,15 @@
         genPo007PoDate: "تاريخ أمر الشراء",
         genPo007PoRef: "المرجع:",
         genPo007Page: "صفحة",
-        genPo007EditorTitle: "أمر شراء — نموذج PO007",
+        genPo007EditorTitle: "أمر شراء ادارة عامة",
+        btnEditGeneralPoTemplate: "تعديل القالب الافتراضي",
+        genPoTemplateEditorTitle: "القالب الافتراضي — أوامر الإدارة العامة",
+        genPoTemplateEditorHint:
+          "عدّل أقسام القالب الافتراضي ثم اضغط «حفظ القالب» — يُطبَّق على أوامر الشراء الجديدة (حسب لغة المستند).",
+        genPoTemplateSaveBtn: "حفظ القالب",
+        genPoTemplateSaved: "تم حفظ القالب الافتراضي.",
+        genPoTemplateLangChangeWarn:
+          "تغيير لغة المستند يعيد تحميل القالب المحفوظ لتلك اللغة. هل تريد المتابعة؟",
         genPoSectionDocs: "المستندات المطلوبة",
         genPoColSn: "م",
         genPoColDocDesc: "وصف المستند",
@@ -6450,6 +6495,10 @@
         genPoColDesc: "Description",
         genPoColUnit: "Unit",
         genPoColQty: "Qty",
+        genPoColIncluded: "In base price",
+        genPoLinesIncludedHint:
+          "Items bundled in base material prices (e.g. spare parts) — listed on the order but not added to the total.",
+        genPoLineIncludedInBasePrice: "Included in base material price",
         genPoColUnitPrice: "Unit price (IQD)",
         genPoColPrice: "Price / note",
         genPoColLineTotal: "Line total",
@@ -6530,7 +6579,15 @@
         genPo007PoDate: "PO Date",
         genPo007PoRef: "Ref:",
         genPo007Page: "Page",
-        genPo007EditorTitle: "Purchase order — PO007 template",
+        genPo007EditorTitle: "General administration purchase order",
+        btnEditGeneralPoTemplate: "Edit default template",
+        genPoTemplateEditorTitle: "Default template — general admin POs",
+        genPoTemplateEditorHint:
+          "Edit the default sections then click «Save template» — applied to new purchase orders (per document language).",
+        genPoTemplateSaveBtn: "Save template",
+        genPoTemplateSaved: "Default template saved.",
+        genPoTemplateLangChangeWarn:
+          "Changing document language reloads the saved template for that language. Continue?",
         genPoSectionDocs: "Required documents",
         genPoColSn: "#",
         genPoColDocDesc: "Document",
@@ -6981,22 +7038,79 @@
       return s;
     }
 
+    function generalLineIsIncluded(l) {
+      const x = l || {};
+      return !!(x.includedInBasePrice || x.priceIncluded);
+    }
+
+    function generalLinesBillableTotal(lines) {
+      return (Array.isArray(lines) ? lines : []).reduce((s, l) => {
+        if (generalLineIsIncluded(l)) return s;
+        return s + (Number(l.lineTotal) || 0);
+      }, 0);
+    }
+
+    function applyGeneralLineIncludedRowUi(tr, docLang) {
+      if (!tr) return;
+      const included = !!tr.querySelector(".gen-line-included")?.checked;
+      tr.classList.toggle("gen-line-included-row", included);
+      const priceEl = tr.querySelector(".po007-unit-price");
+      const priceInp = tr.querySelector(".po-gen-line-price");
+      const totalEl = tr.querySelector(".po007-line-total");
+      const totalInp = tr.querySelector(".po-gen-line-total");
+      const inclText = tPo007(docLang, "genPoLineIncludedInBasePrice");
+      const dash = tPo007(docLang, "dash");
+      if (priceEl) {
+        const priceBox = priceEl.closest(".po007-cell-box");
+        if (included) {
+          priceBox?.classList.add("gen-line-included-readonly");
+          priceEl.contentEditable = "false";
+          priceEl.textContent = inclText;
+        } else {
+          priceBox?.classList.remove("gen-line-included-readonly");
+          priceEl.contentEditable = "true";
+          if ((priceEl.textContent || "").trim() === inclText) priceEl.textContent = "0";
+        }
+      }
+      if (priceInp) {
+        priceInp.readOnly = included;
+        if (included) priceInp.value = inclText;
+        else if (priceInp.value === inclText) priceInp.value = "";
+      }
+      if (totalEl) totalEl.textContent = included ? dash : totalEl.textContent;
+      if (totalInp) totalInp.value = included ? "" : totalInp.value;
+    }
+
     function normalizeGeneralLineRow(l) {
       const x = l || {};
       const itemTag = (x.itemTag || x.item || "").trim();
       const description = (x.description || x.remark || "").trim();
       const qty = Number(x.qty) || 0;
+      const includedInBasePrice = generalLineIsIncluded(x);
       const priceText =
-        x.priceText != null && String(x.priceText).trim() !== ""
-          ? String(x.priceText).trim()
-          : x.price != null && x.price !== ""
-            ? String(x.price)
-            : "";
-      const lineTotal =
-        x.lineTotal != null && x.lineTotal !== ""
+        includedInBasePrice
+          ? ""
+          : x.priceText != null && String(x.priceText).trim() !== ""
+            ? String(x.priceText).trim()
+            : x.price != null && x.price !== ""
+              ? String(x.price)
+              : "";
+      const lineTotal = includedInBasePrice
+        ? 0
+        : x.lineTotal != null && x.lineTotal !== ""
           ? Number(x.lineTotal)
           : qty * (parseFloat(String(priceText).replace(/,/g, "")) || 0);
-      return { itemTag, description, item: itemTag, unit: (x.unit || "").trim(), qty, priceText, lineTotal, remark: description };
+      return {
+        itemTag,
+        description,
+        item: itemTag,
+        unit: (x.unit || "").trim(),
+        qty,
+        priceText,
+        lineTotal,
+        remark: description,
+        includedInBasePrice,
+      };
     }
 
     function enrichGeneralFormPo007(g) {
@@ -7050,6 +7164,16 @@
       { id: "inspection", page: 2, titleKey: "genPo007SecInspection" },
       { id: "effective", page: 2, titleKey: "genPo007SecEffective" },
     ];
+
+    const PO007_BUILTIN_SECTION_IDS = new Set(PO007_MAIN_SECTIONS.map((s) => s.id));
+
+    function getPo007BuiltinSectionVisibility() {
+      return { delivery: "deleted" };
+    }
+
+    function mergePo007DefaultSectionVisibility(vis) {
+      return { ...getPo007BuiltinSectionVisibility(), ...(vis || {}) };
+    }
 
     function getPo007MetaCurrency() {
       const v = ($("po007-meta-currency")?.value || "").trim();
@@ -7159,6 +7283,7 @@
       const tr = document.createElement("tr");
       const idx = tbody.querySelectorAll("tr").length + 1;
       const l = normalizeGeneralLineRow(line);
+      const incl = generalLineIsIncluded(l);
       tr.innerHTML = `
         <td class="po-print-num">${idx}</td>
         <td><input type="text" class="po-gen-line-tag" value="${escapeAttr(l.itemTag)}" /></td>
@@ -7166,6 +7291,12 @@
         <td><input type="number" class="po-gen-line-qty" min="0" step="any" value="${escapeAttr(
           l.qty ? String(l.qty) : ""
         )}" /></td>
+        <td>
+          <label class="gen-line-included-lbl" title="${escapeAttr(t("genPoLinesIncludedHint"))}">
+            <input type="checkbox" class="gen-line-included"${incl ? " checked" : ""} />
+            <span data-i18n="genPoColIncluded">${escapeHtml(t("genPoColIncluded"))}</span>
+          </label>
+        </td>
         <td><input type="text" class="po-gen-line-price" value="${escapeAttr(l.priceText)}" /></td>
         <td><input type="text" class="po-gen-line-total" value="${escapeAttr(
           l.lineTotal ? String(l.lineTotal) : ""
@@ -7173,6 +7304,10 @@
         <td><button type="button" class="btn btn-secondary btn-sm po-gen-line-remove" aria-label="×">×</button></td>`;
       const descTa = tr.querySelector(".po-gen-line-desc");
       if (descTa) descTa.value = l.description || "";
+      tr.querySelector(".gen-line-included")?.addEventListener("change", () => {
+        applyGeneralLineIncludedRowUi(tr, lang === "en" ? "en" : "ar");
+      });
+      applyGeneralLineIncludedRowUi(tr, lang === "en" ? "en" : "ar");
       tr.querySelector(".po-gen-line-remove")?.addEventListener("click", () => {
         tr.remove();
         renumberGeneralLineRows();
@@ -7198,6 +7333,7 @@
             itemTag: tr.querySelector(".po-gen-line-tag")?.value?.trim() || "",
             description: tr.querySelector(".po-gen-line-desc")?.value?.trim() || "",
             qty: parseFloat(String(tr.querySelector(".po-gen-line-qty")?.value)) || 0,
+            includedInBasePrice: !!tr.querySelector(".gen-line-included")?.checked,
             priceText: tr.querySelector(".po-gen-line-price")?.value?.trim() || "",
             lineTotal: parseFloat(String(tr.querySelector(".po-gen-line-total")?.value).replace(/,/g, "")) || 0,
           })
@@ -8223,7 +8359,7 @@
       return escapeHtml(text || "").replace(/\n/g, "<br/>");
     }
 
-    function getPo007DefaultTemplate(docLang) {
+    function getPo007BuiltinTemplate(docLang) {
       const ar = docLang === "ar";
       const shippingDocs = getPo007ShippingDocsBuiltin(docLang);
       if (ar) {
@@ -8297,6 +8433,36 @@
         ],
         effectiveDateItems: ["From of the date of first down payment or approval on DFA whichever is later."],
         ...shippingDocs,
+      };
+    }
+
+    function getPo007DefaultTemplate(docLang) {
+      const lang = docLang === "en" ? "en" : "ar";
+      const builtin = getPo007BuiltinTemplate(lang);
+      const saved = generalPoTemplateCache[lang];
+      if (!saved) return builtin;
+      return {
+        ...builtin,
+        noteItems: saved.noteItems?.length ? [...saved.noteItems] : builtin.noteItems,
+        docListItems: saved.docListItems?.length ? [...saved.docListItems] : builtin.docListItems,
+        paymentTerms: saved.paymentTerms?.length
+          ? saved.paymentTerms.map((p) => ({ ...p }))
+          : builtin.paymentTerms,
+        deliveryRows: saved.deliveryRows?.length
+          ? saved.deliveryRows.map((r) => ({ ...r }))
+          : builtin.deliveryRows,
+        shippingDocsIntro: (saved.shippingDocsIntro || "").trim() || builtin.shippingDocsIntro,
+        shippingDocsRows: saved.shippingDocsRows?.length
+          ? saved.shippingDocsRows.map((r) => ({ ...r }))
+          : builtin.shippingDocsRows,
+        termsPacking: (saved.termsPacking || "").trim() || builtin.termsPacking,
+        warranty: (saved.warranty || "").trim() || builtin.warranty,
+        inspectionItems: saved.inspectionItems?.length
+          ? [...saved.inspectionItems]
+          : builtin.inspectionItems,
+        effectiveDateItems: saved.effectiveDateItems?.length
+          ? [...saved.effectiveDateItems]
+          : builtin.effectiveDateItems,
       };
     }
 
@@ -8638,17 +8804,74 @@
       }
     }
 
-    function buildPo007PageSectionsHtml(g, docLang, page, editorMode) {
+    function buildPo007SectionNumberMap(g, docLang, editorMode) {
       const gNorm = normalizePo007SectionMeta(g);
       const gSec = editorMode ? mergePo007TemplateIntoForm(gNorm, docLang) : gNorm;
+      const map = new Map();
+      let num = 0;
+      for (const id of gNorm.sectionOrder) {
+        const state = getPo007SectionState(gNorm, id);
+        if (editorMode) {
+          if (state === "deleted") continue;
+        } else if (state !== "visible") continue;
+        const body = renderPo007MainSectionBody(id, gSec, docLang, editorMode);
+        if (!editorMode && !body) continue;
+        num += 1;
+        map.set(id, num);
+      }
+      return map;
+    }
+
+    function compactPo007SectionMeta(g) {
+      const x = normalizePo007SectionMeta(g);
+      const order = x.sectionOrder.filter((id) => {
+        const st = getPo007SectionState(x, id);
+        if (st !== "deleted") return true;
+        return PO007_BUILTIN_SECTION_IDS.has(id);
+      });
+      const orderSet = new Set(order);
+      const vis = { ...x.sectionVisibility };
+      Object.keys(vis).forEach((id) => {
+        if (vis[id] === "deleted" || vis[id] === false) {
+          if (PO007_BUILTIN_SECTION_IDS.has(id)) vis[id] = "deleted";
+          else delete vis[id];
+        }
+      });
+      PO007_MAIN_SECTIONS.forEach((sec) => {
+        if (vis[sec.id] === "deleted" && !orderSet.has(sec.id)) order.push(sec.id);
+      });
+      const customSections = (x.customSections || []).filter((cs) => getPo007SectionState(x, cs.id) !== "deleted");
+      const titles = { ...(x.sectionTitles || {}) };
+      Object.keys(titles).forEach((id) => {
+        if (!orderSet.has(id) && !PO007_BUILTIN_SECTION_IDS.has(id)) delete titles[id];
+      });
+      const custom = { ...(x.sectionCustomDefaults || {}) };
+      Object.keys(custom).forEach((id) => {
+        if (!orderSet.has(id) && !PO007_BUILTIN_SECTION_IDS.has(id)) delete custom[id];
+      });
+      return {
+        ...x,
+        sectionOrder: order,
+        sectionVisibility: vis,
+        sectionTitles: titles,
+        sectionCustomDefaults: custom,
+        customSections,
+      };
+    }
+
+    function buildPo007PageSectionsHtml(g, docLang, page, editorMode, sectionNums) {
+      const gNorm = normalizePo007SectionMeta(g);
+      const gSec = editorMode ? mergePo007TemplateIntoForm(gNorm, docLang) : gNorm;
+      const nums = sectionNums || buildPo007SectionNumberMap(gNorm, docLang, editorMode);
       const secs = getPo007SectionsForPage(gNorm, page, editorMode);
       let html = "";
-      let num = 0;
       secs.forEach((sec) => {
-        num += 1;
         const body = renderPo007MainSectionBody(sec.id, gSec, docLang, editorMode);
         const title = getPo007SectionTitle(gNorm, sec.id, docLang);
         const state = getPo007SectionState(gNorm, sec.id);
+        const num = nums.get(sec.id);
+        if (!editorMode && (state !== "visible" || !body)) return;
+        if (!num) return;
         html += renderPo007SectionShell(sec.id, num, title, body, editorMode, state, docLang, gNorm);
       });
       if (editorMode) html += renderPo007AddSectionBar(page, gNorm, docLang);
@@ -8853,6 +9076,162 @@
     }
 
     let generalPo007EditorLogo = "";
+    let generalPo007EditorMode = "po";
+    const generalPoTemplateCache = { ar: null, en: null, loaded: false };
+
+    function generalPoTemplateDocRef() {
+      return doc(db, "appConfig", "generalAdminPoTemplate");
+    }
+
+    async function loadGeneralPoTemplateCache() {
+      try {
+        const snap = await getDoc(generalPoTemplateDocRef());
+        if (snap.exists()) {
+          const d = snap.data();
+          generalPoTemplateCache.ar = d.ar && typeof d.ar === "object" ? d.ar : null;
+          generalPoTemplateCache.en = d.en && typeof d.en === "object" ? d.en : null;
+        } else {
+          generalPoTemplateCache.ar = null;
+          generalPoTemplateCache.en = null;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      generalPoTemplateCache.loaded = true;
+    }
+
+    function pickGeneralPoTemplatePayload(g) {
+      const x = compactPo007SectionMeta(enrichGeneralFormPo007(g || {}));
+      return {
+        currency: x.currency === "USD" ? "USD" : "IQD",
+        poRev: (x.poRev ?? "").trim(),
+        lines: (x.lines || []).map(normalizeGeneralLineRow),
+        noteItems: [...(x.noteItems || [])],
+        docListItems: [...(x.docListItems || [])],
+        paymentTerms: (x.paymentTerms || []).map((p) => ({ ...p })),
+        deliveryRows: (x.deliveryRows || []).map((r) => ({ ...r })),
+        shippingDocsIntro: (x.shippingDocsIntro || "").trim(),
+        shippingDocsRows: (x.shippingDocsRows || []).map((r) => ({ ...r })),
+        customSections: JSON.parse(JSON.stringify(x.customSections || [])),
+        termsPacking: (x.termsPacking || "").trim(),
+        warranty: (x.warranty || "").trim(),
+        inspectionItems: [...(x.inspectionItems || [])],
+        effectiveDateItems: [...(x.effectiveDateItems || [])],
+        sectionTitles: { ...(x.sectionTitles || {}) },
+        sectionVisibility: { ...(x.sectionVisibility || {}) },
+        sectionOrder: [...(x.sectionOrder || getDefaultPo007SectionOrder(x))],
+        sectionCustomDefaults: JSON.parse(JSON.stringify(x.sectionCustomDefaults || {})),
+        buyerExtra: { ...(x.buyerExtra || {}) },
+        offerType: (x.offerType || "").trim(),
+        totalWords: (x.totalWords || "").trim(),
+        signVendor: (x.signVendor || "").trim(),
+        signBuyer: (x.signBuyer || "").trim(),
+      };
+    }
+
+    function applyGeneralPoTemplateMetadataToForm(base, saved) {
+      if (!saved || typeof saved !== "object") return base;
+      if (saved.currency) base.currency = saved.currency === "USD" ? "USD" : "IQD";
+      if (saved.poRev != null) base.poRev = saved.poRev;
+      if (Array.isArray(saved.lines) && saved.lines.length) base.lines = saved.lines.map(normalizeGeneralLineRow);
+      if (saved.sectionTitles) base.sectionTitles = { ...saved.sectionTitles };
+      base.sectionVisibility = mergePo007DefaultSectionVisibility(
+        saved.sectionVisibility ? { ...saved.sectionVisibility } : base.sectionVisibility
+      );
+      if (saved.sectionOrder) base.sectionOrder = [...saved.sectionOrder];
+      if (saved.sectionCustomDefaults) {
+        base.sectionCustomDefaults = JSON.parse(JSON.stringify(saved.sectionCustomDefaults));
+      }
+      if (saved.customSections) base.customSections = JSON.parse(JSON.stringify(saved.customSections));
+      if (saved.buyerExtra) base.buyerExtra = { ...saved.buyerExtra };
+      if (saved.offerType != null) base.offerType = saved.offerType;
+      if (saved.totalWords != null) base.totalWords = saved.totalWords;
+      if (saved.signVendor != null) base.signVendor = saved.signVendor;
+      if (saved.signBuyer != null) base.signBuyer = saved.signBuyer;
+      return base;
+    }
+
+    function syncGeneralPo007EditorModeUi() {
+      const modal = $("modal-general-po007");
+      const isTemplate = generalPo007EditorMode === "template";
+      modal?.classList.toggle("template-mode", isTemplate);
+      const titleEl = modal?.querySelector(".po007-editor-toolbar-title");
+      if (titleEl) titleEl.textContent = isTemplate ? t("genPoTemplateEditorTitle") : t("genPo007EditorTitle");
+      const saveBtn = $("po007-editor-save");
+      if (saveBtn) saveBtn.textContent = isTemplate ? t("genPoTemplateSaveBtn") : t("save");
+      $("po007-template-hint")?.classList.toggle("hidden", !isTemplate);
+    }
+
+    function syncGeneralPoToolbarButtons() {
+      const tplBtn = $("btn-edit-general-po-template");
+      if (tplBtn) tplBtn.classList.toggle("hidden", isPoEditorRoleBlocked());
+    }
+
+    function buildGeneralPoTemplateEditorForm(docLang) {
+      const lang = docLang === "en" ? "en" : "ar";
+      const saved = generalPoTemplateCache[lang];
+      if (saved) {
+        const g = enrichGeneralFormPo007({
+          documentLang: lang,
+          ...pickGeneralPoTemplatePayload(saved),
+          sectionVisibility: mergePo007DefaultSectionVisibility(saved.sectionVisibility),
+          poNumber: "—",
+          poDate: formatTodayYmd(),
+          vendor: { name: "—", attn: "", phone: "", email: "", extraNotes: "" },
+        });
+        return generalFormForEditor(g, {});
+      }
+      return defaultGeneralPo007EditorForm(lang);
+    }
+
+    async function openGeneralPoTemplateEditor() {
+      if (isPoEditorRoleBlocked()) {
+        alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
+        return;
+      }
+      await loadGeneralPoTemplateCache();
+      generalPo007EditorMode = "template";
+      $("po007-editor-id").value = "";
+      fillPo007StatusOptions();
+      const langSel = $("po007-meta-lang");
+      if (langSel) langSel.value = "en";
+      const curSel = $("po007-meta-currency");
+      if (curSel) curSel.value = "USD";
+      setPo007MetaPoDateIso(formatTodayYmd());
+      syncGeneralPo007EditorModeUi();
+      $("modal-general-po007")?.classList.remove("hidden");
+      const docLang = getPo007DocumentLang();
+      const g = buildGeneralPoTemplateEditorForm(docLang);
+      g.poNumber = "—";
+      g.poDate = getPo007MetaPoDateIso();
+      mountGeneralPo007Editor(g, {});
+      void refreshPo007MetaToFrame();
+    }
+
+    async function saveGeneralPoTemplateModal() {
+      if (!getGeneralPo007Mount()?.querySelector(".po007-surface")) {
+        alert(t("loadError"));
+        return;
+      }
+      const docLang = getPo007DocumentLang();
+      const payload = pickGeneralPoTemplatePayload(buildGeneralFormFromEditor());
+      try {
+        const ref = generalPoTemplateDocRef();
+        const snap = await getDoc(ref);
+        const patch = {
+          [docLang]: payload,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser?.uid || null,
+        };
+        if (snap.exists()) await updateDoc(ref, patch);
+        else await setDoc(ref, patch);
+        generalPoTemplateCache[docLang] = payload;
+        alert(t("genPoTemplateSaved"));
+        closeGeneralPo007Modal();
+      } catch (err) {
+        alert(t("saveFailed") + " " + (err.message || ""));
+      }
+    }
     let generalPo007EditorPo = null;
     let generalPo007EditorCachedMeta = null;
 
@@ -8918,31 +9297,35 @@
     }
 
     function defaultGeneralPo007EditorForm(docLang) {
-      return mergePo007TemplateIntoForm(
-        enrichGeneralFormPo007({
-          documentLang: docLang,
-          currency: "IQD",
-          poRev: "",
-          poNumber: "—",
-          lines: [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }],
-          noteItems: [],
-          docListItems: [],
-          paymentTerms: [],
-          deliveryRows: [],
-          shippingDocsIntro: "",
-          shippingDocsRows: [],
-          customSections: [],
-          termsPacking: "",
-          warranty: "",
-          inspectionItems: [],
-          effectiveDateItems: [],
-          vendor: { name: "", attn: "", phone: "", email: "", extraNotes: "" },
-          buyerExtra: { attn: "", phone: "", emails: "", extraNotes: "" },
-          offerType: "",
-          totalWords: "",
-        }),
-        docLang
-      );
+      const lang = docLang === "en" ? "en" : "ar";
+      const saved = generalPoTemplateCache[lang];
+      const base = enrichGeneralFormPo007({
+        documentLang: lang,
+        currency: saved?.currency === "USD" ? "USD" : saved?.currency === "IQD" ? "IQD" : "USD",
+        poRev: saved?.poRev ?? "",
+        poNumber: "—",
+        lines: saved?.lines?.length
+          ? saved.lines.map(normalizeGeneralLineRow)
+          : [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }],
+        noteItems: [],
+        docListItems: [],
+        paymentTerms: [],
+        deliveryRows: [],
+        shippingDocsIntro: "",
+        shippingDocsRows: [],
+        customSections: [],
+        termsPacking: "",
+        warranty: "",
+        inspectionItems: [],
+        effectiveDateItems: [],
+        vendor: { name: "", attn: "", phone: "", email: "", extraNotes: "" },
+        buyerExtra: { attn: "", phone: "", emails: "", extraNotes: "" },
+        offerType: "",
+        totalWords: "",
+      });
+      applyGeneralPoTemplateMetadataToForm(base, saved);
+      base.sectionVisibility = mergePo007DefaultSectionVisibility(base.sectionVisibility);
+      return mergePo007TemplateIntoForm(base, lang);
     }
 
     function po007ItemsTableLabels(docLang, curSuffix) {
@@ -8964,9 +9347,14 @@
       const tag = (l.itemTag || l.item || "").trim();
       const desc = (l.description || l.remark || "").trim();
       const qty = l.qty != null ? String(l.qty) : "1";
-      const priceRaw = (l.priceText || (l.price != null ? String(l.price) : "0")).trim() || "0";
-      const price = formatPo007AmountText(priceRaw, docLang);
-      return `<tr data-po007-line>
+      const included = generalLineIsIncluded(l);
+      const priceRaw = included
+        ? ""
+        : (l.priceText || (l.price != null ? String(l.price) : "0")).trim() || "0";
+      const price = included ? tPo007(docLang, "genPoLineIncludedInBasePrice") : formatPo007AmountText(priceRaw, docLang);
+      const inclTitle = escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"));
+      const inclLbl = escapeHtml(tPo007(docLang, "genPoColIncluded"));
+      return `<tr data-po007-line${included ? ' class="gen-line-included-row"' : ""}>
         <td class="po007-col-no">
           <div class="po007-line-no-cell">
             <button type="button" class="del-btn po007-del-item-row" title="${escapeAttr(lbl.delTitle)}">✕</button>
@@ -8988,14 +9376,20 @@
             <span class="po007-cell-field po007-cell-field--num po007-qty" contenteditable="true" spellcheck="false">${escapeHtml(qty)}</span>
           </div>
         </td>
+        <td class="po007-col-included">
+          <label class="gen-line-included-lbl" title="${inclTitle}">
+            <input type="checkbox" class="gen-line-included"${included ? " checked" : ""} />
+            <span>${inclLbl}</span>
+          </label>
+        </td>
         <td class="po007-col-price">
-          <div class="po007-cell-box">
-            <span class="po007-cell-field po007-cell-field--num po007-cell-field--price po007-unit-price" contenteditable="true" spellcheck="false">${escapeHtml(price)}</span>
+          <div class="po007-cell-box${included ? " gen-line-included-readonly" : ""}">
+            <span class="po007-cell-field po007-cell-field--num po007-cell-field--price po007-unit-price" contenteditable="${included ? "false" : "true"}" spellcheck="false">${escapeHtml(price)}</span>
           </div>
         </td>
         <td class="po007-col-total">
           <div class="po007-cell-box po007-cell-box--readonly po007-cell-box--end">
-            <span class="po007-line-total">0</span>
+            <span class="po007-line-total">${included ? escapeHtml(tPo007(docLang, "dash")) : "0"}</span>
           </div>
         </td>
       </tr>`;
@@ -9009,30 +9403,36 @@
         .map((l, i) => renderGeneralPo007EditorLineRow(l, i, docLang))
         .join("");
       return `<div class="po007-items-table-wrap">
+        <p class="sub gen-lines-included-hint" style="margin:0 0 0.45rem;color:var(--muted);font-size:0.82rem">${escapeHtml(
+          tPo007(docLang, "genPoLinesIncludedHint")
+        )}</p>
         <table class="po007-items-table" data-po007="items-table">
           <colgroup>
             <col class="po007-col-no" /><col class="po007-col-item" /><col class="po007-col-desc" />
-            <col class="po007-col-qty" /><col class="po007-col-price" /><col class="po007-col-total" />
+            <col class="po007-col-qty" /><col class="po007-col-included" /><col class="po007-col-price" /><col class="po007-col-total" />
           </colgroup>
           <thead><tr>
             <th class="po007-col-no" data-po007="th-no">${escapeHtml(lbl.no)}</th>
             <th class="po007-col-item" data-po007="th-item">${escapeHtml(lbl.item)}</th>
             <th class="po007-col-desc" data-po007="th-desc">${escapeHtml(lbl.desc)}</th>
             <th class="po007-col-qty" data-po007="th-qty">${escapeHtml(lbl.qty)}</th>
+            <th class="po007-col-included" data-po007="th-included" title="${escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"))}">${escapeHtml(
+        tPo007(docLang, "genPoColIncluded")
+      )}</th>
             <th class="po007-col-price" data-po007="th-unit">${escapeHtml(lbl.unit)}</th>
             <th class="po007-col-total" data-po007="th-total">${escapeHtml(lbl.total)}</th>
           </tr></thead>
           <tbody>
             ${rows}
-            <tr class="po007-items-add-row"><td colspan="6">
+            <tr class="po007-items-add-row"><td colspan="7">
               <button type="button" class="add-row-btn po007-add-item-row">${escapeHtml(lbl.addRow)}</button>
             </td></tr>
             <tr class="po007-total-num-row">
-              <td colspan="5" class="po007-col-desc po007-total-num-lbl">${escapeHtml(tPo007(docLang, "genPo007TotalNumeric"))}</td>
+              <td colspan="6" class="po007-col-desc po007-total-num-lbl">${escapeHtml(tPo007(docLang, "genPo007TotalNumeric"))}</td>
               <td class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>
             </tr>
             <tr class="po007-total-row">
-              <td colspan="6" class="po007-col-desc">
+              <td colspan="7" class="po007-col-desc">
                 <div class="po007-total-say">
                   <span>${escapeHtml(tPo007(docLang, "genPo007TotalPriceSay"))}</span>
                   <span data-po007="total-words" contenteditable="true" spellcheck="false">${escapeHtml((g.totalWords || "").trim())}</span>
@@ -9049,19 +9449,21 @@
       if (!mount) return [];
       return [...mount.querySelectorAll("[data-po007-line]")]
         .map((tr) => {
+          const included = !!tr.querySelector(".gen-line-included")?.checked;
           const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
-          const unit = parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
-          const lineTotal = qty * unit;
+          const unit = included ? 0 : parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
+          const lineTotal = included ? 0 : qty * unit;
           const docLang = getPo007DocumentLang();
           return normalizeGeneralLineRow({
             itemTag: (tr.querySelector(".po007-item-tag")?.textContent || "").trim(),
             description: (tr.querySelector(".po007-desc")?.textContent || "").trim(),
             qty,
-            priceText: formatPo007EditorAmount(unit, docLang),
+            includedInBasePrice: included,
+            priceText: included ? "" : formatPo007EditorAmount(unit, docLang),
             lineTotal,
           });
         })
-        .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal);
+        .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal || l.includedInBasePrice);
     }
 
     function renumberGeneralPo007ItemRows() {
@@ -9210,16 +9612,22 @@
       const curSuffix = po007CurrencySuffix(getPo007MetaCurrency(), docLang);
       let sum = 0;
       mount.querySelectorAll("[data-po007-line]").forEach((tr) => {
+        applyGeneralLineIncludedRowUi(tr, docLang);
+        const included = !!tr.querySelector(".gen-line-included")?.checked;
         const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
         const priceEl = tr.querySelector(".po007-unit-price");
-        const unit = parsePo007EditorNum(priceEl?.textContent);
-        if (priceEl && document.activeElement !== priceEl) {
+        const unit = included ? 0 : parsePo007EditorNum(priceEl?.textContent);
+        if (priceEl && document.activeElement !== priceEl && !included) {
           applyPo007AmountFieldFormat(priceEl, docLang);
         }
-        const lineTotal = qty * unit;
+        const lineTotal = included ? 0 : qty * unit;
         sum += lineTotal;
         const lt = tr.querySelector(".po007-line-total");
-        if (lt) lt.textContent = formatPo007EditorAmount(lineTotal, docLang);
+        if (lt) {
+          lt.textContent = included
+            ? tPo007(docLang, "dash")
+            : formatPo007EditorAmount(lineTotal, docLang);
+        }
       });
       const grandDisp = formatPo007GrandTotalDisplay(sum, curSuffix, docLang);
       const grand = mount.querySelector('[data-po007="grand-total"]');
@@ -9245,6 +9653,7 @@
       set("th-item", lbl.item);
       set("th-desc", lbl.desc);
       set("th-qty", lbl.qty);
+      set("th-included", tPo007(docLang, "genPoColIncluded"));
       set("th-unit", lbl.unit);
       set("th-total", lbl.total);
       const addBtn = mount.querySelector(".po007-add-item-row");
@@ -9623,6 +10032,9 @@
         },
         true
       );
+      mount.addEventListener("change", (e) => {
+        if (e.target.matches(".gen-line-included")) recalcGeneralPo007ItemsTable();
+      });
     }
 
     function readPo007EditorMetaForFooter() {
@@ -9737,7 +10149,7 @@
       const savedTotalWords = (model.totalWords || "").trim();
       if (savedTotalWords) {
         const el = mount.querySelector('[data-po007="total-words"]');
-        const sum = (model.lines || []).reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+        const sum = generalLinesBillableTotal(model.lines || []);
         const auto = formatPo007TotalWordsDisplay(
           sum,
           model.currency,
@@ -9781,7 +10193,7 @@
         const manual = mount?.querySelector('[data-po007="total-words"]');
         const txt = read("total-words");
         if (txt && manual?.dataset.po007Manual === "1") return txt;
-        const sum = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+        const sum = generalLinesBillableTotal(lines);
         return formatPo007TotalWordsDisplay(sum, getPo007MetaCurrency(), getPo007DocumentLang());
       })();
       const printForm = enrichGeneralFormPo007({
@@ -9838,6 +10250,7 @@
           emails: [read("buyer-email-primary"), read("buyer-email-secondary")].filter(Boolean).join("\n"),
           extraNotes: read("buyer-extra"),
         },
+        buyerName: buyerSnap,
         lines,
         totalWords,
         ...sections,
@@ -9869,8 +10282,8 @@
         : editorMode
           ? `<img class="po007-logo" data-po007="logo" alt="" style="display:none" />`
           : "";
-      const buyerName = (po.companyNameSnapshot || "").trim();
       const docLang = g.documentLang === "en" ? "en" : "ar";
+      const buyerName = ((g.buyerName || "").trim() || (po.companyNameSnapshot || "").trim());
       const refText = (g.poNumber || po.title || "").trim() || tPo007(docLang, "dash");
       const poDateDisp = formatPo007DisplayDate(g.poDate) || poRowDisplayDate(po);
       const poRev = (g.poRev ?? "").trim();
@@ -9896,12 +10309,16 @@
                     .join("<br/>")
                 : "";
               const desc = (l.description || l.remark || "").trim();
-              const priceDisp = formatPo007AmountText(l.priceText || l.price, docLang);
-              const totalDisp =
-                l.lineTotal != null && l.lineTotal !== ""
+              const included = generalLineIsIncluded(l);
+              const priceDisp = included
+                ? tPo007(docLang, "genPoLineIncludedInBasePrice")
+                : formatPo007AmountText(l.priceText || l.price, docLang);
+              const totalDisp = included
+                ? tPo007(docLang, "dash")
+                : l.lineTotal != null && l.lineTotal !== ""
                   ? formatPo007EditorAmount(Number(l.lineTotal), docLang)
                   : "";
-              return `<tr data-po007-line>
+              return `<tr data-po007-line${included ? ' class="gen-line-included-row"' : ""}>
                 <td class="po007-col-no"><span class="po007-line-no">${i + 1}</span></td>
                 <td class="po007-col-item">${tagHtml ? `<span class="po007-item-tag">${tagHtml}</span>` : ""}</td>
                 <td class="po007-col-desc"><div class="po007-desc">${escapeHtml(desc)}</div></td>
@@ -9913,7 +10330,7 @@
             .join("")
         : `<tr><td colspan="6">${escapeHtml(tPo007(docLang, "dash"))}</td></tr>`;
 
-      const totalNum = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+      const totalNum = generalLinesBillableTotal(lines);
       const totalWords = (g.totalWords || "").trim();
       const totalSay =
         totalWords ||
@@ -9932,8 +10349,9 @@
       const totalRow = totalNumRow + totalSayRow;
 
       const gSec = editorMode ? mergePo007TemplateIntoForm(g, docLang) : g;
-      const page1Sections = [buildPo007PageSectionsHtml(gSec, docLang, 1, editorMode)];
-      const page2Sections = [buildPo007PageSectionsHtml(gSec, docLang, 2, editorMode)];
+      const sectionNums = buildPo007SectionNumberMap(gSec, docLang, editorMode);
+      const page1Sections = [buildPo007PageSectionsHtml(gSec, docLang, 1, editorMode, sectionNums)];
+      const page2Sections = [buildPo007PageSectionsHtml(gSec, docLang, 2, editorMode, sectionNums)];
       let signaturesBlock;
       if (editorMode) {
         signaturesBlock = renderPo007EditorSignatures(gSec, buyerName, v.name, docLang);
@@ -10164,6 +10582,7 @@
     async function refreshPo007MetaToFrame() {
       syncPo007MetaDateToFrame();
       syncPo007MetaCurrencyToFrame();
+      if (generalPo007EditorMode === "template") return;
       await hydratePo007CompanyToFrame();
       await applyPo007VendorFromSupplierSelect();
       await hydratePo007ProjectToFrame();
@@ -10177,6 +10596,8 @@
         alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
         return;
       }
+      if (!generalPoTemplateCache.loaded) await loadGeneralPoTemplateCache();
+      generalPo007EditorMode = "po";
       generalPo007PendingLoad = { existingId: existingId || null, po: null, g: null };
       $("po007-editor-id").value = existingId || "";
       fillPo007StatusOptions();
@@ -10213,9 +10634,9 @@
         const st = $("po007-meta-status");
         if (st) st.value = "draft";
         const langSel = $("po007-meta-lang");
-        if (langSel) langSel.value = lang === "en" ? "en" : "ar";
+        if (langSel) langSel.value = "en";
         const curSel = $("po007-meta-currency");
-        if (curSel) curSel.value = "IQD";
+        if (curSel) curSel.value = "USD";
         setPo007MetaPoDateIso(formatTodayYmd());
         await Promise.all([
           fillGeneralProjectSelect("", "po007-meta-project"),
@@ -10224,11 +10645,12 @@
         ]);
       }
       const docLang =
-        ($("po007-meta-lang")?.value || generalPo007PendingLoad?.g?.documentLang || lang || "ar") === "en"
+        ($("po007-meta-lang")?.value || generalPo007PendingLoad?.g?.documentLang || "en") === "en"
           ? "en"
           : "ar";
       const langSelOpen = $("po007-meta-lang");
       if (langSelOpen) langSelOpen.value = docLang;
+      syncGeneralPo007EditorModeUi();
       $("modal-general-po007")?.classList.remove("hidden");
       const po = generalPo007PendingLoad?.po || {};
       const g = generalPo007PendingLoad?.g
@@ -10249,9 +10671,15 @@
       if (mount) mount.innerHTML = "";
       generalPo007EditorLogo = "";
       generalPo007PendingLoad = null;
+      generalPo007EditorMode = "po";
+      syncGeneralPo007EditorModeUi();
     }
 
     async function saveGeneralPo007Modal() {
+      if (generalPo007EditorMode === "template") {
+        await saveGeneralPoTemplateModal();
+        return;
+      }
       if (!getGeneralPo007Mount()?.querySelector(".po007-surface")) {
         alert(t("loadError"));
         return;
@@ -10286,18 +10714,23 @@
         return;
       }
       const lines = g.lines.length ? g.lines : [{ itemTag: "—", description: "", qty: 0, priceText: "", lineTotal: 0 }];
-      const totalAmount = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+      const totalAmount = generalLinesBillableTotal(lines);
       let companyNameSnapshot = null;
       let companyLogoDataUrlSnapshot = null;
       let companyLogoUrlSnapshot = null;
+      const docLangSave = g.documentLang === "en" ? "en" : "ar";
       const cs = await getDoc(doc(db, "companies", companyId));
       if (cs.exists()) {
         const comp = { id: cs.id, ...cs.data() };
-        companyNameSnapshot = companyDisplayName(comp);
+        companyNameSnapshot = companyDisplayNameForDoc(comp, docLangSave);
         const csrc = companyLogoSrc(comp);
         if (csrc.startsWith("data:")) companyLogoDataUrlSnapshot = csrc;
         else if (csrc.startsWith("http")) companyLogoUrlSnapshot = csrc;
       }
+      const buyerDom = getGeneralPo007Mount()?.querySelector('[data-po007="buyer-name"]')?.textContent?.trim();
+      if (buyerDom) companyNameSnapshot = buyerDom;
+      g.buyerName = companyNameSnapshot || "";
+      g = compactPo007SectionMeta(g);
       let projectNameSnapshot = (g.projectName || "").trim();
       if (!projectNameSnapshot) {
         const ps = await getDoc(doc(db, "projects", projectId));
@@ -10339,12 +10772,33 @@
       }
     }
 
-    function openGeneralPoPrintView(po) {
+    async function resolveGeneralPoBuyerName(po, g) {
+      const docLang = g?.documentLang === "en" ? "en" : "ar";
+      const fromForm = (g?.buyerName || "").trim();
+      if (fromForm) return fromForm;
+      const cid = (g?.companyId || po?.companyId || "").trim();
+      if (cid) {
+        try {
+          const cs = await getDoc(doc(db, "companies", cid));
+          if (cs.exists()) {
+            const name = companyDisplayNameForDoc(cs.data(), docLang);
+            if (name && name !== t("dash")) return name;
+          }
+        } catch (_) {
+          /* fallback below */
+        }
+      }
+      return (po?.companyNameSnapshot || "").trim();
+    }
+
+    async function openGeneralPoPrintView(po) {
       const g = normalizeGeneralFormFromPo(po);
+      const buyerName = await resolveGeneralPoBuyerName(po, g);
+      const poRender = { ...po, companyNameSnapshot: buyerName };
       const refText = (g.poNumber || po.title || "").trim() || t("docTitle");
       const el = $("po-print-content");
       if (!el) return;
-      const html = renderGeneralPo007Html(po, g);
+      const html = renderGeneralPo007Html(poRender, g);
       el.innerHTML = html;
       lastPoPrintDoc = { title: refText, html };
       $("modal-po-print-view")?.classList.remove("hidden");
@@ -13705,7 +14159,7 @@
       const po = { id: snap.id, ...snap.data() };
       const isProject = po.scope === "project";
       if (!isProject) {
-        openGeneralPoPrintView(po);
+        await openGeneralPoPrintView(po);
         return;
       }
       const pr = po.projectId ? await getDoc(doc(db, "projects", po.projectId)) : null;
@@ -14315,6 +14769,7 @@
       if (scope !== "project") {
         projectPurchaseOrdersContext = null;
         filterBar?.classList.add("hidden");
+        syncGeneralPoToolbarButtons();
       }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
@@ -17160,7 +17615,7 @@
             else if (csrc.startsWith("http")) companyLogoUrlSnapshot = csrc;
           }
         }
-        const totalAmount = lines.reduce((s, l) => s + (Number(l.lineTotal) || 0), 0);
+        const totalAmount = generalLinesBillableTotal(lines);
         payload = {
           title: g.poNumber,
           supplierId: (g.supplierId || "").trim() || null,
@@ -17366,29 +17821,35 @@
       openPoModal("project", null);
     });
     $("btn-new-po-general").addEventListener("click", () => void openGeneralPo007Modal(null));
+    $("btn-edit-general-po-template")?.addEventListener("click", () => void openGeneralPoTemplateEditor());
     $("po007-editor-save")?.addEventListener("click", () => void saveGeneralPo007Modal());
     $("po007-editor-cancel")?.addEventListener("click", closeGeneralPo007Modal);
     $("po007-editor-preview")?.addEventListener("click", () => {
       if (!getGeneralPo007Mount()?.querySelector(".po007-surface")) return;
       const g = buildGeneralFormFromEditor();
+      const buyerDom =
+        getGeneralPo007Mount()?.querySelector('[data-po007="buyer-name"]')?.textContent?.trim() || "";
       const po = {
         title: g.poNumber,
-        companyNameSnapshot: "",
+        companyNameSnapshot: buyerDom,
         companyLogoDataUrlSnapshot: "",
         generalForm: g,
       };
       const cid = ($("po007-meta-company")?.value || "").trim();
+      const docLangPreview = getPo007DocumentLang();
       if (cid) {
         void getDoc(doc(db, "companies", cid)).then((cs) => {
           if (cs.exists()) {
             const comp = { id: cs.id, ...cs.data() };
-            po.companyNameSnapshot = companyDisplayName(comp);
+            if (!po.companyNameSnapshot) {
+              po.companyNameSnapshot = companyDisplayNameForDoc(comp, docLangPreview);
+            }
             const csrc = companyLogoSrc(comp);
             if (csrc.startsWith("data:")) po.companyLogoDataUrlSnapshot = csrc;
           }
-          openGeneralPoPrintView(po);
+          void openGeneralPoPrintView(po);
         });
-      } else openGeneralPoPrintView(po);
+      } else void openGeneralPoPrintView(po);
     });
     $("po007-meta-po-date")?.addEventListener("change", () => {
       syncPo007MetaDateToFrame();
@@ -17406,6 +17867,18 @@
       const sel = e.target;
       const docLang = getPo007DocumentLang();
       const prevLang = docLang === "ar" ? "en" : "ar";
+      if (generalPo007EditorMode === "template") {
+        if (!confirm(t("genPoTemplateLangChangeWarn"))) {
+          sel.value = prevLang;
+          return;
+        }
+        const g = buildGeneralPoTemplateEditorForm(docLang);
+        g.poNumber = "—";
+        g.poDate = getPo007MetaPoDateIso();
+        mountGeneralPo007Editor(g, {});
+        void refreshPo007MetaToFrame();
+        return;
+      }
       const isNew = !($("po007-editor-id")?.value || "").trim();
       if (isNew) {
         if (!confirm(t("genPoLangChangeNewWarn"))) {
@@ -19461,6 +19934,7 @@
         const profile = await ensureUserProfile(user);
         currentUserProfile = profile;
         userRole = profile.role || "user";
+        await loadGeneralPoTemplateCache();
         applyNavVisibility();
         $("view-login").classList.add("hidden");
         $("view-app").classList.remove("hidden");
