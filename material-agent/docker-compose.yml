@@ -1,0 +1,8 @@
+services:
+  material-agent:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SIMILARITY_THRESHOLD: "85"
+    restart: unless-stopped

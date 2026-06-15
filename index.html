@@ -4047,6 +4047,35 @@
           <div id="reports-materials-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات ضمن الفترة.</p></div>
         </div>
         <div class="card">
+          <h3 data-i18n="reportMatLinkTitle">ربط المواد المتشابهة (تحليل)</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportMatLinkHint">
+            يجمّع أسماء المواد المكتوبة بصيغ مختلفة ويقارن أسعار الوحدة. شغّل «تقرير المواد وأسعارها» أولاً، أو ارفع ملف CSV مُصدَّر. يتطلب تشغيل خدمة material-agent عبر Docker على الجهاز أو السيرفر.
+          </p>
+          <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+              <label class="po-filter-field" style="grid-column:1/-1">
+                <span data-i18n="reportMatLinkAgentUrlLabel">عنوان خدمة التحليل</span>
+                <input type="url" id="mat-link-agent-url" value="" placeholder="https://po-material-agent.onrender.com" autocomplete="off" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportMatLinkThresholdLabel">درجة التشابه (٥٠–١٠٠)</span>
+                <input type="number" id="mat-link-threshold" min="50" max="100" value="85" step="1" />
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-mat-link-analyze" data-i18n="btnMatLinkAnalyze">
+                تحليل البنود الحالية
+              </button>
+              <label class="po-filter-field">
+                <span data-i18n="reportMatLinkCsvLabel">ملف CSV (اختياري)</span>
+                <input type="file" id="mat-link-csv" accept=".csv,text/csv" />
+              </label>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-mat-link-csv-analyze" data-i18n="btnMatLinkAnalyzeCsv">
+                تحليل ملف CSV
+              </button>
+            </div>
+          </div>
+          <div id="reports-mat-link-wrap"><p class="empty-state" data-i18n="reportMatLinkEmpty">شغّل تقرير المواد ثم اضغط «تحليل البنود الحالية»، أو ارفع CSV.</p></div>
+        </div>
+        <div class="card">
           <h3 data-i18n="reportDeptAchievementsTitle">إنجاز الأقسام (طلبات المشاريع)</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportDeptAchievementsHint">
             يعتمد هذا التقرير على تواريخ الانتقال بين مراحل المسار (المسجلة تلقائياً عند كل إجراء). يعرض عدد الإنجازات ضمن الفترة ومتوسط زمن الانتقال من المرحلة السابقة.
@@ -5456,6 +5485,30 @@
         reportMatSummaryTotalConverted: "إجمالي البنود (محوّل)",
         reportMatColConvertedLine: "مجموع البند (محوّل)",
         alertMatReportNeedDates: "حدّد من تاريخ وإلى تاريخ.",
+        reportMatLinkTitle: "ربط المواد المتشابهة (تحليل)",
+        reportMatLinkHint:
+          "يجمّع أسماء المواد المكتوبة بصيغ مختلفة ويقارن أسعار الوحدة. شغّل «تقرير المواد وأسعارها» أولاً، أو ارفع ملف CSV مُصدَّر. يتطلب تشغيل خدمة material-agent عبر Docker.",
+        reportMatLinkAgentUrlLabel: "عنوان خدمة التحليل",
+        reportMatLinkThresholdLabel: "درجة التشابه (٥٠–١٠٠)",
+        reportMatLinkCsvLabel: "ملف CSV (اختياري)",
+        reportMatLinkEmpty: "شغّل تقرير المواد ثم اضغط «تحليل البنود الحالية»، أو ارفع CSV.",
+        btnMatLinkAnalyze: "تحليل البنود الحالية",
+        btnMatLinkAnalyzeCsv: "تحليل ملف CSV",
+        reportMatLinkAnalyzing: "جاري تحليل وربط المواد…",
+        reportMatLinkNeedLines: "لا توجد بنود للتحليل. شغّل تقرير المواد وأسعارها أو ارفع CSV.",
+        reportMatLinkNeedCsv: "اختر ملف CSV أولاً.",
+        reportMatLinkAgentError: "تعذّر الاتصال بخدمة التحليل. أدخل عنوان HTTPS للخدمة (مثل Render) أو شغّل Docker محلياً.",
+        reportMatLinkNeedUrl: "أدخل عنوان خدمة التحليل (HTTPS) في الحقل أعلاه.",
+        reportMatLinkSummaryClusters: "مجموعات موحّدة",
+        reportMatLinkSummaryRaw: "أسماء خامة مميّزة",
+        reportMatLinkSummaryLines: "بنود محلّلة",
+        reportMatLinkColCanonical: "المادة الموحّدة",
+        reportMatLinkColAliases: "صيغ مكتوبة",
+        reportMatLinkColLines: "عدد البنود",
+        reportMatLinkColUnit: "الوحدة",
+        reportMatLinkColPriceRange: "نطاق سعر الوحدة",
+        reportMatLinkColSpread: "فرق السعر %",
+        reportMatLinkDetailsToggle: "عرض التفاصيل",
         tabFxRates: "أسعار الصرف",
         addFxRate: "إضافة سعر",
         modalNewFxRate: "سعر صرف جديد",
@@ -6247,6 +6300,31 @@
         reportMatSummaryTotalConverted: "Total lines (converted)",
         reportMatColConvertedLine: "Line total (converted)",
         alertMatReportNeedDates: "Select From and To dates.",
+        reportMatLinkTitle: "Similar material linking (analysis)",
+        reportMatLinkHint:
+          "Groups material names written in different ways and compares unit prices. Run the materials report first, or upload an exported CSV. Requires the material-agent Docker service.",
+        reportMatLinkAgentUrlLabel: "Analysis service URL",
+        reportMatLinkThresholdLabel: "Similarity (50–100)",
+        reportMatLinkCsvLabel: "CSV file (optional)",
+        reportMatLinkEmpty: "Run the materials report then Analyze current lines, or upload a CSV.",
+        btnMatLinkAnalyze: "Analyze current lines",
+        btnMatLinkAnalyzeCsv: "Analyze CSV file",
+        reportMatLinkAnalyzing: "Analyzing and linking materials…",
+        reportMatLinkNeedLines: "No lines to analyze. Run the materials report or upload a CSV.",
+        reportMatLinkNeedCsv: "Choose a CSV file first.",
+        reportMatLinkAgentError:
+          "Could not reach the analysis service. Enter the HTTPS service URL (e.g. Render) or run Docker locally.",
+        reportMatLinkNeedUrl: "Enter the analysis service URL (HTTPS) above.",
+        reportMatLinkSummaryClusters: "Unified groups",
+        reportMatLinkSummaryRaw: "Distinct raw names",
+        reportMatLinkSummaryLines: "Lines analyzed",
+        reportMatLinkColCanonical: "Canonical material",
+        reportMatLinkColAliases: "Written forms",
+        reportMatLinkColLines: "Line count",
+        reportMatLinkColUnit: "Unit",
+        reportMatLinkColPriceRange: "Unit price range",
+        reportMatLinkColSpread: "Price spread %",
+        reportMatLinkDetailsToggle: "Show details",
         tabFxRates: "FX rates",
         addFxRate: "Add rate",
         modalNewFxRate: "New FX rate",
@@ -11525,6 +11603,7 @@
     async function loadReportsScreen() {
       await loadPurchasingReportScreen();
       await loadMaterialsReportScreen();
+      await loadMaterialLinkScreen();
       await loadDeptAchievementsReportScreen();
     }
 
@@ -12869,6 +12948,261 @@
       w.document.close();
       w.focus();
       w.print();
+    }
+
+    const MATERIAL_AGENT_URL_KEY = "poMaterialAgentUrl";
+
+    function materialAgentBaseUrl() {
+      const raw = ($("mat-link-agent-url")?.value || localStorage.getItem(MATERIAL_AGENT_URL_KEY) || "").trim();
+      return raw.replace(/\/+$/, "");
+    }
+
+    function materialLinkThreshold() {
+      const n = parseInt(String($("mat-link-threshold")?.value || "85"), 10);
+      if (Number.isNaN(n)) return 85;
+      return Math.max(50, Math.min(100, n));
+    }
+
+    function formatMatLinkPriceRange(stats) {
+      if (!stats || !stats.priced_line_count) return t("dash");
+      const cur = stats.currency || "";
+      const mn = stats.min_price;
+      const mx = stats.max_price;
+      if (mn == null || mx == null) return t("dash");
+      if (mn === mx) return `${cur} ${Number(mn).toLocaleString(localeTag())}`;
+      return `${cur} ${Number(mn).toLocaleString(localeTag())} – ${Number(mx).toLocaleString(localeTag())}`;
+    }
+
+    function renderMaterialLinkReport(data) {
+      const wrap = $("reports-mat-link-wrap");
+      if (!wrap || !data) return;
+      const sum = data.summary || {};
+      const clusters = Array.isArray(data.clusters) ? data.clusters : [];
+      if (!clusters.length) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+        return;
+      }
+      const summaryPanel = `<div class="detail-panel" style="margin-bottom:0.75rem">
+        <div class="wf-po-meta-grid">
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatLinkSummaryClusters"))}</span><span>${escapeHtml(String(sum.clusters ?? clusters.length))}</span></div>
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatLinkSummaryRaw"))}</span><span>${escapeHtml(String(sum.unique_raw_items ?? t("dash")))}</span></div>
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatLinkSummaryLines"))}</span><span>${escapeHtml(String(sum.lines_with_item ?? sum.input_lines ?? t("dash")))}</span></div>
+        </div>
+      </div>`;
+      const rowsHtml = clusters
+        .map((cl) => {
+          const aliases = (cl.aliases || [])
+            .map((a) => `${escapeHtml(a.text)} (${a.count})`)
+            .join(" · ");
+          const unitRows = (cl.units || [])
+            .map((ug) => {
+              const statsParts = (ug.currency_stats || [])
+                .filter((s) => s.priced_line_count > 0)
+                .map((s) => {
+                  const range = formatMatLinkPriceRange(s);
+                  const spread =
+                    s.price_spread_pct != null ? `${Number(s.price_spread_pct).toLocaleString(localeTag())}%` : t("dash");
+                  return `<tr>
+                    <td>${escapeHtml(ug.display_unit || ug.unit || t("dash"))}</td>
+                    <td>${escapeHtml(String(ug.line_count ?? ""))}</td>
+                    <td>${escapeHtml(s.currency || "")}</td>
+                    <td>${escapeHtml(range)}</td>
+                    <td class="num">${escapeHtml(spread)}</td>
+                  </tr>`;
+                })
+                .join("");
+              return statsParts;
+            })
+            .join("");
+          const samples = (cl.sample_lines || [])
+            .map(
+              (ln) =>
+                `<tr><td>${escapeHtml(ln.ref || t("dash"))}</td><td>${escapeHtml(ln.requestDate || t("dash"))}</td><td>${escapeHtml(ln.project || t("dash"))}</td><td>${escapeHtml(ln.item || "")}</td><td>${escapeHtml(ln.unit || t("dash"))}</td><td class="num">${escapeHtml(String(ln.qty ?? ""))}</td><td class="num">${escapeHtml(ln.price > 0 ? `${ln.currency || ""} ${Number(ln.price).toLocaleString(localeTag())}` : t("dash"))}</td></tr>`
+            )
+            .join("");
+          return `<tr class="report-group-row">
+            <td colspan="5" style="font-weight:700">${escapeHtml(cl.canonical_name || t("dash"))}</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-size:0.9rem" colspan="5">${escapeHtml(t("reportMatLinkColAliases"))}: ${aliases || t("dash")}</td>
+          </tr>
+          ${unitRows || `<tr><td colspan="5">${escapeHtml(t("dash"))}</td></tr>`}
+          <tr><td colspan="5" style="padding:0.25rem 0">
+            <details>
+              <summary style="cursor:pointer;color:var(--ds-secondary)">${escapeHtml(t("reportMatLinkDetailsToggle"))}</summary>
+              <div class="table-scroll" style="margin-top:0.35rem">
+                <table class="data-table">
+                  <thead><tr>
+                    <th>${escapeHtml(t("colPoReference"))}</th>
+                    <th>${escapeHtml(t("colRequestDate"))}</th>
+                    <th>${escapeHtml(t("colProject"))}</th>
+                    <th>${escapeHtml(t("poLineDescCol"))}</th>
+                    <th>${escapeHtml(t("poLineUnitCol"))}</th>
+                    <th>${escapeHtml(t("poLineQtyCol"))}</th>
+                    <th>${escapeHtml(t("accUnitPriceCol"))}</th>
+                  </tr></thead>
+                  <tbody>${samples}</tbody>
+                </table>
+              </div>
+            </details>
+          </td></tr>`;
+        })
+        .join("");
+      wrap.innerHTML =
+        summaryPanel +
+        `<div class="table-scroll"><table class="data-table">
+          <thead><tr>
+            <th>${escapeHtml(t("reportMatLinkColUnit"))}</th>
+            <th>${escapeHtml(t("reportMatLinkColLines"))}</th>
+            <th>${escapeHtml(t("reportBaseCurrencyLabel"))}</th>
+            <th>${escapeHtml(t("reportMatLinkColPriceRange"))}</th>
+            <th>${escapeHtml(t("reportMatLinkColSpread"))}</th>
+          </tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table></div>`;
+    }
+
+    async function postMaterialLinkAnalysis(payload) {
+      const base = materialAgentBaseUrl();
+      if (!base) {
+        throw new Error(t("reportMatLinkNeedUrl"));
+      }
+      localStorage.setItem(MATERIAL_AGENT_URL_KEY, base);
+      const threshold = materialLinkThreshold();
+      const url = `${base}/api/v1/analyze/lines`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lines: payload.lines, similarity_threshold: threshold }),
+      });
+      if (!res.ok) {
+        let detail = res.statusText;
+        try {
+          const err = await res.json();
+          detail = err.detail || detail;
+        } catch (_) {
+          /* ignore */
+        }
+        throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+      }
+      return res.json();
+    }
+
+    async function postMaterialLinkCsv(file) {
+      const base = materialAgentBaseUrl();
+      if (!base) {
+        throw new Error(t("reportMatLinkNeedUrl"));
+      }
+      localStorage.setItem(MATERIAL_AGENT_URL_KEY, base);
+      const threshold = materialLinkThreshold();
+      const fd = new FormData();
+      fd.append("file", file);
+      const url = `${base}/api/v1/analyze/csv?similarity_threshold=${encodeURIComponent(String(threshold))}`;
+      const res = await fetch(url, { method: "POST", body: fd });
+      if (!res.ok) {
+        let detail = res.statusText;
+        try {
+          const err = await res.json();
+          detail = err.detail || detail;
+        } catch (_) {
+          /* ignore */
+        }
+        throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+      }
+      return res.json();
+    }
+
+    function collectLinesForMaterialLink() {
+      const snap = lastMaterialsReportSnapshot;
+      if (snap && Array.isArray(snap.lineRows) && snap.lineRows.length) {
+        return snap.lineRows.map((r) => ({
+          item: r.item,
+          unit: r.unit,
+          qty: r.qty,
+          price: r.price,
+          currency: r.currency,
+          ref: r.ref,
+          project: r.project,
+          requestDate: r.requestDate,
+          company: r.company,
+          lineNo: r.lineNo,
+        }));
+      }
+      const purch = lastPurchasingReportSnapshot;
+      if (purch && Array.isArray(purch.lineRows) && purch.lineRows.length) {
+        return purch.lineRows.map((r) => ({
+          item: r.item,
+          unit: r.unit,
+          qty: r.qty,
+          price: r.price,
+          currency: r.currency,
+          ref: r.ref,
+          project: r.project,
+          requestDate: r.requestDate,
+          company: r.company,
+          lineNo: r.lineNo,
+        }));
+      }
+      return [];
+    }
+
+    async function runMaterialLinkAnalysis() {
+      const wrap = $("reports-mat-link-wrap");
+      if (!wrap) return;
+      const lines = collectLinesForMaterialLink();
+      if (!lines.length) {
+        alert(t("reportMatLinkNeedLines"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${escapeHtml(t("reportMatLinkAnalyzing"))}</p>`;
+      try {
+        const data = await postMaterialLinkAnalysis({ lines });
+        renderMaterialLinkReport(data);
+      } catch (e) {
+        console.error(e);
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("reportMatLinkAgentError"))}<br>${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    async function runMaterialLinkCsvAnalysis() {
+      const wrap = $("reports-mat-link-wrap");
+      const inp = $("mat-link-csv");
+      if (!wrap || !inp?.files?.length) {
+        alert(t("reportMatLinkNeedCsv"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${escapeHtml(t("reportMatLinkAnalyzing"))}</p>`;
+      try {
+        const data = await postMaterialLinkCsv(inp.files[0]);
+        renderMaterialLinkReport(data);
+      } catch (e) {
+        console.error(e);
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("reportMatLinkAgentError"))}<br>${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    async function loadMaterialLinkScreen() {
+      const urlInp = $("mat-link-agent-url");
+      if (urlInp) {
+        const saved = localStorage.getItem(MATERIAL_AGENT_URL_KEY);
+        if (saved && !urlInp.dataset.userEdited) urlInp.value = saved;
+        if (!urlInp.dataset.wired) {
+          urlInp.dataset.wired = "1";
+          urlInp.addEventListener("input", () => {
+            urlInp.dataset.userEdited = "1";
+          });
+        }
+      }
+      const analyzeBtn = $("btn-mat-link-analyze");
+      if (analyzeBtn && !analyzeBtn.dataset.wired) {
+        analyzeBtn.dataset.wired = "1";
+        analyzeBtn.addEventListener("click", () => void runMaterialLinkAnalysis());
+      }
+      const csvBtn = $("btn-mat-link-csv-analyze");
+      if (csvBtn && !csvBtn.dataset.wired) {
+        csvBtn.dataset.wired = "1";
+        csvBtn.addEventListener("click", () => void runMaterialLinkCsvAnalysis());
+      }
     }
 
     function exportMaterialsReportCsv() {

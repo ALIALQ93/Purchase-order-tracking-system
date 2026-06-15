@@ -1,0 +1,13 @@
+# Render Blueprint — deploy material-agent with HTTPS for GitHub Pages.
+# Dashboard: New → Blueprint → connect repo → apply this file.
+services:
+  - type: web
+    name: po-material-agent
+    runtime: docker
+    rootDir: material-agent
+    dockerfilePath: Dockerfile
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: SIMILARITY_THRESHOLD
+        value: "85"
