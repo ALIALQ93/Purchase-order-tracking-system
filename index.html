@@ -4836,8 +4836,8 @@
   <!-- استلام المستودع: تسجيل الكميات الفعلية -->
   <div id="modal-warehouse-receipt-qty" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide">
-      <h3 data-i18n="warehouseReceiptQtyModalTitle">استلام المستودع — الكميات الفعلية</h3>
-      <p class="sub" style="margin-top:-0.35rem;color:var(--muted)" data-i18n="warehouseReceiptQtyModalHint">
+      <h3 id="wr-modal-title" data-i18n="warehouseReceiptQtyModalTitle">استلام المستودع — الكميات الفعلية</h3>
+      <p id="wr-modal-hint" class="sub" style="margin-top:-0.35rem;color:var(--muted)" data-i18n="warehouseReceiptQtyModalHint">
         أدخل الكمية المستلمة فعلياً لكل بند. يمكن أن تكون أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.
       </p>
       <input type="hidden" id="wr-po-id" />
@@ -5565,12 +5565,13 @@
         emptyPurchasingQueueTrack: "لا توجد طلبات في مراحل لاحقة لعرضها هنا.",
         warehouseReceiptQueueTitle: "استلام المستودعات",
         warehouseReceiptQueueHint:
-          "تأكيد الاستلام للطلبات الصادرة من الحسابات. بعد التأكيد يبقى الطلب ظاهراً في «متابعة المسار» حتى إقفال الحسابات والاكتمال.",
+          "سجّل الكميات المستلمة فعلياً. يمكن تعديلها قبل الإرسال للحسابات، أو تصحيحها من «متابعة بعد التأكيد» ما دام الطلب بانتظار الحسابات.",
         warehouseReceiptSearchLabel: "بحث",
         warehouseReceiptSearchPlaceholder: "رقم الطلب، المشروع، المنطقة، المندوب، مقدم الطلب، سبب الطلب…",
         warehouseReceiptFilterProjectLabel: "المشروع",
         warehouseReceiptFilterRepLabel: "مندوب المشتريات",
         warehouseReceiptClearFilters: "مسح الفلاتر",
+        warehouseReceiptNoFilterResults: "لا توجد نتائج مطابقة لبحثك أو الفلاتر المحددة.",
         emptyWarehouseReceiptQueue: "لا توجد طلبات في شاشة استلام المستودع لمناطقك.",
         warehouseReceiptSectionAction: "بانتظار تأكيد الاستلام",
         warehouseReceiptSectionTrack: "متابعة بعد التأكيد",
@@ -5581,6 +5582,19 @@
           "أدخل الكمية المستلمة فعلياً لكل بند. يمكن أن تكون أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.",
         warehouseReceiptActualQtyCol: "المستلم فعلياً",
         btnConfirmWarehouseReceiptQty: "حفظ وإرسال للحسابات",
+        btnEditWarehouseReceipt: "تعديل الاستلام",
+        btnAmendWarehouseReceipt: "تصحيح الكميات المستلمة",
+        btnSaveWarehouseReceiptUpdate: "حفظ التعديل",
+        btnSaveWarehouseReceiptAmend: "حفظ التصحيح",
+        warehouseReceiptQtyUpdateTitle: "تعديل استلام المستودع",
+        warehouseReceiptQtyUpdateHint:
+          "عدّل الكمية المستلمة فعلياً ثم احفظ. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق أو إبقاء الطلب مفتوحاً.",
+        warehouseReceiptQtyAmendTitle: "تصحيح الكميات المستلمة",
+        warehouseReceiptQtyAmendHint:
+          "صحّح الكميات المستلمة فعلياً بعد إرسال الطلب للحسابات. يُسجَّل التعديل في سجل الطلب.",
+        confirmWarehouseReceiptAmend: "حفظ تصحيح الكميات المستلمة؟ سيُسجَّل من قام بالتعديل والقيم السابقة.",
+        alertWarehouseReceiptUnchanged: "لم تتغير الكميات المستلمة.",
+        poPrintColReceived: "المستلم فعلياً",
         confirmWarehouseReceiptPartialClose:
           "تم إدخال استلام جزئي (أقل من المطلوب) في أحد البنود.\nهل تريد إغلاق الطلب وإرساله للحسابات للإقفال، أم إبقاءه مفتوحاً في الاستلام؟",
         btnCloseAndSendToAccounting: "إغلاق وإرسال للحسابات",
@@ -6388,12 +6402,13 @@
         emptyPurchasingQueueTrack: "No downstream requests to show here.",
         warehouseReceiptQueueTitle: "Warehouse receipt",
         warehouseReceiptQueueHint:
-          "Confirm receipt for requests released from accounting. After confirmation, the request stays under follow-up until accounting closes it.",
+          "Record actual received quantities. You can edit before sending to accounting, or correct from follow-up while the request is still pending accounting.",
         warehouseReceiptSearchLabel: "Search",
         warehouseReceiptSearchPlaceholder: "PO ref, project, region, representative, requester, reason…",
         warehouseReceiptFilterProjectLabel: "Project",
         warehouseReceiptFilterRepLabel: "Purchasing representative",
         warehouseReceiptClearFilters: "Clear filters",
+        warehouseReceiptNoFilterResults: "No results match your search or selected filters.",
         emptyWarehouseReceiptQueue: "No requests on the warehouse receipt screen for your regions.",
         warehouseReceiptSectionAction: "Awaiting receipt confirmation",
         warehouseReceiptSectionTrack: "Follow-up after confirmation",
@@ -6404,6 +6419,19 @@
           "Enter the actual received quantity per line. It may exceed the requested quantity. If receipt is partial, you'll be asked whether to close or keep it open.",
         warehouseReceiptActualQtyCol: "Received (actual)",
         btnConfirmWarehouseReceiptQty: "Save and send to accounting",
+        btnEditWarehouseReceipt: "Edit receipt",
+        btnAmendWarehouseReceipt: "Correct received quantities",
+        btnSaveWarehouseReceiptUpdate: "Save changes",
+        btnSaveWarehouseReceiptAmend: "Save correction",
+        warehouseReceiptQtyUpdateTitle: "Edit warehouse receipt",
+        warehouseReceiptQtyUpdateHint:
+          "Update actual received quantities. If receipt is partial, you'll be asked whether to close or keep the request open.",
+        warehouseReceiptQtyAmendTitle: "Correct received quantities",
+        warehouseReceiptQtyAmendHint:
+          "Correct actual received quantities after the request was sent to accounting. The change is logged on the request.",
+        confirmWarehouseReceiptAmend: "Save the correction to received quantities? Previous values and who changed them will be logged.",
+        alertWarehouseReceiptUnchanged: "Received quantities were not changed.",
+        poPrintColReceived: "Received (actual)",
         confirmWarehouseReceiptPartialClose:
           "Partial receipt was entered (one or more lines received less than requested).\nDo you want to close and send to accounting, or keep it open in warehouse receipt?",
         btnCloseAndSendToAccounting: "Close and send",
@@ -6746,7 +6774,10 @@
       if (id === "screen-pm-approvals") loadPmApprovalQueue();
       if (id === "screen-gm-approvals") loadGmApprovalQueue();
       if (id === "screen-purchasing-queue") loadPurchasingQueue();
-      if (id === "screen-warehouse-receipt-queue") loadWarehouseReceiptQueue();
+      if (id === "screen-warehouse-receipt-queue") {
+        invalidateWarehouseReceiptQueueCache();
+        loadWarehouseReceiptQueue();
+      }
       if (id === "screen-accounting-queue") loadAccountingQueue();
       if (id === "screen-admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
       const poModal = $("modal-po");
@@ -14045,7 +14076,10 @@
       if (a.id === "screen-pm-approvals") loadPmApprovalQueue();
       if (a.id === "screen-gm-approvals") loadGmApprovalQueue();
       if (a.id === "screen-purchasing-queue") loadPurchasingQueue();
-      if (a.id === "screen-warehouse-receipt-queue") loadWarehouseReceiptQueue();
+      if (a.id === "screen-warehouse-receipt-queue") {
+        invalidateWarehouseReceiptQueueCache();
+        loadWarehouseReceiptQueue();
+      }
       if (a.id === "screen-accounting-queue") loadAccountingQueue();
     }
 
@@ -14221,15 +14255,22 @@
         return String(diff);
       }
       const lines = Array.isArray(po.lines) ? po.lines : [];
+      const showReceived =
+        !!(po.warehouseReceiptRecordedAt || po.warehouseReceiptRecordedBy) &&
+        lines.some(
+          (l) => l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
+        );
       const showPrices = !isProject || lines.some((l) => Number(l.price) > 0);
       let lineColCount = 2;
       if (isProject) lineColCount += 1;
       if (isProject) lineColCount += 2;
+      if (showReceived) lineColCount += 1;
       if (showPrices) lineColCount += 2;
       let lineTh = `<th>${escapeHtml(t("poLineDescCol"))}</th>`;
       if (isProject) lineTh += `<th>${escapeHtml(t("poLineUnitCol"))}</th>`;
       lineTh += `<th class="po-print-num">${escapeHtml(t("poLineQtyCol"))}</th>`;
       if (isProject) lineTh += `<th>${escapeHtml(t("poPrintColAvailable"))}</th><th class="po-print-num">${escapeHtml(t("poPrintColToBuy"))}</th>`;
+      if (showReceived) lineTh += `<th class="po-print-num">${escapeHtml(t("poPrintColReceived"))}</th>`;
       if (showPrices)
         lineTh += `<th class="po-print-num">${escapeHtml(t("poPrintColUnitPrice"))}</th><th class="po-print-num">${escapeHtml(t("poPrintColLineTotal"))}</th>`;
       const linesRows = lines
@@ -14242,6 +14283,13 @@
             cells += `<td>${escapeHtml(poPrintLineAvailableText(l))}</td><td class="po-print-num">${escapeHtml(
               poPrintLineToBuyQty(l)
             )}</td>`;
+          if (showReceived) {
+            const recv =
+              l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
+                ? Number(l.receivedQty)
+                : Number(l.qty) || 0;
+            cells += `<td class="po-print-num">${escapeHtml(String(recv))}</td>`;
+          }
           if (showPrices) {
             const p = Number(l.price) || 0;
             const qn = Number(l.qty) || 0;
@@ -14532,7 +14580,10 @@
         if (name === "pm-approvals") loadPmApprovalQueue();
         if (name === "gm-approvals") loadGmApprovalQueue();
         if (name === "purchasing-queue") loadPurchasingQueue();
-        if (name === "warehouse-receipt-queue") loadWarehouseReceiptQueue();
+        if (name === "warehouse-receipt-queue") {
+          invalidateWarehouseReceiptQueueCache();
+          loadWarehouseReceiptQueue();
+        }
         if (name === "accounting-queue") loadAccountingQueue();
         if (name === "reports") loadReportsScreen();
         if (name === "admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
@@ -14573,6 +14624,14 @@
         clearTimeout(tmr);
         tmr = setTimeout(() => fn.apply(null, a), ms);
       };
+    }
+
+    function matchesQueryAllWords(haystack, queryRaw) {
+      const query = (queryRaw || "").trim().toLowerCase();
+      if (!query) return true;
+      const hay = String(haystack || "").toLowerCase();
+      const words = query.split(/\s+/).filter(Boolean);
+      return words.every((w) => hay.includes(w));
     }
 
     function projectPoCompanyDisplay(r, ctx) {
@@ -16137,15 +16196,25 @@
       if (!search || !proj || !rep || !reset) return;
       if (reset.dataset.wired) return;
       reset.dataset.wired = "1";
-      const fire = debounceFn(() => loadWarehouseReceiptQueue(), 260);
+      const fire = debounceFn(() => {
+        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
+        else void loadWarehouseReceiptQueue();
+      }, 260);
       search.addEventListener("input", fire);
-      proj.addEventListener("change", () => void loadWarehouseReceiptQueue());
-      rep.addEventListener("change", () => void loadWarehouseReceiptQueue());
+      proj.addEventListener("change", () => {
+        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
+        else void loadWarehouseReceiptQueue();
+      });
+      rep.addEventListener("change", () => {
+        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
+        else void loadWarehouseReceiptQueue();
+      });
       reset.addEventListener("click", () => {
         search.value = "";
         proj.value = "";
         rep.value = "";
-        void loadWarehouseReceiptQueue();
+        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
+        else void loadWarehouseReceiptQueue();
       });
     }
 
@@ -16165,12 +16234,167 @@
         (po?.purchasingRepresentativeName || "").trim(),
         (po?.requesterName || "").trim(),
         (po?.reasonRequest || "").trim(),
+        (po?.supplierName || "").trim(),
+        (po?.contractNumberSnapshot || "").trim(),
         workflowLabelForDocument(po),
+        poRowDisplayDate(po),
       ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return matchesQueryAllWords(hay, query);
+    }
+
+    let wrQueueDataCache = null;
+
+    function invalidateWarehouseReceiptQueueCache() {
+      wrQueueDataCache = null;
+    }
+
+    function renderWarehouseReceiptQueueTable(cache) {
+      const wrap = $("warehouse-receipt-queue-wrap");
+      if (!wrap || !cache) return;
+      const { rowsAction: actionAll, rowsTrack: trackAll, projectNames, role } = cache;
+      const qText = ($("wrq-search")?.value || "").trim();
+      const fProject = ($("wrq-filter-project")?.value || "").trim();
+      const fRep = ($("wrq-filter-rep")?.value || "").trim();
+      const rowOk = (r) =>
+        warehouseReceiptRowMatchesFilters(r, projectNames[r.projectId] || r.projectId || "", qText, fProject, fRep);
+      let rowsAction = actionAll.filter(rowOk);
+      let rowsTrack = trackAll.filter(rowOk);
+      const sortReceipt = (rows) =>
+        rows.sort((a, b) => {
+          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+          const pd = pri(b) - pri(a);
+          if (pd !== 0) return pd;
+          return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+        });
+      sortReceipt(rowsAction);
+      rowsTrack.sort((a, b) => {
+        const ra = a.workflowStatus === "pending_accounting" ? 0 : 1;
+        const rb = b.workflowStatus === "pending_accounting" ? 0 : 1;
+        if (ra !== rb) return ra - rb;
+        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pd = pri(b) - pri(a);
+        if (pd !== 0) return pd;
+        const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
+        const tb = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
+        return ta - tb;
+      });
+      const hasFilters = !!(qText || fProject || fRep);
+      const totalRows = actionAll.length + trackAll.length;
+      if (!rowsAction.length && !rowsTrack.length) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(
+          t(hasFilters && totalRows > 0 ? "warehouseReceiptNoFilterResults" : "emptyWarehouseReceiptQueue")
+        )}</p>`;
+        return;
+      }
+      const canAct = role === "warehouse_supervisor" || hasAdminAccess();
+      const tableHead = `<thead><tr>
+            <th>${t("colPoReference")}</th>
+            <th>${t("colRequestDate")}</th>
+            <th>${t("colProject")}</th>
+            <th>${t("colRegion")}</th>
+            <th>${t("colPurchasingRepresentative")}</th>
+            <th>${t("poRequesterLabel")}</th>
+            <th>${t("poReasonLabel")}</th>
+            <th>${t("colPriority")}</th>
+            <th>${t("colWorkflow")}</th>
+            <th></th>
+          </tr></thead>`;
+      const actionBody =
+        rowsAction.length > 0
+          ? `<tbody>
+            ${rowsAction
+              .map(
+                (r) => `
+              <tr>
+                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                <td>${purchasingRepresentativeCellHtml(r)}</td>
+                <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
+                <td>${priorityBadge(r.priority)}</td>
+                <td>${formatWorkflowTableCellForPo(r)}</td>
+                <td class="td-approval-actions">
+                  <div class="approval-actions-cell">
+                    <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                      canAct
+                        ? `<button type="button" class="btn btn-primary btn-sm btn-warehouse-receipt-confirm" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                            r.warehouseReceiptRecordedAt || r.warehouseReceiptRecordedBy
+                              ? t("btnEditWarehouseReceipt")
+                              : t("btnConfirmWarehouseReceipt")
+                          )}</button>`
+                        : ""
+                    }
+                  </div>
+                </td>
+              </tr>`
+              )
+              .join("")}
+          </tbody>`
+          : "";
+      const trackBody =
+        rowsTrack.length > 0
+          ? `<tbody>
+            ${rowsTrack
+              .map(
+                (r) => `
+              <tr>
+                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                <td>${purchasingRepresentativeCellHtml(r)}</td>
+                <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
+                <td>${priorityBadge(r.priority)}</td>
+                <td>${formatWorkflowTableCellForPo(r)}</td>
+                <td class="td-approval-actions">
+                  <div class="approval-actions-cell">
+                    <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                      canAct && r.workflowStatus === "pending_accounting"
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-warehouse-receipt-amend" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnAmendWarehouseReceipt"))}</button>`
+                        : ""
+                    }
+                  </div>
+                </td>
+              </tr>`
+              )
+              .join("")}
+          </tbody>`
+          : "";
+      let html = "";
+      html += `<h2 class="queue-section-title">${escapeHtml(t("warehouseReceiptSectionAction"))}</h2>`;
+      if (rowsAction.length) {
+        html += `<div class="table-scroll"><table class="data-table">${tableHead}${actionBody}</table></div>`;
+      } else {
+        html += `<p class="empty-state" style="padding-top:0">${escapeHtml(
+          t(hasFilters && actionAll.length > 0 ? "warehouseReceiptNoFilterResults" : "emptyWarehouseReceiptAction")
+        )}</p>`;
+      }
+      html += `<h2 class="queue-section-title">${escapeHtml(t("warehouseReceiptSectionTrack"))}</h2>`;
+      if (rowsTrack.length) {
+        html += `<div class="table-scroll"><table class="data-table">${tableHead}${trackBody}</table></div>`;
+      } else {
+        html += `<p class="empty-state" style="padding-top:0">${escapeHtml(
+          t(hasFilters && trackAll.length > 0 ? "warehouseReceiptNoFilterResults" : "emptyWarehouseReceiptTrack")
+        )}</p>`;
+      }
+      wrap.innerHTML = html;
+      wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
+        btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      if (canAct) {
+        wrap.querySelectorAll(".btn-warehouse-receipt-confirm").forEach((btn) => {
+          btn.addEventListener("click", () => void openWarehouseReceiptQtyModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-warehouse-receipt-amend").forEach((btn) => {
+          btn.addEventListener("click", () => void openWarehouseReceiptQtyModal(btn.dataset.id));
+        });
+      }
     }
 
     async function loadWarehouseReceiptQueue() {
@@ -16182,13 +16406,13 @@
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertWarehouseSupervisorRegionsRequired"))}</p>`;
         return;
       }
+      wireWarehouseReceiptFiltersOnce();
+      if (wrQueueDataCache) {
+        renderWarehouseReceiptQueueTable(wrQueueDataCache);
+        return;
+      }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
-        wireWarehouseReceiptFiltersOnce();
-        const qText = ($("wrq-search")?.value || "").trim();
-        const fProject = ($("wrq-filter-project")?.value || "").trim();
-        const fRep = ($("wrq-filter-rep")?.value || "").trim();
-
         const qAction = query(
           collection(db, "purchaseOrders"),
           where("scope", "==", "project"),
@@ -16216,7 +16440,6 @@
         rowsAction = filterWarehouseReceiptRowsByRegion(rowsAction, projectRegion, regions, role);
         rowsTrack = filterWarehouseReceiptRowsByRegion(rowsTrack, projectRegion, regions, role);
 
-        // fill filter options (preserve selection)
         const projSel = $("wrq-filter-project");
         if (projSel) {
           const ids = [...new Set([...rowsAction, ...rowsTrack].map((r) => r.projectId).filter(Boolean))];
@@ -16253,126 +16476,8 @@
           repSel.value = uniq.some((x) => (x.id || x.name) === cur) ? cur : "";
         }
 
-        // apply filters
-        const rowOk = (r) =>
-          warehouseReceiptRowMatchesFilters(r, projectNames[r.projectId] || r.projectId || "", qText, fProject, fRep);
-        rowsAction = rowsAction.filter(rowOk);
-        rowsTrack = rowsTrack.filter(rowOk);
-
-        const sortReceipt = (rows) =>
-          rows.sort((a, b) => {
-            const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-            const pd = pri(b) - pri(a);
-            if (pd !== 0) return pd;
-            return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
-          });
-        sortReceipt(rowsAction);
-        rowsTrack.sort((a, b) => {
-          const ra = a.workflowStatus === "pending_accounting" ? 0 : 1;
-          const rb = b.workflowStatus === "pending_accounting" ? 0 : 1;
-          if (ra !== rb) return ra - rb;
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-          const pd = pri(b) - pri(a);
-          if (pd !== 0) return pd;
-          const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
-          const tb = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
-          return ta - tb;
-        });
-        if (!rowsAction.length && !rowsTrack.length) {
-          wrap.innerHTML = `<p class="empty-state">${t("emptyWarehouseReceiptQueue")}</p>`;
-          return;
-        }
-        const canAct = role === "warehouse_supervisor" || hasAdminAccess();
-        const tableHead = `<thead><tr>
-              <th>${t("colPoReference")}</th>
-              <th>${t("colRequestDate")}</th>
-              <th>${t("colProject")}</th>
-              <th>${t("colRegion")}</th>
-              <th>${t("colPurchasingRepresentative")}</th>
-              <th>${t("poRequesterLabel")}</th>
-              <th>${t("poReasonLabel")}</th>
-              <th>${t("colPriority")}</th>
-              <th>${t("colWorkflow")}</th>
-              <th></th>
-            </tr></thead>`;
-        const actionBody =
-          rowsAction.length > 0
-            ? `<tbody>
-              ${rowsAction
-                .map(
-                  (r) => `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
-                        canAct
-                          ? `<button type="button" class="btn btn-primary btn-sm btn-warehouse-receipt-confirm" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmWarehouseReceipt"))}</button>`
-                          : ""
-                      }
-                    </div>
-                  </td>
-                </tr>`
-                )
-                .join("")}
-            </tbody>`
-            : "";
-        const trackBody =
-          rowsTrack.length > 0
-            ? `<tbody>
-              ${rowsTrack
-                .map(
-                  (r) => `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>
-                    </div>
-                  </td>
-                </tr>`
-                )
-                .join("")}
-            </tbody>`
-            : "";
-        let html = "";
-        html += `<h2 class="queue-section-title">${escapeHtml(t("warehouseReceiptSectionAction"))}</h2>`;
-        if (rowsAction.length) {
-          html += `<div class="table-scroll"><table class="data-table">${tableHead}${actionBody}</table></div>`;
-        } else {
-          html += `<p class="empty-state" style="padding-top:0">${escapeHtml(t("emptyWarehouseReceiptAction"))}</p>`;
-        }
-        html += `<h2 class="queue-section-title">${escapeHtml(t("warehouseReceiptSectionTrack"))}</h2>`;
-        if (rowsTrack.length) {
-          html += `<div class="table-scroll"><table class="data-table">${tableHead}${trackBody}</table></div>`;
-        } else {
-          html += `<p class="empty-state" style="padding-top:0">${escapeHtml(t("emptyWarehouseReceiptTrack"))}</p>`;
-        }
-        wrap.innerHTML = html;
-        wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
-          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
-        });
-        if (canAct) {
-          wrap.querySelectorAll(".btn-warehouse-receipt-confirm").forEach((btn) => {
-            btn.addEventListener("click", () => void openWarehouseReceiptQtyModal(btn.dataset.id));
-          });
-        }
+        wrQueueDataCache = { rowsAction, rowsTrack, projectNames, projectRegion, role, regions };
+        renderWarehouseReceiptQueueTable(wrQueueDataCache);
       } catch (e) {
         console.error(e);
         wrap.innerHTML = `<p class="error-msg">${t("loadError")} ${escapeHtml(e.message || "")}</p>`;
@@ -16764,11 +16869,68 @@
     }
 
     let wrEditBaseLines = null;
+    let wrModalMode = "submit";
+
+    function warehouseReceiptQtySnapshot(lines) {
+      return (lines || []).map((l) => ({
+        item: (l.item || "").trim(),
+        qty: Number(l.qty) || 0,
+        receivedQty: Number(l.receivedQty) || 0,
+      }));
+    }
+
+    function warehouseReceiptQtyChanged(oldLines, newLines) {
+      const a = warehouseReceiptQtySnapshot(oldLines);
+      const b = warehouseReceiptQtySnapshot(newLines);
+      if (a.length !== b.length) return true;
+      return a.some((x, i) => x.receivedQty !== b[i].receivedQty);
+    }
+
+    function warehouseReceiptEditableStatus(ws) {
+      return ws === "pending_warehouse_receipt" || ws === "pending_accounting";
+    }
+
+    async function assertWarehouseReceiptAccess(po, role, regions) {
+      if (role !== "warehouse_supervisor" && !hasAdminAccess()) return false;
+      if (role === "warehouse_supervisor" && !regions.length) {
+        alert(t("alertWarehouseSupervisorRegionsRequired"));
+        return false;
+      }
+      if (role === "warehouse_supervisor" && regions.length) {
+        const pr = await getDoc(doc(db, "projects", po.projectId));
+        const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
+        if (!poReg || !regions.includes(poReg)) {
+          alert(t("alertWarehouseWrongRegion"));
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function syncWarehouseReceiptQtyModalUi(mode) {
+      const titleEl = $("wr-modal-title");
+      const hintEl = $("wr-modal-hint");
+      const confirmBtn = $("wr-confirm");
+      if (mode === "amend") {
+        if (titleEl) titleEl.textContent = t("warehouseReceiptQtyAmendTitle");
+        if (hintEl) hintEl.textContent = t("warehouseReceiptQtyAmendHint");
+        if (confirmBtn) confirmBtn.textContent = t("btnSaveWarehouseReceiptAmend");
+      } else if (mode === "update") {
+        if (titleEl) titleEl.textContent = t("warehouseReceiptQtyUpdateTitle");
+        if (hintEl) hintEl.textContent = t("warehouseReceiptQtyUpdateHint");
+        if (confirmBtn) confirmBtn.textContent = t("btnSaveWarehouseReceiptUpdate");
+      } else {
+        if (titleEl) titleEl.textContent = t("warehouseReceiptQtyModalTitle");
+        if (hintEl) hintEl.textContent = t("warehouseReceiptQtyModalHint");
+        if (confirmBtn) confirmBtn.textContent = t("btnConfirmWarehouseReceiptQty");
+      }
+    }
 
     function closeWarehouseReceiptQtyModal() {
       $("modal-warehouse-receipt-qty")?.classList.add("hidden");
       $("wr-po-id") && ($("wr-po-id").value = "");
       wrEditBaseLines = null;
+      wrModalMode = "submit";
       const tb = $("wr-lines-tbody");
       if (tb) tb.innerHTML = "";
     }
@@ -16797,33 +16959,29 @@
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
       const regions = currentUserProfile?.managedRegionIds || [];
-      if (role === "warehouse_supervisor" && !regions.length) {
-        alert(t("alertWarehouseSupervisorRegionsRequired"));
-        return;
-      }
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
       const po = snap.data();
-      if (po.workflowStatus !== "pending_warehouse_receipt") {
+      if (!warehouseReceiptEditableStatus(po.workflowStatus)) {
         alert(t("alertWarehouseReviewStale"));
         return;
       }
-      if (role === "warehouse_supervisor" && regions.length) {
-        const pr = await getDoc(doc(db, "projects", po.projectId));
-        const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
-        if (!poReg || !regions.includes(poReg)) {
-          alert(t("alertWarehouseWrongRegion"));
-          return;
-        }
-      }
+      if (!(await assertWarehouseReceiptAccess(po, role, regions))) return;
       const lines = Array.isArray(po.lines) ? po.lines : [];
       if (!lines.length) {
         alert(t("alertWarehouseReceiptNoLines"));
         return;
       }
+      wrModalMode =
+        po.workflowStatus === "pending_accounting"
+          ? "amend"
+          : po.warehouseReceiptRecordedAt || po.warehouseReceiptRecordedBy
+            ? "update"
+            : "submit";
       wrEditBaseLines = lines.map((l) => ({ ...l }));
       $("wr-po-id").value = poId;
+      syncWarehouseReceiptQtyModalUi(wrModalMode);
       renderWarehouseReceiptQtyLines(lines);
       $("modal-warehouse-receipt-qty")?.classList.remove("hidden");
       $("wr-lines-tbody")?.querySelector("input.wr-line-received")?.focus();
@@ -16851,28 +17009,65 @@
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
       const po = snap.data();
-      if (po.workflowStatus !== "pending_warehouse_receipt") {
+      if (!warehouseReceiptEditableStatus(po.workflowStatus)) {
         alert(t("alertWarehouseReviewStale"));
         closeWarehouseReceiptQtyModal();
         return;
       }
-      if (role === "warehouse_supervisor" && regions.length) {
-        const pr = await getDoc(doc(db, "projects", po.projectId));
-        const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
-        if (!poReg || !regions.includes(poReg)) {
-          alert(t("alertWarehouseWrongRegion"));
-          return;
-        }
-      }
+      if (!(await assertWarehouseReceiptAccess(po, role, regions))) return;
       const newLines = collectWarehouseReceiptQtyLines();
       if (!newLines || !newLines.length) {
         alert(t("alertWarehouseReceiptNoLines"));
         return;
       }
+      const oldLines = Array.isArray(po.lines) ? po.lines : [];
+      if (!warehouseReceiptQtyChanged(oldLines, newLines)) {
+        alert(t("alertWarehouseReceiptUnchanged"));
+        return;
+      }
       const isPartial = newLines.some((l) => (Number(l.receivedQty) || 0) < (Number(l.qty) || 0));
+
+      if (wrModalMode === "amend") {
+        if (po.workflowStatus !== "pending_accounting") {
+          alert(t("alertWarehouseReviewStale"));
+          closeWarehouseReceiptQtyModal();
+          return;
+        }
+        if (!confirm(t("confirmWarehouseReceiptAmend"))) return;
+        try {
+          const prevAmendments = Array.isArray(po.warehouseReceiptAmendments)
+            ? [...po.warehouseReceiptAmendments]
+            : [];
+          prevAmendments.push({
+            at: new Date().toISOString(),
+            by: currentUser.uid,
+            previous: warehouseReceiptQtySnapshot(oldLines),
+            next: warehouseReceiptQtySnapshot(newLines),
+          });
+          await updateDoc(ref, {
+            lines: newLines,
+            warehouseReceiptAmendments: prevAmendments,
+            warehouseReceiptLastAmendedAt: serverTimestamp(),
+            warehouseReceiptLastAmendedBy: currentUser.uid,
+            warehouseReceiptIsPartial: isPartial,
+            updatedAt: serverTimestamp(),
+          });
+          closeWarehouseReceiptQtyModal();
+          refreshWorkflowQueuesByActiveScreen();
+          refreshActiveProjectPoListIfAny();
+        } catch (err) {
+          alert(t("saveFailed") + " " + err.message);
+        }
+        return;
+      }
+
+      if (po.workflowStatus !== "pending_warehouse_receipt") {
+        alert(t("alertWarehouseReviewStale"));
+        closeWarehouseReceiptQtyModal();
+        return;
+      }
       let sendToAccounting = true;
       if (isPartial) {
-        // OK = close + send, Cancel = keep open
         sendToAccounting = confirm(t("confirmWarehouseReceiptPartialClose"));
       }
       try {
@@ -17303,7 +17498,10 @@
       if (active?.id === "screen-pm-approvals") loadPmApprovalQueue();
       if (active?.id === "screen-gm-approvals") loadGmApprovalQueue();
       if (active?.id === "screen-purchasing-queue") loadPurchasingQueue();
-      if (active?.id === "screen-warehouse-receipt-queue") loadWarehouseReceiptQueue();
+      if (active?.id === "screen-warehouse-receipt-queue") {
+        invalidateWarehouseReceiptQueueCache();
+        loadWarehouseReceiptQueue();
+      }
       if (active?.id === "screen-accounting-queue") loadAccountingQueue();
     }
 
