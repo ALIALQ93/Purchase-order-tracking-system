@@ -5260,8 +5260,9 @@
         colWorkflow: "مسار العمل",
         colAssignedRegion: "المناطق المسندة",
         labelAssignedRegionClerk: "مناطق أمين المستودع",
-        assignedRegionClerkHint: "يُعرض لأمين المستودع طلبات المشاريع في هذه المناطق فقط.",
+        assignedRegionClerkHint: "أضف منطقة أو أكثر. يُعرض لأمين المستودع طلبات المشاريع في هذه المناطق فقط.",
         alertClerkRegionsRequired: "حدّد منطقة واحدة على الأقل لأمين المستودع من الإدارة.",
+        alertWarehouseSupervisorRegionsSave: "حدّد منطقة واحدة على الأقل لمسؤول استلام المستودع من الإدارة.",
         workflowStatus_warehouse_review: "بانتظار المستودع",
         workflowStatus_pending_engineer_first: "بانتظار مهندس أول",
         workflowStatus_pending_project_manager: "بانتظار مدير المشروع",
@@ -5302,8 +5303,11 @@
         labelManagedProjectsEf: "المشاريع المسندة (مهندس أول)",
         managedProjectsEfHint: "وافق فقط على طلبات هذه المشاريع.",
         labelManagedRegionsGm: "المناطق المسندة (مسؤول مجموعة)",
+        labelManagedRegionsWs: "مناطق مسؤول الاستلام",
         managedRegionsGmHint:
-          "للمجموعة: موافقات المشاريع في هذه المناطق. لمسؤول الاستلام: طلبات الاستلام في هذه المناطق.",
+          "أضف منطقة أو أكثر. لمسؤول المجموعة: موافقات المشاريع في هذه المناطق.",
+        managedRegionsWsHint:
+          "أضف منطقة أو أكثر. يُعرض لمسؤول الاستلام طلبات الاستلام في هذه المناطق فقط.",
         colManagedProjectsPm: "مشاريع مسندة (م.مشروع)",
         colManagedRegionsGm: "مناطق مسندة (م.مجموعة)",
         emptyPmQueue: "لا توجد طلبات بانتظار موافقتك.",
@@ -6096,7 +6100,7 @@
         colWorkflow: "Workflow",
         colAssignedRegion: "Assigned regions",
         labelAssignedRegionClerk: "Warehouse clerk regions",
-        assignedRegionClerkHint: "The clerk only sees project requests for projects in these regions.",
+        assignedRegionClerkHint: "Add one or more regions. The clerk only sees project requests for projects in these regions.",
         alertClerkRegionsRequired: "Assign at least one region for this warehouse clerk in Administration.",
         workflowStatus_warehouse_review: "Awaiting warehouse",
         workflowStatus_pending_engineer_first: "Awaiting engineer first",
@@ -6138,8 +6142,11 @@
         labelManagedProjectsEf: "Managed projects (engineer first)",
         managedProjectsEfHint: "You approve requests only for these projects.",
         labelManagedRegionsGm: "Managed regions (group manager)",
+        labelManagedRegionsWs: "Receipt supervisor regions",
         managedRegionsGmHint:
-          "For group manager: approvals for projects in these regions. For warehouse receipt supervisor: receipt queue for these regions.",
+          "Add one or more regions. For group manager: project approvals in these regions.",
+        managedRegionsWsHint:
+          "Add one or more regions. The receipt supervisor only sees the warehouse receipt queue for these regions.",
         colManagedProjectsPm: "PM projects",
         colManagedRegionsGm: "GM regions",
         emptyPmQueue: "No requests awaiting your approval.",
@@ -6438,6 +6445,7 @@
         btnKeepOpenInReceipt: "Keep open",
         alertWarehouseReceiptNoLines: "No line items to record receipt.",
         alertWarehouseSupervisorRegionsRequired: "Assign managed regions for this warehouse receipt supervisor in Administration.",
+        alertWarehouseSupervisorRegionsSave: "Assign at least one region for this warehouse receipt supervisor.",
         accountingQueueTitle: "Accounting",
         accountingQueueHint: "Advance and closure; follow-up shows requests after advance release through completion.",
         accountingTrackSectionTitle: "Pipeline follow-up",
@@ -14105,12 +14113,22 @@
       const pm = container.querySelector("#user-pm-projects-wrap");
       const gm = container.querySelector("#user-gm-regions-wrap");
       const bypass = container.querySelector("#user-bypass-wrap");
+      const gmLabel = container.querySelector("#user-gm-regions-wrap label");
+      const gmHint = container.querySelector("#user-gm-regions-wrap .user-form-hint");
       const showBypass = role === "project_manager" || role === "group_manager";
       if (bypass) bypass.classList.toggle("hidden", !showBypass);
       if (eng) eng.classList.toggle("hidden", role !== "engineer" && role !== "engineer_first" && role !== "viewer");
       if (clerk) clerk.classList.toggle("hidden", role !== "warehouse_clerk");
       if (pm) pm.classList.toggle("hidden", role !== "project_manager");
       if (gm) gm.classList.toggle("hidden", role !== "group_manager" && role !== "warehouse_supervisor");
+      if (gmLabel) {
+        gmLabel.textContent =
+          role === "warehouse_supervisor" ? t("labelManagedRegionsWs") : t("labelManagedRegionsGm");
+      }
+      if (gmHint) {
+        gmHint.textContent =
+          role === "warehouse_supervisor" ? t("managedRegionsWsHint") : t("managedRegionsGmHint");
+      }
     }
 
     function workflowLabel(ws) {
@@ -19521,6 +19539,10 @@
             payload.assignedRegionId = deleteField();
             payload.assignedRegionIds = deleteField();
           } else if (roleVal === "group_manager" || roleVal === "warehouse_supervisor") {
+            if (roleVal === "warehouse_supervisor" && !managedRegionIds.length) {
+              alert(t("alertWarehouseSupervisorRegionsSave"));
+              return;
+            }
             payload.managedRegionIds = managedRegionIds;
             payload.assignedProjectIds = deleteField();
             payload.managedProjectIds = deleteField();
