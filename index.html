@@ -5415,7 +5415,10 @@
         alertSelectProjectEntity: "اختر المشروع.",
         alertSelectWarehouse: "اختر المنطقة.",
         alertWarehouseName: "أدخل اسم المستودع.",
-        warehouseRegionHint: "يُربَط المستودع بالمنطقة فقط، ويخدم المشاريع الواقعة في تلك المنطقة.",
+        warehouseRegionHint: "أضف منطقة أو أكثر. يظهر المستودع في مراجعة التوفر وطلبات الشراء لأي من هذه المناطق.",
+        labelWarehouseRegions: "مناطق المستودع",
+        warehouseRegionsHint: "أضف منطقة أو أكثر التي يغطيها هذا المستودع.",
+        alertWarehouseRegionsRequired: "حدّد منطقة واحدة على الأقل للمستودع.",
         helpTitle: "المساعدة",
         helpAboutTitle: "عن النظام",
         helpAboutP1:
@@ -6255,7 +6258,10 @@
         alertSelectProjectEntity: "Select a project.",
         alertSelectWarehouse: "Select a region.",
         alertWarehouseName: "Enter the warehouse name.",
-        warehouseRegionHint: "A warehouse is tied to a region only and serves projects in that region.",
+        warehouseRegionHint: "Add one or more regions. The warehouse appears in availability review and purchase requests for any of these regions.",
+        labelWarehouseRegions: "Warehouse regions",
+        warehouseRegionsHint: "Add one or more regions this warehouse covers.",
+        alertWarehouseRegionsRequired: "Assign at least one region for this warehouse.",
         helpTitle: "Help",
         helpAboutTitle: "About",
         helpAboutP1:
@@ -6887,6 +6893,7 @@
     let userGmRegionAssign = null;
     let userClerkRegionAssign = null;
     let projectRegionAssign = null;
+    let warehouseRegionAssign = null;
     let poFormProjectRegionIds = [];
     let workflowBypassCallback = null;
     let wfPoEditContext = null;
@@ -11129,6 +11136,58 @@
       return legacy ? [legacy] : [];
     }
 
+    function warehouseRegionIdsFromDoc(wh) {
+      const ids = Array.isArray(wh?.regionIds) ? wh.regionIds.map((x) => String(x || "").trim()).filter(Boolean) : [];
+      if (ids.length) return [...new Set(ids)];
+      const legacy = String(wh?.regionId || "").trim();
+      return legacy ? [legacy] : [];
+    }
+
+    function warehouseRegionsDisplayLabels(wh, regionsMap) {
+      const ids = warehouseRegionIdsFromDoc(wh);
+      if (!ids.length) return t("dash");
+      return ids.map((id) => regionsMap[id] || id).join(" · ");
+    }
+
+    function warehouseMatchesRegion(wh, regionId) {
+      const rid = String(regionId || "").trim();
+      if (!rid) return false;
+      return warehouseRegionIdsFromDoc(wh).includes(rid);
+    }
+
+    async function fetchWarehousesForRegion(regionId) {
+      const rid = String(regionId || "").trim();
+      if (!rid) return [];
+      const seen = new Map();
+      try {
+        const snapNew = await getDocs(
+          query(collection(db, "warehouses"), where("regionIds", "array-contains", rid))
+        );
+        snapNew.forEach((d) => seen.set(d.id, { id: d.id, ...d.data() }));
+      } catch (_) {
+        /* index or field may be missing on older data */
+      }
+      try {
+        const snapLegacy = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", rid)));
+        snapLegacy.forEach((d) => {
+          if (!seen.has(d.id)) seen.set(d.id, { id: d.id, ...d.data() });
+        });
+      } catch (_) {}
+      return sortWarehousesByCode([...seen.values()]);
+    }
+
+    async function fetchWarehousesForRegions(regionIds) {
+      const seen = new Map();
+      const ids = [...new Set((regionIds || []).map((x) => String(x || "").trim()).filter(Boolean))];
+      for (const rid of ids) {
+        const rows = await fetchWarehousesForRegion(rid);
+        rows.forEach((w) => {
+          if (!seen.has(w.id)) seen.set(w.id, w);
+        });
+      }
+      return sortWarehousesByCode([...seen.values()]);
+    }
+
     function projectPrimaryRegionId(project) {
       const ids = projectRegionIdsFromDoc(project);
       return ids[0] || String(project?.regionId || "").trim() || null;
@@ -11181,12 +11240,7 @@
         const rs = await getDoc(doc(db, "regions", rid));
         if (rs.exists()) regionRow = { id: rs.id, ...rs.data() };
       }
-      const warehouses = [];
-      if (rid) {
-        const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", rid)));
-        whSnap.forEach((d) => warehouses.push({ id: d.id, ...d.data() }));
-      }
-      sortWarehousesByCode(warehouses);
+      const warehouses = rid ? await fetchWarehousesForRegion(rid) : [];
       const contractSeg = contractSegmentForRef(project.contractNumber, project.code);
       return { project, company, regionRow, warehouses, contractSeg, regionIds };
     }
@@ -13796,10 +13850,7 @@
         if ($("po-region-display")) $("po-region-display").value = "";
         return;
       }
-      const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", regionId)));
-      const warehouses = [];
-      whSnap.forEach((d) => warehouses.push({ id: d.id, ...d.data() }));
-      sortWarehousesByCode(warehouses);
+      const warehouses = await fetchWarehousesForRegion(regionId);
       if ($("po-warehouses-display")) $("po-warehouses-display").value = warehouseListSummary(warehouses);
       if (poFormProjectRegionIds.length <= 1) {
         const rs = await getDoc(doc(db, "regions", regionId));
@@ -14239,10 +14290,8 @@
       if (pr?.exists()) {
         const regId = poEffectiveRegionId(po, projectPrimaryRegionId(pr.data()));
         if (regId) {
-          const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", regId)));
-          const whRows = [];
-          whSnap.forEach((d) => whRows.push({ id: d.id, ...d.data() }));
-          sortWarehousesByCode(whRows).forEach((w) => {
+          const whRows = await fetchWarehousesForRegion(regId);
+          whRows.forEach((w) => {
             whLabelById[w.id] = warehouseShortLabel(w);
           });
         }
@@ -17179,12 +17228,7 @@
         }
       }
       const regionId = poRegionId;
-      const whAccum = [];
-      if (regionId) {
-        const whSnap = await getDocs(query(collection(db, "warehouses"), where("regionId", "==", regionId)));
-        whSnap.forEach((d) => whAccum.push({ id: d.id, ...d.data() }));
-      }
-      const warehouses = sortWarehousesByCode(whAccum);
+      const warehouses = regionId ? await fetchWarehousesForRegion(regionId) : [];
       whReviewWarehousesList = warehouses;
       whReviewPoSnapshot = po;
       $("wh-po-id").value = po.id;
@@ -18478,7 +18522,7 @@
               <tr>
                 <td>${escapeHtml((r.code || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(r.name || "")}</td>
-                <td>${escapeHtml(regions[r.regionId] || r.regionId || t("dash"))}</td>
+                <td>${escapeHtml(warehouseRegionsDisplayLabels(r, regions))}</td>
                 <td>
                   <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="warehouses" data-id="${r.id}">${t("edit")}</button>
                   <button type="button" class="btn btn-danger btn-sm btn-del-entity" data-collection="warehouses" data-id="${r.id}">${t("delete")}</button>
@@ -18909,12 +18953,84 @@
         fields.appendChild(whCodeRow);
         addField("name", t("labelWarehouseName"));
         const rSnap = await getDocs(collection(db, "regions"));
-        const rRows = [];
-        rSnap.forEach((d) => rRows.push({ id: d.id, ...d.data() }));
-        sortRegionsByCode(rRows);
-        const rOpts = [{ value: "", label: t("selectRegionDash") }];
-        rRows.forEach((row) => rOpts.push({ value: row.id, label: regionOptionLabel({ ...row, id: row.id }) }));
-        addField("regionId", t("labelRegionSelect"), "select", rOpts);
+        const allRegionsForWarehouse = [];
+        rSnap.forEach((d) => allRegionsForWarehouse.push({ id: d.id, ...d.data() }));
+        sortRegionsByCode(allRegionsForWarehouse);
+        const whRegBlock = document.createElement("div");
+        whRegBlock.className = "field";
+        whRegBlock.innerHTML = `
+          <label for="warehouse-region-search">${escapeHtml(t("labelWarehouseRegions"))}</label>
+          <p class="user-form-hint" style="margin-top:0.25rem">${escapeHtml(t("warehouseRegionsHint"))}</p>
+          <div id="warehouse-region-chips" class="assign-chips"></div>
+          <input type="search" id="warehouse-region-search" autocomplete="off" placeholder="${escapeHtml(t("assignRegionSearchPlaceholder"))}" />
+          <ul id="warehouse-region-results" class="assign-search-results" role="listbox"></ul>`;
+        fields.appendChild(whRegBlock);
+        const whRegChipsEl = fields.querySelector("#warehouse-region-chips");
+        const whRegResultsUl = fields.querySelector("#warehouse-region-results");
+        const whRegSearchInp = fields.querySelector("#warehouse-region-search");
+        warehouseRegionAssign = {
+          ids: [],
+          allRegions: allRegionsForWarehouse,
+          chipsEl: whRegChipsEl,
+          resultsUl: whRegResultsUl,
+          searchInp: whRegSearchInp,
+        };
+        warehouseRegionAssign.renderAssignChips = function renderWarehouseRegionChips() {
+          if (!warehouseRegionAssign) return;
+          const { ids, allRegions: ar } = warehouseRegionAssign;
+          warehouseRegionAssign.chipsEl.innerHTML = ids
+            .map((id) => {
+              const row = ar.find((r) => r.id === id);
+              const label = row ? regionOptionLabel({ ...row, id }) : id;
+              return `<span class="assign-chip"><span>${escapeHtml(label)}</span><button type="button" class="assign-chip-remove" data-remove-warehouse-region="${escapeHtml(id)}">×</button></span>`;
+            })
+            .join("");
+        };
+        warehouseRegionAssign.renderAssignResults = function renderWarehouseRegionResults(q) {
+          if (!warehouseRegionAssign) return;
+          const queryText = (q || "").trim().toLowerCase();
+          const { ids, allRegions: ar } = warehouseRegionAssign;
+          let pool = ar.filter((row) => !ids.includes(row.id));
+          if (queryText) {
+            pool = pool.filter((row) => {
+              const blob = [row.code, row.name, regionOptionLabel({ ...row, id: row.id })]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+              return blob.includes(queryText);
+            });
+          }
+          pool = pool.slice(0, 12);
+          if (!pool.length) {
+            warehouseRegionAssign.resultsUl.innerHTML = `<li class="empty-hint">${escapeHtml(t("assignRegionNoResults"))}</li>`;
+            return;
+          }
+          warehouseRegionAssign.resultsUl.innerHTML = pool
+            .map(
+              (row) =>
+                `<li><button type="button" data-add-warehouse-region="${escapeHtml(row.id)}">${escapeHtml(regionOptionLabel({ ...row, id: row.id }))}</button></li>`
+            )
+            .join("");
+        };
+        whRegChipsEl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-remove-warehouse-region]");
+          if (!btn || !warehouseRegionAssign) return;
+          const id = btn.getAttribute("data-remove-warehouse-region");
+          warehouseRegionAssign.ids = warehouseRegionAssign.ids.filter((x) => x !== id);
+          warehouseRegionAssign.renderAssignChips();
+          warehouseRegionAssign.renderAssignResults(whRegSearchInp.value);
+        });
+        whRegResultsUl.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-add-warehouse-region]");
+          if (!btn || !warehouseRegionAssign) return;
+          const id = btn.getAttribute("data-add-warehouse-region");
+          if (!warehouseRegionAssign.ids.includes(id)) warehouseRegionAssign.ids.push(id);
+          warehouseRegionAssign.renderAssignChips();
+          warehouseRegionAssign.renderAssignResults(whRegSearchInp.value);
+        });
+        whRegSearchInp.addEventListener("input", () => warehouseRegionAssign.renderAssignResults(whRegSearchInp.value));
+        warehouseRegionAssign.renderAssignChips();
+        warehouseRegionAssign.renderAssignResults("");
       } else if (collectionName === "userProfiles") {
         $("modal-entity-title").textContent = existingId ? t("modalEditUser") : t("modalNewUser");
         fields.classList.add("user-profile-form");
@@ -19394,6 +19510,13 @@
             const d = snap.data();
             const codeInp = fields.querySelector("#ef-warehouse-code");
             if (codeInp) codeInp.value = (d.code || "").trim();
+            if (warehouseRegionAssign) {
+              warehouseRegionAssign.ids = warehouseRegionIdsFromDoc(d);
+              warehouseRegionAssign.renderAssignChips();
+              const sInp = fields.querySelector("#warehouse-region-search");
+              if (sInp) sInp.value = "";
+              warehouseRegionAssign.renderAssignResults("");
+            }
           }
           if (collectionName === "suppliers") {
             const d = snap.data();
@@ -19445,6 +19568,7 @@
       userGmRegionAssign = null;
       userClerkRegionAssign = null;
       projectRegionAssign = null;
+      warehouseRegionAssign = null;
       $("entity-fields")?.classList.remove("user-profile-form");
       document.querySelector("#modal-entity .modal")?.classList.remove("modal-entity-user");
       $("modal-entity").classList.add("hidden");
@@ -19673,8 +19797,9 @@
             alert(t("alertWarehouseName"));
             return;
           }
-          if (!data.regionId) {
-            alert(t("alertSelectWarehouse"));
+          const regionIds = warehouseRegionAssign?.ids ? [...warehouseRegionAssign.ids] : [];
+          if (!regionIds.length) {
+            alert(t("alertWarehouseRegionsRequired"));
             return;
           }
           let code;
@@ -19686,7 +19811,8 @@
           }
           const payload = {
             name,
-            regionId: data.regionId,
+            regionIds,
+            regionId: regionIds[0],
             code,
             updatedAt: serverTimestamp(),
           };
