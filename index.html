@@ -11500,7 +11500,7 @@
       const sub = [po.poReference || po.title || "", poRowDisplayDate(po)].filter(Boolean).join(" · ");
       $("modal-wf-po-sub").textContent = sub;
       $("wf-po-project").textContent = pname;
-      $("wf-po-region").textContent = (po.regionName || "").trim() || t("dash");
+      $("wf-po-region").textContent = projectPoRegionDisplayName(po);
       $("wf-po-reason").textContent = (po.reasonRequest || "").trim() || t("dash");
       $("wf-po-usage").textContent = (po.usageNote || "").trim() || t("dash");
       $("wf-po-notes").textContent = (po.notes || "").trim() || t("dash");
@@ -11791,7 +11791,7 @@
       const sub = [po.poReference || po.title || "", poRowDisplayDate(po)].filter(Boolean).join(" · ");
       $("modal-acc-po-sub").textContent = sub;
       $("acc-po-project").textContent = pname;
-      $("acc-po-region").textContent = (po.regionName || "").trim() || t("dash");
+      $("acc-po-region").textContent = projectPoRegionDisplayName(po);
       const verified = !!po.pricesVerified;
       const by = (po.pricesVerifiedBy || "").trim();
       const at = po.pricesVerifiedAt ? formatFirestoreInstant(po.pricesVerifiedAt) : "";
@@ -12758,7 +12758,7 @@
         const company = cid ? (companyNameById[cid] || cid) : t("dash");
         const ref = (po.poReference || po.title || "").trim() || t("dash");
         const projectLabel = projectNames[po.projectId] || po.projectId || t("dash");
-        const region = (po.regionName || "").trim() || t("dash");
+        const region = projectPoRegionDisplayName(po);
         const rep = (po.purchasingRepresentativeName || "").trim() || t("dash");
         const hasLinePrices = lines.some((l) => Number(l.price) > 0);
         const pricesVerified = !!po.pricesVerified;
@@ -13831,7 +13831,7 @@
         sel.innerHTML =
           `<option value="">${escapeHtml(t("selectRegionDash"))}</option>` +
           regionRows
-            .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml(regionOptionLabel(r))}</option>`)
+            .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml(regionDisplayName(r))}</option>`)
             .join("");
         sel.value = pref && regionIds.includes(pref) ? pref : "";
         sel.required = true;
@@ -13840,7 +13840,7 @@
         sel.innerHTML = "";
       } else if (disp) {
         const row = regionRows[0];
-        disp.value = row ? regionOptionLabel(row) : t("dash");
+        disp.value = row ? regionDisplayName(row) : t("dash");
       }
     }
 
@@ -13855,7 +13855,7 @@
       if (poFormProjectRegionIds.length <= 1) {
         const rs = await getDoc(doc(db, "regions", regionId));
         if ($("po-region-display"))
-          $("po-region-display").value = rs.exists() ? regionOptionLabel({ id: rs.id, ...rs.data() }) : t("dash");
+          $("po-region-display").value = rs.exists() ? regionDisplayName({ id: rs.id, ...rs.data() }) : t("dash");
       }
     }
 
@@ -14388,7 +14388,7 @@
         metaDlInner += `<dt>${escapeHtml(t("poPrintMetaRef"))}</dt><dd>${escapeHtml(refText)}</dd>`;
         metaDlInner += `<dt>${escapeHtml(t("poPrintMetaDate"))}</dt><dd>${escapeHtml(poRowDisplayDate(po))}</dd>`;
         metaDlInner += `<dt>${escapeHtml(t("poPrintMetaProject"))}</dt><dd>${escapeHtml(pname)}</dd>`;
-        metaDlInner += `<dt>${escapeHtml(t("poPrintMetaRegion"))}</dt><dd>${escapeHtml((po.regionName || "").trim() || t("dash"))}</dd>`;
+        metaDlInner += `<dt>${escapeHtml(t("poPrintMetaRegion"))}</dt><dd>${escapeHtml(projectPoRegionDisplayName(po))}</dd>`;
         metaDlInner += `<dt>${escapeHtml(t("poPrintMetaRequester"))}</dt><dd>${escapeHtml((po.requesterName || "").trim() || t("dash"))}</dd>`;
         metaDlInner += `<dt>${escapeHtml(t("poPrintMetaContract"))}</dt><dd>${escapeHtml((po.contractNumberSnapshot || "").trim() || t("dash"))}</dd>`;
         metaDlInner += `<dt>${escapeHtml(t("poRequestTypeLabel"))}</dt><dd>${escapeHtml(projectPoRequestTypeLabel(po.requestType))}</dd>`;
@@ -14728,7 +14728,7 @@
       if (pri && (r.priority || "normal") !== pri) return false;
       const cDisp = projectPoCompanyDisplay(r, ctx);
       if (co && cDisp !== co) return false;
-      const rName = (r.regionName || "").trim();
+      const rName = projectPoRegionDisplayName(r);
       if (reg && rName !== reg) return false;
       const q = (qRaw || "").trim().toLowerCase();
       if (!q) return true;
@@ -14738,6 +14738,7 @@
         cDisp,
         projectPoContractDisplay(r, ctx),
         rName,
+        (r.regionName || "").trim(),
         (r.requesterName || "").trim(),
         (r.reasonRequest || "").trim(),
         projectPoRequestTypeLabel(r.requestType),
@@ -14764,7 +14765,7 @@
       const companies = [
         ...new Set(ctx.rows.map((r) => projectPoCompanyDisplay(r, ctx)).filter(Boolean)),
       ].sort((a, b) => a.localeCompare(b, loc));
-      const regions = [...new Set(ctx.rows.map((r) => (r.regionName || "").trim()).filter(Boolean))].sort((a, b) =>
+      const regions = [...new Set(ctx.rows.map((r) => projectPoRegionDisplayName(r)).filter((x) => x && x !== t("dash")))].sort((a, b) =>
         a.localeCompare(b, loc)
       );
       const wfVal = wfSel.value;
@@ -14855,7 +14856,7 @@
                   <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(compName)}</td>
                   <td>${escapeHtml(contractNo)}</td>
-                  <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
                   <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
                   ${projectPoReasonTableCell(r.reasonRequest)}
                   <td>${escapeHtml(projectPoRequestTypeLabel(r.requestType))}</td>
@@ -15036,7 +15037,7 @@
       const companies = [
         ...new Set(ctx.rows.map((r) => projectPoCompanyDisplay(r, ctx)).filter(Boolean)),
       ].sort((a, b) => a.localeCompare(b, loc));
-      const regions = [...new Set(ctx.rows.map((r) => (r.regionName || "").trim()).filter(Boolean))].sort((a, b) =>
+      const regions = [...new Set(ctx.rows.map((r) => projectPoRegionDisplayName(r)).filter((x) => x && x !== t("dash")))].sort((a, b) =>
         a.localeCompare(b, loc)
       );
       const wfVal = wfSel.value;
@@ -15122,7 +15123,7 @@
                   <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(compName)}</td>
                   <td>${escapeHtml(contractNo)}</td>
-                  <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
                   <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
                   ${projectPoReasonTableCell(r.reasonRequest)}
                   <td>${escapeHtml(projectPoRequestTypeLabel(r.requestType))}</td>
@@ -15908,7 +15909,7 @@
                   <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
                   <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
@@ -16297,7 +16298,7 @@
       const hay = [
         (po?.poReference || po?.title || "").trim(),
         (projectName || "").trim(),
-        (po?.regionName || "").trim(),
+        projectPoRegionDisplayName(po),
         (po?.purchasingRepresentativeName || "").trim(),
         (po?.requesterName || "").trim(),
         (po?.reasonRequest || "").trim(),
@@ -16379,7 +16380,7 @@
                 <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
                 <td>${purchasingRepresentativeCellHtml(r)}</td>
                 <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
@@ -16413,7 +16414,7 @@
                 <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                <td>${escapeHtml((r.regionName || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
                 <td>${purchasingRepresentativeCellHtml(r)}</td>
                 <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.reasonRequest || "").trim() || t("dash"))}</td>
@@ -17532,6 +17533,25 @@
       return c || n || row.id || t("dash");
     }
 
+    function regionDisplayName(row) {
+      const n = (row.name || "").trim();
+      if (n) return n;
+      const c = (row.code || "").trim();
+      return c || row.id || t("dash");
+    }
+
+    function projectPoRegionDisplayName(poOrLabel) {
+      const raw =
+        typeof poOrLabel === "string" ? poOrLabel.trim() : (poOrLabel?.regionName || "").trim();
+      if (!raw) return t("dash");
+      const parts = raw.split(/\s+[—–]\s+/);
+      if (parts.length >= 2) {
+        const nameOnly = parts.slice(1).join(" — ").trim();
+        return nameOnly || raw;
+      }
+      return raw;
+    }
+
     function roleLabelDisplay(role) {
       if (role === "admin") return t("roleOptAdmin");
       if (role === "engineer") return t("roleOptEngineer");
@@ -17822,7 +17842,7 @@
           requesterName: ($("po-requester-display").value || "").trim() || requesterDisplayName(),
           contractNumberSnapshot: (ctx.project.contractNumber || "").trim() || null,
           regionId: selectedRegionId,
-          regionName: ctx.regionRow ? regionOptionLabel(ctx.regionRow) : null,
+          regionName: ctx.regionRow ? regionDisplayName(ctx.regionRow) : null,
           companyNameSnapshot: ctx.company ? companyDisplayName(ctx.company) : null,
           ...(() => {
             const csrc = ctx.company ? companyLogoSrc(ctx.company) : "";
