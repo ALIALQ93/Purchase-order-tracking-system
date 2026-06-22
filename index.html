@@ -854,6 +854,40 @@
       font-weight: 600;
     }
 
+    .dashboard-tip-card {
+      background: linear-gradient(135deg, var(--ds-surface-container-low) 0%, var(--surface) 55%);
+      border-inline-start: 4px solid var(--accent);
+    }
+
+    .dashboard-tip-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-bottom: var(--space-sm);
+    }
+
+    .dashboard-tip-head h2 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .dashboard-tip-date {
+      flex-shrink: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .dashboard-tip-text {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--ds-on-surface-variant);
+    }
+
     .toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -3720,14 +3754,14 @@
         display: none !important;
       }
 
-      #screen-dashboard > .card:nth-of-type(2) .toolbar {
+      #screen-dashboard > .card:nth-of-type(3) .toolbar {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 0.5rem;
         margin-bottom: 0;
       }
 
-      #screen-dashboard > .card:nth-of-type(2) .toolbar .btn {
+      #screen-dashboard > .card:nth-of-type(3) .toolbar .btn {
         width: 100%;
         justify-content: center;
         text-align: center;
@@ -3938,6 +3972,13 @@
         <div class="card">
           <h2 data-i18n="welcomeCardTitle">مرحباً</h2>
           <p id="dashboard-welcome" style="margin:0;color:var(--muted);"></p>
+        </div>
+        <div class="card dashboard-tip-card">
+          <div class="dashboard-tip-head">
+            <h2 data-i18n="dashboardTipTitle">معلومة اليوم — المشتريات</h2>
+            <span class="dashboard-tip-date" id="dashboard-tip-date" aria-hidden="true"></span>
+          </div>
+          <p class="dashboard-tip-text" id="dashboard-tip-text"></p>
         </div>
         <div class="card">
           <h2 data-i18n="shortcutsTitle">اختصارات</h2>
@@ -5286,6 +5327,7 @@
         navMenuCloseAria: "إغلاق القائمة",
         dashboardTitle: "لوحة التحكم",
         welcomeCardTitle: "مرحباً",
+        dashboardTipTitle: "معلومة اليوم — المشتريات",
         shortcutsTitle: "اختصارات",
         shortcutPoProjects: "أوامر شراء المشاريع",
         shortcutPoGeneral: "أوامر شراء الإدارة العامة",
@@ -6143,6 +6185,7 @@
         navMenuCloseAria: "Close menu",
         dashboardTitle: "Dashboard",
         welcomeCardTitle: "Welcome",
+        dashboardTipTitle: "Today's insight — Procurement",
         shortcutsTitle: "Shortcuts",
         shortcutPoProjects: "Project purchase orders",
         shortcutPoGeneral: "General admin purchase orders",
@@ -15820,6 +15863,156 @@
       return t("roleUser");
     }
 
+    const PROCUREMENT_DAILY_TIPS = [
+      {
+        ar: "طلب الشراء (PR) يعبّر عن الحاجة والموافقات؛ أمر الشراء (PO) يُصدر للمورد بعد الاعتماد ويُلزم مالياً. لا تخلط بينهما في المراسلات.",
+        en: "A purchase request (PR) expresses need and approvals; a purchase order (PO) is issued to the supplier after approval and is financially binding. Do not mix them in correspondence.",
+      },
+      {
+        ar: "وصف البند بدقة (المواصفات، الوحدة، الكمية) يقلّل التأخير ويمنع استلام مواد غير مطابقة.",
+        en: "Precise line descriptions (specs, unit, quantity) reduce delays and prevent receiving non-conforming materials.",
+      },
+      {
+        ar: "اذكر سبب الطلب بوضوح — يساعد الموافقين على اتخاذ قرار أسرع ويوثّق الحاجة التشغيلية.",
+        en: "State the reason for the request clearly — it helps approvers decide faster and documents operational need.",
+      },
+      {
+        ar: "قارن ثلاث عروض أسعار عند الإمكان؛ التوثيق يدعم الشفافية ويُقوّي موقف المشتريات في التفاوض.",
+        en: "Compare three quotations when possible; documentation supports transparency and strengthens purchasing in negotiation.",
+      },
+      {
+        ar: "تحقق من توفر الكمية في المستودع قبل طلب شراء جديد — قد تكون المادة متوفرة دون حاجة لأمر جديد.",
+        en: "Check warehouse availability before a new purchase request — the item may already be in stock.",
+      },
+      {
+        ar: "الطلبات العاجلة تُعالَج أولاً؛ استخدم الأولوية العاجلة فقط عند ضرورة تشغيلية حقيقية.",
+        en: "Urgent requests are handled first; use urgent priority only for genuine operational necessity.",
+      },
+      {
+        ar: "لا تتخطَّ مراحل الموافقة — كل مرحلة تضيف رقابة: مستودع، مهندس أول، مدير مشروع، ثم المشتريات.",
+        en: "Do not skip approval stages — each step adds control: warehouse, engineer first, project manager, then purchasing.",
+      },
+      {
+        ar: "مراجعة المستودع تؤكد الحاجة الفعلية والكميات؛ أدخل بيانات دقيقة لتسريع هذه المرحلة.",
+        en: "Warehouse review confirms real need and quantities; enter accurate data to speed up this stage.",
+      },
+      {
+        ar: "بعد الشراء، استلام المستودع يُثبت وصول المواد — بدونه لا يكتمل المسار المحاسبي.",
+        en: "After purchasing, warehouse receipt confirms goods arrival — without it the accounting workflow cannot complete.",
+      },
+      {
+        ar: "تحقق من الأسعار قبل الإغلاق المحاسبي؛ أي فرق يجب توثيقه ومراجعته مع المشتريات.",
+        en: "Verify prices before accounting closure; any variance must be documented and reviewed with purchasing.",
+      },
+      {
+        ar: "حدّد وحدة القياس لكل بند (قطعة، متر، طن…) — الغموض يسبب أخطاء في الكميات والفواتير.",
+        en: "Specify the unit of measure for each line (piece, meter, ton…) — ambiguity causes quantity and invoice errors.",
+      },
+      {
+        ar: "اذكر موعد التسليم المطلوب في الطلب؛ يساعد المشتريات على التفاوض مع الموردين بشكل واقعي.",
+        en: "Include the required delivery date in the request; it helps purchasing negotiate realistically with suppliers.",
+      },
+      {
+        ar: "تأكد من صلاحية عرض السعر — العروض المنتهية قد لا تعكس السعر الحالي في السوق.",
+        en: "Confirm quotation validity — expired quotes may not reflect current market prices.",
+      },
+      {
+        ar: "استخدم الموردين المعتمدين في النظام؛ يقلّل المخاطر ويُسرّع معالجة الطلب.",
+        en: "Use approved suppliers in the system; it reduces risk and speeds up request processing.",
+      },
+      {
+        ar: "وثّق شروط الدفع والضمان في أمر الشراء — يحمي الجهة عند النزاعات أو الأعطال.",
+        en: "Document payment terms and warranty in the purchase order — it protects the organization in disputes or defects.",
+      },
+      {
+        ar: "التعبئة والشحن جزء من التكلفة — اذكرها صراحة عند مقارنة العروض.",
+        en: "Packing and shipping are part of cost — state them explicitly when comparing quotations.",
+      },
+      {
+        ar: "لا تكرّر طلباً لنفس المادة دون مراجعة الطلبات المفتوحة — يمنع الشراء المزدوج.",
+        en: "Do not duplicate a request for the same material without checking open orders — it prevents double purchasing.",
+      },
+      {
+        ar: "عند رفض الطلب، السبب المسجّل يوضح للمقدّم ما يجب تصحيحه قبل إعادة التقديم.",
+        en: "When a request is rejected, the recorded reason tells the requester what to fix before resubmitting.",
+      },
+      {
+        ar: "طلبات صيانة الآليات تحتاج نوع ورقم المركبة — بدونها يصعب تتبع التكاليف والصيانة.",
+        en: "Vehicle maintenance requests need type and number — without them cost and maintenance tracking is difficult.",
+      },
+      {
+        ar: "تابع مرحلة المسار في قائمة الطلبات — تعرف أين توقف الطلب ومن المسؤول عن الخطوة التالية.",
+        en: "Track workflow stage in the orders list — you see where the request stopped and who owns the next step.",
+      },
+      {
+        ar: "التقارير تساعد على قياس أداء الأقسام ومتوسط مدة كل مرحلة — استخدمها في التحسين المستمر.",
+        en: "Reports help measure department performance and average stage duration — use them for continuous improvement.",
+      },
+      {
+        ar: "البيانات الدقيقة في النظام أهم من السرعة — خطأ في الكمية أو المشروع يكلف وقتاً لاحقاً أكثر.",
+        en: "Accurate data in the system matters more than speed — errors in quantity or project cost more time later.",
+      },
+      {
+        ar: "راجع الفاتورة مع أمر الشراء والاستلام قبل الإغلاق — المطابقة الثلاثية تمنع الدفع الزائد.",
+        en: "Match the invoice to the PO and receipt before closing — three-way matching prevents overpayment.",
+      },
+      {
+        ar: "احترم ميزانية المشروع والعقد — أي شراء خارج النطاق يحتاج موافقة إضافية وتوثيقاً.",
+        en: "Respect project budget and contract — any out-of-scope purchase needs extra approval and documentation.",
+      },
+      {
+        ar: "الامتثال لسياسات الشركة في المشتريات ليس إجراءً شكلياً — يحمي الجهة قانونياً ومالياً.",
+        en: "Compliance with company procurement policies is not bureaucracy — it protects the organization legally and financially.",
+      },
+      {
+        ar: "التوثيق الرقمي في النظام يحل محل المراسلات المتفرقة — كل قرار مرتبط بالطلب وزمنه.",
+        en: "Digital documentation in the system replaces scattered messages — every decision is tied to the request and its time.",
+      },
+      {
+        ar: "عند اختيار منطقة تنفيذ الطلب لمشروع متعدد المناطق، تأكد أنها تطابق مكان الاستخدام الفعلي.",
+        en: "When selecting execution region for a multi-region project, ensure it matches where materials will actually be used.",
+      },
+      {
+        ar: "المشتريات تحتاج مواصفات كاملة — «مثل السابق» غير كافٍ إن لم يُحدد المرجع أو رقم البند السابق.",
+        en: "Purchasing needs complete specs — “same as before” is not enough unless the prior reference or line is specified.",
+      },
+      {
+        ar: "بعد إرسال الطلب، راقب الإشعارات — تُعلمك بكل موافقة أو رفض أو إرجاع للتعديل.",
+        en: "After submitting, watch notifications — they inform you of every approval, rejection, or return for revision.",
+      },
+      {
+        ar: "الطلبات المرفوضة تبقى للاطلاع والطباعة — راجعها لتجنب تكرار نفس الأخطاء في طلب جديد.",
+        en: "Rejected requests remain available for review and printing — study them to avoid repeating mistakes in a new request.",
+      },
+      {
+        ar: "التنسيق بين المهندس والمستودع والمشتريات يختصر زمن التسليم — أجب بسرعة على الاستفسارات في المسار.",
+        en: "Coordination between engineer, warehouse, and purchasing shortens delivery time — respond quickly to in-workflow inquiries.",
+      },
+    ];
+
+    function localDayOfYear(d = new Date()) {
+      const start = new Date(d.getFullYear(), 0, 0);
+      return Math.floor((d - start) / 86400000);
+    }
+
+    function dailyProcurementTipText() {
+      const tips = PROCUREMENT_DAILY_TIPS;
+      if (!tips.length) return "";
+      const idx = localDayOfYear() % tips.length;
+      const row = tips[idx];
+      return lang === "ar" ? row.ar : row.en;
+    }
+
+    function dashboardTipDateLabel() {
+      const loc = lang === "ar" ? "ar-IQ" : "en-GB";
+      return new Date().toLocaleDateString(loc, {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    }
+
     function refreshDashboard() {
       const w = $("dashboard-welcome");
       if (currentUser && w) {
@@ -15827,6 +16020,10 @@
           .replace("{email}", currentUser.email || "")
           .replace("{role}", dashboardRoleLabel());
       }
+      const tipEl = $("dashboard-tip-text");
+      const tipDateEl = $("dashboard-tip-date");
+      if (tipEl) tipEl.textContent = dailyProcurementTipText();
+      if (tipDateEl) tipDateEl.textContent = dashboardTipDateLabel();
     }
 
     function debounceFn(fn, ms) {
