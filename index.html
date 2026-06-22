@@ -1886,11 +1886,59 @@
       }
       #modal-po-print-view .po007-items-table thead tr,
       #modal-po-print-view .po007-sec-data-table thead tr,
+      #modal-po-print-view .po007-delivery-table thead tr,
       #modal-po-print-view .po007-section-heading,
       #modal-po-print-view .po007-total-num-row td,
       #modal-po-print-view .po007-total-row td,
       #modal-po-print-view .po007-items-table tbody tr:nth-child(even),
       #modal-po-print-view .po007-sec-data-table tbody tr:nth-child(even) {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      /* PO007 — استثناء الخلفيات الداكنة من قاعدة color:#111 أعلاه */
+      #modal-po-print-view .po007-section-heading,
+      #modal-po-print-view .po007-section-heading .num,
+      #modal-po-print-view .po007-section-heading > span:not(.num),
+      #modal-po-print-view .po007-items-table thead th,
+      #modal-po-print-view .po007-sec-data-table thead th,
+      #modal-po-print-view .po007-delivery-table thead th,
+      #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-total-row td,
+      #modal-po-print-view .po007-total-num-row td *,
+      #modal-po-print-view .po007-total-row td * {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+      }
+      #modal-po-print-view .po007-section-heading {
+        background: #254a70 !important;
+      }
+      #modal-po-print-view .po007-section-heading .num {
+        background: #315f85 !important;
+        color: #fff !important;
+      }
+      #modal-po-print-view .po007-items-table thead tr,
+      #modal-po-print-view .po007-sec-data-table thead tr {
+        background: #254a70 !important;
+      }
+      #modal-po-print-view .po007-delivery-table thead tr {
+        background: #2a5490 !important;
+      }
+      #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-total-row td {
+        background: #254a70 !important;
+      }
+      #modal-po-print-view .po007-logo {
+        height: 104px !important;
+        width: auto !important;
+        max-width: 220px !important;
+        min-width: 72px !important;
+        object-fit: contain !important;
+        object-position: left center !important;
+      }
+      #modal-po-print-view .po007-shipping-docs-table,
+      #modal-po-print-view .po007-shipping-docs-table thead th,
+      #modal-po-print-view .po007-shipping-docs-table tbody td {
+        border: 1px solid #8fa3b8 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -1952,13 +2000,21 @@
     .po007-surface .po007-doc-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       border-bottom: 2.5px solid #222;
       padding-bottom: 13px;
       margin-bottom: 15px;
       direction: ltr;
     }
-    .po007-surface .po007-dh-logo { flex-shrink: 0; }
+    .po007-surface .po007-dh-logo {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-width: 88px;
+      max-width: 228px;
+      padding-inline-end: 14px;
+    }
   /* Header flex is always LTR (logo left); use margin-left not margin-inline-start */
     .po007-surface .po007-dh-meta {
       margin-left: auto;
@@ -2022,9 +2078,12 @@
     .po007-doc[dir="rtl"] .po007-mini-header { direction: rtl; }
     .po007-doc[dir="ltr"] .po007-mini-header { direction: ltr; }
     .po007-surface .po007-logo {
-      height: 72px;
-      width: 72px;
+      height: 104px;
+      width: auto;
+      max-width: 220px;
+      min-width: 72px;
       object-fit: contain;
+      object-position: left center;
       display: block;
     }
     .po007-surface .po007-parties {
@@ -2194,7 +2253,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #1c3557;
+      background: #254a70;
       color: #fff;
       padding: 5px 12px;
       font-weight: 700;
@@ -2204,11 +2263,15 @@
       margin-bottom: 9px;
     }
     .po007-surface .po007-section-heading .num {
-      background: rgba(255, 255, 255, 0.15);
+      background: #315f85;
+      color: #fff;
       border-radius: 3px;
       padding: 1px 6px;
       font-size: 10.5px;
       flex-shrink: 0;
+    }
+    .po007-surface .po007-section-heading > span:not(.num) {
+      color: #fff;
     }
     .po007-surface.po007-edit-mode .po007-section-heading {
       flex-wrap: wrap;
@@ -2338,6 +2401,17 @@
     .po007-surface .po007-shipping-docs-table col.po007-ship-sn-col { width: 52px; }
     .po007-surface .po007-shipping-docs-table col.po007-ship-qty-col { width: 56px; }
     .po007-surface .po007-shipping-docs-table col.po007-ship-desc-col { width: 22%; }
+    .po007-surface .po007-shipping-docs-table {
+      border: 1px solid #b0becf;
+    }
+    .po007-surface .po007-shipping-docs-table thead th,
+    .po007-surface .po007-shipping-docs-table tbody td {
+      border: 1px solid #b0becf;
+      padding: 6px 8px;
+    }
+    .po007-surface .po007-shipping-docs-table tbody tr {
+      border-bottom: none;
+    }
     .po007-surface .po007-shipping-docs-table .po007-ship-sn,
     .po007-surface .po007-shipping-docs-table .po007-ship-qty { text-align: center; }
     .po007-surface .po007-shipping-docs-table .po007-ship-notes-print { white-space: pre-wrap; line-height: 1.45; }
@@ -2878,6 +2952,53 @@
       font-size: 9px;
       padding: 3px 6px;
       white-space: nowrap;
+    }
+    .po007-surface.po007-edit-mode .po007-custom-table-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 0.75rem;
+      margin: 0 0 0.45rem;
+      font-size: 0.78rem;
+    }
+    .po007-surface.po007-edit-mode .po007-custom-table-head-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      color: var(--muted);
+      user-select: none;
+    }
+    .po007-surface.po007-edit-mode .po007-custom-table-head-toggle input {
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .po007-surface.po007-edit-mode .po007-custom-table-col-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.4rem;
+      padding: 0.35rem 0.4rem;
+      background: #f0f4f8;
+      border: 1px dashed #c8d4e8;
+      border-radius: 4px;
+    }
+    .po007-surface.po007-edit-mode .po007-custom-col-chip {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 0.25rem;
+      padding: 0.2rem 0.35rem;
+      background: #fff;
+      border: 1px solid #d0d8e4;
+      border-radius: 4px;
+      min-width: 4.5rem;
+    }
+    .po007-surface.po007-edit-mode .po007-custom-col-chip .po007-sec-table-th-field {
+      min-width: 3.5rem;
+      font-size: 10px;
+    }
+    .po007-surface .po007-custom-table-no-head thead {
+      display: none;
     }
     .po007-surface.po007-edit-mode .po007-line-no {
       font-size: 13px;
@@ -5754,6 +5875,7 @@
         genPo007AddSubItem: "+ إضافة بند فرعي",
         genPo007AddTableRow: "+ إضافة صف",
         genPo007AddTableCol: "+ عمود",
+        genPo007CustomTableShowHeader: "إظهار عناوين الأعمدة",
         genPo007CustomListDefault: "فقرة جديدة",
         genPo007CustomTableDefault: "جدول جديد",
         genPo007SecHide: "إخفاء",
@@ -6598,6 +6720,7 @@
         genPo007AddSubItem: "+ Add sub-item",
         genPo007AddTableRow: "+ Add row",
         genPo007AddTableCol: "+ Column",
+        genPo007CustomTableShowHeader: "Show column headers",
         genPo007CustomListDefault: "New section",
         genPo007CustomTableDefault: "New table",
         genPo007SecHide: "Hide",
@@ -7188,6 +7311,7 @@
       if (!x.shippingDocsIntro) x.shippingDocsIntro = "";
       if (!Array.isArray(x.shippingDocsRows)) x.shippingDocsRows = [];
       if (!Array.isArray(x.customSections)) x.customSections = [];
+      x.customSections = x.customSections.map((cs) => normalizePo007CustomSection(cs, x.documentLang));
       if (!x.warranty) x.warranty = "";
       if (!Array.isArray(x.inspectionItems)) x.inspectionItems = [];
       if (!Array.isArray(x.effectiveDateItems)) x.effectiveDateItems = [];
@@ -7196,6 +7320,12 @@
       }
       x.currency = x.currency === "USD" ? "USD" : "IQD";
       x.lines = (Array.isArray(x.lines) ? x.lines : []).map(normalizeGeneralLineRow);
+      if (x.sectionCustomDefaults && typeof x.sectionCustomDefaults === "object") {
+        x.sectionCustomDefaults = deserializeSectionCustomDefaultsFromFirestore(
+          x.sectionCustomDefaults,
+          x.documentLang
+        );
+      }
       return normalizePo007SectionMeta(x);
     }
 
@@ -7841,6 +7971,115 @@
       return typeof id === "string" && id.startsWith("c-");
     }
 
+    function readPo007SectionTitleFromMount(mount, sectionId, fallback) {
+      if (!mount || !sectionId) return (fallback || "").trim();
+      const el = mount.querySelector(`[data-po007-section-title="${sectionId}"]`);
+      return (el?.textContent || "").trim() || (fallback || "").trim();
+    }
+
+    /** Firestore لا يدعم مصفوفات متداخلة — صفوف الجدول تُخزَّن كـ { cells: string[] } */
+    function po007TableRowToCells(row) {
+      if (Array.isArray(row)) return row.map((c) => String(c ?? ""));
+      if (row && typeof row === "object" && Array.isArray(row.cells)) {
+        return row.cells.map((c) => String(c ?? ""));
+      }
+      return [];
+    }
+
+    function serializePo007TableRowsForFirestore(rows) {
+      return (rows || []).map((row) => ({ cells: po007TableRowToCells(row) }));
+    }
+
+    function serializeCustomSectionForFirestore(cs) {
+      if (!cs || typeof cs !== "object") return cs;
+      if (cs.type !== "table") return { ...cs };
+      return { ...cs, rows: serializePo007TableRowsForFirestore(cs.rows) };
+    }
+
+    function serializeCustomSectionsForFirestore(sections) {
+      return (sections || []).map(serializeCustomSectionForFirestore);
+    }
+
+    function serializeSectionCustomDefaultsForFirestore(defaults) {
+      const out = {};
+      Object.entries(defaults || {}).forEach(([key, val]) => {
+        if (!val || typeof val !== "object") {
+          out[key] = val;
+          return;
+        }
+        if (val.type === "table" && Array.isArray(val.rows)) {
+          out[key] = serializeCustomSectionForFirestore(val);
+        } else {
+          out[key] = val;
+        }
+      });
+      return out;
+    }
+
+    function serializeGeneralFormForFirestore(g) {
+      if (!g || typeof g !== "object") return g;
+      return {
+        ...g,
+        customSections: serializeCustomSectionsForFirestore(g.customSections),
+        sectionCustomDefaults: serializeSectionCustomDefaultsForFirestore(g.sectionCustomDefaults),
+      };
+    }
+
+    function deserializeSectionCustomDefaultsFromFirestore(defaults, docLang) {
+      const lang = docLang === "ar" ? "ar" : "en";
+      const out = {};
+      Object.entries(defaults || {}).forEach(([key, val]) => {
+        if (val && typeof val === "object" && val.type === "table") {
+          out[key] = normalizePo007CustomSection(val, lang);
+        } else {
+          out[key] = val;
+        }
+      });
+      return out;
+    }
+
+    function normalizePo007CustomSection(cs, docLang) {
+      if (!cs || typeof cs !== "object" || !cs.id) return cs;
+      const lang = docLang === "ar" ? "ar" : "en";
+      const page = Number(cs.page) === 1 ? 1 : 2;
+      const type = cs.type === "table" ? "table" : "list";
+      const title =
+        (cs.title || "").trim() ||
+        tPo007(lang, type === "table" ? "genPo007CustomTableDefault" : "genPo007CustomListDefault");
+      const intro = (cs.intro || "").trim();
+      if (type === "table") {
+        const columns =
+          Array.isArray(cs.columns) && cs.columns.length
+            ? cs.columns.map((c) => String(c ?? ""))
+            : [lang === "ar" ? "العمود 1" : "Column 1"];
+        let rows = Array.isArray(cs.rows) ? cs.rows : [];
+        rows = rows.map((row) => {
+          const cells = po007TableRowToCells(row);
+          return columns.map((_, ci) => (cells[ci] != null ? String(cells[ci]) : ""));
+        });
+        if (!rows.length) rows = [columns.map(() => "")];
+        return {
+          id: cs.id,
+          type: "table",
+          page,
+          title,
+          intro,
+          columns,
+          rows,
+          showHeader: cs.showHeader !== false,
+        };
+      }
+      const items = Array.isArray(cs.items) ? cs.items.map((i) => String(i ?? "")) : [];
+      return {
+        id: cs.id,
+        type: "list",
+        page,
+        title,
+        intro,
+        items: items.length ? items : [""],
+      };
+    }
+
     function getPo007CustomSection(g, id) {
       return (g?.customSections || []).find((s) => s.id === id) || null;
     }
@@ -8070,6 +8309,10 @@
         const id = el.getAttribute("data-po007-section-title");
         const txt = (el.textContent || "").trim();
         if (!id || !txt) return;
+        if (isPo007CustomSectionId(id)) {
+          titles[id] = txt;
+          return;
+        }
         const defaultTitle = getPo007SectionTitle(
           { sectionTitles: {}, customSections: base.customSections },
           id,
@@ -8177,7 +8420,24 @@
       return `${wrapStart}${introHtml}<ul class="po007-custom-list">${items.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}</ul></div>`;
     }
 
+    function po007CustomTableColHeadNodes(block) {
+      if (!block) return [];
+      return [...block.querySelectorAll("[data-po007-custom-col-head]")];
+    }
+
+    function po007CustomTableColCount(block) {
+      const n = po007CustomTableColHeadNodes(block).length;
+      return n || 1;
+    }
+
+    function po007CustomTableShowHeaderFromBlock(block, fallback) {
+      const cb = block?.querySelector(".po007-custom-table-show-header");
+      if (cb) return cb.checked;
+      return fallback !== false;
+    }
+
     function renderPo007CustomTableSectionBody(cs, docLang, editorMode) {
+      const showHeader = cs.showHeader !== false;
       const columns = cs.columns?.length ? cs.columns : editorMode ? [docLang === "ar" ? "العمود 1" : "Column 1"] : [];
       const rows = cs.rows?.length ? cs.rows : editorMode ? [columns.map(() => "")] : [];
       const intro = (cs.intro || "").trim();
@@ -8192,12 +8452,38 @@
         const cells = Array.isArray(row) ? row : [];
         return columns.map((_, ci) => (cells[ci] != null ? String(cells[ci]) : ""));
       });
+      const editorTools = editorMode
+        ? `<div class="po007-custom-table-tools">
+            <label class="po007-custom-table-head-toggle" title="${escapeAttr(tPo007(docLang, "genPo007CustomTableShowHeader"))}">
+              <input type="checkbox" class="po007-custom-table-show-header"${showHeader ? " checked" : ""} />
+              <span>${escapeHtml(tPo007(docLang, "genPo007CustomTableShowHeader"))}</span>
+            </label>
+            ${
+              !showHeader
+                ? `<button type="button" class="btn btn-secondary btn-sm po007-add-custom-col" data-po007-custom-id="${escapeAttr(cs.id)}">${escapeHtml(tPo007(docLang, "genPo007AddTableCol"))}</button>`
+                : ""
+            }
+          </div>`
+        : "";
+      let colBarHtml = "";
+      if (editorMode && !showHeader) {
+        const chips = columns
+          .map((col, ci) =>
+            `<div class="po007-custom-col-chip"><button type="button" class="del-btn po007-del-custom-col" data-po007-col-idx="${ci}" title="✕">✕</button><span class="po007-sec-table-th-field" data-po007-custom-col-head contenteditable="true" spellcheck="false">${escapeHtml(col)}</span></div>`
+          )
+          .join("");
+        colBarHtml = `<div class="po007-custom-table-col-bar" data-po007-custom-col-bar="${escapeAttr(cs.id)}">${chips}</div>`;
+      }
       const headCells = columns
         .map((col, ci) => (editorMode ? po007SecTableCustomThHtml(col, ci) : `<th>${escapeHtml(col)}</th>`))
         .join("");
       const headExtra = editorMode
         ? `<th class="po007-custom-col-actions"><button type="button" class="po007-sec-tool-btn po007-add-custom-col" data-po007-custom-id="${escapeAttr(cs.id)}" style="color:#1c3557;border-color:#c8d4e8;background:#fff">${escapeHtml(tPo007(docLang, "genPo007AddTableCol"))}</button></th><th class="po007-custom-row-actions"></th>`
         : "";
+      const headHtml =
+        showHeader && (editorMode || columns.some((c) => (c || "").trim()))
+          ? `<thead><tr>${headCells}${headExtra}</tr></thead>`
+          : "";
       const body = normRows
         .map((row) => {
           const cells = row
@@ -8215,48 +8501,67 @@
             : `<tr>${cells}</tr>`;
         })
         .join("");
-      const table = `<div class="po007-items-table-wrap"><table class="po007-sec-data-table" data-po007-custom-table="${escapeAttr(cs.id)}"><thead><tr>${headCells}${headExtra}</tr></thead><tbody>${body}</tbody></table></div>`;
+      const tableClass = `po007-sec-data-table${!showHeader && editorMode ? " po007-custom-table-no-head" : ""}`;
+      const table = `<div class="po007-items-table-wrap">${colBarHtml}<table class="${tableClass}" data-po007-custom-table="${escapeAttr(cs.id)}">${headHtml}<tbody>${body}</tbody></table></div>`;
       if (editorMode) {
-        return `${wrapStart}${introHtml}${table}<button type="button" class="add-row-btn po007-add-custom-table-row" data-po007-custom-id="${escapeAttr(cs.id)}">${escapeHtml(tPo007(docLang, "genPo007AddTableRow"))}</button></div>`;
+        return `${wrapStart}${introHtml}${editorTools}${table}<button type="button" class="add-row-btn po007-add-custom-table-row" data-po007-custom-id="${escapeAttr(cs.id)}">${escapeHtml(tPo007(docLang, "genPo007AddTableRow"))}</button></div>`;
       }
       return `${wrapStart}${introHtml}${table}</div>`;
     }
 
-    function collectPo007CustomSectionsFromMount(mount, existing) {
-      const map = new Map((existing || []).map((s) => [s.id, { ...s }]));
+    function collectPo007CustomSectionsFromMount(mount, existing, sectionOrder) {
+      const orderSet = Array.isArray(sectionOrder)
+        ? new Set(sectionOrder.filter((id) => isPo007CustomSectionId(id)))
+        : null;
+      const seed = (existing || []).filter((s) => s?.id && (!orderSet || orderSet.has(s.id)));
+      const map = new Map(seed.map((s) => [s.id, { ...s }]));
       mount?.querySelectorAll("[data-po007-custom-section]").forEach((block) => {
         const id = block.dataset.po007CustomSection;
         const type = block.dataset.po007CustomType;
         if (!id || !type) return;
+        if (orderSet && !orderSet.has(id)) return;
         const page = Number(block.dataset.po007CustomPage) || 2;
         const prev = map.get(id) || { id, type, page };
         const intro = (block.querySelector("[data-po007-custom-intro]")?.textContent || "").trim();
+        const title = readPo007SectionTitleFromMount(mount, id, prev.title);
         if (type === "list") {
-          const items = [...block.querySelectorAll("[data-po007-custom-list-item] .po007-sec-field")]
-            .map((el) => (el.textContent || "").trim())
-            .filter(Boolean);
-          map.set(id, { ...prev, type: "list", page, intro, items: items.length ? items : [""], title: prev.title });
-        } else if (type === "table") {
-          const columns = [...block.querySelectorAll("[data-po007-custom-col-head]")].map((el) =>
+          const items = [...block.querySelectorAll("[data-po007-custom-list-item] .po007-sec-field")].map((el) =>
             (el.textContent || "").trim()
           );
-          const rows = [...block.querySelectorAll("[data-po007-custom-table-row]")].map((tr) =>
-            [...tr.querySelectorAll("td:not(.po007-custom-row-actions) .po007-cell-field")].map((el) =>
+          map.set(id, {
+            ...prev,
+            type: "list",
+            page,
+            intro,
+            items: items.length ? items : [""],
+            title,
+          });
+        } else if (type === "table") {
+          const columns = po007CustomTableColHeadNodes(block).map((el) => (el.textContent || "").trim());
+          const showHeader = po007CustomTableShowHeaderFromBlock(block, prev.showHeader);
+          const colCount = columns.length || 1;
+          const rows = [...block.querySelectorAll("[data-po007-custom-table-row]")].map((tr) => {
+            const cells = [...tr.querySelectorAll("td:not(.po007-custom-row-actions) .po007-cell-field")].map((el) =>
               (el.textContent || "").trim()
-            )
-          );
+            );
+            while (cells.length < colCount) cells.push("");
+            return cells.slice(0, colCount);
+          });
+          const cols = columns.length ? columns : [""];
           map.set(id, {
             ...prev,
             type: "table",
             page,
             intro,
-            columns: columns.length ? columns : [""],
-            rows: rows.length ? rows : [columns.map(() => "")],
-            title: prev.title,
+            columns: cols,
+            rows: rows.length ? rows : [cols.map(() => "")],
+            title,
+            showHeader,
           });
         }
       });
-      return [...map.values()];
+      const out = [...map.values()];
+      return orderSet ? out.filter((s) => orderSet.has(s.id)) : out;
     }
 
     function addPo007CustomSection(type, page) {
@@ -8273,6 +8578,7 @@
               intro: "",
               columns: [docLang === "ar" ? "العمود 1" : "Column 1", docLang === "ar" ? "العمود 2" : "Column 2"],
               rows: [["", ""]],
+              showHeader: true,
             }
           : {
               id,
@@ -9087,7 +9393,8 @@
       const signBuyer = (mount?.querySelector('[data-po007="sign-buyer"]')?.textContent || "").trim();
       const customSections = collectPo007CustomSectionsFromMount(
         mount,
-        generalPo007EditorCachedMeta?.customSections
+        generalPo007EditorCachedMeta?.customSections,
+        generalPo007EditorCachedMeta?.sectionOrder
       );
       return {
         noteItems,
@@ -9158,7 +9465,9 @@
         deliveryRows: (x.deliveryRows || []).map((r) => ({ ...r })),
         shippingDocsIntro: (x.shippingDocsIntro || "").trim(),
         shippingDocsRows: (x.shippingDocsRows || []).map((r) => ({ ...r })),
-        customSections: JSON.parse(JSON.stringify(x.customSections || [])),
+        customSections: serializeCustomSectionsForFirestore(
+          (x.customSections || []).map((cs) => normalizePo007CustomSection(cs, x.documentLang))
+        ),
         termsPacking: (x.termsPacking || "").trim(),
         warranty: (x.warranty || "").trim(),
         inspectionItems: [...(x.inspectionItems || [])],
@@ -9166,7 +9475,7 @@
         sectionTitles: { ...(x.sectionTitles || {}) },
         sectionVisibility: { ...(x.sectionVisibility || {}) },
         sectionOrder: [...(x.sectionOrder || getDefaultPo007SectionOrder(x))],
-        sectionCustomDefaults: JSON.parse(JSON.stringify(x.sectionCustomDefaults || {})),
+        sectionCustomDefaults: serializeSectionCustomDefaultsForFirestore(x.sectionCustomDefaults || {}),
         buyerExtra: { ...(x.buyerExtra || {}) },
         offerType: (x.offerType || "").trim(),
         totalWords: (x.totalWords || "").trim(),
@@ -9180,15 +9489,35 @@
       if (saved.currency) base.currency = saved.currency === "USD" ? "USD" : "IQD";
       if (saved.poRev != null) base.poRev = saved.poRev;
       if (Array.isArray(saved.lines) && saved.lines.length) base.lines = saved.lines.map(normalizeGeneralLineRow);
+      if (Array.isArray(saved.noteItems)) base.noteItems = [...saved.noteItems];
+      if (Array.isArray(saved.docListItems)) base.docListItems = [...saved.docListItems];
+      if (Array.isArray(saved.paymentTerms))
+        base.paymentTerms = saved.paymentTerms.map((p) => ({ ...p }));
+      if (Array.isArray(saved.deliveryRows)) base.deliveryRows = saved.deliveryRows.map((r) => ({ ...r }));
+      if (saved.shippingDocsIntro != null) base.shippingDocsIntro = saved.shippingDocsIntro;
+      if (Array.isArray(saved.shippingDocsRows))
+        base.shippingDocsRows = saved.shippingDocsRows.map((r) => ({ ...r }));
+      if (saved.termsPacking != null) base.termsPacking = saved.termsPacking;
+      if (saved.warranty != null) base.warranty = saved.warranty;
+      if (Array.isArray(saved.inspectionItems)) base.inspectionItems = [...saved.inspectionItems];
+      if (Array.isArray(saved.effectiveDateItems)) base.effectiveDateItems = [...saved.effectiveDateItems];
       if (saved.sectionTitles) base.sectionTitles = { ...saved.sectionTitles };
       base.sectionVisibility = mergePo007DefaultSectionVisibility(
         saved.sectionVisibility ? { ...saved.sectionVisibility } : base.sectionVisibility
       );
       if (saved.sectionOrder) base.sectionOrder = [...saved.sectionOrder];
       if (saved.sectionCustomDefaults) {
-        base.sectionCustomDefaults = JSON.parse(JSON.stringify(saved.sectionCustomDefaults));
+        base.sectionCustomDefaults = deserializeSectionCustomDefaultsFromFirestore(
+          JSON.parse(JSON.stringify(saved.sectionCustomDefaults)),
+          base.documentLang || saved.documentLang || "en"
+        );
       }
-      if (saved.customSections) base.customSections = JSON.parse(JSON.stringify(saved.customSections));
+      if (saved.customSections) {
+        const lang = base.documentLang || saved.documentLang || "en";
+        base.customSections = JSON.parse(JSON.stringify(saved.customSections)).map((cs) =>
+          normalizePo007CustomSection(cs, lang)
+        );
+      }
       if (saved.buyerExtra) base.buyerExtra = { ...saved.buyerExtra };
       if (saved.offerType != null) base.offerType = saved.offerType;
       if (saved.totalWords != null) base.totalWords = saved.totalWords;
@@ -9216,18 +9545,16 @@
     function buildGeneralPoTemplateEditorForm(docLang) {
       const lang = docLang === "en" ? "en" : "ar";
       const saved = generalPoTemplateCache[lang];
-      if (saved) {
-        const g = enrichGeneralFormPo007({
-          documentLang: lang,
-          ...pickGeneralPoTemplatePayload(saved),
-          sectionVisibility: mergePo007DefaultSectionVisibility(saved.sectionVisibility),
-          poNumber: "—",
-          poDate: formatTodayYmd(),
-          vendor: { name: "—", attn: "", phone: "", email: "", extraNotes: "" },
-        });
-        return generalFormForEditor(g, {});
-      }
-      return defaultGeneralPo007EditorForm(lang);
+      if (!saved) return defaultGeneralPo007EditorForm(lang);
+      const g = enrichGeneralFormPo007({
+        documentLang: lang,
+        poNumber: "—",
+        poDate: formatTodayYmd(),
+        vendor: { name: "—", attn: "", phone: "", email: "", extraNotes: "" },
+      });
+      applyGeneralPoTemplateMetadataToForm(g, saved);
+      g.sectionVisibility = mergePo007DefaultSectionVisibility(g.sectionVisibility);
+      return generalFormForEditor(g, {});
     }
 
     async function openGeneralPoTemplateEditor() {
@@ -9800,6 +10127,20 @@
     function bindGeneralPo007EditorEvents() {
       const mount = getGeneralPo007Mount();
       if (!mount) return;
+      if (!mount.dataset.po007ChangeWired) {
+        mount.dataset.po007ChangeWired = "1";
+        mount.addEventListener("change", (e) => {
+          if (!e.target.matches(".po007-custom-table-show-header")) return;
+          const block = e.target.closest("[data-po007-custom-section]");
+          const sid = block?.dataset.po007CustomSection;
+          if (!sid) return;
+          const g = buildGeneralFormFromEditor();
+          const customSections = (g.customSections || []).map((cs) =>
+            cs.id === sid ? { ...cs, showHeader: e.target.checked } : cs
+          );
+          reloadGeneralPo007Editor({ customSections });
+        });
+      }
       mount.onclick = (e) => {
         const secActionBtn = e.target.closest("[data-po007-sec-action]");
         if (secActionBtn) {
@@ -9853,7 +10194,7 @@
           const table = block?.querySelector("[data-po007-custom-table]");
           const tbody = table?.querySelector("tbody");
           if (!tbody) return;
-          const colCount = table.querySelectorAll("[data-po007-custom-col-head]").length || 1;
+          const colCount = po007CustomTableColCount(block);
           const tr = document.createElement("tr");
           tr.setAttribute("data-po007-custom-table-row", "");
           tr.innerHTML = `${Array.from({ length: colCount })
@@ -9872,17 +10213,33 @@
         }
         if (e.target.closest(".po007-add-custom-col")) {
           e.preventDefault();
-          const table = e.target.closest("[data-po007-custom-table]");
-          const headRow = table?.querySelector("thead tr");
+          const block = e.target.closest("[data-po007-custom-section]");
+          const table = block?.querySelector("[data-po007-custom-table]");
           const tbody = table?.querySelector("tbody");
-          if (!headRow || !tbody) return;
+          if (!block || !tbody) return;
           const docLang = getPo007DocumentLang();
-          const colIdx = headRow.querySelectorAll("[data-po007-custom-col-head]").length;
-          const th = document.createElement("th");
-          th.innerHTML = `<div class="po007-sec-th-cell"><button type="button" class="del-btn po007-del-custom-col" data-po007-col-idx="${colIdx}" title="✕">✕</button><span class="po007-sec-table-th-field" data-po007-custom-col-head contenteditable="true" spellcheck="false">${escapeHtml(docLang === "ar" ? "عمود" : "Column")}</span></div>`;
-          const actionsTh = headRow.querySelector(".po007-custom-col-actions");
-          if (actionsTh) headRow.insertBefore(th, actionsTh);
-          else headRow.appendChild(th);
+          const colLabel = escapeHtml(docLang === "ar" ? "عمود" : "Column");
+          const showHeader = po007CustomTableShowHeaderFromBlock(block, true);
+          if (showHeader) {
+            const headRow = table?.querySelector("thead tr");
+            if (!headRow) return;
+            const colIdx = headRow.querySelectorAll("[data-po007-custom-col-head]").length;
+            const th = document.createElement("th");
+            th.innerHTML = `<div class="po007-sec-th-cell"><button type="button" class="del-btn po007-del-custom-col" data-po007-col-idx="${colIdx}" title="✕">✕</button><span class="po007-sec-table-th-field" data-po007-custom-col-head contenteditable="true" spellcheck="false">${colLabel}</span></div>`;
+            const actionsTh = headRow.querySelector(".po007-custom-col-actions");
+            if (actionsTh) headRow.insertBefore(th, actionsTh);
+            else headRow.appendChild(th);
+            th.querySelector(".po007-sec-table-th-field")?.focus();
+          } else {
+            const colBar = block.querySelector("[data-po007-custom-col-bar]");
+            if (!colBar) return;
+            const colIdx = colBar.querySelectorAll("[data-po007-custom-col-head]").length;
+            const chip = document.createElement("div");
+            chip.className = "po007-custom-col-chip";
+            chip.innerHTML = `<button type="button" class="del-btn po007-del-custom-col" data-po007-col-idx="${colIdx}" title="✕">✕</button><span class="po007-sec-table-th-field" data-po007-custom-col-head contenteditable="true" spellcheck="false">${colLabel}</span>`;
+            colBar.appendChild(chip);
+            chip.querySelector(".po007-sec-table-th-field")?.focus();
+          }
           tbody.querySelectorAll("[data-po007-custom-table-row]").forEach((tr) => {
             const rowActions = tr.querySelector(".po007-custom-row-actions");
             const td = document.createElement("td");
@@ -9890,22 +10247,21 @@
             if (rowActions) tr.insertBefore(td, rowActions);
             else tr.appendChild(td);
           });
-          th.querySelector(".po007-sec-table-th-field")?.focus();
           return;
         }
         if (e.target.closest(".po007-del-custom-col")) {
           e.preventDefault();
           const btn = e.target.closest(".po007-del-custom-col");
-          const th = btn?.closest("th");
-          const table = e.target.closest("[data-po007-custom-table]");
-          const headRow = table?.querySelector("thead tr");
-          const colHeads = headRow?.querySelectorAll("[data-po007-custom-col-head]");
-          if (!th || !colHeads || colHeads.length <= 1) return;
-          const colIdx = [...headRow.querySelectorAll("th")].indexOf(th);
-          th.remove();
+          const block = e.target.closest("[data-po007-custom-section]");
+          const table = block?.querySelector("[data-po007-custom-table]");
+          const colHeads = po007CustomTableColHeadNodes(block);
+          if (!block || !table || colHeads.length <= 1) return;
+          const headWrap = btn?.closest("th, .po007-custom-col-chip");
+          const colIdx = colHeads.findIndex((h) => h.closest("th, .po007-custom-col-chip") === headWrap);
+          headWrap?.remove();
           table.querySelectorAll("[data-po007-custom-table-row]").forEach((tr) => {
             const tds = tr.querySelectorAll("td:not(.po007-custom-row-actions)");
-            if (tds[colIdx]) tds[colIdx].remove();
+            if (colIdx >= 0 && tds[colIdx]) tds[colIdx].remove();
           });
           return;
         }
@@ -10218,14 +10574,28 @@
       const sectionVisibility = collectPo007SectionVisibility(mount, generalPo007EditorCachedMeta);
       const sectionOrder = collectPo007SectionOrderFromMount(mount, {
         ...generalPo007EditorCachedMeta,
-        customSections: collectPo007CustomSectionsFromMount(mount, generalPo007EditorCachedMeta?.customSections),
+        customSections: collectPo007CustomSectionsFromMount(
+          mount,
+          generalPo007EditorCachedMeta?.customSections,
+          generalPo007EditorCachedMeta?.sectionOrder
+        ),
       });
       const sectionCustomDefaults = generalPo007EditorCachedMeta?.sectionCustomDefaults || {};
-      const customSectionsRaw = collectPo007CustomSectionsFromMount(mount, generalPo007EditorCachedMeta?.customSections);
-      const customSections = customSectionsRaw.map((cs) => ({
-        ...cs,
-        title: sectionTitles[cs.id] || cs.title,
-      }));
+      const docLangForm = getPo007DocumentLang();
+      const customSectionsRaw = collectPo007CustomSectionsFromMount(
+        mount,
+        generalPo007EditorCachedMeta?.customSections,
+        sectionOrder
+      );
+      const customSections = customSectionsRaw.map((cs) =>
+        normalizePo007CustomSection(
+          {
+            ...cs,
+            title: sectionTitles[cs.id] || cs.title,
+          },
+          docLangForm
+        )
+      );
       const companyId = ($("po007-meta-company")?.value || "").trim();
       const supplierId = ($("po007-meta-supplier")?.value || "").trim();
       const projectId = ($("po007-meta-project")?.value || "").trim();
@@ -10800,7 +11170,7 @@
         companyLogoUrlSnapshot,
         totalAmountWords: g.totalWords || "",
         currency: g.currency === "USD" ? "USD" : "IQD",
-        generalForm: g,
+        generalForm: serializeGeneralFormForFirestore(g),
         updatedAt: serverTimestamp(),
       };
       try {
@@ -17912,7 +18282,7 @@
           companyLogoDataUrlSnapshot,
           companyLogoUrlSnapshot,
           totalAmountWords: g.totalWords || "",
-          generalForm: g,
+          generalForm: serializeGeneralFormForFirestore(g),
           updatedAt: serverTimestamp(),
         };
       }
