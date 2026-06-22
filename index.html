@@ -3751,6 +3751,7 @@
     }
 
     .btn-chat {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3915,6 +3916,7 @@
 
     .chat-compose {
       display: flex;
+      align-items: flex-end;
       gap: 0.45rem;
       padding: 0.65rem 0.85rem;
       border-top: 1px solid var(--border);
@@ -3922,14 +3924,28 @@
       background: var(--surface);
     }
 
-    .chat-compose input {
+    .chat-compose textarea {
       flex: 1;
       min-width: 0;
+      min-height: 2.35rem;
+      max-height: 8rem;
       padding: 0.55rem 0.65rem;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--surface);
       color: var(--text);
+      resize: none;
+      overflow-y: auto;
+      line-height: 1.4;
+      font-family: inherit;
+      font-size: 1rem;
+      field-sizing: content;
+    }
+
+    @supports not (field-sizing: content) {
+      .chat-compose textarea {
+        overflow-y: hidden;
+      }
     }
 
     .chat-empty {
@@ -3943,6 +3959,213 @@
       flex-shrink: 0;
       padding: 0.35rem 0.55rem;
       font-size: 0.8rem;
+    }
+
+    .chat-toolbar-row {
+      display: flex;
+      gap: 0.45rem;
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chat-toolbar-row .btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .chat-dm-hint {
+      margin: 0;
+      padding: 0.45rem 0.85rem 0.55rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-dm-search {
+      margin: 0.5rem 0.85rem 0;
+      width: calc(100% - 1.7rem);
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .chat-po-pick-panel {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-po-pick-panel.hidden {
+      display: none !important;
+    }
+
+    .chat-po-pick-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chat-po-pick-head input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.5rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .chat-po-results {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .chat-po-pending {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.85rem;
+      background: var(--ds-surface-container-low);
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+
+    .chat-po-pending.hidden {
+      display: none !important;
+    }
+
+    .chat-po-pending-label {
+      flex: 1;
+      min-width: 0;
+      color: var(--ds-on-surface-variant);
+    }
+
+    .chat-msg-po-link {
+      margin-top: 0.45rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: var(--radius);
+      background: var(--ds-surface-container-low);
+      border: 1px solid var(--border);
+    }
+
+    .chat-msg-po-ref {
+      font-weight: 600;
+      font-size: 0.82rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .chat-msg-po-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .chat-compose .chat-btn-attach {
+      flex-shrink: 0;
+      width: 2.35rem;
+      height: 2.35rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .chat-compose .chat-btn-attach:hover {
+      background: var(--ds-surface-container-low);
+    }
+
+    .chat-compose-block {
+      position: relative;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-compose-block .chat-compose {
+      border-top: none;
+    }
+
+    .chat-mention-picker {
+      max-height: 10rem;
+      overflow-y: auto;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .chat-mention-picker.hidden {
+      display: none !important;
+    }
+
+    .chat-mention-item {
+      display: block;
+      width: 100%;
+      text-align: inherit;
+      padding: 0.55rem 0.85rem;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .chat-mention-item:hover,
+    .chat-mention-item.active {
+      background: var(--ds-surface-container-low);
+    }
+
+    .chat-mention-item-sub {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .chat-mention {
+      color: var(--accent);
+      font-weight: 600;
+      background: rgba(0, 88, 190, 0.1);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    .chat-msg.mine .chat-mention {
+      background: rgba(0, 88, 190, 0.16);
+    }
+
+    .chat-compose .chat-btn-mention {
+      flex-shrink: 0;
+      width: 2.35rem;
+      height: 2.35rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    .chat-compose .chat-btn-mention:hover {
+      background: var(--ds-surface-container-low);
+    }
+
+    .chat-compose .chat-btn-mention.hidden {
+      display: none !important;
     }
 
     @media (min-width: 901px) {
@@ -4144,6 +4367,7 @@
               title=""
             >
               <span aria-hidden="true">💬</span>
+              <span class="notifications-badge hidden" id="chat-badge" aria-hidden="true">0</span>
             </button>
           </div>
           <div class="notifications-wrap" id="notifications-wrap">
@@ -5456,13 +5680,37 @@
         <button type="button" class="btn btn-secondary btn-sm" id="chat-btn-close" data-i18n-aria="chatCloseAria" aria-label="">✕</button>
       </div>
       <div class="chat-shell-body">
-        <div id="chat-view-channels"></div>
+        <div id="chat-view-channels">
+          <div class="chat-toolbar-row">
+            <button type="button" class="btn btn-secondary btn-sm" id="chat-btn-new-dm" data-i18n="chatNewDm">محادثة جديدة</button>
+          </div>
+        </div>
+        <div id="chat-view-new-dm" class="hidden">
+          <input type="search" class="chat-dm-search" id="chat-dm-search" autocomplete="off" data-i18n-placeholder="chatDmSearchPlaceholder" />
+          <div class="chat-channel-list" id="chat-dm-user-list"></div>
+        </div>
         <div id="chat-view-room" class="hidden">
+          <div id="chat-view-po-pick" class="chat-po-pick-panel hidden">
+            <div class="chat-po-pick-head">
+              <input type="search" id="chat-po-search" autocomplete="off" data-i18n-placeholder="chatPoSearchPlaceholder" />
+              <button type="button" class="btn btn-secondary btn-sm" id="chat-po-pick-cancel" data-i18n="cancel">إلغاء</button>
+            </div>
+            <div class="chat-po-results" id="chat-po-results"></div>
+          </div>
           <div class="chat-messages" id="chat-messages"></div>
-          <form class="chat-compose" id="chat-compose-form">
-            <input type="text" id="chat-compose-input" maxlength="2000" autocomplete="off" data-i18n-placeholder="chatMessagePlaceholder" />
-            <button type="submit" class="btn btn-primary btn-sm" data-i18n="chatSend">إرسال</button>
-          </form>
+          <div id="chat-po-pending" class="chat-po-pending hidden">
+            <span class="chat-po-pending-label" id="chat-po-pending-label"></span>
+            <button type="button" class="btn btn-secondary btn-sm" id="chat-po-pending-clear" data-i18n="chatPoClear">إزالة</button>
+          </div>
+          <div class="chat-compose-block">
+            <div id="chat-mention-picker" class="chat-mention-picker hidden" role="listbox"></div>
+            <form class="chat-compose" id="chat-compose-form">
+              <button type="button" class="chat-btn-attach" id="chat-btn-attach-po" title="" data-i18n-title="chatAttachPo" aria-label="">📋</button>
+              <button type="button" class="chat-btn-mention hidden" id="chat-btn-mention" title="" data-i18n-title="chatMentionBtn" aria-label="">@</button>
+              <textarea id="chat-compose-input" rows="1" maxlength="2000" autocomplete="off" data-i18n-placeholder="chatMessagePlaceholder"></textarea>
+              <button type="submit" class="btn btn-primary btn-sm" data-i18n="chatSend">إرسال</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -6387,6 +6635,24 @@
         chatNoMessages: "لا رسائل بعد. ابدأ المحادثة.",
         chatAccessDenied: "لا يمكنك الوصول إلى هذه القناة.",
         chatSendFailed: "تعذّر إرسال الرسالة.",
+        chatDirectTitle: "رسائل خاصة",
+        chatDirectEmpty: "لا توجد محادثات خاصة بعد.",
+        chatNewDm: "محادثة جديدة",
+        chatDmHint: "لبدء رسالة خاصة: اضغط «محادثة جديدة» ثم اختر مستخدماً من نفس الشركة (عبر المشاريع الموكّلة).",
+        chatDmSearchPlaceholder: "بحث عن مستخدم…",
+        chatDmUsersEmpty: "لا يوجد مستخدمون يشاركونك شركة. تأكد من تعيين مشاريع لك وللطرف الآخر في الإدارة.",
+        chatAttachPo: "إرفاق طلب شراء",
+        chatPoSearchPlaceholder: "بحث بالمرجع أو المشروع…",
+        chatPoPickTitle: "اختر طلب شراء",
+        chatPoClear: "إزالة",
+        chatOpenPo: "فتح الطلب",
+        chatPoLinkOnly: "طلب شراء مرفق",
+        chatMentionBtn: "إشارة لمستخدم (@)",
+        chatMentionEmpty: "لا يوجد مستخدم مطابق.",
+        chatMentionedYou: "أشار إليك",
+        chatMessagePlaceholderCompany: "اكتب رسالة… (@ لإشارة مستخدم)",
+        notif_chat_message: "{{room}} — {{preview}}",
+        notif_chat_mention: "{{room}} — {{preview}}",
         notif_po_warehouse: "طلب مشروع جديد {{ref}} — بانتظار مراجعة المستودع.",
         notif_po_engineer_first: "طلب {{ref}} يحتاج موافقة مهندس أول.",
         notif_po_stock_complete: "طلب {{ref}} اكتمل من المخزون.",
@@ -7258,6 +7524,24 @@
         chatNoMessages: "No messages yet. Start the conversation.",
         chatAccessDenied: "You cannot access this channel.",
         chatSendFailed: "Could not send the message.",
+        chatDirectTitle: "Direct messages",
+        chatDirectEmpty: "No direct conversations yet.",
+        chatNewDm: "New conversation",
+        chatDmHint: "To start a private chat: tap «New conversation», then pick a user who shares a company with you (via assigned projects).",
+        chatDmSearchPlaceholder: "Search users…",
+        chatDmUsersEmpty: "No users share a company with you. Ensure both accounts have assigned projects in Administration.",
+        chatAttachPo: "Attach purchase order",
+        chatPoSearchPlaceholder: "Search by reference or project…",
+        chatPoPickTitle: "Select purchase order",
+        chatPoClear: "Remove",
+        chatOpenPo: "Open order",
+        chatPoLinkOnly: "Purchase order attached",
+        chatMentionBtn: "Mention a user (@)",
+        chatMentionEmpty: "No matching user.",
+        chatMentionedYou: "mentioned you",
+        chatMessagePlaceholderCompany: "Type a message… (@ to mention)",
+        notif_chat_message: "{{room}} — {{preview}}",
+        notif_chat_mention: "{{room}} — {{preview}}",
         notif_po_warehouse: "New project request {{ref}} — awaiting warehouse review.",
         notif_po_engineer_first: "Request {{ref}} needs engineer-first approval.",
         notif_po_stock_complete: "Request {{ref}} fulfilled from warehouse stock.",
@@ -7546,7 +7830,18 @@
     let chatActiveRoomId = null;
     let chatActiveCompanyId = null;
     let chatActiveCompanyName = "";
+    let chatActiveRoomType = null;
+    let chatActivePeerUid = null;
+    let chatActiveRoomTitle = "";
+    let chatDirectChannels = [];
+    let chatPendingPoLink = null;
+    let chatLinkablePosCache = null;
     let chatOverlayOpen = false;
+    let chatCompanyMentionUsers = [];
+    let chatComposeMentions = [];
+    let chatMentionState = null;
+    let chatMentionPickIndex = 0;
+    const CHAT_READ_KEY = "pot_chat_read";
 
     const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-projects-rejected", "po-general"];
 
@@ -15654,45 +15949,597 @@
       return d.toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
     }
 
-    function renderChatCompanyChannelList() {
-      const wrap = $("chat-view-channels");
-      if (!wrap) return;
-      if (!chatCompanyChannels.length) {
-        wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("chatCompaniesEmpty"))}</p>`;
+    function directChatRoomId(uidA, uidB) {
+      const [a, b] = [String(uidA || ""), String(uidB || "")].sort();
+      return `dm_${a}_${b}`;
+    }
+
+    function profilesShareCompany(companyIdsA, companyIdsB) {
+      const a = new Set(companyIdsA || []);
+      return (companyIdsB || []).some((c) => a.has(c));
+    }
+
+    function getChatReadMarkers() {
+      if (!currentUser?.uid) return {};
+      try {
+        const raw = localStorage.getItem(`${CHAT_READ_KEY}_${currentUser.uid}`);
+        return raw ? JSON.parse(raw) : {};
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function markChatRoomRead(roomId) {
+      if (!roomId || !currentUser?.uid) return;
+      const markers = getChatReadMarkers();
+      markers[roomId] = Math.floor(Date.now() / 1000);
+      localStorage.setItem(`${CHAT_READ_KEY}_${currentUser.uid}`, JSON.stringify(markers));
+      updateChatBadge();
+    }
+
+    function chatRoomUnreadCount(room) {
+      if (!room?.roomId || !currentUser) return 0;
+      const lastAt = room.lastMessageAt?.seconds || 0;
+      if (!lastAt || room.lastSenderUid === currentUser.uid) return 0;
+      const readAt = getChatReadMarkers()[room.roomId] || 0;
+      return lastAt > readAt ? 1 : 0;
+    }
+
+    function updateChatBadge() {
+      const badge = $("chat-badge");
+      if (!badge) return;
+      const rooms = [...chatCompanyChannels, ...chatDirectChannels];
+      const n = rooms.reduce((sum, r) => sum + chatRoomUnreadCount(r), 0);
+      if (n > 0) {
+        badge.textContent = n > 99 ? "99+" : String(n);
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
+    async function userCanDmWith(peerProfile) {
+      if (!peerProfile || peerProfile.uid === currentUser?.uid) return false;
+      let peerCompanies = Array.isArray(peerProfile.companyIds) ? peerProfile.companyIds : [];
+      if (!peerCompanies.length) {
+        const prof = {
+          role: peerProfile.role || "user",
+          visibleSections: peerProfile.visibleSections,
+          assignedProjectIds: peerProfile.assignedProjectIds || [],
+          managedProjectIds: peerProfile.managedProjectIds || [],
+          managedRegionIds: peerProfile.managedRegionIds || [],
+          assignedRegionIds: peerProfile.assignedRegionIds || [],
+          assignedRegionId: peerProfile.assignedRegionId || null,
+        };
+        peerCompanies = await resolveCompanyIdsForProfile(prof);
+      }
+      return profilesShareCompany(currentUserProfile?.companyIds, peerCompanies);
+    }
+
+    async function loadDmEligibleUsers() {
+      const profiles = await getUserProfilesForNotify();
+      const out = [];
+      for (const p of profiles) {
+        if (p.uid === currentUser?.uid) continue;
+        if (await userCanDmWith(p)) {
+          out.push({
+            uid: p.uid,
+            displayName: (p.displayName || p.email || p.uid || "").trim(),
+            email: (p.email || "").trim(),
+          });
+        }
+      }
+      out.sort((a, b) => a.displayName.localeCompare(b.displayName, lang === "ar" ? "ar" : "en"));
+      return out;
+    }
+
+    async function ensureDirectChatRoom(peerUid, peerName) {
+      const peer = String(peerUid || "").trim();
+      if (!peer || !currentUser || peer === currentUser.uid) return null;
+      const profiles = await getUserProfilesForNotify();
+      const peerProfile = profiles.find((p) => p.uid === peer);
+      if (!peerProfile || !(await userCanDmWith(peerProfile))) return null;
+      const roomId = directChatRoomId(currentUser.uid, peer);
+      const participants = [currentUser.uid, peer].sort();
+      const participantNames = {
+        [currentUser.uid]: chatSenderDisplayName(),
+        [peer]: (peerName || peerProfile.displayName || peerProfile.email || peer).trim(),
+      };
+      await setDoc(
+        doc(db, CHAT_COL, roomId),
+        {
+          type: "direct",
+          participants,
+          participantNames,
+          peerUid: peer,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+      return roomId;
+    }
+
+    async function loadDirectChatChannels() {
+      if (!currentUser) {
+        chatDirectChannels = [];
+        return [];
+      }
+      let snap;
+      try {
+        snap = await getDocs(
+          query(collection(db, CHAT_COL), where("type", "==", "direct"), where("participants", "array-contains", currentUser.uid))
+        );
+      } catch (e) {
+        console.warn("loadDirectChatChannels", e);
+        chatDirectChannels = [];
+        return [];
+      }
+      const channels = [];
+      snap.forEach((d) => {
+        const data = d.data();
+        const peer = (data.participants || []).find((u) => u !== currentUser.uid);
+        const peerName =
+          (data.participantNames && peer && data.participantNames[peer]) ||
+          (peer || "");
+        channels.push({
+          roomId: d.id,
+          type: "direct",
+          peerUid: peer,
+          peerName,
+          ...data,
+        });
+      });
+      channels.sort((a, b) => {
+        const ta = a.lastMessageAt?.seconds || 0;
+        const tb = b.lastMessageAt?.seconds || 0;
+        if (tb !== ta) return tb - ta;
+        return String(a.peerName || "").localeCompare(String(b.peerName || ""), lang === "ar" ? "ar" : "en");
+      });
+      chatDirectChannels = channels;
+      return channels;
+    }
+
+    async function fetchLinkablePurchaseOrders() {
+      const r = currentUserProfile?.role || userRole;
+      const rows = [];
+      if (hasAdminAccess() || r === "purchasing_officer" || r === "accountant") {
+        const snap = await getDocs(collection(db, "purchaseOrders"));
+        snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      } else {
+        const ctx = await fetchProjectPurchaseOrdersTableContext();
+        rows.push(...ctx.rows);
+        const sections = currentUserProfile?.visibleSections || [];
+        if (r !== "viewer" && sections.includes("po-general")) {
+          const gq = query(collection(db, "purchaseOrders"), where("scope", "==", "general"));
+          const gsnap = await getDocs(gq);
+          gsnap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+        }
+      }
+      const seen = new Set();
+      return rows.filter((row) => {
+        if (!row.id || seen.has(row.id)) return false;
+        seen.add(row.id);
+        return true;
+      });
+    }
+
+    function poLinkLabelFromPo(po, projectName) {
+      const ref = (po.poReference || po.title || "").trim();
+      const g = po.generalForm && typeof po.generalForm === "object" ? po.generalForm : null;
+      const genRef = (g?.poNumber || "").trim();
+      return ref || genRef || po.id || t("dash");
+    }
+
+    function poLinkSubLabelFromPo(po, projectName) {
+      if (po.scope === "general") {
+        const comp = (po.companyNameSnapshot || "").trim();
+        return comp || t("poGeneralTitle");
+      }
+      return (projectName || "").trim() || t("poProjectsTitle");
+    }
+
+    async function buildPoLinkFromPo(po, projectName) {
+      return {
+        poId: po.id,
+        poReference: poLinkLabelFromPo(po, projectName),
+        scope: po.scope === "general" ? "general" : "project",
+        projectName: (projectName || "").trim() || null,
+      };
+    }
+
+    async function userCanViewPoById(poId) {
+      if (!poId) return false;
+      const list = chatLinkablePosCache || (await fetchLinkablePurchaseOrders());
+      return list.some((p) => p.id === poId);
+    }
+
+    function clearChatPendingPoLink() {
+      chatPendingPoLink = null;
+      const block = $("chat-po-pending");
+      if (block) block.classList.add("hidden");
+    }
+
+    function closeChatMentionPicker() {
+      chatMentionState = null;
+      chatMentionPickIndex = 0;
+      $("chat-mention-picker")?.classList.add("hidden");
+    }
+
+    function clearChatComposeMentions() {
+      chatComposeMentions = [];
+      closeChatMentionPicker();
+    }
+
+    function syncChatComposeMentionsFromText(text) {
+      const val = String(text || "");
+      chatComposeMentions = chatComposeMentions.filter((m) => {
+        const name = (m.displayName || "").trim();
+        return name && val.includes(`@${name}`);
+      });
+    }
+
+    async function loadCompanyChannelMentionUsers(companyId) {
+      const cid = String(companyId || "").trim();
+      if (!cid) {
+        chatCompanyMentionUsers = [];
+        return [];
+      }
+      const profiles = await getUserProfilesForNotify();
+      const users = [];
+      for (const p of profiles) {
+        if (p.uid === currentUser?.uid) continue;
+        let companies = Array.isArray(p.companyIds) ? p.companyIds : [];
+        if (!companies.length) {
+          companies = await resolveCompanyIdsForProfile({
+            role: p.role || "user",
+            visibleSections: p.visibleSections,
+            assignedProjectIds: p.assignedProjectIds || [],
+            managedProjectIds: p.managedProjectIds || [],
+            managedRegionIds: p.managedRegionIds || [],
+            assignedRegionIds: p.assignedRegionIds || [],
+            assignedRegionId: p.assignedRegionId || null,
+          });
+        }
+        if (companies.includes(cid)) {
+          users.push({
+            uid: p.uid,
+            displayName: (p.displayName || p.email || p.uid || "").trim(),
+            email: (p.email || "").trim(),
+          });
+        }
+      }
+      users.sort((a, b) => a.displayName.localeCompare(b.displayName, lang === "ar" ? "ar" : "en"));
+      chatCompanyMentionUsers = users;
+      return users;
+    }
+
+    function filteredChatMentionUsers() {
+      const q = (chatMentionState?.query || "").trim().toLowerCase();
+      if (!q) return [...chatCompanyMentionUsers];
+      return chatCompanyMentionUsers.filter((u) => {
+        const hay = [u.displayName, u.email, u.uid].join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function renderChatMentionPicker() {
+      const picker = $("chat-mention-picker");
+      if (!picker || !chatMentionState) return;
+      const users = filteredChatMentionUsers();
+      if (!users.length) {
+        picker.innerHTML = `<p class="chat-empty" style="padding:0.65rem">${escapeHtml(t("chatMentionEmpty"))}</p>`;
+        picker.classList.remove("hidden");
         return;
       }
-      const items = chatCompanyChannels
+      if (chatMentionPickIndex >= users.length) chatMentionPickIndex = 0;
+      picker.innerHTML = users
+        .map((u, i) => {
+          const active = i === chatMentionPickIndex ? " active" : "";
+          return `<button type="button" class="chat-mention-item${active}" data-uid="${escapeAttr(u.uid)}" data-name="${escapeAttr(
+            u.displayName
+          )}" role="option">
+            <span>${escapeHtml(u.displayName)}</span>
+            <span class="chat-mention-item-sub">${escapeHtml(u.email || u.uid)}</span>
+          </button>`;
+        })
+        .join("");
+      picker.classList.remove("hidden");
+      picker.querySelectorAll(".chat-mention-item").forEach((btn, i) => {
+        btn.addEventListener("click", () => {
+          insertChatMention({ uid: btn.dataset.uid, displayName: btn.dataset.name });
+        });
+        if (i === chatMentionPickIndex) btn.scrollIntoView({ block: "nearest" });
+      });
+    }
+
+    function detectChatMentionTrigger() {
+      if (chatActiveRoomType !== "company" || !chatCompanyMentionUsers.length) {
+        closeChatMentionPicker();
+        return;
+      }
+      const inp = $("chat-compose-input");
+      if (!inp) return;
+      const val = inp.value;
+      const pos = inp.selectionStart ?? val.length;
+      const before = val.slice(0, pos);
+      const match = before.match(/(^|[\s\u200f\u200e])@([^\s@]*)$/);
+      if (!match) {
+        closeChatMentionPicker();
+        return;
+      }
+      chatMentionState = {
+        start: pos - match[2].length - 1,
+        query: match[2],
+      };
+      chatMentionPickIndex = 0;
+      renderChatMentionPicker();
+    }
+
+    function insertChatMention(user) {
+      const inp = $("chat-compose-input");
+      if (!inp || !user?.uid || !chatMentionState) return;
+      const name = (user.displayName || "").trim();
+      if (!name) return;
+      const pos = inp.selectionStart ?? inp.value.length;
+      const before = inp.value.slice(0, chatMentionState.start);
+      const after = inp.value.slice(pos);
+      const token = `@${name} `;
+      inp.value = before + token + after;
+      const caret = before.length + token.length;
+      inp.setSelectionRange(caret, caret);
+      if (!chatComposeMentions.some((m) => m.uid === user.uid)) {
+        chatComposeMentions.push({ uid: user.uid, displayName: name });
+      }
+      closeChatMentionPicker();
+      autoResizeChatComposeInput(inp);
+      inp.focus();
+    }
+
+    function insertChatMentionAtCursor() {
+      const inp = $("chat-compose-input");
+      if (!inp || chatActiveRoomType !== "company") return;
+      const pos = inp.selectionStart ?? inp.value.length;
+      const before = inp.value.slice(0, pos);
+      const after = inp.value.slice(pos);
+      const needsSpace = before.length && !/\s$/.test(before);
+      const token = `${needsSpace ? " " : ""}@`;
+      inp.value = before + token + after;
+      const caret = before.length + token.length;
+      inp.setSelectionRange(caret, caret);
+      chatMentionState = { start: caret - 1, query: "" };
+      chatMentionPickIndex = 0;
+      renderChatMentionPicker();
+      inp.focus();
+    }
+
+    function formatChatMessageText(text, mentions) {
+      if (!text) return "";
+      const list = Array.isArray(mentions) ? mentions.filter((m) => (m?.displayName || "").trim()) : [];
+      if (!list.length) return escapeHtml(text);
+      let html = escapeHtml(text);
+      const sorted = [...list].sort((a, b) => String(b.displayName).length - String(a.displayName).length);
+      for (const m of sorted) {
+        const needle = escapeHtml(`@${m.displayName}`);
+        const meCls = m.uid === currentUser?.uid ? " chat-mention-me" : "";
+        const span = `<span class="chat-mention${meCls}">${needle}</span>`;
+        html = html.split(needle).join(span);
+      }
+      return html;
+    }
+
+    function updateChatMentionUiForRoom() {
+      const mentionBtn = $("chat-btn-mention");
+      const inp = $("chat-compose-input");
+      const isCompany = chatActiveRoomType === "company";
+      mentionBtn?.classList.toggle("hidden", !isCompany);
+      if (inp) inp.placeholder = isCompany ? t("chatMessagePlaceholderCompany") : t("chatMessagePlaceholder");
+      if (mentionBtn) {
+        mentionBtn.title = t("chatMentionBtn");
+        mentionBtn.setAttribute("aria-label", t("chatMentionBtn"));
+      }
+      if (!isCompany) {
+        chatCompanyMentionUsers = [];
+        clearChatComposeMentions();
+      }
+    }
+
+    function showChatPendingPoLink(link) {
+      chatPendingPoLink = link;
+      const block = $("chat-po-pending");
+      const label = $("chat-po-pending-label");
+      if (!block || !label) return;
+      label.textContent = `${t("chatAttachPo")}: ${(link.poReference || "").trim() || link.poId}`;
+      block.classList.remove("hidden");
+    }
+
+    function hideChatSubViews() {
+      $("chat-view-channels")?.classList.add("hidden");
+      $("chat-view-new-dm")?.classList.add("hidden");
+      $("chat-view-room")?.classList.add("hidden");
+      $("chat-view-po-pick")?.classList.add("hidden");
+    }
+
+    function chatNewDmToolbarHtml() {
+      return `<div class="chat-toolbar-row">
+        <button type="button" class="btn btn-primary btn-sm" id="chat-btn-new-dm">${escapeHtml(t("chatNewDm"))}</button>
+      </div>
+      <p class="chat-dm-hint">${escapeHtml(t("chatDmHint"))}</p>`;
+    }
+
+    function wireChatChannelListEvents(wrap) {
+      if (!wrap) return;
+      wrap.querySelector("#chat-btn-new-dm")?.addEventListener("click", () => void showChatNewDmView());
+      wrap.querySelector("#chat-btn-new-dm-inline")?.addEventListener("click", () => void showChatNewDmView());
+      wrap.querySelectorAll(".chat-channel-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.chatKind === "direct") {
+            void openDirectChatRoom(btn.dataset.chatRoom, btn.dataset.chatPeer, btn.dataset.chatName);
+          } else {
+            void openCompanyChatRoom(btn.dataset.chatRoom, btn.dataset.chatCompany, btn.dataset.chatName);
+          }
+        });
+      });
+    }
+
+    function renderChatChannelList() {
+      const wrap = $("chat-view-channels");
+      if (!wrap) return;
+      let html = chatNewDmToolbarHtml();
+      const companyItems = chatCompanyChannels
         .map((ch) => {
           const preview = (ch.lastMessagePreview || "").trim();
+          const unread = chatRoomUnreadCount(ch);
           const previewHtml = preview
             ? `<div class="chat-channel-item-preview">${escapeHtml(preview)}</div>`
             : "";
-          return `<button type="button" class="chat-channel-item" data-chat-room="${escapeAttr(ch.roomId)}" data-chat-company="${escapeAttr(
-            ch.companyId
-          )}" data-chat-name="${escapeAttr(ch.companyName || "")}">
-            <div class="chat-channel-item-title">${escapeHtml(ch.companyName || ch.companyId)}</div>
+          const unreadBadge = unread
+            ? `<span class="notifications-badge" style="position:static;display:inline-block;margin-inline-start:0.35rem;min-width:1rem;height:1rem;line-height:1rem;font-size:0.6rem;">${unread}</span>`
+            : "";
+          return `<button type="button" class="chat-channel-item" data-chat-kind="company" data-chat-room="${escapeAttr(
+            ch.roomId
+          )}" data-chat-company="${escapeAttr(ch.companyId)}" data-chat-name="${escapeAttr(ch.companyName || "")}">
+            <div class="chat-channel-item-title">${escapeHtml(ch.companyName || ch.companyId)}${unreadBadge}</div>
             ${previewHtml}
           </button>`;
         })
         .join("");
-      wrap.innerHTML = `<div class="chat-section-label">${escapeHtml(t("chatCompanyChannelsTitle"))}</div>${items}`;
-      wrap.querySelectorAll(".chat-channel-item").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          void openCompanyChatRoom(btn.dataset.chatRoom, btn.dataset.chatCompany, btn.dataset.chatName);
+      html += `<div class="chat-section-label">${escapeHtml(t("chatCompanyChannelsTitle"))}</div>`;
+      html += companyItems || `<p class="chat-empty">${escapeHtml(t("chatCompaniesEmpty"))}</p>`;
+      const dmItems = chatDirectChannels
+        .map((ch) => {
+          const preview = (ch.lastMessagePreview || "").trim();
+          const unread = chatRoomUnreadCount(ch);
+          const previewHtml = preview
+            ? `<div class="chat-channel-item-preview">${escapeHtml(preview)}</div>`
+            : "";
+          const unreadBadge = unread
+            ? `<span class="notifications-badge" style="position:static;display:inline-block;margin-inline-start:0.35rem;min-width:1rem;height:1rem;line-height:1rem;font-size:0.6rem;">${unread}</span>`
+            : "";
+          return `<button type="button" class="chat-channel-item" data-chat-kind="direct" data-chat-room="${escapeAttr(
+            ch.roomId
+          )}" data-chat-peer="${escapeAttr(ch.peerUid || "")}" data-chat-name="${escapeAttr(ch.peerName || "")}">
+            <div class="chat-channel-item-title">${escapeHtml(ch.peerName || ch.peerUid)}${unreadBadge}</div>
+            ${previewHtml}
+          </button>`;
+        })
+        .join("");
+      html += `<div class="chat-section-label">${escapeHtml(t("chatDirectTitle"))}</div>`;
+      html +=
+        dmItems ||
+        `<p class="chat-empty">${escapeHtml(t("chatDirectEmpty"))}</p>
+         <div style="padding:0 0.85rem 0.75rem">
+           <button type="button" class="btn btn-secondary btn-sm" id="chat-btn-new-dm-inline" style="width:100%">${escapeHtml(t("chatNewDm"))}</button>
+         </div>`;
+      wrap.innerHTML = html;
+      wireChatChannelListEvents(wrap);
+      updateChatBadge();
+    }
+
+    async function showChatNewDmView() {
+      hideChatSubViews();
+      $("chat-view-new-dm")?.classList.remove("hidden");
+      $("chat-btn-back")?.classList.remove("hidden");
+      const title = $("chat-shell-title");
+      if (title) title.textContent = t("chatNewDm");
+      const list = $("chat-dm-user-list");
+      if (list) list.innerHTML = `<p class="chat-empty">${escapeHtml(t("loading"))}</p>`;
+      const users = await loadDmEligibleUsers();
+      const render = (q) => {
+        if (!list) return;
+        const query = (q || "").trim().toLowerCase();
+        const filtered = users.filter((u) => {
+          if (!query) return true;
+          const hay = [u.displayName, u.email, u.uid].join(" ").toLowerCase();
+          return hay.includes(query);
         });
-      });
+        if (!filtered.length) {
+          list.innerHTML = `<p class="chat-empty">${escapeHtml(users.length ? t("companiesFilterNoMatch") : t("chatDmUsersEmpty"))}</p>`;
+          return;
+        }
+        list.innerHTML = filtered
+          .map(
+            (u) =>
+              `<button type="button" class="chat-channel-item" data-chat-peer="${escapeAttr(u.uid)}" data-chat-name="${escapeAttr(
+                u.displayName
+              )}">
+                <div class="chat-channel-item-title">${escapeHtml(u.displayName)}</div>
+                <div class="chat-channel-item-preview">${escapeHtml(u.email || u.uid)}</div>
+              </button>`
+          )
+          .join("");
+        list.querySelectorAll(".chat-channel-item").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            void startDirectChatWithUser(btn.dataset.chatPeer, btn.dataset.chatName);
+          });
+        });
+      };
+      const searchInp = $("chat-dm-search");
+      if (searchInp) {
+        searchInp.value = "";
+        searchInp.placeholder = t("chatDmSearchPlaceholder");
+        searchInp.oninput = () => render(searchInp.value);
+      }
+      render("");
+    }
+
+    async function startDirectChatWithUser(peerUid, peerName) {
+      const roomId = await ensureDirectChatRoom(peerUid, peerName);
+      if (!roomId) {
+        alert(t("chatAccessDenied"));
+        return;
+      }
+      await loadDirectChatChannels();
+      await openDirectChatRoom(roomId, peerUid, peerName);
     }
 
     function showChatChannelsView() {
       chatActiveRoomId = null;
       chatActiveCompanyId = null;
       chatActiveCompanyName = "";
+      chatActiveRoomType = null;
+      chatActivePeerUid = null;
+      chatActiveRoomTitle = "";
+      clearChatPendingPoLink();
       stopChatMessagesListener();
+      closeChatPoPicker();
+      closeChatMentionPicker();
+      hideChatSubViews();
       $("chat-view-channels")?.classList.remove("hidden");
-      $("chat-view-room")?.classList.add("hidden");
       $("chat-btn-back")?.classList.add("hidden");
       const title = $("chat-shell-title");
       if (title) title.textContent = t("chatTitle");
+    }
+
+    function autoResizeChatComposeInput(el) {
+      const inp = el || $("chat-compose-input");
+      if (!inp) return;
+      inp.style.height = "auto";
+      const maxPx = 128;
+      inp.style.height = `${Math.min(inp.scrollHeight, maxPx)}px`;
+    }
+
+    function resetChatComposeInput() {
+      const inp = $("chat-compose-input");
+      if (!inp) return;
+      inp.value = "";
+      clearChatComposeMentions();
+      autoResizeChatComposeInput(inp);
+    }
+
+    function openChatRoomUi(title) {
+      hideChatSubViews();
+      $("chat-view-room")?.classList.remove("hidden");
+      $("chat-btn-back")?.classList.remove("hidden");
+      const titleEl = $("chat-shell-title");
+      if (titleEl) titleEl.textContent = title;
+      resetChatComposeInput();
+      clearChatPendingPoLink();
+      updateChatMentionUiForRoom();
+      const attachBtn = $("chat-btn-attach-po");
+      if (attachBtn) {
+        attachBtn.title = t("chatAttachPo");
+        attachBtn.setAttribute("aria-label", t("chatAttachPo"));
+      }
     }
 
     async function openCompanyChatRoom(roomId, companyId, companyName) {
@@ -15702,24 +16549,121 @@
         return;
       }
       chatActiveRoomId = roomId;
+      chatActiveRoomType = "company";
       chatActiveCompanyId = cid;
       chatActiveCompanyName = (companyName || "").trim() || cid;
-      $("chat-view-channels")?.classList.add("hidden");
-      $("chat-view-room")?.classList.remove("hidden");
-      $("chat-btn-back")?.classList.remove("hidden");
-      const title = $("chat-shell-title");
-      if (title) title.textContent = chatActiveCompanyName;
-      const inp = $("chat-compose-input");
-      if (inp) inp.value = "";
+      chatActivePeerUid = null;
+      chatActiveRoomTitle = chatActiveCompanyName;
+      openChatRoomUi(chatActiveRoomTitle);
+      markChatRoomRead(roomId);
+      await loadCompanyChannelMentionUsers(cid);
+      updateChatMentionUiForRoom();
       startChatMessagesListener(roomId);
     }
 
-    function stopChatMessagesListener() {
-      if (typeof chatMessagesUnsub === "function") {
-        chatMessagesUnsub();
-        chatMessagesUnsub = null;
+    async function openDirectChatRoom(roomId, peerUid, peerName) {
+      const peer = String(peerUid || "").trim();
+      if (!roomId || !peer) {
+        alert(t("chatAccessDenied"));
+        return;
       }
-      chatMessageRows = [];
+      chatActiveRoomId = roomId;
+      chatActiveRoomType = "direct";
+      chatActiveCompanyId = null;
+      chatActiveCompanyName = "";
+      chatActivePeerUid = peer;
+      chatActiveRoomTitle = (peerName || "").trim() || peer;
+      openChatRoomUi(chatActiveRoomTitle);
+      markChatRoomRead(roomId);
+      startChatMessagesListener(roomId);
+    }
+
+    async function openChatFromNotification(roomId) {
+      if (!roomId) return;
+      const rs = await getDoc(doc(db, CHAT_COL, roomId));
+      if (!rs.exists()) return;
+      const data = rs.data();
+      if (data.type === "company") {
+        await openCompanyChatRoom(roomId, data.companyId, data.companyName);
+      } else if (data.type === "direct") {
+        const peer = (data.participants || []).find((u) => u !== currentUser?.uid);
+        const peerName = (data.participantNames && peer && data.participantNames[peer]) || peer || "";
+        await openDirectChatRoom(roomId, peer, peerName);
+      }
+    }
+
+    function renderChatPoPickerResults(rows, projectNames) {
+      const wrap = $("chat-po-results");
+      if (!wrap) return;
+      if (!rows.length) {
+        wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("poProjectsNoFilterResults"))}</p>`;
+        return;
+      }
+      wrap.innerHTML = rows
+        .slice(0, 40)
+        .map((po) => {
+          const pname = po.projectId ? projectNames[po.projectId] || "" : "";
+          const ref = poLinkLabelFromPo(po, pname);
+          const sub = poLinkSubLabelFromPo(po, pname);
+          return `<button type="button" class="chat-channel-item" data-po-id="${escapeAttr(po.id)}">
+            <div class="chat-channel-item-title">${escapeHtml(ref)}</div>
+            <div class="chat-channel-item-preview">${escapeHtml(sub)}</div>
+          </button>`;
+        })
+        .join("");
+      wrap.querySelectorAll(".chat-channel-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          void selectChatPoLink(btn.dataset.poId);
+        });
+      });
+    }
+
+    async function showChatPoPicker() {
+      if (!chatActiveRoomId) return;
+      closeChatMentionPicker();
+      $("chat-view-po-pick")?.classList.remove("hidden");
+      $("chat-messages")?.classList.add("hidden");
+      $("chat-compose-form")?.classList.add("hidden");
+      $("chat-po-pending")?.classList.add("hidden");
+      const results = $("chat-po-results");
+      if (results) results.innerHTML = `<p class="chat-empty">${escapeHtml(t("loading"))}</p>`;
+      chatLinkablePosCache = await fetchLinkablePurchaseOrders();
+      const ctx = await fetchProjectPurchaseOrdersTableContext().catch(() => ({ projectNames: {} }));
+      const projectNames = ctx.projectNames || {};
+      const render = (q) => {
+        const query = (q || "").trim().toLowerCase();
+        const filtered = chatLinkablePosCache.filter((po) => {
+          if (!query) return true;
+          const pname = po.projectId ? projectNames[po.projectId] || "" : "";
+          const ref = poLinkLabelFromPo(po, pname);
+          const hay = [ref, pname, po.title, po.poReference, po.supplierName].filter(Boolean).join(" ").toLowerCase();
+          return hay.includes(query);
+        });
+        renderChatPoPickerResults(filtered, projectNames);
+      };
+      const searchInp = $("chat-po-search");
+      if (searchInp) {
+        searchInp.value = "";
+        searchInp.placeholder = t("chatPoSearchPlaceholder");
+        searchInp.oninput = () => render(searchInp.value);
+      }
+      render("");
+    }
+
+    function closeChatPoPicker() {
+      $("chat-view-po-pick")?.classList.add("hidden");
+      $("chat-messages")?.classList.remove("hidden");
+      $("chat-compose-form")?.classList.remove("hidden");
+      if (chatPendingPoLink) $("chat-po-pending")?.classList.remove("hidden");
+    }
+
+    async function selectChatPoLink(poId) {
+      const po = (chatLinkablePosCache || []).find((p) => p.id === poId);
+      if (!po) return;
+      const ctx = await fetchProjectPurchaseOrdersTableContext().catch(() => ({ projectNames: {} }));
+      const pname = po.projectId ? ctx.projectNames?.[po.projectId] || "" : "";
+      showChatPendingPoLink(await buildPoLinkFromPo(po, pname));
+      closeChatPoPicker();
     }
 
     function renderChatMessages() {
@@ -15734,14 +16678,41 @@
           const mine = m.senderUid === currentUser?.uid;
           const name = escapeHtml((m.senderName || "").trim() || t("defaultDisplayName"));
           const time = escapeHtml(formatChatMessageTime(m.createdAt));
-          const text = escapeHtml((m.text || "").trim());
+          const text = (m.text || "").trim();
+          const textHtml = text ? `<div class="chat-msg-text">${formatChatMessageText(text, m.mentions)}</div>` : "";
+          let poHtml = "";
+          if (m.poLink && m.poLink.poId) {
+            const ref = escapeHtml((m.poLink.poReference || "").trim() || m.poLink.poId);
+            const sub = escapeHtml((m.poLink.projectName || "").trim() || (m.poLink.scope === "general" ? t("poGeneralTitle") : ""));
+            poHtml = `<div class="chat-msg-po-link">
+              <div class="chat-msg-po-ref">📋 ${ref}</div>
+              ${sub ? `<div class="chat-msg-po-sub">${sub}</div>` : ""}
+              <button type="button" class="btn btn-secondary btn-sm btn-chat-open-po" data-po-id="${escapeAttr(m.poLink.poId)}">${escapeHtml(
+              t("chatOpenPo")
+            )}</button>
+            </div>`;
+          }
           return `<div class="chat-msg${mine ? " mine" : ""}">
             <div class="chat-msg-meta">${name} · ${time}</div>
-            <div class="chat-msg-text">${text}</div>
+            ${textHtml}
+            ${poHtml}
           </div>`;
         })
         .join("");
+      wrap.querySelectorAll(".btn-chat-open-po").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          void openPoPrintViewModal(btn.dataset.poId);
+        });
+      });
       wrap.scrollTop = wrap.scrollHeight;
+    }
+
+    function stopChatMessagesListener() {
+      if (typeof chatMessagesUnsub === "function") {
+        chatMessagesUnsub();
+        chatMessagesUnsub = null;
+      }
+      chatMessageRows = [];
     }
 
     function startChatMessagesListener(roomId) {
@@ -15758,6 +16729,7 @@
           chatMessageRows = [];
           snap.forEach((d) => chatMessageRows.push({ id: d.id, ...d.data() }));
           renderChatMessages();
+          if (chatOverlayOpen && chatActiveRoomId === roomId) markChatRoomRead(roomId);
         },
         (err) => {
           console.error("chat messages listener", err);
@@ -15767,34 +16739,131 @@
       );
     }
 
-    async function sendCompanyChatMessage(textRaw) {
+    async function notifyChatRoomParticipants(roomId, roomMeta, previewText, mentionUids) {
+      if (!roomId || !currentUser) return;
+      const preview = (previewText || "").trim() || t("chatPoLinkOnly");
+      const rs = roomMeta || (await getDoc(doc(db, CHAT_COL, roomId))).data();
+      if (!rs) return;
+      const profiles = await getUserProfilesForNotify();
+      let uids = [];
+      let roomTitle = "";
+      if (rs.type === "direct") {
+        uids = (rs.participants || []).filter((u) => u && u !== currentUser.uid);
+        const peer = uids[0];
+        roomTitle = (rs.participantNames && peer && rs.participantNames[peer]) || rs.peerName || t("chatDirectTitle");
+      } else if (rs.type === "company" && rs.companyId) {
+        roomTitle = (rs.companyName || "").trim() || rs.companyId;
+        uids = profiles
+          .filter((p) => Array.isArray(p.companyIds) && p.companyIds.includes(rs.companyId))
+          .map((p) => p.uid);
+      }
+      const actorName = chatSenderDisplayName();
+      const fullPreview = `${actorName}: ${preview}`.slice(0, 160);
+      const mentionSet = new Set((mentionUids || []).filter((u) => u && u !== currentUser.uid));
+      if (mentionSet.size) {
+        const mentionPreview = `${actorName} ${t("chatMentionedYou")}: ${preview}`.slice(0, 160);
+        await pushChatNotifications([...mentionSet], {
+          roomId,
+          roomTitle,
+          preview: mentionPreview,
+          kind: "notif_chat_mention",
+        });
+      }
+      const generalUids = uids.filter((u) => !mentionSet.has(u));
+      await pushChatNotifications(generalUids, { roomId, roomTitle, preview: fullPreview, kind: "notif_chat_message" });
+    }
+
+    async function pushChatNotifications(recipientUids, { roomId, roomTitle, preview, kind }) {
+      const actor = currentUser?.uid;
+      const uids = [...new Set((recipientUids || []).filter(Boolean))].filter((u) => u !== actor);
+      if (!uids.length || !roomId) return;
+      const notifKind = kind || "notif_chat_message";
+      for (let i = 0; i < uids.length; i += NOTIF_BATCH) {
+        const slice = uids.slice(i, i + NOTIF_BATCH);
+        const batch = writeBatch(db);
+        slice.forEach((userId) => {
+          const nref = doc(collection(db, NOTIF_COL));
+          batch.set(nref, {
+            userId,
+            roomId,
+            roomTitle: (roomTitle || "").trim().slice(0, 120),
+            preview: (preview || "").trim().slice(0, 160),
+            navTarget: "chat",
+            kind: notifKind,
+            read: false,
+            createdAt: serverTimestamp(),
+          });
+        });
+        await batch.commit();
+      }
+    }
+
+    async function sendChatMessage(textRaw) {
       const text = String(textRaw || "").trim();
-      if (!text || !chatActiveRoomId || !currentUser) return;
-      if (!userCanAccessCompanyChat(chatActiveCompanyId)) {
+      const poLink = chatPendingPoLink;
+      if ((!text && !poLink) || !chatActiveRoomId || !currentUser) return;
+      if (chatActiveRoomType === "company" && !userCanAccessCompanyChat(chatActiveCompanyId)) {
         alert(t("chatAccessDenied"));
         return;
       }
+      if (poLink?.poId && !(await userCanViewPoById(poLink.poId))) {
+        alert(t("chatAccessDenied"));
+        return;
+      }
+      syncChatComposeMentionsFromText(text);
+      const mentions =
+        chatActiveRoomType === "company" && chatComposeMentions.length
+          ? chatComposeMentions.map((m) => ({ uid: m.uid, displayName: m.displayName }))
+          : [];
       const senderName = chatSenderDisplayName();
+      const preview = text || (poLink?.poReference ? `📋 ${poLink.poReference}` : t("chatPoLinkOnly"));
+      const msgPayload = {
+        senderUid: currentUser.uid,
+        senderName,
+        text,
+        createdAt: serverTimestamp(),
+      };
+      if (mentions.length) msgPayload.mentions = mentions;
+      if (poLink?.poId) msgPayload.poLink = { ...poLink };
       try {
-        await addDoc(collection(db, CHAT_COL, chatActiveRoomId, "messages"), {
-          senderUid: currentUser.uid,
-          senderName,
-          text,
-          createdAt: serverTimestamp(),
-        });
-        await updateDoc(doc(db, CHAT_COL, chatActiveRoomId), {
+        await addDoc(collection(db, CHAT_COL, chatActiveRoomId, "messages"), msgPayload);
+        const roomUpdate = {
           lastMessageAt: serverTimestamp(),
-          lastMessagePreview: text.slice(0, 120),
+          lastMessagePreview: preview.slice(0, 120),
           lastSenderUid: currentUser.uid,
           lastSenderName: senderName,
-          companyId: chatActiveCompanyId,
-          companyName: chatActiveCompanyName,
-          type: "company",
-        });
+          type: chatActiveRoomType,
+        };
+        if (chatActiveRoomType === "company") {
+          roomUpdate.companyId = chatActiveCompanyId;
+          roomUpdate.companyName = chatActiveCompanyName;
+        } else if (chatActiveRoomType === "direct") {
+          roomUpdate.participants = [currentUser.uid, chatActivePeerUid].sort();
+          roomUpdate.participantNames = {
+            [currentUser.uid]: senderName,
+            [chatActivePeerUid]: chatActiveRoomTitle,
+          };
+          roomUpdate.peerUid = chatActivePeerUid;
+        }
+        await updateDoc(doc(db, CHAT_COL, chatActiveRoomId), roomUpdate);
+        clearChatPendingPoLink();
+        const mentionUids = mentions.map((m) => m.uid);
+        await notifyChatRoomParticipants(chatActiveRoomId, roomUpdate, preview, mentionUids);
+        resetChatComposeInput();
+        if (chatActiveRoomType === "company") await loadCompanyChatChannels();
+        else await loadDirectChatChannels();
+        updateChatBadge();
       } catch (e) {
         console.error(e);
         alert(t("chatSendFailed"));
       }
+    }
+
+    async function refreshChatUnreadState() {
+      if (!currentUser) return;
+      await loadCompanyChatChannels();
+      await loadDirectChatChannels();
+      updateChatBadge();
     }
 
     async function openChatOverlay() {
@@ -15806,16 +16875,34 @@
       $("btn-chat")?.setAttribute("aria-expanded", "true");
       showChatChannelsView();
       const wrap = $("chat-view-channels");
-      if (wrap) wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("loading"))}</p>`;
+      if (wrap) {
+        wrap.innerHTML = `${chatNewDmToolbarHtml()}<p class="chat-empty">${escapeHtml(t("loading"))}</p>`;
+        wireChatChannelListEvents(wrap);
+      }
       await loadCompanyChatChannels();
-      renderChatCompanyChannelList();
-      overlay.querySelectorAll("[data-i18n]").forEach((el) => {
-        if (el.id !== "chat-shell-title") el.textContent = t(el.dataset.i18n);
+      await loadDirectChatChannels();
+      renderChatChannelList();
+      applyChatOverlayI18n();
+    }
+
+    function applyChatOverlayI18n() {
+      $("chat-overlay")?.querySelectorAll("[data-i18n]").forEach((el) => {
+        if (el.id === "chat-shell-title") {
+          el.textContent = chatActiveRoomTitle || t("chatTitle");
+        } else {
+          el.textContent = t(el.dataset.i18n);
+        }
       });
+      $("chat-overlay")?.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        el.placeholder = t(el.dataset.i18nPlaceholder);
+      });
+      $("chat-overlay")?.querySelectorAll("[data-i18n-title]").forEach((el) => {
+        el.title = t(el.dataset.i18nTitle);
+        el.setAttribute("aria-label", t(el.dataset.i18nTitle));
+      });
+      updateChatMentionUiForRoom();
       const closeBtn = $("chat-btn-close");
       if (closeBtn) closeBtn.setAttribute("aria-label", t("chatCloseAria"));
-      const inp = $("chat-compose-input");
-      if (inp) inp.placeholder = t("chatMessagePlaceholder");
     }
 
     function closeChatOverlay() {
@@ -15824,23 +16911,15 @@
       overlay.classList.add("hidden");
       chatOverlayOpen = false;
       $("btn-chat")?.setAttribute("aria-expanded", "false");
+      closeChatPoPicker();
       showChatChannelsView();
+      void refreshChatUnreadState();
     }
 
     function refreshChatI18n() {
       if (!chatOverlayOpen) return;
-      $("chat-overlay")?.querySelectorAll("[data-i18n]").forEach((el) => {
-        if (el.id === "chat-shell-title") {
-          el.textContent = chatActiveCompanyName || t("chatTitle");
-        } else {
-          el.textContent = t(el.dataset.i18n);
-        }
-      });
-      const closeBtn = $("chat-btn-close");
-      if (closeBtn) closeBtn.setAttribute("aria-label", t("chatCloseAria"));
-      const inp = $("chat-compose-input");
-      if (inp) inp.placeholder = t("chatMessagePlaceholder");
-      if (!chatActiveRoomId) renderChatCompanyChannelList();
+      applyChatOverlayI18n();
+      if (!chatActiveRoomId) renderChatChannelList();
       else renderChatMessages();
     }
 
@@ -21706,7 +22785,7 @@
               refreshDashboard();
               const active = document.querySelector(".app-screen:not(.hidden)");
               if (active?.id === "screen-admin" && !hasAdminAccess()) showView(firstAllowedView());
-              if (chatOverlayOpen) void loadCompanyChatChannels().then(() => renderChatCompanyChannelList());
+              if (chatOverlayOpen) void loadCompanyChatChannels().then(() => loadDirectChatChannels()).then(() => renderChatChannelList());
             }
           }
         } else if (collectionName === "regions") {
@@ -21983,6 +23062,12 @@
       return String((po.poReference || po.title || "").trim() || po.id || "").slice(0, 200);
     }
 
+    function formatChatNotificationLine(r) {
+      const room = (r.roomTitle || "").trim() || t("chatTitle");
+      const preview = (r.preview || "").trim() || t("dash");
+      return String(t("notif_chat_message")).replace("{{room}}", room).replace("{{preview}}", preview);
+    }
+
     function formatNotificationLine(kind, poReference) {
       const ref = (poReference || "").trim() || t("dash");
       const raw = t(kind);
@@ -22162,12 +23247,15 @@
       }
       listEl.innerHTML = notificationsRows
         .map((r) => {
-          const text = escapeHtml(formatNotificationLine(r.kind, r.poReference));
+          const text =
+            r.kind === "notif_chat_message" || r.kind === "notif_chat_mention"
+              ? escapeHtml(formatChatNotificationLine(r))
+              : escapeHtml(formatNotificationLine(r.kind, r.poReference));
           const time = escapeHtml(formatNotifTime(r.createdAt));
           const unread = r.read ? "" : " unread";
           return `<button type="button" class="notif-item${unread}" data-notif-id="${escapeAttr(r.id)}" data-po-id="${escapeAttr(
             r.poId || ""
-          )}" data-nav="${escapeAttr(r.navTarget || "")}">
+          )}" data-room-id="${escapeAttr(r.roomId || "")}" data-nav="${escapeAttr(r.navTarget || "")}">
             ${text}<span class="notif-item-time">${time}</span>
           </button>`;
         })
@@ -22181,6 +23269,7 @@
       const id = btn.dataset.notifId;
       const poId = btn.dataset.poId;
       const nav = btn.dataset.nav;
+      const roomId = btn.dataset.roomId;
       if (id) {
         try {
           await updateDoc(doc(db, NOTIF_COL, id), { read: true });
@@ -22189,7 +23278,12 @@
         }
       }
       closeNotificationsPanel();
-      if (nav) showView(nav);
+      if (nav === "chat" && roomId) {
+        if (!chatOverlayOpen) await openChatOverlay();
+        await openChatFromNotification(roomId);
+        return;
+      }
+      if (nav && nav !== "chat") showView(nav);
       if (poId) setTimeout(() => openPoPrintViewModal(poId), 180);
     }
 
@@ -22274,8 +23368,12 @@
     });
     $("chat-btn-close")?.addEventListener("click", () => closeChatOverlay());
     $("chat-btn-back")?.addEventListener("click", () => {
+      if ($("chat-view-po-pick") && !$("chat-view-po-pick").classList.contains("hidden")) {
+        closeChatPoPicker();
+        return;
+      }
       showChatChannelsView();
-      renderChatCompanyChannelList();
+      renderChatChannelList();
     });
     $("chat-overlay")?.addEventListener("click", (e) => {
       if (e.target === $("chat-overlay")) closeChatOverlay();
@@ -22284,9 +23382,54 @@
       e.preventDefault();
       const inp = $("chat-compose-input");
       const text = inp?.value || "";
-      if (inp) inp.value = "";
-      void sendCompanyChatMessage(text);
+      void sendChatMessage(text);
     });
+    $("chat-compose-input")?.addEventListener("input", () => {
+      autoResizeChatComposeInput();
+      syncChatComposeMentionsFromText($("chat-compose-input")?.value || "");
+      detectChatMentionTrigger();
+    });
+    $("chat-compose-input")?.addEventListener("keydown", (e) => {
+      const pickerOpen = $("chat-mention-picker") && !$("chat-mention-picker").classList.contains("hidden");
+      if (pickerOpen && chatMentionState) {
+        const users = filteredChatMentionUsers();
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (users.length) {
+            chatMentionPickIndex = (chatMentionPickIndex + 1) % users.length;
+            renderChatMentionPicker();
+          }
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (users.length) {
+            chatMentionPickIndex = (chatMentionPickIndex - 1 + users.length) % users.length;
+            renderChatMentionPicker();
+          }
+          return;
+        }
+        if (e.key === "Enter" && !e.shiftKey && users.length) {
+          e.preventDefault();
+          const u = users[chatMentionPickIndex];
+          if (u) insertChatMention(u);
+          return;
+        }
+        if (e.key === "Escape") {
+          e.preventDefault();
+          closeChatMentionPicker();
+          return;
+        }
+      }
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        $("chat-compose-form")?.requestSubmit();
+      }
+    });
+    $("chat-btn-mention")?.addEventListener("click", () => insertChatMentionAtCursor());
+    $("chat-btn-attach-po")?.addEventListener("click", () => void showChatPoPicker());
+    $("chat-po-pick-cancel")?.addEventListener("click", () => closeChatPoPicker());
+    $("chat-po-pending-clear")?.addEventListener("click", () => clearChatPendingPoLink());
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
@@ -22306,6 +23449,7 @@
         $("header-email").textContent = user.email || "";
         userProfilesNotifyCache = { t: 0, list: null };
         startNotificationsListener();
+        void refreshChatUnreadState();
         refreshDashboard();
         showView(firstAllowedView());
       } else {
@@ -22313,6 +23457,9 @@
         closeNotificationsPanel();
         closeChatOverlay();
         stopChatMessagesListener();
+        chatCompanyChannels = [];
+        chatDirectChannels = [];
+        $("chat-badge")?.classList.add("hidden");
         closeMobileNav();
         $("view-app").classList.add("hidden");
         $("view-login").classList.remove("hidden");
