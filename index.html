@@ -2070,7 +2070,8 @@
     .po007-doc[dir="rtl"] .po007-delivery-table thead th:last-child { text-align: center; }
     .po007-doc[dir="rtl"] .po007-items-table thead th { text-align: right; }
     .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-no,
-    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-qty { text-align: center; }
+    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-qty,
+    .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-unit { text-align: center; }
     .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-price,
     .po007-doc[dir="rtl"] .po007-items-table thead th.po007-col-total { text-align: left; }
     .po007-doc[dir="rtl"] .po007-section-heading,
@@ -2189,13 +2190,16 @@
       vertical-align: middle;
       border-bottom: 2px solid #152a45;
     }
-    .po007-surface .po007-items-table col.po007-col-no { width: 52px; }
+    .po007-surface .po007-items-table col.po007-col-no { width: 72px; }
     .po007-surface .po007-items-table col.po007-col-item { width: 15%; }
     .po007-surface .po007-items-table col.po007-col-desc { width: 34%; }
     .po007-surface .po007-items-table col.po007-col-qty { width: 72px; }
+    .po007-surface .po007-items-table col.po007-col-unit { width: 88px; }
     .po007-surface .po007-items-table col.po007-col-included { width: 108px; }
     .po007-surface .po007-items-table col.po007-col-price { width: 15%; }
     .po007-surface .po007-items-table col.po007-col-total { width: 15%; }
+    .po007-surface .po007-items-table col.po007-col-remarks { width: 14%; }
+    .po007-surface .po007-items-table col.po007-col-extra { width: 12%; }
     .po007-surface .po007-items-table thead th.po007-col-included { text-align: center; font-size: 9px; }
     .po007-surface .po007-items-table thead th.po007-col-no { text-align: center; }
     .po007-surface .po007-items-table thead th.po007-col-qty { text-align: center; }
@@ -2213,6 +2217,7 @@
     }
     .po007-surface .po007-items-table .po007-col-no { text-align: center; vertical-align: middle; }
     .po007-surface .po007-items-table .po007-col-qty { text-align: center; vertical-align: middle; }
+    .po007-surface .po007-items-table .po007-col-unit { text-align: center; vertical-align: middle; }
     .po007-surface .po007-items-table .po007-col-price,
     .po007-surface .po007-items-table .po007-col-total { text-align: end; vertical-align: middle; }
     .po007-surface .po007-item-tag {
@@ -2760,6 +2765,36 @@
       justify-content: flex-start;
       gap: 4px;
       padding-top: 2px;
+      min-width: 4.5rem;
+    }
+    .po007-surface.po007-edit-mode .po007-items-row-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      justify-content: center;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table .po007-line-no-cell .po007-items-row-move,
+    .po007-surface.po007-edit-mode .po007-items-table .po007-line-no-cell .del-btn {
+      font-size: 10px;
+      padding: 3px 6px;
+      border: 1px solid #b8cce8;
+      border-radius: 4px;
+      background: #fff;
+      color: #1c4587;
+      cursor: pointer;
+      line-height: 1.2;
+      margin: 0;
+      min-width: 1.5rem;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table .po007-line-no-cell .po007-items-row-move:hover,
+    .po007-surface.po007-edit-mode .po007-items-table .po007-line-no-cell .del-btn:hover {
+      background: #e8eef7;
+      border-color: #1c4587;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table .po007-line-no-cell .po007-items-row-move:disabled {
+      opacity: 0.35;
+      cursor: default;
+      background: #f3f6fb;
     }
     .po007-surface.po007-edit-mode .po007-cell-box {
       min-height: 2.5em;
@@ -2825,6 +2860,27 @@
     .po007-surface.po007-edit-mode .po007-items-table .po007-cell-field--price {
       text-align: end;
     }
+    .po007-surface.po007-edit-mode .po007-items-table .po007-measure-unit-select {
+      display: block;
+      width: 100%;
+      min-height: 2.5em;
+      box-sizing: border-box;
+      background: #fafcff;
+      border: 1px dashed #c8d4e8;
+      border-radius: 4px;
+      padding: 5px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #444;
+      cursor: pointer;
+      outline: none;
+      text-align: center;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table .po007-measure-unit-select:focus {
+      border-color: #1c4587;
+      background: #f8fbff;
+      box-shadow: 0 0 0 2px rgba(28, 69, 135, 0.12);
+    }
     .po007-surface.po007-edit-mode .po007-items-table .po007-line-total {
       font-size: 10px;
       font-weight: 700;
@@ -2852,6 +2908,91 @@
     }
     .po007-surface.po007-edit-mode .po007-add-item-row:hover {
       background: #d0ddf5;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 0.45rem;
+      align-items: center;
+    }
+    .po007-surface.po007-edit-mode .po007-items-bulk-insert-btn,
+    .po007-surface.po007-edit-mode .po007-items-add-col-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid #c8d4e8;
+      border-radius: 5px;
+      color: #1c4587;
+      background: #fff;
+      cursor: pointer;
+    }
+    .po007-surface.po007-edit-mode .po007-items-bulk-insert-btn:hover,
+    .po007-surface.po007-edit-mode .po007-items-add-col-btn:hover {
+      background: #e8eef7;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table thead .po007-items-th-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .po007-surface.po007-edit-mode .po007-items-col-tools {
+      display: flex;
+      gap: 2px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .po007-surface.po007-edit-mode .po007-items-col-move,
+    .po007-surface.po007-edit-mode .po007-items-row-move {
+      font-size: 9px;
+      padding: 2px 5px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+    .po007-surface.po007-edit-mode .po007-items-col-move:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+    .po007-surface.po007-edit-mode .po007-items-col-move:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table thead .po007-items-extra-col-head {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px dashed rgba(255, 255, 255, 0.9);
+      border-radius: 4px;
+      padding: 4px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #1c3557;
+      text-align: center;
+      outline: none;
+    }
+    #modal-po007-items-bulk.modal-overlay {
+      z-index: 12050;
+    }
+    #modal-po007-items-bulk textarea {
+      width: 100%;
+      min-height: 160px;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    #modal-po007-items-bulk .po007-bulk-hint {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+      line-height: 1.45;
     }
     .po007-surface.po007-edit-mode .po007-items-table .del-btn,
     .po007-surface.po007-edit-mode .po007-sec-data-table .del-btn {
@@ -4871,6 +5012,20 @@
     </div>
   </div>
 
+  <div id="modal-po007-items-bulk" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width: 640px">
+      <h3 id="po007-items-bulk-title" data-i18n="genPo007ItemsBulkInsertTitle">إدراج صفوف متعددة</h3>
+      <p id="po007-items-bulk-hint" class="po007-bulk-hint" data-i18n="genPo007ItemsBulkInsertHint"></p>
+      <p id="po007-items-bulk-cols" class="po007-bulk-hint" style="font-weight:600"></p>
+      <p id="po007-items-bulk-included-hint" class="po007-bulk-hint hidden"></p>
+      <textarea id="po007-items-bulk-text" spellcheck="false" dir="auto"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="po007-items-bulk-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="po007-items-bulk-apply" data-i18n="genPo007ItemsBulkInsertApply">إدراج</button>
+      </div>
+    </div>
+  </div>
+
   <!-- عرض طلب للطباعة (مشتريات وغيره) -->
   <div id="modal-po-print-view" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide">
@@ -5822,6 +5977,20 @@
         genPoColPrice: "السعر / ملاحظة",
         genPoColLineTotal: "الإجمالي",
         genPoColRemark: "ملاحظة",
+        genPoColRemarks: "ملاحظات",
+        genPo007ItemsAddCol: "إضافة عمود",
+        genPo007ItemsBulkInsert: "إدراج متعدد",
+        genPo007ItemsBulkInsertTitle: "إدراج صفوف متعددة",
+        genPo007ItemsBulkInsertHint:
+          "الصق صفاً لكل سطر. افصل الأعمدة بعلامة Tab أو | وفق ترتيب الأعمدة. عمود «مشمول بالسعر»: 1 أو نعم أو مشمول = متضمن؛ اتركه فارغاً أو 0 أو لا = غير متضمن.",
+        genPo007ItemsBulkIncludedHint:
+          "مشمول بالسعر: 1 / نعم / yes / مشمول = متضمن — فارغ / 0 / لا / no = غير متضمن",
+        genPo007ItemsBulkInsertApply: "إدراج",
+        genPo007ItemsColMoveLeft: "تحريك العمود يساراً",
+        genPo007ItemsColMoveRight: "تحريك العمود يميناً",
+        genPo007ItemsRowMoveUp: "تحريك الصف لأعلى",
+        genPo007ItemsRowMoveDown: "تحريك الصف لأسفل",
+        genPo007ItemsDelExtraCol: "حذف العمود",
         genPoAddLine: "إضافة بند",
         genPoLabelTotalWords: "المبلغ الإجمالي كتابة",
         genPoSectionNote: "ملاحظات (NOTE)",
@@ -6667,6 +6836,20 @@
         genPoColPrice: "Price / note",
         genPoColLineTotal: "Line total",
         genPoColRemark: "Remark",
+        genPoColRemarks: "Remarks",
+        genPo007ItemsAddCol: "Add column",
+        genPo007ItemsBulkInsert: "Bulk insert",
+        genPo007ItemsBulkInsertTitle: "Insert multiple rows",
+        genPo007ItemsBulkInsertHint:
+          "Paste one row per line. Separate columns with Tab or | in this order. In base price: 1, yes, or included = bundled; leave empty, 0, or no = not bundled.",
+        genPo007ItemsBulkIncludedHint:
+          "In base price: 1 / yes / included = bundled — empty / 0 / no = not bundled",
+        genPo007ItemsBulkInsertApply: "Insert",
+        genPo007ItemsColMoveLeft: "Move column left",
+        genPo007ItemsColMoveRight: "Move column right",
+        genPo007ItemsRowMoveUp: "Move row up",
+        genPo007ItemsRowMoveDown: "Move row down",
+        genPo007ItemsDelExtraCol: "Delete column",
         genPoAddLine: "Add line",
         genPoLabelTotalWords: "Total amount in words",
         genPoSectionNote: "Notes (NOTE)",
@@ -7269,17 +7452,296 @@
         : x.lineTotal != null && x.lineTotal !== ""
           ? Number(x.lineTotal)
           : qty * (parseFloat(String(priceText).replace(/,/g, "")) || 0);
+      const extraRaw = x.extra && typeof x.extra === "object" ? x.extra : {};
+      const extra = {};
+      Object.keys(extraRaw).forEach((k) => {
+        extra[k] = extraRaw[k] != null ? String(extraRaw[k]) : "";
+      });
       return {
         itemTag,
         description,
         item: itemTag,
-        unit: (x.unit || "").trim(),
+        unit: normalizePo007MeasureUnit(x.unit || ""),
+        remarks: (x.remarks || x.lineRemarks || "").trim(),
         qty,
         priceText,
         lineTotal,
         remark: description,
         includedInBasePrice,
+        extra,
       };
+    }
+
+    const PO007_MEASURE_UNITS = [
+      { code: "m", ar: "متر", en: "Meter", aliases: ["m", "meter", "metre", "م"] },
+      { code: "pcs", ar: "قطعة", en: "Piece", aliases: ["pcs", "pc", "piece", "pieces", "قطعة", "قطع"] },
+      { code: "km", ar: "كم", en: "Km", aliases: ["km", "kilometer", "kilometre"] },
+      { code: "set", ar: "طقم", en: "Set", aliases: ["set", "sets", "طقم"] },
+      { code: "kg", ar: "كغ", en: "Kg", aliases: ["kg", "kilo", "كيلو", "كغ"] },
+      { code: "ton", ar: "طن", en: "Ton", aliases: ["ton", "tons", "t", "طن"] },
+      { code: "l", ar: "لتر", en: "Liter", aliases: ["l", "liter", "litre", "لتر"] },
+      { code: "m2", ar: "م²", en: "m²", aliases: ["m2", "m²", "sqm", "sq m"] },
+      { code: "m3", ar: "م³", en: "m³", aliases: ["m3", "m³", "cbm", "cum"] },
+      { code: "roll", ar: "رول", en: "Roll", aliases: ["roll", "rolls", "رول"] },
+      { code: "box", ar: "صندوق", en: "Box", aliases: ["box", "boxes", "صندوق"] },
+      { code: "bag", ar: "كيس", en: "Bag", aliases: ["bag", "bags", "كيس"] },
+      { code: "hr", ar: "ساعة", en: "Hour", aliases: ["hr", "hrs", "hour", "hours", "ساعة"] },
+      { code: "day", ar: "يوم", en: "Day", aliases: ["day", "days", "يوم"] },
+      { code: "lot", ar: "دفعة", en: "Lot", aliases: ["lot", "lots", "دفعة"] },
+    ];
+
+    function normalizePo007MeasureUnit(raw) {
+      const s = String(raw || "").trim();
+      if (!s) return "";
+      const low = s.toLowerCase();
+      for (const u of PO007_MEASURE_UNITS) {
+        if (u.code.toLowerCase() === low) return u.code;
+        if (u.ar === s || u.en.toLowerCase() === low) return u.code;
+        for (const a of u.aliases || []) {
+          if (String(a).toLowerCase() === low || a === s) return u.code;
+        }
+      }
+      return s;
+    }
+
+    function po007MeasureUnitIsPreset(code) {
+      return PO007_MEASURE_UNITS.some((u) => u.code === code);
+    }
+
+    function po007MeasureUnitLabel(code, docLang) {
+      const c = String(code || "").trim();
+      if (!c) return "";
+      const u = PO007_MEASURE_UNITS.find((x) => x.code === c);
+      if (u) return docLang === "ar" ? u.ar : u.en;
+      return c;
+    }
+
+    function renderPo007MeasureUnitSelect(raw, docLang) {
+      const value = normalizePo007MeasureUnit(raw);
+      const ar = docLang === "ar";
+      const opts = [`<option value="">${escapeHtml(tPo007(docLang, "dash"))}</option>`];
+      PO007_MEASURE_UNITS.forEach((u) => {
+        const lbl = ar ? u.ar : u.en;
+        opts.push(
+          `<option value="${escapeAttr(u.code)}"${value === u.code ? " selected" : ""}>${escapeHtml(lbl)}</option>`
+        );
+      });
+      if (value && !po007MeasureUnitIsPreset(value)) {
+        opts.push(`<option value="${escapeAttr(value)}" selected>${escapeHtml(value)}</option>`);
+      }
+      return `<select class="po007-measure-unit-select po007-measure-unit" aria-label="${escapeAttr(
+        tPo007(docLang, "genPoColUnit")
+      )}">${opts.join("")}</select>`;
+    }
+
+    function readPo007MeasureUnitFromEl(el) {
+      if (!el) return "";
+      if (el.tagName === "SELECT") return normalizePo007MeasureUnit(el.value);
+      return normalizePo007MeasureUnit(el.textContent);
+    }
+
+    const PO007_ITEMS_BUILTIN_COL_IDS = new Set([
+      "item",
+      "desc",
+      "unit",
+      "qty",
+      "included",
+      "unitPrice",
+      "total",
+      "remarks",
+    ]);
+
+    function getDefaultPo007ItemsColumnOrder() {
+      return ["item", "desc", "unit", "qty", "included", "unitPrice", "total", "remarks"];
+    }
+
+    function newPo007ItemsExtraColId() {
+      return `ec_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+    }
+
+    function isPo007ItemsExtraColId(colId) {
+      return String(colId || "").startsWith("ec_");
+    }
+
+    function normalizePo007ItemsTableConfig(cfg, docLang) {
+      const ar = docLang === "ar";
+      const defaultOrder = getDefaultPo007ItemsColumnOrder();
+      const base = cfg && typeof cfg === "object" ? cfg : {};
+      const extraColumns = (Array.isArray(base.extraColumns) ? base.extraColumns : [])
+        .map((c) => ({
+          id: String(c?.id || newPo007ItemsExtraColId()).trim(),
+          label: String(c?.label ?? (ar ? "عمود" : "Column")).trim() || (ar ? "عمود" : "Column"),
+        }))
+        .filter((c) => c.id);
+      const extraIds = new Set(extraColumns.map((c) => c.id));
+      let columnOrder =
+        Array.isArray(base.columnOrder) && base.columnOrder.length ? [...base.columnOrder] : [...defaultOrder];
+      columnOrder = columnOrder.filter((id) => PO007_ITEMS_BUILTIN_COL_IDS.has(id) || extraIds.has(id));
+      defaultOrder.forEach((id) => {
+        if (!columnOrder.includes(id)) columnOrder.push(id);
+      });
+      extraColumns.forEach((c) => {
+        if (!columnOrder.includes(c.id)) columnOrder.push(c.id);
+      });
+      return { columnOrder, extraColumns };
+    }
+
+    function po007ItemsColCssClass(colId) {
+      if (colId === "unitPrice") return "po007-col-price";
+      if (colId === "total") return "po007-col-total";
+      if (colId === "item") return "po007-col-item";
+      if (colId === "desc") return "po007-col-desc";
+      if (colId === "qty") return "po007-col-qty";
+      if (colId === "included") return "po007-col-included";
+      if (colId === "unit") return "po007-col-unit";
+      if (colId === "remarks") return "po007-col-remarks";
+      return "po007-col-extra";
+    }
+
+    function po007ItemsColLabel(colId, cfg, docLang, curSuffix) {
+      const ar = docLang === "ar";
+      const extra = (cfg?.extraColumns || []).find((c) => c.id === colId);
+      if (extra) return extra.label;
+      const map = {
+        item: tPo007(docLang, "genPoColItemTag"),
+        desc: ar ? "الوصف" : "Description",
+        unit: tPo007(docLang, "genPoColUnit"),
+        qty: ar ? "الكمية" : "Qty.",
+        included: tPo007(docLang, "genPoColIncluded"),
+        unitPrice: ar ? `سعر الوحدة (${curSuffix})` : `Unit Price (${curSuffix})`,
+        total: ar ? `الإجمالي (${curSuffix})` : `Total (${curSuffix})`,
+        remarks: tPo007(docLang, "genPoColRemarks"),
+      };
+      return map[colId] || colId;
+    }
+
+    function po007ItemsPrintColumnOrder(cfg) {
+      return normalizePo007ItemsTableConfig(cfg).columnOrder.filter((id) => id !== "included");
+    }
+
+    function po007ItemsTableColCount(cfg, editorMode) {
+      const order = editorMode
+        ? normalizePo007ItemsTableConfig(cfg).columnOrder
+        : po007ItemsPrintColumnOrder(cfg);
+      return 1 + order.length;
+    }
+
+    function po007ItemsTotalLabelColspan(cfg, editorMode) {
+      const order = editorMode
+        ? normalizePo007ItemsTableConfig(cfg).columnOrder
+        : po007ItemsPrintColumnOrder(cfg);
+      const totalIdx = order.indexOf("total");
+      if (totalIdx < 0) return po007ItemsTableColCount(cfg, editorMode);
+      return 1 + totalIdx;
+    }
+
+    function movePo007ItemsColumnOrder(cfg, colId, dir, docLang) {
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const order = [...norm.columnOrder];
+      const idx = order.indexOf(colId);
+      if (idx < 0) return norm;
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= order.length) return norm;
+      order.splice(idx, 1);
+      order.splice(newIdx, 0, colId);
+      return { ...norm, columnOrder: order };
+    }
+
+    function addPo007ItemsExtraColumn(cfg, docLang) {
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const ar = docLang === "ar";
+      const id = newPo007ItemsExtraColId();
+      const label = ar ? "عمود" : "Column";
+      const extraColumns = [...norm.extraColumns, { id, label }];
+      const columnOrder = [...norm.columnOrder];
+      const remarksIdx = columnOrder.indexOf("remarks");
+      if (remarksIdx >= 0) columnOrder.splice(remarksIdx, 0, id);
+      else columnOrder.push(id);
+      return { columnOrder, extraColumns };
+    }
+
+    function removePo007ItemsExtraColumn(cfg, colId, docLang) {
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      if (!isPo007ItemsExtraColId(colId)) return norm;
+      return {
+        columnOrder: norm.columnOrder.filter((id) => id !== colId),
+        extraColumns: norm.extraColumns.filter((c) => c.id !== colId),
+      };
+    }
+
+    function readPo007ItemsTableConfigFromMount(mount, fallback, docLang) {
+      const lang = docLang === "ar" ? "ar" : "en";
+      const base = normalizePo007ItemsTableConfig(fallback, lang);
+      const table = mount?.querySelector('[data-po007="items-table"]');
+      if (!table) return base;
+      const heads = [...table.querySelectorAll("thead [data-po007-items-col]")];
+      if (!heads.length) return base;
+      const columnOrder = heads.map((h) => h.getAttribute("data-po007-items-col")).filter(Boolean);
+      const extraColumns = base.extraColumns.map((c) => ({ ...c }));
+      heads.forEach((h) => {
+        const colId = h.getAttribute("data-po007-items-col");
+        if (!isPo007ItemsExtraColId(colId)) return;
+        const labelEl = h.querySelector("[data-po007-items-col-head]");
+        const label = (labelEl?.textContent || "").trim();
+        const idx = extraColumns.findIndex((c) => c.id === colId);
+        if (idx >= 0) extraColumns[idx].label = label || extraColumns[idx].label;
+        else extraColumns.push({ id: colId, label: label || (lang === "ar" ? "عمود" : "Column") });
+      });
+      return normalizePo007ItemsTableConfig({ columnOrder, extraColumns }, lang);
+    }
+
+    function po007ItemsColsAfterTotal(cfg, editorMode) {
+      const order = editorMode
+        ? normalizePo007ItemsTableConfig(cfg).columnOrder
+        : po007ItemsPrintColumnOrder(cfg);
+      const totalIdx = order.indexOf("total");
+      if (totalIdx < 0) return 0;
+      return order.length - totalIdx - 1;
+    }
+
+    function parsePo007BulkIncludedValue(raw) {
+      const v = String(raw ?? "").trim();
+      if (!v) return false;
+      if (/^(0|no|n|false|لا|لأ|—|-)$/i.test(v)) return false;
+      return /^(1|yes|y|true|نعم|✓|x|included|incl|مشمول)$/i.test(v);
+    }
+
+    function parsePo007BulkItemRows(text, cfg, docLang) {
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const order = norm.columnOrder;
+      return String(text || "")
+        .split(/\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const parts = line.includes("\t")
+            ? line.split("\t").map((p) => p.trim())
+            : line.split("|").map((p) => p.trim());
+          const row = {
+            itemTag: "",
+            description: "",
+            unit: "",
+            remarks: "",
+            qty: 1,
+            priceText: "0",
+            includedInBasePrice: false,
+            extra: {},
+          };
+          order.forEach((colId, i) => {
+            const v = (parts[i] ?? "").trim();
+            if (colId === "item") row.itemTag = v;
+            else if (colId === "desc") row.description = v;
+            else if (colId === "unit") row.unit = v;
+            else if (colId === "qty") row.qty = parsePo007EditorNum(v) || 0;
+            else if (colId === "included") row.includedInBasePrice = parsePo007BulkIncludedValue(v);
+            else if (colId === "unitPrice") row.priceText = v;
+            else if (colId === "remarks") row.remarks = v;
+            else if (colId === "total") {
+              /* skip computed */
+            } else row.extra[colId] = v;
+          });
+          return normalizeGeneralLineRow(row);
+        });
     }
 
     function enrichGeneralFormPo007(g) {
@@ -7320,6 +7782,7 @@
       }
       x.currency = x.currency === "USD" ? "USD" : "IQD";
       x.lines = (Array.isArray(x.lines) ? x.lines : []).map(normalizeGeneralLineRow);
+      x.itemsTableConfig = normalizePo007ItemsTableConfig(x.itemsTableConfig, x.documentLang);
       if (x.sectionCustomDefaults && typeof x.sectionCustomDefaults === "object") {
         x.sectionCustomDefaults = deserializeSectionCustomDefaultsFromFirestore(
           x.sectionCustomDefaults,
@@ -9476,6 +9939,7 @@
         sectionVisibility: { ...(x.sectionVisibility || {}) },
         sectionOrder: [...(x.sectionOrder || getDefaultPo007SectionOrder(x))],
         sectionCustomDefaults: serializeSectionCustomDefaultsForFirestore(x.sectionCustomDefaults || {}),
+        itemsTableConfig: normalizePo007ItemsTableConfig(x.itemsTableConfig, x.documentLang),
         buyerExtra: { ...(x.buyerExtra || {}) },
         offerType: (x.offerType || "").trim(),
         totalWords: (x.totalWords || "").trim(),
@@ -9523,6 +9987,12 @@
       if (saved.totalWords != null) base.totalWords = saved.totalWords;
       if (saved.signVendor != null) base.signVendor = saved.signVendor;
       if (saved.signBuyer != null) base.signBuyer = saved.signBuyer;
+      if (saved.itemsTableConfig) {
+        base.itemsTableConfig = normalizePo007ItemsTableConfig(
+          saved.itemsTableConfig,
+          base.documentLang || saved.documentLang || "en"
+        );
+      }
       return base;
     }
 
@@ -9705,66 +10175,146 @@
       const ar = docLang === "ar";
       return {
         no: ar ? "م" : "No.",
-        item: ar ? "الصنف" : "Item",
-        desc: ar ? "الوصف" : "Description",
-        qty: ar ? "الكمية" : "Qty.",
-        unit: ar ? `سعر الوحدة (${curSuffix})` : `Unit Price (${curSuffix})`,
-        total: ar ? `الإجمالي (${curSuffix})` : `Total (${curSuffix})`,
         addRow: ar ? "+ إضافة صف مادة" : "+ Add Item Row",
         delTitle: ar ? "حذف الصف" : "Delete row",
       };
     }
 
-    function renderGeneralPo007EditorLineRow(l, i, docLang) {
-      const lbl = po007ItemsTableLabels(docLang, "");
+    function renderPo007ItemsColHead(colId, cfg, docLang, curSuffix, colIdx, colCount) {
+      const css = po007ItemsColCssClass(colId);
+      const label = po007ItemsColLabel(colId, cfg, docLang, curSuffix);
+      const canLeft = colIdx > 0;
+      const canRight = colIdx < colCount - 1;
+      const isExtra = isPo007ItemsExtraColId(colId);
+      const tools = `<div class="po007-items-col-tools">
+        <button type="button" class="po007-items-col-move" data-po007-items-col-move="-1" data-po007-items-col-id="${escapeAttr(colId)}" title="${escapeAttr(tPo007(docLang, "genPo007ItemsColMoveLeft"))}"${canLeft ? "" : " disabled"}>◀</button>
+        <button type="button" class="po007-items-col-move" data-po007-items-col-move="1" data-po007-items-col-id="${escapeAttr(colId)}" title="${escapeAttr(tPo007(docLang, "genPo007ItemsColMoveRight"))}"${canRight ? "" : " disabled"}>▶</button>
+        ${isExtra ? `<button type="button" class="del-btn po007-del-items-extra-col" data-po007-items-col-id="${escapeAttr(colId)}" title="${escapeAttr(tPo007(docLang, "genPo007ItemsDelExtraCol"))}">✕</button>` : ""}
+      </div>`;
+      const labelHtml = isExtra
+        ? `<span class="po007-items-extra-col-head" data-po007-items-col-head contenteditable="true" spellcheck="false">${escapeHtml(label)}</span>`
+        : `<span>${escapeHtml(label)}</span>`;
+      const inclTitle =
+        colId === "included" ? ` title="${escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"))}"` : "";
+      return `<th class="${css}" data-po007-items-col="${escapeAttr(colId)}"${inclTitle}><div class="po007-items-th-cell">${tools}${labelHtml}</div></th>`;
+    }
+
+    function renderPo007ItemsColCellEditor(colId, l, docLang) {
+      const css = po007ItemsColCssClass(colId);
       const tag = (l.itemTag || l.item || "").trim();
       const desc = (l.description || l.remark || "").trim();
+      const measureUnit = (l.unit || "").trim();
+      const remarks = (l.remarks || "").trim();
       const qty = l.qty != null ? String(l.qty) : "1";
       const included = generalLineIsIncluded(l);
       const priceRaw = included
         ? ""
         : (l.priceText || (l.price != null ? String(l.price) : "0")).trim() || "0";
-      const price = included ? tPo007(docLang, "genPoLineIncludedInBasePrice") : formatPo007AmountText(priceRaw, docLang);
+      const price = included
+        ? tPo007(docLang, "genPoLineIncludedInBasePrice")
+        : formatPo007AmountText(priceRaw, docLang);
       const inclTitle = escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"));
       const inclLbl = escapeHtml(tPo007(docLang, "genPoColIncluded"));
+      const extra = l.extra && typeof l.extra === "object" ? l.extra : {};
+      if (colId === "item") {
+        return `<td class="${css}" data-po007-items-col="item"><div class="po007-cell-box"><span class="po007-cell-field po007-cell-field--text po007-item-tag" contenteditable="true" spellcheck="false">${escapeHtml(tag)}</span></div></td>`;
+      }
+      if (colId === "desc") {
+        return `<td class="${css}" data-po007-items-col="desc"><div class="po007-cell-box"><div class="po007-cell-field po007-cell-field--text po007-desc" contenteditable="true" spellcheck="false">${escapeHtml(desc)}</div></div></td>`;
+      }
+      if (colId === "unit") {
+        return `<td class="${css}" data-po007-items-col="unit"><div class="po007-cell-box">${renderPo007MeasureUnitSelect(
+          measureUnit,
+          docLang
+        )}</div></td>`;
+      }
+      if (colId === "qty") {
+        return `<td class="${css}" data-po007-items-col="qty"><div class="po007-cell-box"><span class="po007-cell-field po007-cell-field--num po007-qty" contenteditable="true" spellcheck="false">${escapeHtml(qty)}</span></div></td>`;
+      }
+      if (colId === "included") {
+        return `<td class="${css}" data-po007-items-col="included"><label class="gen-line-included-lbl" title="${inclTitle}"><input type="checkbox" class="gen-line-included"${included ? " checked" : ""} /><span>${inclLbl}</span></label></td>`;
+      }
+      if (colId === "unitPrice") {
+        return `<td class="${css}" data-po007-items-col="unitPrice"><div class="po007-cell-box${included ? " gen-line-included-readonly" : ""}"><span class="po007-cell-field po007-cell-field--num po007-cell-field--price po007-unit-price" contenteditable="${included ? "false" : "true"}" spellcheck="false">${escapeHtml(price)}</span></div></td>`;
+      }
+      if (colId === "total") {
+        return `<td class="${css}" data-po007-items-col="total"><div class="po007-cell-box po007-cell-box--readonly po007-cell-box--end"><span class="po007-line-total">${included ? escapeHtml(tPo007(docLang, "dash")) : "0"}</span></div></td>`;
+      }
+      if (colId === "remarks") {
+        return `<td class="${css}" data-po007-items-col="remarks"><div class="po007-cell-box"><div class="po007-cell-field po007-cell-field--text po007-line-remarks" contenteditable="true" spellcheck="false">${escapeHtml(remarks)}</div></div></td>`;
+      }
+      const val = extra[colId] != null ? String(extra[colId]) : "";
+      return `<td class="${css}" data-po007-items-col="${escapeAttr(colId)}"><div class="po007-cell-box"><span class="po007-cell-field po007-cell-field--text po007-extra-cell" data-po007-extra-col="${escapeAttr(colId)}" contenteditable="true" spellcheck="false">${escapeHtml(val)}</span></div></td>`;
+    }
+
+    function renderPo007ItemsColCellPrint(colId, l, docLang) {
+      const css = po007ItemsColCssClass(colId);
+      const tag = (l.itemTag || l.item || "").trim();
+      const tagHtml = tag
+        ? tag
+            .split(/\n/)
+            .map((p) => escapeHtml(p))
+            .join("<br/>")
+        : "";
+      const desc = (l.description || l.remark || "").trim();
+      const measureUnit = (l.unit || "").trim();
+      const remarks = (l.remarks || "").trim();
+      const included = generalLineIsIncluded(l);
+      const priceDisp = included
+        ? tPo007(docLang, "genPoLineIncludedInBasePrice")
+        : formatPo007AmountText(l.priceText || l.price, docLang);
+      const totalDisp = included
+        ? tPo007(docLang, "dash")
+        : l.lineTotal != null && l.lineTotal !== ""
+          ? formatPo007EditorAmount(Number(l.lineTotal), docLang)
+          : "";
+      const extra = l.extra && typeof l.extra === "object" ? l.extra : {};
+      if (colId === "item") {
+        return `<td class="${css}">${tagHtml ? `<span class="po007-item-tag">${tagHtml}</span>` : ""}</td>`;
+      }
+      if (colId === "desc") {
+        return `<td class="${css}"><div class="po007-desc">${escapeHtml(desc)}</div></td>`;
+      }
+      if (colId === "unit") {
+        return `<td class="${css}">${escapeHtml(
+          po007MeasureUnitLabel(normalizePo007MeasureUnit(measureUnit), docLang)
+        )}</td>`;
+      }
+      if (colId === "qty") {
+        return `<td class="${css}">${escapeHtml(String(l.qty ?? ""))}</td>`;
+      }
+      if (colId === "unitPrice") {
+        return `<td class="${css}">${escapeHtml(priceDisp)}</td>`;
+      }
+      if (colId === "total") {
+        return `<td class="${css}">${escapeHtml(totalDisp)}</td>`;
+      }
+      if (colId === "remarks") {
+        return `<td class="${css}"><div class="po007-line-remarks">${escapeHtml(remarks)}</div></td>`;
+      }
+      const val = extra[colId] != null ? String(extra[colId]) : "";
+      return `<td class="${css}">${escapeHtml(val)}</td>`;
+    }
+
+    function renderGeneralPo007EditorLineRow(l, i, docLang, cfg, rowCount) {
+      const lbl = po007ItemsTableLabels(docLang, "");
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const included = generalLineIsIncluded(l);
+      const canUp = i > 0;
+      const canDown = i < rowCount - 1;
+      const cells = norm.columnOrder.map((colId) => renderPo007ItemsColCellEditor(colId, l, docLang)).join("");
       return `<tr data-po007-line${included ? ' class="gen-line-included-row"' : ""}>
         <td class="po007-col-no">
           <div class="po007-line-no-cell">
-            <button type="button" class="del-btn po007-del-item-row" title="${escapeAttr(lbl.delTitle)}">✕</button>
+            <div class="po007-items-row-tools">
+              <button type="button" class="po007-items-row-move" data-po007-items-row-move="-1" title="${escapeAttr(tPo007(docLang, "genPo007ItemsRowMoveUp"))}"${canUp ? "" : " disabled"}>↑</button>
+              <button type="button" class="po007-items-row-move" data-po007-items-row-move="1" title="${escapeAttr(tPo007(docLang, "genPo007ItemsRowMoveDown"))}"${canDown ? "" : " disabled"}>↓</button>
+              <button type="button" class="del-btn po007-del-item-row" title="${escapeAttr(lbl.delTitle)}">✕</button>
+            </div>
             <span class="po007-line-no">${i + 1}</span>
           </div>
         </td>
-        <td class="po007-col-item">
-          <div class="po007-cell-box">
-            <span class="po007-cell-field po007-cell-field--text po007-item-tag" contenteditable="true" spellcheck="false">${escapeHtml(tag)}</span>
-          </div>
-        </td>
-        <td class="po007-col-desc">
-          <div class="po007-cell-box">
-            <div class="po007-cell-field po007-cell-field--text po007-desc" contenteditable="true" spellcheck="false">${escapeHtml(desc)}</div>
-          </div>
-        </td>
-        <td class="po007-col-qty">
-          <div class="po007-cell-box">
-            <span class="po007-cell-field po007-cell-field--num po007-qty" contenteditable="true" spellcheck="false">${escapeHtml(qty)}</span>
-          </div>
-        </td>
-        <td class="po007-col-included">
-          <label class="gen-line-included-lbl" title="${inclTitle}">
-            <input type="checkbox" class="gen-line-included"${included ? " checked" : ""} />
-            <span>${inclLbl}</span>
-          </label>
-        </td>
-        <td class="po007-col-price">
-          <div class="po007-cell-box${included ? " gen-line-included-readonly" : ""}">
-            <span class="po007-cell-field po007-cell-field--num po007-cell-field--price po007-unit-price" contenteditable="${included ? "false" : "true"}" spellcheck="false">${escapeHtml(price)}</span>
-          </div>
-        </td>
-        <td class="po007-col-total">
-          <div class="po007-cell-box po007-cell-box--readonly po007-cell-box--end">
-            <span class="po007-line-total">${included ? escapeHtml(tPo007(docLang, "dash")) : "0"}</span>
-          </div>
-        </td>
+        ${cells}
       </tr>`;
     }
 
@@ -9772,40 +10322,54 @@
       const docLang = g.documentLang === "en" ? "en" : "ar";
       const curSuffix = po007CurrencySuffix(g.currency, docLang);
       const lbl = po007ItemsTableLabels(docLang, curSuffix);
-      const rows = (lines.length ? lines : [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }])
-        .map((l, i) => renderGeneralPo007EditorLineRow(l, i, docLang))
+      const cfg = normalizePo007ItemsTableConfig(g.itemsTableConfig, docLang);
+      const lineList = lines.length ? lines : [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }];
+      const rows = lineList
+        .map((l, i) => renderGeneralPo007EditorLineRow(l, i, docLang, cfg, lineList.length))
+        .join("");
+      const colCount = cfg.columnOrder.length;
+      const fullColspan = po007ItemsTableColCount(cfg, true);
+      const totalLabelColspan = po007ItemsTotalLabelColspan(cfg, true);
+      const afterTotalCols = po007ItemsColsAfterTotal(cfg, true);
+      const colgroup = `<col class="po007-col-no" />${cfg.columnOrder
+        .map((colId) => `<col class="${po007ItemsColCssClass(colId)}" />`)
+        .join("")}`;
+      const headCells = cfg.columnOrder
+        .map((colId, i) => renderPo007ItemsColHead(colId, cfg, docLang, curSuffix, i, colCount))
         .join("");
       return `<div class="po007-items-table-wrap">
-        <p class="sub gen-lines-included-hint" style="margin:0 0 0.45rem;color:var(--muted);font-size:0.82rem">${escapeHtml(
-          tPo007(docLang, "genPoLinesIncludedHint")
-        )}</p>
+        <div class="po007-items-table-toolbar">
+          <p class="sub gen-lines-included-hint" style="margin:0;color:var(--muted);font-size:0.82rem;flex:1 1 100%">${escapeHtml(
+            tPo007(docLang, "genPoLinesIncludedHint")
+          )}</p>
+          <button type="button" class="po007-items-add-col-btn" data-po007="items-add-col">${escapeHtml(
+            tPo007(docLang, "genPo007ItemsAddCol")
+          )}</button>
+          <button type="button" class="po007-items-bulk-insert-btn" data-po007="items-bulk-insert">${escapeHtml(
+            tPo007(docLang, "genPo007ItemsBulkInsert")
+          )}</button>
+        </div>
         <table class="po007-items-table" data-po007="items-table">
-          <colgroup>
-            <col class="po007-col-no" /><col class="po007-col-item" /><col class="po007-col-desc" />
-            <col class="po007-col-qty" /><col class="po007-col-included" /><col class="po007-col-price" /><col class="po007-col-total" />
-          </colgroup>
+          <colgroup>${colgroup}</colgroup>
           <thead><tr>
             <th class="po007-col-no" data-po007="th-no">${escapeHtml(lbl.no)}</th>
-            <th class="po007-col-item" data-po007="th-item">${escapeHtml(lbl.item)}</th>
-            <th class="po007-col-desc" data-po007="th-desc">${escapeHtml(lbl.desc)}</th>
-            <th class="po007-col-qty" data-po007="th-qty">${escapeHtml(lbl.qty)}</th>
-            <th class="po007-col-included" data-po007="th-included" title="${escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"))}">${escapeHtml(
-        tPo007(docLang, "genPoColIncluded")
-      )}</th>
-            <th class="po007-col-price" data-po007="th-unit">${escapeHtml(lbl.unit)}</th>
-            <th class="po007-col-total" data-po007="th-total">${escapeHtml(lbl.total)}</th>
+            ${headCells}
           </tr></thead>
           <tbody>
             ${rows}
-            <tr class="po007-items-add-row"><td colspan="7">
+            <tr class="po007-items-add-row"><td colspan="${fullColspan}">
               <button type="button" class="add-row-btn po007-add-item-row">${escapeHtml(lbl.addRow)}</button>
             </td></tr>
             <tr class="po007-total-num-row">
-              <td colspan="6" class="po007-col-desc po007-total-num-lbl">${escapeHtml(tPo007(docLang, "genPo007TotalNumeric"))}</td>
-              <td class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>
+              <td colspan="${totalLabelColspan}" class="po007-col-desc po007-total-num-lbl">${escapeHtml(
+        tPo007(docLang, "genPo007TotalNumeric")
+      )}</td>
+              <td class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>${
+        afterTotalCols > 0 ? `<td colspan="${afterTotalCols}"></td>` : ""
+      }
             </tr>
             <tr class="po007-total-row">
-              <td colspan="7" class="po007-col-desc">
+              <td colspan="${fullColspan}" class="po007-col-desc">
                 <div class="po007-total-say">
                   <span>${escapeHtml(tPo007(docLang, "genPo007TotalPriceSay"))}</span>
                   <span data-po007="total-words" contenteditable="true" spellcheck="false">${escapeHtml((g.totalWords || "").trim())}</span>
@@ -9820,31 +10384,55 @@
     function readGeneralPo007LinesFromMount() {
       const mount = getGeneralPo007Mount();
       if (!mount) return [];
+      const docLang = getPo007DocumentLang();
       return [...mount.querySelectorAll("[data-po007-line]")]
         .map((tr) => {
           const included = !!tr.querySelector(".gen-line-included")?.checked;
           const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
-          const unit = included ? 0 : parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
-          const lineTotal = included ? 0 : qty * unit;
-          const docLang = getPo007DocumentLang();
+          const unitPrice = included ? 0 : parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
+          const lineTotal = included ? 0 : qty * unitPrice;
+          const extra = {};
+          tr.querySelectorAll("[data-po007-extra-col]").forEach((el) => {
+            const colId = el.getAttribute("data-po007-extra-col");
+            if (colId) extra[colId] = (el.textContent || "").trim();
+          });
           return normalizeGeneralLineRow({
             itemTag: (tr.querySelector(".po007-item-tag")?.textContent || "").trim(),
             description: (tr.querySelector(".po007-desc")?.textContent || "").trim(),
+            unit: readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit")),
+            remarks: (tr.querySelector(".po007-line-remarks")?.textContent || "").trim(),
             qty,
             includedInBasePrice: included,
-            priceText: included ? "" : formatPo007EditorAmount(unit, docLang),
+            priceText: included ? "" : formatPo007EditorAmount(unitPrice, docLang),
             lineTotal,
+            extra,
           });
         })
-        .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal || l.includedInBasePrice);
+        .filter(
+          (l) =>
+            l.itemTag ||
+            l.description ||
+            l.unit ||
+            l.remarks ||
+            l.qty ||
+            l.priceText ||
+            l.lineTotal ||
+            l.includedInBasePrice ||
+            Object.values(l.extra || {}).some((v) => String(v || "").trim())
+        );
     }
 
     function renumberGeneralPo007ItemRows() {
       const mount = getGeneralPo007Mount();
       if (!mount) return;
-      mount.querySelectorAll("[data-po007-line]").forEach((tr, i) => {
+      const rows = [...mount.querySelectorAll("[data-po007-line]")];
+      rows.forEach((tr, i) => {
         const no = tr.querySelector(".po007-line-no");
         if (no) no.textContent = String(i + 1);
+        tr.querySelectorAll(".po007-items-row-move").forEach((btn) => {
+          const dir = Number(btn.getAttribute("data-po007-items-row-move"));
+          btn.disabled = dir < 0 ? i <= 0 : i >= rows.length - 1;
+        });
       });
     }
 
@@ -10018,38 +10606,141 @@
       const docLang = getPo007DocumentLang();
       const curSuffix = po007CurrencySuffix(getPo007MetaCurrency(), docLang);
       const lbl = po007ItemsTableLabels(docLang, curSuffix);
-      const set = (key, text) => {
-        const el = mount.querySelector(`[data-po007="${key}"]`);
-        if (el) el.textContent = text;
-      };
-      set("th-no", lbl.no);
-      set("th-item", lbl.item);
-      set("th-desc", lbl.desc);
-      set("th-qty", lbl.qty);
-      set("th-included", tPo007(docLang, "genPoColIncluded"));
-      set("th-unit", lbl.unit);
-      set("th-total", lbl.total);
+      const cfg = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta?.itemsTableConfig, docLang);
+      const thNo = mount.querySelector('[data-po007="th-no"]');
+      if (thNo) thNo.textContent = lbl.no;
+      mount.querySelectorAll("thead [data-po007-items-col]").forEach((th, i) => {
+        const colId = th.getAttribute("data-po007-items-col");
+        if (!colId) return;
+        const label = po007ItemsColLabel(colId, cfg, docLang, curSuffix);
+        const headField = th.querySelector("[data-po007-items-col-head]");
+        if (headField) {
+          if (document.activeElement !== headField) headField.textContent = label;
+        } else {
+          const span = th.querySelector(".po007-items-th-cell > span:not(.po007-items-extra-col-head)");
+          if (span) span.textContent = label;
+        }
+        const canLeft = i > 0;
+        const canRight = i < cfg.columnOrder.length - 1;
+        th.querySelectorAll("[data-po007-items-col-move]").forEach((btn) => {
+          const dir = Number(btn.getAttribute("data-po007-items-col-move"));
+          btn.disabled = dir < 0 ? !canLeft : !canRight;
+        });
+      });
       const addBtn = mount.querySelector(".po007-add-item-row");
       if (addBtn) addBtn.textContent = lbl.addRow;
     }
 
-    function addGeneralPo007ItemRow() {
+    function addGeneralPo007ItemRow(line) {
       const mount = getGeneralPo007Mount();
       const tbody = mount?.querySelector(".po007-items-table tbody");
       const addRow = mount?.querySelector(".po007-items-add-row");
       if (!tbody || !addRow) return;
+      const docLang = getPo007DocumentLang();
+      const cfg = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta?.itemsTableConfig, docLang);
       const idx = mount.querySelectorAll("[data-po007-line]").length;
       const wrap = document.createElement("tbody");
       wrap.innerHTML = renderGeneralPo007EditorLineRow(
-        { itemTag: "", description: "", qty: 1, priceText: "0" },
+        line || { itemTag: "", description: "", qty: 1, priceText: "0" },
         idx,
-        getPo007DocumentLang()
+        docLang,
+        cfg,
+        idx + 1
       );
       const tr = wrap.querySelector("tr");
       if (!tr) return;
       tbody.insertBefore(tr, addRow);
       recalcGeneralPo007ItemsTable();
       tr.querySelector("[contenteditable]")?.focus();
+    }
+
+    function moveGeneralPo007ItemRow(tr, dir) {
+      if (!tr || !dir) return;
+      const mount = getGeneralPo007Mount();
+      if (!mount) return;
+      const tbody = tr.closest(".po007-items-table tbody");
+      const addRow = mount.querySelector(".po007-items-add-row");
+      if (!tbody || !addRow) return;
+      const rows = [...tbody.querySelectorAll("[data-po007-line]")];
+      const idx = rows.indexOf(tr);
+      if (idx < 0) return;
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= rows.length) return;
+      const reordered = [...rows];
+      const [item] = reordered.splice(idx, 1);
+      reordered.splice(newIdx, 0, item);
+      reordered.forEach((row) => tbody.insertBefore(row, addRow));
+      recalcGeneralPo007ItemsTable();
+    }
+
+    function reloadGeneralPo007ItemsTableConfig(patchCfg) {
+      const g = buildGeneralFormFromEditor();
+      reloadGeneralPo007Editor({ itemsTableConfig: patchCfg, lines: g.lines });
+    }
+
+    function openPo007ItemsBulkInsertModal() {
+      const mount = getGeneralPo007Mount();
+      const docLang = getPo007DocumentLang();
+      const curSuffix = po007CurrencySuffix(getPo007MetaCurrency(), docLang);
+      const cfg = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta?.itemsTableConfig, docLang);
+      const colLabels = cfg.columnOrder
+        .filter((id) => id !== "total")
+        .map((id) => po007ItemsColLabel(id, cfg, docLang, curSuffix));
+      const modal = $("modal-po007-items-bulk");
+      const colsEl = $("po007-items-bulk-cols");
+      const includedHintEl = $("po007-items-bulk-included-hint");
+      const textEl = $("po007-items-bulk-text");
+      if (!modal || !colsEl || !textEl) return;
+      colsEl.textContent = colLabels.join(" | ");
+      if (includedHintEl) {
+        const hasIncluded = cfg.columnOrder.includes("included");
+        if (hasIncluded) {
+          includedHintEl.textContent = tPo007(docLang, "genPo007ItemsBulkIncludedHint");
+          includedHintEl.classList.remove("hidden");
+        } else {
+          includedHintEl.textContent = "";
+          includedHintEl.classList.add("hidden");
+        }
+      }
+      textEl.value = "";
+      modal.classList.remove("hidden");
+      textEl.focus();
+    }
+
+    function closePo007ItemsBulkInsertModal() {
+      $("modal-po007-items-bulk")?.classList.add("hidden");
+    }
+
+    function applyPo007ItemsBulkInsert() {
+      const mount = getGeneralPo007Mount();
+      const docLang = getPo007DocumentLang();
+      const text = ($("po007-items-bulk-text")?.value || "").trim();
+      if (!text) {
+        closePo007ItemsBulkInsertModal();
+        return;
+      }
+      const cfg = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta?.itemsTableConfig, docLang);
+      const newLines = parsePo007BulkItemRows(text, cfg, docLang);
+      if (!newLines.length) {
+        closePo007ItemsBulkInsertModal();
+        return;
+      }
+      const existing = readGeneralPo007LinesFromMount();
+      const hasContent = existing.some(
+        (l) =>
+          l.itemTag ||
+          l.description ||
+          l.unit ||
+          l.remarks ||
+          l.qty ||
+          l.priceText ||
+          l.lineTotal ||
+          l.includedInBasePrice ||
+          Object.values(l.extra || {}).some((v) => String(v || "").trim())
+      );
+      const lines = hasContent ? [...existing, ...newLines] : newLines;
+      closePo007ItemsBulkInsertModal();
+      reloadGeneralPo007Editor({ lines, itemsTableConfig: cfg });
     }
 
     function removeGeneralPo007ItemRow(tr) {
@@ -10269,6 +10960,59 @@
         if (addBtn) {
           e.preventDefault();
           addGeneralPo007ItemRow();
+          return;
+        }
+        if (e.target.closest('[data-po007="items-bulk-insert"]')) {
+          e.preventDefault();
+          openPo007ItemsBulkInsertModal();
+          return;
+        }
+        if (e.target.closest('[data-po007="items-add-col"]')) {
+          e.preventDefault();
+          const docLang = getPo007DocumentLang();
+          const cfg = readPo007ItemsTableConfigFromMount(
+            mount,
+            generalPo007EditorCachedMeta?.itemsTableConfig,
+            docLang
+          );
+          reloadGeneralPo007ItemsTableConfig(addPo007ItemsExtraColumn(cfg, docLang));
+          return;
+        }
+        const colMoveBtn = e.target.closest(".po007-items-col-move");
+        if (colMoveBtn && !colMoveBtn.disabled) {
+          e.preventDefault();
+          const colId = colMoveBtn.getAttribute("data-po007-items-col-id");
+          const dir = Number(colMoveBtn.getAttribute("data-po007-items-col-move"));
+          const docLang = getPo007DocumentLang();
+          const cfg = readPo007ItemsTableConfigFromMount(
+            mount,
+            generalPo007EditorCachedMeta?.itemsTableConfig,
+            docLang
+          );
+          reloadGeneralPo007ItemsTableConfig(movePo007ItemsColumnOrder(cfg, colId, dir, docLang));
+          return;
+        }
+        const delExtraColBtn = e.target.closest(".po007-del-items-extra-col");
+        if (delExtraColBtn) {
+          e.preventDefault();
+          const colId = delExtraColBtn.getAttribute("data-po007-items-col-id");
+          const docLang = getPo007DocumentLang();
+          const cfg = readPo007ItemsTableConfigFromMount(
+            mount,
+            generalPo007EditorCachedMeta?.itemsTableConfig,
+            docLang
+          );
+          reloadGeneralPo007ItemsTableConfig(removePo007ItemsExtraColumn(cfg, colId, docLang));
+          return;
+        }
+        const rowMoveBtn = e.target.closest(".po007-items-row-move");
+        if (rowMoveBtn && !rowMoveBtn.disabled) {
+          e.preventDefault();
+          e.stopPropagation();
+          moveGeneralPo007ItemRow(
+            rowMoveBtn.closest("[data-po007-line]"),
+            Number(rowMoveBtn.getAttribute("data-po007-items-row-move"))
+          );
           return;
         }
         const delBtn = e.target.closest(".po007-del-item-row");
@@ -10582,6 +11326,11 @@
       });
       const sectionCustomDefaults = generalPo007EditorCachedMeta?.sectionCustomDefaults || {};
       const docLangForm = getPo007DocumentLang();
+      const itemsTableConfig = readPo007ItemsTableConfigFromMount(
+        mount,
+        generalPo007EditorCachedMeta?.itemsTableConfig,
+        docLangForm
+      );
       const customSectionsRaw = collectPo007CustomSectionsFromMount(
         mount,
         generalPo007EditorCachedMeta?.customSections,
@@ -10640,6 +11389,7 @@
         sectionOrder,
         sectionCustomDefaults,
         customSections,
+        itemsTableConfig,
       });
       const saved = enrichGeneralFormPo007({
         poNumber: read("po-number"),
@@ -10675,6 +11425,7 @@
         sectionOrder,
         sectionCustomDefaults,
         customSections,
+        itemsTableConfig,
         po007PrintHtml: renderGeneralPo007Html(poStub, printForm),
       });
       generalPo007EditorCachedMeta = {
@@ -10683,6 +11434,7 @@
         sectionOrder: saved.sectionOrder,
         sectionCustomDefaults: saved.sectionCustomDefaults,
         customSections: JSON.parse(JSON.stringify(saved.customSections || [])),
+        itemsTableConfig: JSON.parse(JSON.stringify(saved.itemsTableConfig || {})),
       };
       return saved;
     }
@@ -10714,52 +11466,39 @@
         .split(/\n/)
         .map((e) => e.trim())
         .filter(Boolean);
+      const itemsCfg = normalizePo007ItemsTableConfig(g.itemsTableConfig, docLang);
+      const printColOrder = po007ItemsPrintColumnOrder(itemsCfg);
+      const printColCount = po007ItemsTableColCount(itemsCfg, false);
+      const printTotalLabelColspan = po007ItemsTotalLabelColspan(itemsCfg, false);
+      const printAfterTotalCols = po007ItemsColsAfterTotal(itemsCfg, false);
+      const printFullColspan = po007ItemsTableColCount(itemsCfg, false);
       const lineRows = lines.length
         ? lines
             .map((l, i) => {
-              const tag = (l.itemTag || l.item || "").trim();
-              const tagHtml = tag
-                ? tag
-                    .split(/\n/)
-                    .map((p) => escapeHtml(p))
-                    .join("<br/>")
-                : "";
-              const desc = (l.description || l.remark || "").trim();
               const included = generalLineIsIncluded(l);
-              const priceDisp = included
-                ? tPo007(docLang, "genPoLineIncludedInBasePrice")
-                : formatPo007AmountText(l.priceText || l.price, docLang);
-              const totalDisp = included
-                ? tPo007(docLang, "dash")
-                : l.lineTotal != null && l.lineTotal !== ""
-                  ? formatPo007EditorAmount(Number(l.lineTotal), docLang)
-                  : "";
+              const cells = printColOrder
+                .map((colId) => renderPo007ItemsColCellPrint(colId, l, docLang))
+                .join("");
               return `<tr data-po007-line${included ? ' class="gen-line-included-row"' : ""}>
                 <td class="po007-col-no"><span class="po007-line-no">${i + 1}</span></td>
-                <td class="po007-col-item">${tagHtml ? `<span class="po007-item-tag">${tagHtml}</span>` : ""}</td>
-                <td class="po007-col-desc"><div class="po007-desc">${escapeHtml(desc)}</div></td>
-                <td class="po007-col-qty">${escapeHtml(String(l.qty ?? ""))}</td>
-                <td class="po007-col-price">${escapeHtml(priceDisp)}</td>
-                <td class="po007-col-total">${escapeHtml(totalDisp)}</td>
+                ${cells}
               </tr>`;
             })
             .join("")
-        : `<tr><td colspan="6">${escapeHtml(tPo007(docLang, "dash"))}</td></tr>`;
+        : `<tr><td colspan="${printColCount}">${escapeHtml(tPo007(docLang, "dash"))}</td></tr>`;
 
       const totalNum = generalLinesBillableTotal(lines);
       const totalWords = (g.totalWords || "").trim();
       const totalSay =
         totalWords ||
         (totalNum > 0 ? formatPo007TotalWordsDisplay(totalNum, curCode, docLang) : docLang === "ar" ? "صفر" : "Zero");
-      const unitPriceTh =
-        docLang === "ar" ? `سعر الوحدة (${curSuffix})` : `Unit Price (${curSuffix})`;
-      const totalPriceTh =
-        docLang === "ar" ? `الإجمالي (${curSuffix})` : `Total Price (${curSuffix})`;
       const numericTotalDisp = formatPo007GrandTotalDisplay(totalNum, curSuffix, docLang);
-      const totalNumRow = `<tr class="po007-total-num-row"><td colspan="5" class="po007-col-desc po007-total-num-lbl">${escapeHtml(
+      const totalNumRow = `<tr class="po007-total-num-row"><td colspan="${printTotalLabelColspan}" class="po007-col-desc po007-total-num-lbl">${escapeHtml(
         tPo007(docLang, "genPo007TotalNumeric")
-      )}</td><td class="po007-col-total">${escapeHtml(numericTotalDisp)}</td></tr>`;
-      const totalSayRow = `<tr class="po007-total-row"><td colspan="6" class="po007-col-desc">${escapeHtml(
+      )}</td><td class="po007-col-total">${escapeHtml(numericTotalDisp)}</td>${
+        printAfterTotalCols > 0 ? `<td colspan="${printAfterTotalCols}"></td>` : ""
+      }</tr>`;
+      const totalSayRow = `<tr class="po007-total-row"><td colspan="${printFullColspan}" class="po007-col-desc">${escapeHtml(
         tPo007(docLang, "genPo007TotalPriceSay")
       )} ${escapeHtml(totalSay)}</td></tr>`;
       const totalRow = totalNumRow + totalSayRow;
@@ -10794,21 +11533,27 @@
 
       const itemsTableHtml = editorMode
         ? renderGeneralPo007EditorItemsTable(lines, g)
-        : `<div class="po007-items-table-wrap"><table class="po007-items-table">
-              <colgroup>
-                <col class="po007-col-no" /><col class="po007-col-item" /><col class="po007-col-desc" />
-                <col class="po007-col-qty" /><col class="po007-col-price" /><col class="po007-col-total" />
-              </colgroup>
+        : (() => {
+            const colgroup = `<col class="po007-col-no" />${printColOrder
+              .map((colId) => `<col class="${po007ItemsColCssClass(colId)}" />`)
+              .join("")}`;
+            const headCells = printColOrder
+              .map(
+                (colId) =>
+                  `<th class="${po007ItemsColCssClass(colId)}">${escapeHtml(
+                    po007ItemsColLabel(colId, itemsCfg, docLang, curSuffix)
+                  )}</th>`
+              )
+              .join("");
+            return `<div class="po007-items-table-wrap"><table class="po007-items-table">
+              <colgroup>${colgroup}</colgroup>
               <thead><tr>
                 <th class="po007-col-no">${docLang === "ar" ? "م" : "No."}</th>
-                <th class="po007-col-item">${docLang === "ar" ? "الصنف" : "Item"}</th>
-                <th class="po007-col-desc">${docLang === "ar" ? "الوصف" : "Description"}</th>
-                <th class="po007-col-qty">${docLang === "ar" ? "الكمية" : "Qty."}</th>
-                <th class="po007-col-price">${escapeHtml(unitPriceTh)}</th>
-                <th class="po007-col-total">${escapeHtml(totalPriceTh)}</th>
+                ${headCells}
               </tr></thead>
               <tbody>${lineRows}${totalRow}</tbody>
             </table></div>`;
+          })();
 
       const headerBlock = renderPo007DocHeaderBlock(docLang, {
         logoHtml,
@@ -10894,6 +11639,8 @@
         .map((tr) => {
           const tag = (tr.querySelector(".item-tag, .po007-item-tag")?.textContent || "").trim();
           const desc = (tr.querySelector(".desc .e-block, .desc, .po007-desc")?.textContent || "").trim();
+          const measureUnit = readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit"));
+          const remarks = (tr.querySelector(".po007-line-remarks")?.textContent || "").trim();
           const qty =
             parseFloat(
               String(tr.querySelector("td.qty, .po007-qty")?.textContent || "").replace(/,/g, "")
@@ -10905,7 +11652,15 @@
             parseFloat(
               String(tr.querySelector("td.line-total, .po007-line-total")?.textContent || "").replace(/,/g, "")
             ) || 0;
-          return normalizeGeneralLineRow({ itemTag: tag, description: desc, qty, priceText, lineTotal });
+          return normalizeGeneralLineRow({
+            itemTag: tag,
+            description: desc,
+            unit: measureUnit,
+            remarks,
+            qty,
+            priceText,
+            lineTotal,
+          });
         })
         .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal);
     }
@@ -18474,6 +19229,8 @@
     $("btn-edit-general-po-template")?.addEventListener("click", () => void openGeneralPoTemplateEditor());
     $("po007-editor-save")?.addEventListener("click", () => void saveGeneralPo007Modal());
     $("po007-editor-cancel")?.addEventListener("click", closeGeneralPo007Modal);
+    $("po007-items-bulk-cancel")?.addEventListener("click", closePo007ItemsBulkInsertModal);
+    $("po007-items-bulk-apply")?.addEventListener("click", applyPo007ItemsBulkInsert);
     $("po007-editor-preview")?.addEventListener("click", () => {
       if (!getGeneralPo007Mount()?.querySelector(".po007-surface")) return;
       const g = buildGeneralFormFromEditor();
