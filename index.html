@@ -3745,6 +3745,206 @@
       text-align: center;
     }
 
+    .chat-wrap {
+      position: relative;
+      margin-inline-end: 0.35rem;
+    }
+
+    .btn-chat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .btn-chat:hover {
+      background: var(--ds-surface-container-low);
+    }
+
+    #chat-overlay {
+      z-index: 3500;
+      align-items: stretch;
+      justify-content: flex-end;
+      padding: 0;
+    }
+
+    html[dir="ltr"] #chat-overlay {
+      justify-content: flex-end;
+    }
+
+    .chat-shell {
+      display: flex;
+      flex-direction: column;
+      width: min(26rem, 100vw);
+      height: 100%;
+      max-height: 100dvh;
+      background: var(--surface);
+      box-shadow: var(--shadow-elevated);
+      border-inline-start: 1px solid var(--border);
+    }
+
+    .chat-shell-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chat-shell-head h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-shell-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat-view-channels {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    #chat-view-room:not(.hidden) {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .chat-channel-list {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .chat-section-label {
+      padding: 0.55rem 0.85rem 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chat-channel-item {
+      display: block;
+      width: 100%;
+      text-align: inherit;
+      padding: 0.7rem 0.85rem;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .chat-channel-item:hover {
+      background: var(--ds-surface-container-low);
+    }
+
+    .chat-channel-item-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .chat-channel-item-preview {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-messages {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0.75rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      background: var(--ds-surface-container-low);
+    }
+
+    .chat-msg {
+      max-width: 88%;
+      align-self: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.5rem 0.65rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .chat-msg.mine {
+      align-self: flex-end;
+      background: rgba(0, 88, 190, 0.08);
+      border-color: rgba(0, 88, 190, 0.2);
+    }
+
+    .chat-msg-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .chat-msg-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .chat-compose {
+      display: flex;
+      gap: 0.45rem;
+      padding: 0.65rem 0.85rem;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+
+    .chat-compose input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .chat-empty {
+      padding: 1.25rem 0.85rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .chat-back-btn {
+      flex-shrink: 0;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.8rem;
+    }
+
     @media (min-width: 901px) {
       .nav-toggle {
         display: none !important;
@@ -3933,6 +4133,19 @@
           <span class="nav-toggle-bars" aria-hidden="true"></span>
         </button>
         <div class="header-end">
+          <div class="chat-wrap" id="chat-wrap">
+            <button
+              type="button"
+              class="btn-chat"
+              id="btn-chat"
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              data-i18n-aria="chatBellAria"
+              title=""
+            >
+              <span aria-hidden="true">💬</span>
+            </button>
+          </div>
           <div class="notifications-wrap" id="notifications-wrap">
             <button
               type="button"
@@ -5234,6 +5447,27 @@
     </div>
   </div>
 
+  <!-- المحادثات الداخلية -->
+  <div id="chat-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="chat-shell-title">
+    <div class="chat-shell">
+      <div class="chat-shell-head">
+        <button type="button" class="btn btn-secondary btn-sm chat-back-btn hidden" id="chat-btn-back" data-i18n="chatBackToChannels">القنوات</button>
+        <h2 id="chat-shell-title" data-i18n="chatTitle">المحادثات</h2>
+        <button type="button" class="btn btn-secondary btn-sm" id="chat-btn-close" data-i18n-aria="chatCloseAria" aria-label="">✕</button>
+      </div>
+      <div class="chat-shell-body">
+        <div id="chat-view-channels"></div>
+        <div id="chat-view-room" class="hidden">
+          <div class="chat-messages" id="chat-messages"></div>
+          <form class="chat-compose" id="chat-compose-form">
+            <input type="text" id="chat-compose-input" maxlength="2000" autocomplete="off" data-i18n-placeholder="chatMessagePlaceholder" />
+            <button type="submit" class="btn btn-primary btn-sm" data-i18n="chatSend">إرسال</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- إضافة مورد سريعة من نموذج أمر الإدارة العامة -->
   <div id="modal-supplier-quick" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal">
@@ -6142,6 +6376,17 @@
         notificationsTitle: "الإشعارات",
         notificationsMarkAllRead: "تعليم الكل كمقروء",
         notificationsEmpty: "لا توجد إشعارات.",
+        chatBellAria: "المحادثات الداخلية",
+        chatTitle: "المحادثات",
+        chatCloseAria: "إغلاق المحادثات",
+        chatCompanyChannelsTitle: "قنوات الشركة",
+        chatCompaniesEmpty: "لا توجد قنوات شركة ضمن نطاق صلاحيتك.",
+        chatBackToChannels: "القنوات",
+        chatMessagePlaceholder: "اكتب رسالة…",
+        chatSend: "إرسال",
+        chatNoMessages: "لا رسائل بعد. ابدأ المحادثة.",
+        chatAccessDenied: "لا يمكنك الوصول إلى هذه القناة.",
+        chatSendFailed: "تعذّر إرسال الرسالة.",
         notif_po_warehouse: "طلب مشروع جديد {{ref}} — بانتظار مراجعة المستودع.",
         notif_po_engineer_first: "طلب {{ref}} يحتاج موافقة مهندس أول.",
         notif_po_stock_complete: "طلب {{ref}} اكتمل من المخزون.",
@@ -7002,6 +7247,17 @@
         notificationsTitle: "Notifications",
         notificationsMarkAllRead: "Mark all read",
         notificationsEmpty: "No notifications yet.",
+        chatBellAria: "Internal chat",
+        chatTitle: "Chat",
+        chatCloseAria: "Close chat",
+        chatCompanyChannelsTitle: "Company channels",
+        chatCompaniesEmpty: "No company channels in your scope.",
+        chatBackToChannels: "Channels",
+        chatMessagePlaceholder: "Type a message…",
+        chatSend: "Send",
+        chatNoMessages: "No messages yet. Start the conversation.",
+        chatAccessDenied: "You cannot access this channel.",
+        chatSendFailed: "Could not send the message.",
         notif_po_warehouse: "New project request {{ref}} — awaiting warehouse review.",
         notif_po_engineer_first: "Request {{ref}} needs engineer-first approval.",
         notif_po_stock_complete: "Request {{ref}} fulfilled from warehouse stock.",
@@ -7053,6 +7309,16 @@
       if (k) btn.setAttribute("aria-label", t(k));
     }
 
+    function syncChatBellAria() {
+      const btn = $("btn-chat");
+      if (!btn) return;
+      const k = btn.dataset.i18nAria;
+      if (k) {
+        btn.setAttribute("aria-label", t(k));
+        btn.title = t(k);
+      }
+    }
+
     function applyStaticI18n() {
       document.querySelectorAll("[data-i18n]").forEach((el) => {
         el.textContent = t(el.dataset.i18n);
@@ -7070,6 +7336,7 @@
       document.title = t("docTitle");
       refreshNavToggleAria();
       syncNotificationsBellAria();
+      syncChatBellAria();
     }
 
     function refreshNavToggleAria() {
@@ -7208,6 +7475,7 @@
         });
         renderNotificationsList();
       }
+      refreshChatI18n();
     }
 
     function setLang(next) {
@@ -7268,6 +7536,17 @@
     let notificationsRows = [];
     let userProfilesNotifyCache = { t: 0, list: null };
     let notificationsBackdropCloseBound = false;
+
+    /** Internal chat — company channels (phase 1). Firestore: authenticated users; room access enforced client-side + companyIds on profile. */
+    const CHAT_COL = "chatRooms";
+    const CHAT_MSG_LIMIT = 150;
+    let chatMessagesUnsub = null;
+    let chatMessageRows = [];
+    let chatCompanyChannels = [];
+    let chatActiveRoomId = null;
+    let chatActiveCompanyId = null;
+    let chatActiveCompanyName = "";
+    let chatOverlayOpen = false;
 
     const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-projects-rejected", "po-general"];
 
@@ -15188,6 +15467,7 @@
           assignedRegionIds: [],
           managedProjectIds: [],
           managedRegionIds: [],
+          companyIds: [],
         };
       }
       const d = snap.data();
@@ -15208,6 +15488,7 @@
       const managedProjectIds = Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [];
       const managedRegionIds = Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [];
       const assignedRegionIds = clerkAssignedRegionIds(d);
+      const companyIds = Array.isArray(d.companyIds) ? d.companyIds.filter(Boolean) : [];
       return {
         role: d.role || "user",
         displayName: d.displayName || u.email || "",
@@ -15218,7 +15499,349 @@
         assignedRegionIds,
         managedProjectIds,
         managedRegionIds,
+        companyIds,
       };
+    }
+
+    function profileHasAdminAccess(profile) {
+      return Array.isArray(profile?.visibleSections) && profile.visibleSections.includes("admin");
+    }
+
+    function companyIdsEqual(a, b) {
+      const sa = [...(a || [])].sort().join("\0");
+      const sb = [...(b || [])].sort().join("\0");
+      return sa === sb;
+    }
+
+    async function getProjectIdsForCompanyResolution(profile) {
+      const r = profile?.role || "user";
+      if (r === "engineer" || r === "engineer_first" || r === "viewer") {
+        return [...(profile.assignedProjectIds || [])];
+      }
+      if (r === "project_manager") {
+        return [...(profile.managedProjectIds || [])];
+      }
+      if (r === "group_manager" || r === "warehouse_supervisor") {
+        const regions = profile.managedRegionIds || [];
+        if (!regions.length) return [];
+        const snap = await getDocs(collection(db, "projects"));
+        const out = [];
+        snap.forEach((d) => {
+          const pRegions = projectRegionIdsFromDoc(d.data());
+          if (pRegions.some((rid) => regions.includes(rid))) out.push(d.id);
+        });
+        return out;
+      }
+      if (r === "warehouse_clerk") {
+        const regions = clerkAssignedRegionIds(profile);
+        if (!regions.length) return [];
+        const snap = await getDocs(collection(db, "projects"));
+        const out = [];
+        snap.forEach((d) => {
+          const pRegions = projectRegionIdsFromDoc(d.data());
+          if (pRegions.some((rid) => regions.includes(rid))) out.push(d.id);
+        });
+        return out;
+      }
+      return [];
+    }
+
+    async function resolveCompanyIdsForProfile(profile) {
+      const r = profile?.role || "user";
+      if (profileHasAdminAccess(profile) || r === "purchasing_officer" || r === "accountant") {
+        const snap = await getDocs(collection(db, "companies"));
+        const ids = [];
+        snap.forEach((d) => ids.push(d.id));
+        return [...new Set(ids)];
+      }
+      const projectIds = await getProjectIdsForCompanyResolution(profile);
+      if (!projectIds.length) return [];
+      const companyIds = new Set();
+      await Promise.all(
+        projectIds.map(async (pid) => {
+          const ps = await getDoc(doc(db, "projects", pid));
+          if (ps.exists()) {
+            const cid = String(ps.data().companyId || "").trim();
+            if (cid) companyIds.add(cid);
+          }
+        })
+      );
+      return [...companyIds];
+    }
+
+    async function syncUserCompanyIds(uid, profile) {
+      if (!uid || !profile) return [];
+      const computed = await resolveCompanyIdsForProfile(profile);
+      const existing = Array.isArray(profile.companyIds) ? profile.companyIds : [];
+      if (!companyIdsEqual(computed, existing)) {
+        await updateDoc(doc(db, "userProfiles", uid), {
+          companyIds: computed,
+          companyIdsUpdatedAt: serverTimestamp(),
+        });
+      }
+      return computed;
+    }
+
+    function userCanAccessCompanyChat(companyId) {
+      const cid = String(companyId || "").trim();
+      if (!cid) return false;
+      const ids = currentUserProfile?.companyIds || [];
+      return ids.includes(cid);
+    }
+
+    function companyChatRoomId(companyId) {
+      return `company_${String(companyId || "").trim()}`;
+    }
+
+    function chatSenderDisplayName() {
+      const n = (currentUserProfile?.displayName || "").trim();
+      if (n) return n;
+      return (currentUser?.email || "").trim() || t("defaultDisplayName");
+    }
+
+    async function ensureCompanyChatRoom(companyId, companyName) {
+      const cid = String(companyId || "").trim();
+      if (!cid || !userCanAccessCompanyChat(cid)) return null;
+      const roomId = companyChatRoomId(cid);
+      await setDoc(
+        doc(db, CHAT_COL, roomId),
+        {
+          type: "company",
+          companyId: cid,
+          companyName: (companyName || "").trim() || cid,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+      return roomId;
+    }
+
+    async function loadCompanyChatChannels() {
+      const companyIds = currentUserProfile?.companyIds || [];
+      if (!companyIds.length) {
+        chatCompanyChannels = [];
+        return [];
+      }
+      const channels = [];
+      await Promise.all(
+        companyIds.map(async (cid) => {
+          const cs = await getDoc(doc(db, "companies", cid));
+          const name = cs.exists() ? companyDisplayName(cs.data()) : cid;
+          const roomId = await ensureCompanyChatRoom(cid, name);
+          if (!roomId) return;
+          const rs = await getDoc(doc(db, CHAT_COL, roomId));
+          channels.push({
+            companyId: cid,
+            companyName: name,
+            roomId,
+            ...(rs.exists() ? rs.data() : {}),
+          });
+        })
+      );
+      channels.sort((a, b) => {
+        const ta = a.lastMessageAt?.seconds || 0;
+        const tb = b.lastMessageAt?.seconds || 0;
+        if (tb !== ta) return tb - ta;
+        return String(a.companyName || "").localeCompare(String(b.companyName || ""), lang === "ar" ? "ar" : "en");
+      });
+      chatCompanyChannels = channels;
+      return channels;
+    }
+
+    function formatChatMessageTime(ts) {
+      if (!ts || typeof ts.seconds !== "number") return "";
+      const d = new Date(ts.seconds * 1000);
+      return d.toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+    }
+
+    function renderChatCompanyChannelList() {
+      const wrap = $("chat-view-channels");
+      if (!wrap) return;
+      if (!chatCompanyChannels.length) {
+        wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("chatCompaniesEmpty"))}</p>`;
+        return;
+      }
+      const items = chatCompanyChannels
+        .map((ch) => {
+          const preview = (ch.lastMessagePreview || "").trim();
+          const previewHtml = preview
+            ? `<div class="chat-channel-item-preview">${escapeHtml(preview)}</div>`
+            : "";
+          return `<button type="button" class="chat-channel-item" data-chat-room="${escapeAttr(ch.roomId)}" data-chat-company="${escapeAttr(
+            ch.companyId
+          )}" data-chat-name="${escapeAttr(ch.companyName || "")}">
+            <div class="chat-channel-item-title">${escapeHtml(ch.companyName || ch.companyId)}</div>
+            ${previewHtml}
+          </button>`;
+        })
+        .join("");
+      wrap.innerHTML = `<div class="chat-section-label">${escapeHtml(t("chatCompanyChannelsTitle"))}</div>${items}`;
+      wrap.querySelectorAll(".chat-channel-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          void openCompanyChatRoom(btn.dataset.chatRoom, btn.dataset.chatCompany, btn.dataset.chatName);
+        });
+      });
+    }
+
+    function showChatChannelsView() {
+      chatActiveRoomId = null;
+      chatActiveCompanyId = null;
+      chatActiveCompanyName = "";
+      stopChatMessagesListener();
+      $("chat-view-channels")?.classList.remove("hidden");
+      $("chat-view-room")?.classList.add("hidden");
+      $("chat-btn-back")?.classList.add("hidden");
+      const title = $("chat-shell-title");
+      if (title) title.textContent = t("chatTitle");
+    }
+
+    async function openCompanyChatRoom(roomId, companyId, companyName) {
+      const cid = String(companyId || "").trim();
+      if (!roomId || !userCanAccessCompanyChat(cid)) {
+        alert(t("chatAccessDenied"));
+        return;
+      }
+      chatActiveRoomId = roomId;
+      chatActiveCompanyId = cid;
+      chatActiveCompanyName = (companyName || "").trim() || cid;
+      $("chat-view-channels")?.classList.add("hidden");
+      $("chat-view-room")?.classList.remove("hidden");
+      $("chat-btn-back")?.classList.remove("hidden");
+      const title = $("chat-shell-title");
+      if (title) title.textContent = chatActiveCompanyName;
+      const inp = $("chat-compose-input");
+      if (inp) inp.value = "";
+      startChatMessagesListener(roomId);
+    }
+
+    function stopChatMessagesListener() {
+      if (typeof chatMessagesUnsub === "function") {
+        chatMessagesUnsub();
+        chatMessagesUnsub = null;
+      }
+      chatMessageRows = [];
+    }
+
+    function renderChatMessages() {
+      const wrap = $("chat-messages");
+      if (!wrap) return;
+      if (!chatMessageRows.length) {
+        wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("chatNoMessages"))}</p>`;
+        return;
+      }
+      wrap.innerHTML = chatMessageRows
+        .map((m) => {
+          const mine = m.senderUid === currentUser?.uid;
+          const name = escapeHtml((m.senderName || "").trim() || t("defaultDisplayName"));
+          const time = escapeHtml(formatChatMessageTime(m.createdAt));
+          const text = escapeHtml((m.text || "").trim());
+          return `<div class="chat-msg${mine ? " mine" : ""}">
+            <div class="chat-msg-meta">${name} · ${time}</div>
+            <div class="chat-msg-text">${text}</div>
+          </div>`;
+        })
+        .join("");
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+
+    function startChatMessagesListener(roomId) {
+      stopChatMessagesListener();
+      if (!roomId || !currentUser) return;
+      const qm = query(
+        collection(db, CHAT_COL, roomId, "messages"),
+        orderBy("createdAt", "asc"),
+        limit(CHAT_MSG_LIMIT)
+      );
+      chatMessagesUnsub = onSnapshot(
+        qm,
+        (snap) => {
+          chatMessageRows = [];
+          snap.forEach((d) => chatMessageRows.push({ id: d.id, ...d.data() }));
+          renderChatMessages();
+        },
+        (err) => {
+          console.error("chat messages listener", err);
+          const wrap = $("chat-messages");
+          if (wrap) wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("loadError"))}</p>`;
+        }
+      );
+    }
+
+    async function sendCompanyChatMessage(textRaw) {
+      const text = String(textRaw || "").trim();
+      if (!text || !chatActiveRoomId || !currentUser) return;
+      if (!userCanAccessCompanyChat(chatActiveCompanyId)) {
+        alert(t("chatAccessDenied"));
+        return;
+      }
+      const senderName = chatSenderDisplayName();
+      try {
+        await addDoc(collection(db, CHAT_COL, chatActiveRoomId, "messages"), {
+          senderUid: currentUser.uid,
+          senderName,
+          text,
+          createdAt: serverTimestamp(),
+        });
+        await updateDoc(doc(db, CHAT_COL, chatActiveRoomId), {
+          lastMessageAt: serverTimestamp(),
+          lastMessagePreview: text.slice(0, 120),
+          lastSenderUid: currentUser.uid,
+          lastSenderName: senderName,
+          companyId: chatActiveCompanyId,
+          companyName: chatActiveCompanyName,
+          type: "company",
+        });
+      } catch (e) {
+        console.error(e);
+        alert(t("chatSendFailed"));
+      }
+    }
+
+    async function openChatOverlay() {
+      const overlay = $("chat-overlay");
+      if (!overlay || !currentUser) return;
+      closeNotificationsPanel();
+      overlay.classList.remove("hidden");
+      chatOverlayOpen = true;
+      $("btn-chat")?.setAttribute("aria-expanded", "true");
+      showChatChannelsView();
+      const wrap = $("chat-view-channels");
+      if (wrap) wrap.innerHTML = `<p class="chat-empty">${escapeHtml(t("loading"))}</p>`;
+      await loadCompanyChatChannels();
+      renderChatCompanyChannelList();
+      overlay.querySelectorAll("[data-i18n]").forEach((el) => {
+        if (el.id !== "chat-shell-title") el.textContent = t(el.dataset.i18n);
+      });
+      const closeBtn = $("chat-btn-close");
+      if (closeBtn) closeBtn.setAttribute("aria-label", t("chatCloseAria"));
+      const inp = $("chat-compose-input");
+      if (inp) inp.placeholder = t("chatMessagePlaceholder");
+    }
+
+    function closeChatOverlay() {
+      const overlay = $("chat-overlay");
+      if (!overlay) return;
+      overlay.classList.add("hidden");
+      chatOverlayOpen = false;
+      $("btn-chat")?.setAttribute("aria-expanded", "false");
+      showChatChannelsView();
+    }
+
+    function refreshChatI18n() {
+      if (!chatOverlayOpen) return;
+      $("chat-overlay")?.querySelectorAll("[data-i18n]").forEach((el) => {
+        if (el.id === "chat-shell-title") {
+          el.textContent = chatActiveCompanyName || t("chatTitle");
+        } else {
+          el.textContent = t(el.dataset.i18n);
+        }
+      });
+      const closeBtn = $("chat-btn-close");
+      if (closeBtn) closeBtn.setAttribute("aria-label", t("chatCloseAria"));
+      const inp = $("chat-compose-input");
+      if (inp) inp.placeholder = t("chatMessagePlaceholder");
+      if (!chatActiveRoomId) renderChatCompanyChannelList();
+      else renderChatMessages();
     }
 
     function hasAdminAccess() {
@@ -21056,27 +21679,34 @@
           await setDoc(doc(db, "userProfiles", uid), payload, { merge: true });
           userProfilesNotifyCache = { t: 0, list: null };
 
-          if (currentUser && uid === currentUser.uid) {
-            const s = await getDoc(doc(db, "userProfiles", uid));
-            if (s.exists()) {
-              const d = s.data();
-              const clerkRegions = clerkAssignedRegionIds(d);
+          const freshUserSnap = await getDoc(doc(db, "userProfiles", uid));
+          if (freshUserSnap.exists()) {
+            const d = freshUserSnap.data();
+            const clerkRegions = clerkAssignedRegionIds(d);
+            const profForSync = {
+              role: d.role || "user",
+              visibleSections: normalizeVisibleSectionsFromDoc(d),
+              canBypassLowerApprovals: d.canBypassLowerApprovals === true,
+              assignedProjectIds: Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [],
+              assignedRegionId: clerkRegions[0] || null,
+              assignedRegionIds: clerkRegions,
+              managedProjectIds: Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [],
+              managedRegionIds: Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [],
+            };
+            const companyIds = await syncUserCompanyIds(uid, profForSync);
+
+            if (currentUser && uid === currentUser.uid) {
               currentUserProfile = {
-                role: d.role || "user",
-                visibleSections: normalizeVisibleSectionsFromDoc(d),
-                canBypassLowerApprovals: d.canBypassLowerApprovals === true,
-                assignedProjectIds: Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [],
-                assignedRegionId: clerkRegions[0] || null,
-                assignedRegionIds: clerkRegions,
-                managedProjectIds: Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [],
-                managedRegionIds: Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [],
+                ...profForSync,
                 displayName: d.displayName || "",
+                companyIds,
               };
               userRole = currentUserProfile.role;
               applyNavVisibility();
               refreshDashboard();
               const active = document.querySelector(".app-screen:not(.hidden)");
               if (active?.id === "screen-admin" && !hasAdminAccess()) showView(firstAllowedView());
+              if (chatOverlayOpen) void loadCompanyChatChannels().then(() => renderChatCompanyChannelList());
             }
           }
         } else if (collectionName === "regions") {
@@ -21637,12 +22267,38 @@
       void markAllNotificationsRead();
     });
 
+    $("btn-chat")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (chatOverlayOpen) closeChatOverlay();
+      else void openChatOverlay();
+    });
+    $("chat-btn-close")?.addEventListener("click", () => closeChatOverlay());
+    $("chat-btn-back")?.addEventListener("click", () => {
+      showChatChannelsView();
+      renderChatCompanyChannelList();
+    });
+    $("chat-overlay")?.addEventListener("click", (e) => {
+      if (e.target === $("chat-overlay")) closeChatOverlay();
+    });
+    $("chat-compose-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const inp = $("chat-compose-input");
+      const text = inp?.value || "";
+      if (inp) inp.value = "";
+      void sendCompanyChatMessage(text);
+    });
+
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user) {
         const profile = await ensureUserProfile(user);
-        currentUserProfile = profile;
-        userRole = profile.role || "user";
+        const profForSync = {
+          ...profile,
+          email: user.email || "",
+        };
+        const companyIds = await syncUserCompanyIds(user.uid, profForSync);
+        currentUserProfile = { ...profForSync, companyIds };
+        userRole = currentUserProfile.role || "user";
         await loadGeneralPoTemplateCache();
         applyNavVisibility();
         $("view-login").classList.add("hidden");
@@ -21655,6 +22311,8 @@
       } else {
         stopNotificationsListener();
         closeNotificationsPanel();
+        closeChatOverlay();
+        stopChatMessagesListener();
         closeMobileNav();
         $("view-app").classList.add("hidden");
         $("view-login").classList.remove("hidden");
