@@ -10815,7 +10815,14 @@
       const mount = getGeneralPo007Mount();
       const scrollEl = mount?.closest(".po007-editor-scroll");
       const scrollTop = scrollEl?.scrollTop || 0;
+      const wasManual = mount?.querySelector('[data-po007="total-words"]')?.dataset.po007Manual === "1";
       const g = { ...buildGeneralFormFromEditor(), ...(patch || {}) };
+      if (Array.isArray(patch?.lines) && !wasManual) {
+        const docLang = getPo007DocumentLang();
+        const cur = g.currency || getPo007MetaCurrency();
+        g.totalWords = formatPo007TotalWordsDisplay(generalLinesBillableTotal(patch.lines), cur, docLang);
+        g.totalWordsManual = false;
+      }
       mountGeneralPo007Editor(g, generalPo007EditorPo || {});
       if (scrollEl) scrollEl.scrollTop = scrollTop;
     }
@@ -11297,18 +11304,21 @@
       renumberPo007NoteItems();
       updateGeneralPo007ItemHeaders();
       recalcGeneralPo007ItemsTable();
-      const savedTotalWords = (model.totalWords || "").trim();
-      if (savedTotalWords) {
-        const el = mount.querySelector('[data-po007="total-words"]');
+      const totalWordsEl = mount.querySelector('[data-po007="total-words"]');
+      if (totalWordsEl) {
+        const docLang = model.documentLang === "en" ? "en" : "ar";
         const sum = generalLinesBillableTotal(model.lines || []);
-        const auto = formatPo007TotalWordsDisplay(
-          sum,
-          model.currency,
-          model.documentLang === "en" ? "en" : "ar"
-        );
-        if (el && savedTotalWords !== auto) {
-          el.dataset.po007Manual = "1";
-          el.textContent = savedTotalWords;
+        const auto = formatPo007TotalWordsDisplay(sum, model.currency, docLang);
+        const savedTotalWords = (model.totalWords || "").trim();
+        if (model.totalWordsManual && savedTotalWords) {
+          totalWordsEl.dataset.po007Manual = "1";
+          totalWordsEl.textContent = savedTotalWords;
+        } else if (savedTotalWords && savedTotalWords !== auto) {
+          totalWordsEl.dataset.po007Manual = "1";
+          totalWordsEl.textContent = savedTotalWords;
+        } else {
+          delete totalWordsEl.dataset.po007Manual;
+          totalWordsEl.textContent = auto;
         }
       }
       patchPo007FootersAndMiniHeader();
@@ -11359,13 +11369,16 @@
         companyLogoDataUrlSnapshot: generalPo007EditorLogo.startsWith("data:") ? generalPo007EditorLogo : "",
         companyLogoUrlSnapshot: generalPo007EditorLogo.startsWith("http") ? generalPo007EditorLogo : "",
       };
-      const totalWords = (() => {
-        const manual = mount?.querySelector('[data-po007="total-words"]');
-        const txt = read("total-words");
-        if (txt && manual?.dataset.po007Manual === "1") return txt;
-        const sum = generalLinesBillableTotal(lines);
-        return formatPo007TotalWordsDisplay(sum, getPo007MetaCurrency(), getPo007DocumentLang());
-      })();
+      const totalWordsEl = mount?.querySelector('[data-po007="total-words"]');
+      const totalWordsTxt = read("total-words");
+      const totalWordsManual = totalWordsEl?.dataset.po007Manual === "1" && !!totalWordsTxt;
+      const totalWords = totalWordsManual
+        ? totalWordsTxt
+        : formatPo007TotalWordsDisplay(
+            generalLinesBillableTotal(lines),
+            getPo007MetaCurrency(),
+            getPo007DocumentLang()
+          );
       const printForm = enrichGeneralFormPo007({
         lines,
         documentLang: getPo007DocumentLang(),
@@ -11424,6 +11437,7 @@
         buyerName: buyerSnap,
         lines,
         totalWords,
+        totalWordsManual,
         ...sections,
         sectionTitles,
         sectionVisibility,
