@@ -1937,7 +1937,10 @@
       }
       #modal-po-print-view .po007-shipping-docs-table,
       #modal-po-print-view .po007-shipping-docs-table thead th,
-      #modal-po-print-view .po007-shipping-docs-table tbody td {
+      #modal-po-print-view .po007-shipping-docs-table tbody td,
+      #modal-po-print-view .po007-items-table,
+      #modal-po-print-view .po007-items-table thead th,
+      #modal-po-print-view .po007-items-table tbody td {
         border: 1px solid #8fa3b8 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -2176,9 +2179,10 @@
     }
     .po007-surface .po007-items-table {
       width: 100%;
-      border-collapse: separate;
+      border-collapse: collapse;
       border-spacing: 0;
       table-layout: fixed;
+      border: 1px solid #b0becf;
     }
     .po007-surface .po007-items-table thead tr { background: #1c3557; color: #fff; }
     .po007-surface .po007-items-table thead th {
@@ -2188,7 +2192,7 @@
       font-weight: 600;
       letter-spacing: 0.3px;
       vertical-align: middle;
-      border-bottom: 2px solid #152a45;
+      border: 1px solid #b0becf;
     }
     .po007-surface .po007-items-table col.po007-col-no { width: 72px; }
     .po007-surface .po007-items-table col.po007-col-item { width: 15%; }
@@ -2205,7 +2209,7 @@
     .po007-surface .po007-items-table thead th.po007-col-qty { text-align: center; }
     .po007-surface .po007-items-table thead th.po007-col-price,
     .po007-surface .po007-items-table thead th.po007-col-total { text-align: end; }
-    .po007-surface .po007-items-table tbody tr[data-po007-line] { border-bottom: 1px solid #e0e4ea; }
+    .po007-surface .po007-items-table tbody tr[data-po007-line] { border-bottom: none; }
     .po007-surface .po007-items-table tbody tr[data-po007-line]:nth-child(odd) { background: #fff; }
     .po007-surface .po007-items-table tbody tr[data-po007-line]:nth-child(even) { background: #f5f7fa; }
     .po007-surface .po007-items-table tbody tr:not([data-po007-line]):not(.po007-items-add-row) { border-bottom: none; }
@@ -2214,6 +2218,7 @@
       vertical-align: top;
       font-size: 10px;
       line-height: 1.55;
+      border: 1px solid #b0becf;
     }
     .po007-surface .po007-items-table .po007-col-no { text-align: center; vertical-align: middle; }
     .po007-surface .po007-items-table .po007-col-qty { text-align: center; vertical-align: middle; }
@@ -2248,7 +2253,7 @@
       color: #fff;
       font-weight: 700;
       font-size: 10.5px;
-      border: none;
+      border: 1px solid #8fa3b8;
     }
     .po007-surface .po007-total-num-row .po007-total-num-lbl {
       text-align: end;
@@ -2748,7 +2753,7 @@
       color: #fff;
     }
     .po007-surface.po007-edit-mode .po007-items-table tbody tr[data-po007-line] {
-      border-bottom: 1px solid #d0d8e4;
+      border-bottom: none;
     }
     .po007-surface.po007-edit-mode .po007-items-table tbody tr[data-po007-line] {
       height: 1px;
