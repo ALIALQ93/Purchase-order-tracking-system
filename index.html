@@ -952,8 +952,17 @@
     .badge-sent { background: rgba(0, 88, 190, 0.12); color: #0058be; }
     .badge-received { background: rgba(16, 185, 129, 0.12); color: #059669; }
     .badge-cancelled { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
+    .badge-supplier-accepted { background: rgba(16, 185, 129, 0.14); color: #047857; }
+    .badge-supplier-rejected { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+    .badge-approved-to-send { background: rgba(99, 102, 241, 0.14); color: #4338ca; }
 
-    .badge-priority-urgent {
+    .po007-status-hint {
+      margin: 0.35rem 0 0;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
       background: rgba(245, 158, 11, 0.14);
       color: #b45309;
       border: 1px solid rgba(245, 158, 11, 0.25);
@@ -5479,6 +5488,7 @@
           <span data-i18n="poStatusLabel">الحالة</span>
           <select id="po007-meta-status"></select>
         </label>
+        <p class="po007-status-hint po007-meta-po-only" id="po007-meta-status-hint" data-i18n="genPoStatusHint"></p>
         <label class="po007-meta-field">
           <span data-i18n="genPoDocumentLang">لغة المستند</span>
           <select id="po007-meta-lang">
@@ -5905,6 +5915,18 @@
         poStatus_sent: "مرسل للمورد",
         poStatus_received: "مستلم",
         poStatus_cancelled: "ملغى",
+        poStatus_approved_to_send: "موافق عليه للإرسال للمورد",
+        poStatus_supplier_accepted: "مقبول من المورد",
+        poStatus_supplier_rejected: "غير مقبول — يحتاج تعديل",
+        genPoStatusHint: "مسودة → موافق للإرسال → مرسل للمورد → مقبول/مرفوض من المورد → مستلم.",
+        genPoStatusDescTitle: "حالات أمر الإدارة العامة",
+        genPoStatusDesc_draft: "مسودة: الطلب قيد الإعداد ولم يُعتمد بعد للإرسال.",
+        genPoStatusDesc_approved_to_send: "موافق عليه للإرسال للمورد: اعتماد داخلي — جاهز لإرسال أمر الشراء للمورد.",
+        genPoStatusDesc_sent: "مرسل للمورد: تم إرسال الأمر للمورد وبانتظار رده.",
+        genPoStatusDesc_supplier_accepted: "مقبول من المورد: المورد وافق على الأمر.",
+        genPoStatusDesc_supplier_rejected: "غير مقبول — يحتاج تعديل: المورد رفض أو طلب تعديلات — راجع الأمر ثم أعد الإرسال.",
+        genPoStatusDesc_received: "مستلم: اكتمل التنفيذ/الاستلام.",
+        genPoStatusDesc_cancelled: "ملغى: أُلغي الطلب ولا يُتابع.",
         adminTitle: "الإدارة",
         tabCompanies: "الشركات",
         tabProjects: "المشاريع",
@@ -6240,7 +6262,7 @@
         helpNavItem1: "<strong>لوحة التحكم:</strong> نظرة عامة واختصارات.",
         helpNavItem2:
           "<strong>أوامر شراء المشاريع:</strong> طلبات نشطة للمسار (بدون المرفوضة). <strong>طلبات مرفوضة:</strong> أرشيف الطلبات التي توقّف مسارها بالرفض (عرض وطباعة).",
-        helpNavItem3: "<strong>أوامر شراء الإدارة العامة:</strong> طلبات المركز الإداري في قائمة ونموذج مستقلّين (حالة الطلب التقليدية)، وليست ضمن طابور المستودع/مهندس أول الحالي.",
+        helpNavItem3: "<strong>أوامر شراء الإدارة العامة:</strong> طلبات المركز الإداري في قائمة ونموذج مستقلّين. الحالات: مسودة → موافق للإرسال للمورد → مرسل → مقبول/مرفوض من المورد → مستلم (أو ملغى).",
         helpNavItem4: "<strong>الإدارة:</strong> تظهر إذا كان القسم مفعّلاً في ملف المستخدم (قسم «الإدارة»).",
         helpNavItem5:
           "<strong>مراجعة المستودع:</strong> لطلبات المشاريع — تسجيل المتوفر؛ إن اكتفى المخزن يُغلق المسار ككمية متوفرة، وإلا يُرسل الطلب إلى «بانتظار مهندس أول». يبقى الطلب قيد المتابعة بعد المراجعة.",
@@ -6792,6 +6814,18 @@
         poStatus_sent: "Sent to supplier",
         poStatus_received: "Received",
         poStatus_cancelled: "Cancelled",
+        poStatus_approved_to_send: "Approved to send to supplier",
+        poStatus_supplier_accepted: "Accepted by supplier",
+        poStatus_supplier_rejected: "Rejected — needs revision",
+        genPoStatusHint: "Draft → approved to send → sent → supplier accepted/rejected → received.",
+        genPoStatusDescTitle: "General admin PO statuses",
+        genPoStatusDesc_draft: "Draft: order is being prepared; not yet approved for sending.",
+        genPoStatusDesc_approved_to_send: "Approved to send: internal approval complete; ready to send to the supplier.",
+        genPoStatusDesc_sent: "Sent to supplier: PO transmitted; awaiting supplier response.",
+        genPoStatusDesc_supplier_accepted: "Accepted by supplier: supplier confirmed the order.",
+        genPoStatusDesc_supplier_rejected: "Rejected — needs revision: supplier declined or requested changes; revise and resend.",
+        genPoStatusDesc_received: "Received: delivery/fulfillment completed.",
+        genPoStatusDesc_cancelled: "Cancelled: order cancelled; no further action.",
         adminTitle: "Administration",
         tabCompanies: "Companies",
         tabProjects: "Projects",
@@ -7128,7 +7162,7 @@
         helpNavItem1: "<strong>Dashboard:</strong> Overview and shortcuts.",
         helpNavItem2:
           "<strong>Project purchase orders:</strong> Active pipeline orders (excludes rejected). <strong>Rejected:</strong> Archive of workflow-terminated rejections (view/print).",
-        helpNavItem3: "<strong>General admin purchase orders:</strong> Central administration requests on a separate list and form (classic status), not the current warehouse / engineer-first pipeline.",
+        helpNavItem3: "<strong>General admin purchase orders:</strong> Central admin requests on a separate list and form. Statuses: draft → approved to send → sent → supplier accepted/rejected → received (or cancelled).",
         helpNavItem4: "<strong>Administration:</strong> Shown when the Admin section is enabled on your profile.",
         helpNavItem5:
           "<strong>Warehouse review:</strong> For project orders — record availability; if fully covered the workflow closes as stock available, otherwise status becomes awaiting engineer first. Follow-up continues after review.",
@@ -7720,6 +7754,11 @@
           if (st && [...st.options].some((o) => o.value === savedStatus)) st.value = savedStatus;
         }
       }
+      const po007M = $("modal-general-po007");
+      if (po007M && !po007M.classList.contains("hidden") && generalPo007EditorMode === "po") {
+        const savedGenStatus = $("po007-meta-status")?.value || "draft";
+        fillPo007StatusOptions(savedGenStatus);
+      }
       const whM = $("modal-warehouse-review");
       if (whM && !whM.classList.contains("hidden")) {
         whM.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -7844,6 +7883,58 @@
     const CHAT_READ_KEY = "pot_chat_read";
 
     const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-projects-rejected", "po-general"];
+
+    /** ترتيب حالات أوامر شراء الإدارة العامة (scope=general). */
+    const GENERAL_PO_STATUS_ORDER = [
+      "draft",
+      "approved_to_send",
+      "sent",
+      "supplier_accepted",
+      "supplier_rejected",
+      "received",
+      "cancelled",
+    ];
+
+    function normalizeGeneralPoStatus(status) {
+      const s = String(status || "draft").trim();
+      if (s === "pending" || s === "approved") return "approved_to_send";
+      if (GENERAL_PO_STATUS_ORDER.includes(s)) return s;
+      return "draft";
+    }
+
+    function generalPoStatusOptions() {
+      return GENERAL_PO_STATUS_ORDER.map((value) => ({
+        value,
+        label: t("poStatus_" + value),
+      }));
+    }
+
+    function generalPoStatusBadgeClass(status) {
+      const s = normalizeGeneralPoStatus(status);
+      return (
+        {
+          draft: "badge-draft",
+          approved_to_send: "badge-approved-to-send",
+          sent: "badge-sent",
+          supplier_accepted: "badge-supplier-accepted",
+          supplier_rejected: "badge-supplier-rejected",
+          received: "badge-received",
+          cancelled: "badge-cancelled",
+          pending: "badge-pending",
+          approved: "badge-approved",
+        }[s] || "badge-draft"
+      );
+    }
+
+    function updatePo007StatusHint() {
+      const sel = $("po007-meta-status");
+      const hint = $("po007-meta-status-hint");
+      if (!sel || !hint) return;
+      const key = normalizeGeneralPoStatus(sel.value);
+      const descKey = "genPoStatusDesc_" + key;
+      const desc = t(descKey);
+      hint.textContent = desc && desc !== descKey ? desc : t("genPoStatusHint");
+    }
 
     /** أنهاء مسار بالرفض — تُستبعد من قائمة المشاريع الرئيسية وتُعرض في «طلبات مرفوضة». */
     const PROJECT_PO_REJECTED_WORKFLOW_STATUSES = ["rejected_engineer_first", "rejected_pm", "rejected_gm"];
@@ -8110,6 +8201,18 @@
       { code: "hr", ar: "ساعة", en: "Hour", aliases: ["hr", "hrs", "hour", "hours", "ساعة"] },
       { code: "day", ar: "يوم", en: "Day", aliases: ["day", "days", "يوم"] },
       { code: "lot", ar: "دفعة", en: "Lot", aliases: ["lot", "lots", "دفعة"] },
+      { code: "svc", ar: "خدمة", en: "Service", aliases: ["svc", "service", "services", "خدمة", "خدمات"] },
+      { code: "month", ar: "شهر", en: "Month", aliases: ["month", "months", "mo", "شهر", "شهري", "شهور"] },
+      { code: "year", ar: "سنة", en: "Year", aliases: ["year", "years", "yr", "سنة", "سنوي", "سنوات"] },
+      { code: "week", ar: "أسبوع", en: "Week", aliases: ["week", "weeks", "wk", "أسبوع", "أسابيع"] },
+      { code: "time", ar: "مرة", en: "Time", aliases: ["time", "times", "once", "مرة", "مرات"] },
+      { code: "lump", ar: "مقطوعية", en: "Lump sum", aliases: ["lump", "lump sum", "ls", "مقطوعية", "مقطوعة"] },
+      { code: "trip", ar: "رحلة", en: "Trip", aliases: ["trip", "trips", "رحلة", "رحلات"] },
+      { code: "visit", ar: "زيارة", en: "Visit", aliases: ["visit", "visits", "زيارة", "زيارات"] },
+      { code: "person", ar: "شخص", en: "Person", aliases: ["person", "persons", "people", "شخص", "أشخاص"] },
+      { code: "job", ar: "عمل", en: "Job", aliases: ["job", "jobs", "عمل", "أعمال"] },
+      { code: "contract", ar: "عقد", en: "Contract", aliases: ["contract", "contracts", "عقد", "عقود"] },
+      { code: "shift", ar: "وردية", en: "Shift", aliases: ["shift", "shifts", "وردية", "ورديات"] },
     ];
 
     function normalizePo007MeasureUnit(raw) {
@@ -12301,16 +12404,25 @@
         .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal);
     }
 
-    function fillPo007StatusOptions() {
+    function fillPo007StatusOptions(selectedStatus) {
       const sel = $("po007-meta-status");
       if (!sel) return;
-      const opts = [
-        { value: "draft", label: t("poStatus_draft") },
-        { value: "sent", label: t("poStatus_sent") },
-        { value: "received", label: t("poStatus_received") },
-        { value: "cancelled", label: t("poStatus_cancelled") },
-      ];
+      const opts = generalPoStatusOptions();
+      const raw = String(selectedStatus || "").trim();
+      const normalized = raw ? normalizeGeneralPoStatus(raw) : "draft";
+      const known = new Set(opts.map((o) => o.value));
+      if (raw && !known.has(raw) && raw !== normalized) {
+        opts.push({ value: raw, label: t("poStatus_" + raw) || raw });
+      }
       sel.innerHTML = opts.map((o) => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`).join("");
+      if (raw && [...sel.options].some((o) => o.value === raw)) sel.value = raw;
+      else if ([...sel.options].some((o) => o.value === normalized)) sel.value = normalized;
+      else sel.value = "draft";
+      if (!sel.dataset.statusHintWired) {
+        sel.dataset.statusHintWired = "1";
+        sel.addEventListener("change", () => updatePo007StatusHint());
+      }
+      updatePo007StatusHint();
     }
 
     async function refreshPo007HeaderNumbers() {
@@ -12407,7 +12519,6 @@
       generalPo007EditorMode = "po";
       generalPo007PendingLoad = { existingId: existingId || null, po: null, g: null };
       $("po007-editor-id").value = existingId || "";
-      fillPo007StatusOptions();
       if (existingId) {
         const ref = doc(db, "purchaseOrders", existingId);
         const snap = await getDoc(ref);
@@ -12415,8 +12526,7 @@
         const po = { id: snap.id, ...snap.data() };
         generalPo007PendingLoad.po = po;
         generalPo007PendingLoad.g = normalizeGeneralFormFromPo(po);
-        const st = $("po007-meta-status");
-        if (st) st.value = po.status || "draft";
+        fillPo007StatusOptions(po.status || "draft");
         const langSelExisting = $("po007-meta-lang");
         if (langSelExisting) {
           langSelExisting.value =
@@ -12438,8 +12548,7 @@
           fillGeneralSupplierSelect(generalPo007PendingLoad.g.supplierId || po.supplierId || "", "po007-meta-supplier"),
         ]);
       } else {
-        const st = $("po007-meta-status");
-        if (st) st.value = "draft";
+        fillPo007StatusOptions("draft");
         const langSel = $("po007-meta-lang");
         if (langSel) langSel.value = "en";
         const curSel = $("po007-meta-currency");
@@ -12547,7 +12656,7 @@
         title: g.poNumber,
         supplierId: (g.supplierId || "").trim() || null,
         supplierName: g.vendor.name || "",
-        status: ($("po007-meta-status")?.value || "draft").trim() || "draft",
+        status: normalizeGeneralPoStatus(($("po007-meta-status")?.value || "draft").trim() || "draft"),
         scope: "general",
         projectId,
         projectNameSnapshot,
@@ -15708,18 +15817,26 @@
       return escapeHtml(n || t("dash"));
     }
 
-    function statusBadge(status) {
-      const label = t("poStatus_" + (status || "draft")) || status;
+    function statusBadge(status, scope) {
+      const s = String(status || "draft").trim();
+      const labelKey = "poStatus_" + s;
+      const labelTry = t(labelKey);
+      const label = labelTry && labelTry !== labelKey ? labelTry : s || t("poStatus_draft");
       const cls =
-        {
-          draft: "badge-draft",
-          pending: "badge-pending",
-          approved: "badge-approved",
-          sent: "badge-sent",
-          received: "badge-received",
-          cancelled: "badge-cancelled",
-        }[status] || "badge-draft";
-      return `<span class="badge ${cls}">${label}</span>`;
+        scope === "general"
+          ? generalPoStatusBadgeClass(s)
+          : {
+              draft: "badge-draft",
+              pending: "badge-pending",
+              approved: "badge-approved",
+              sent: "badge-sent",
+              received: "badge-received",
+              cancelled: "badge-cancelled",
+              approved_to_send: "badge-approved-to-send",
+              supplier_accepted: "badge-supplier-accepted",
+              supplier_rejected: "badge-supplier-rejected",
+            }[s] || "badge-draft";
+      return `<span class="badge ${cls}">${escapeHtml(label)}</span>`;
     }
 
     function priorityBadge(priority) {
@@ -17997,7 +18114,7 @@
                   <td>${escapeHtml(poNo)}</td>
                   <td>${escapeHtml(comp)}</td>
                   <td>${escapeHtml(sup)}</td>
-                  <td>${statusBadge(r.status || "draft")}</td>
+                  <td>${statusBadge(r.status || "draft", scope)}</td>
                   <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
