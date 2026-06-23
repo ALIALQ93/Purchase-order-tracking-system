@@ -1726,15 +1726,66 @@
         display: none !important;
       }
 
+      .po007-page-break-guide {
+        display: none !important;
+      }
+
+      .po007-items-table-page-break {
+        display: none !important;
+      }
+
+      /* PO007 — المعاينة فقط؛ الطباعة الفعلية عبر iframe (.po007-print-output) */
+      #modal-po-print-view .po007-preview-mode .po007-page-footer {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        border-top: none !important;
+        padding-top: 2mm;
+        margin-top: 2mm;
+        font-size: 8pt;
+        color: #64748b;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      #modal-po-print-view .po007-preview-mode .po007-page-footer .po007-pf-num {
+        color: #1c4587;
+        font-weight: 700;
+        font-size: 9pt;
+        flex-shrink: 0;
+      }
+
+      #modal-po-print-view .po007-row-page-break-end td {
+        padding-bottom: 2mm !important;
+        border-bottom: none !important;
+      }
+
+      #modal-po-print-view .po007-row-page-break-start td {
+        padding-top: 2mm !important;
+        border-top: 2px solid #1c3557 !important;
+      }
+
+      #modal-po-print-view .po007-page-content {
+        padding-bottom: 1mm;
+      }
+
+      #modal-po-print-view .po007-preview-mode .po007-page-footer {
+        margin-top: 3mm;
+      }
+
+      #modal-po-print-view .po007-print-running-footer,
+      body > .po007-print-running-footer.po007-print-running-footer-detached {
+        display: none !important;
+      }
+
       @page {
         size: A4 portrait;
-        /* قلّل العلوي لتفادي فراغ فوق الهيدر، وزِد السفلي كمساحة أمان */
         margin: 3mm 8mm 10mm 8mm;
       }
 
       /* اطبع فقط محتوى مودال الطباعة */
       /* ملاحظة: visibility:hidden يُبقي العناصر تأخذ مساحة وقد ينتج صفحات بيضاء */
-      body > *:not(#modal-po-print-view) {
+      body > *:not(#modal-po-print-view):not(.po007-print-running-footer-detached) {
         display: none !important;
       }
       #modal-po-print-view {
@@ -1888,21 +1939,21 @@
         page-break-after: auto;
         break-after: auto;
       }
-      #modal-po-print-view .po-print-sheet:has(.po007-print-mode) {
+      #modal-po-print-view .po-print-sheet:has(.po007-preview-mode) {
         padding: 0 !important;
         background: #fff !important;
         border: none !important;
         max-width: none !important;
       }
-      #modal-po-print-view .po007-surface.po007-print-mode {
+      #modal-po-print-view .po007-surface.po007-preview-mode {
         padding: 0 !important;
       }
-      #modal-po-print-view .po007-surface.po007-print-mode .po007-doc {
+      #modal-po-print-view .po007-surface.po007-preview-mode .po007-doc {
         gap: 0 !important;
         padding: 0 !important;
         align-items: stretch !important;
       }
-      #modal-po-print-view .po007-surface.po007-print-mode .po007-page {
+      #modal-po-print-view .po007-surface.po007-preview-mode .po007-page {
         width: 100% !important;
         max-width: 100% !important;
         min-height: auto !important;
@@ -1915,6 +1966,30 @@
       }
       #modal-po-print-view .po007-items-table-wrap {
         overflow: visible !important;
+        margin-bottom: 2mm !important;
+      }
+      #modal-po-print-view .po007-items-table tbody tr[data-po007-line] {
+        break-inside: auto;
+        page-break-inside: auto;
+      }
+      #modal-po-print-view .po007-items-table tbody tr.po007-total-num-row,
+      #modal-po-print-view .po007-items-table tbody tr.po007-total-row {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      #modal-po-print-view .po007-print-sheet-footer-row,
+      #modal-po-print-view .po007-print-sheet-header-row {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        break-after: auto !important;
+        page-break-after: auto !important;
+        break-before: auto !important;
+        page-break-before: auto !important;
+      }
+
+      #modal-po-print-view .po007-items-table thead {
+        break-after: avoid;
+        page-break-after: avoid;
       }
       #modal-po-print-view .po007-section,
       #modal-po-print-view .po007-signatures,
@@ -2010,34 +2085,114 @@
     }
 
     /* General PO — PO007 layout (print / preview) */
-    #modal-po-print-view .po-print-sheet:has(.po007-print-mode) {
+    #modal-po-print-view .po-print-sheet:has(.po007-preview-mode) {
       max-width: min(860px, calc(100vw - 1.25rem));
       padding: 0.65rem;
       background: #e9eef5;
       border: none;
     }
-    .po007-surface.po007-print-mode {
+    /* PO007 — معاينة A4 مطابقة للطباعة */
+    #modal-po-print-view .po007-surface.po007-preview-mode {
+      --po007-a4-w: 794px;
+      --po007-a4-sheet-h: 980px;
+      --po007-print-pad-top: 11px;
+      --po007-print-pad-x: 30px;
+      --po007-print-pad-bottom: 38px;
       width: 100%;
     }
-    .po007-surface.po007-print-mode .po007-doc {
-      gap: 18px;
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-doc {
+      gap: 14px;
       padding: 0;
+      align-items: center;
     }
-    .po007-surface.po007-print-mode .po007-page {
-      margin: 0 auto;
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-page {
+      width: var(--po007-a4-w);
+      max-width: calc(100vw - 1.5rem);
       min-height: auto;
+      margin: 0 auto;
+      padding: var(--po007-print-pad-top) var(--po007-print-pad-x) var(--po007-print-pad-bottom);
+      box-sizing: border-box;
+      box-shadow: 0 4px 22px rgba(15, 23, 42, 0.12);
+      font-size: 10pt;
+      line-height: 1.35;
     }
+    #modal-po-print-view .po007-page.po007-page--multi-sheet {
+      box-shadow: 0 4px 22px rgba(15, 23, 42, 0.12);
+    }
+    #modal-po-print-view .po007-page-break-guide {
+      border-top: none;
+      box-shadow:
+        0 -6px 0 6px #e9eef5,
+        0 -7px 0 7px #cbd5e1;
+      z-index: 5;
+    }
+    #modal-po-print-view .po007-page-break-guide-lbl {
+      background: #1c4587;
+      color: #fff;
+      border-color: #1c4587;
+      font-size: 8px;
+    }
+    #modal-po-print-view .po007-preview-hint {
+      margin: 0 0 0.65rem;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.78rem;
+      color: #475569;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      text-align: center;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-section {
+      margin-top: 14px;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-section:first-of-type {
+      margin-top: 12px;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-items-table-wrap {
+      margin: 10px 0 10px;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-page-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1.25rem;
+      padding-top: 10px;
+      border-top: none;
+      font-size: 8pt;
+      color: #64748b;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-page-footer .po007-pf-num {
+      color: #1c4587;
+      font-weight: 700;
+      font-size: 9pt;
+    }
+    .po007-surface.po007-preview-mode {
+      width: 100%;
+    }
+
     .po007-surface .po007-section-body {
       padding: 0 2px;
     }
-    .po007-surface.po007-print-mode .po007-section {
+    .po007-surface.po007-preview-mode .po007-doc {
+      gap: 18px;
+      padding: 0;
+    }
+    .po007-surface.po007-preview-mode .po007-page {
+      margin: 0 auto;
+      min-height: auto;
+    }
+    .po007-surface.po007-preview-mode .po007-section {
       margin-top: 14px;
     }
-    .po007-surface.po007-print-mode .po007-section:first-of-type {
+    .po007-surface.po007-preview-mode .po007-section:first-of-type {
       margin-top: 12px;
     }
-    .po007-surface.po007-print-mode .po007-items-table-wrap {
-      margin: 10px 0 6px;
+    .po007-surface.po007-preview-mode .po007-items-table-wrap {
+      margin: 10px 0 10px;
+    }
+    .po007-surface.po007-preview-mode .po007-page-footer {
+      margin-top: 1.25rem;
+      padding-top: 10px;
     }
 
     .po007-surface .po007-doc {
@@ -2060,6 +2215,38 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
+      position: relative;
+    }
+    .po007-surface .po007-page.po007-page--multi-sheet {
+      box-shadow:
+        0 6px 36px rgba(0, 0, 0, 0.12),
+        inset 0 -1px 0 rgba(148, 163, 184, 0.35);
+    }
+    .po007-page-break-guide {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 0;
+      border-top: 2px dashed #64748b;
+      pointer-events: none;
+      z-index: 4;
+      box-shadow: 0 -5px 14px rgba(15, 23, 42, 0.07);
+    }
+    .po007-page-break-guide-lbl {
+      position: absolute;
+      left: 50%;
+      top: -10px;
+      transform: translateX(-50%);
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #475569;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
     }
     .po007-surface .po007-page-content { flex: 1; }
     .po007-surface .po007-doc-header {
@@ -2238,6 +2425,43 @@
       width: 100%;
       margin: 12px 0 4px;
       overflow-x: auto;
+    }
+    .po007-items-table-wrap.po007-items-table--page-split {
+      position: relative;
+      overflow: visible;
+    }
+    .po007-items-table-page-break {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 0;
+      border-top: 3px double #1c3557;
+      pointer-events: none;
+      z-index: 6;
+      box-shadow:
+        0 -1px 0 #b0becf,
+        0 1px 0 #b0becf;
+    }
+    .po007-surface .po007-items-table tr.po007-row-page-break-end td {
+      border-bottom: 2px solid #1c3557 !important;
+      padding-bottom: 1.35rem;
+    }
+    .po007-surface .po007-items-table tr.po007-row-page-break-start td {
+      border-top: 2px solid #1c3557 !important;
+      padding-top: 0.85rem;
+    }
+    .po007-surface.po007-edit-mode .po007-page-content {
+      padding-bottom: 0.35rem;
+    }
+    .po007-surface.po007-edit-mode .po007-items-table-wrap {
+      margin-bottom: 0.85rem;
+    }
+    .po007-surface.po007-edit-mode .po007-page-footer {
+      margin-top: 1rem;
+      padding-top: 10px;
+      background: #fff;
+      position: relative;
+      z-index: 2;
     }
     .po007-surface .po007-items-table {
       width: 100%;
@@ -2669,17 +2893,24 @@
     .po007-surface .po007-mh-po { font-size: 10px; color: #444; }
     .po007-surface .po007-page-footer {
       display: flex;
-      justify-content: space-between;
-      border-top: 1px solid #ddd;
+      justify-content: center;
+      align-items: center;
       padding-top: 7px;
       margin-top: 14px;
       font-size: 9px;
       color: #aaa;
       flex-shrink: 0;
-      gap: 0.5rem;
-      flex-wrap: wrap;
     }
     .po007-surface .po007-pf-num { color: #1c4587; font-weight: 700; font-size: 10px; }
+    .po007-print-abs-sheet-footer,
+    .po007-print-sheet-footer-row,
+    .po007-print-block-sheet-footer,
+    .po007-print-sheet-header-row {
+      display: none;
+    }
+    .po007-print-running-footer {
+      display: none;
+    }
     .po-gen-list-table input,
     .po-gen-list-table textarea { width: 100%; font: inherit; }
     .po-gen-line-desc { min-height: 3.5rem; resize: vertical; }
@@ -5629,6 +5860,7 @@
   <!-- عرض طلب للطباعة (مشتريات وغيره) -->
   <div id="modal-po-print-view" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide">
+      <p id="po007-preview-hint" class="po007-preview-hint no-print hidden" aria-live="polite"></p>
       <div id="po-print-content" class="po-print-sheet"></div>
       <div class="modal-actions no-print">
         <button type="button" class="btn btn-secondary" id="modal-po-print-close" data-i18n="cancel">إلغاء</button>
@@ -6732,6 +6964,7 @@
         genPo007PoDate: "تاريخ أمر الشراء",
         genPo007PoRef: "المرجع:",
         genPo007Page: "صفحة",
+        genPo007PageBreakGuide: "حد الصفحة",
         genPo007EditorTitle: "أمر شراء ادارة عامة",
         btnEditGeneralPoTemplate: "تعديل القالب الافتراضي",
         genPoTemplateEditorTitle: "القالب الافتراضي — أوامر الإدارة العامة",
@@ -7639,6 +7872,7 @@
         genPo007PoDate: "PO Date",
         genPo007PoRef: "Ref:",
         genPo007Page: "Page",
+        genPo007PageBreakGuide: "Page break",
         genPo007EditorTitle: "General administration purchase order",
         btnEditGeneralPoTemplate: "Edit default template",
         genPoTemplateEditorTitle: "Default template — general admin POs",
@@ -7969,6 +8203,8 @@
     let projectPoFiltersWired = false;
     let rejectedProjectPoFiltersWired = false;
     let lastPoPrintDoc = null;
+    /** مصدر بيانات الطباعة — منفصل عن DOM المعاينة */
+    let lastPo007PrintSource = null;
 
     /** In-app inbox. Add Firestore rules: users read docs where userId==auth.uid; update only {read}; authenticated create allowed (merge with your project rules). */
     const NOTIF_COL = "inAppNotifications";
@@ -11097,6 +11333,910 @@
       return mergePo007TemplateIntoForm(base, lang);
     }
 
+    /* ═══ PO007 — معاينة (صفحتان منطقيتان) + طباعة (ورقات A4 فعلية) ═══ */
+    const PO007_A4_WIDTH_PX = 794;
+    const PO007_A4_HEIGHT_PX = 1123;
+    const PO007_PAGE_SHEET_HEIGHT_PX = PO007_A4_HEIGHT_PX;
+    const PO007_PRINT_MARGIN_TOP_PX = Math.round((3 / 25.4) * 96);
+    const PO007_PRINT_MARGIN_X_PX = Math.round((8 / 25.4) * 96);
+    const PO007_PRINT_MARGIN_BOTTOM_PX = Math.round((10 / 25.4) * 96);
+    const PO007_PRINT_PAGE_HEIGHT_PX = PO007_A4_HEIGHT_PX;
+    const PO007_PRINT_PADDING_BOTTOM_PX = 8;
+    const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
+    const PO007_PRINT_FOOTER_GAP_PX = 4;
+    const PO007_PRINT_FOOTER_RESERVE_PX = 18;
+    const PO007_PRINT_BODY_SAFETY_PX = 12;
+    const PO007_PRINT_BODY_MAX_PX =
+      PO007_PRINT_PAGE_HEIGHT_PX -
+      PO007_PRINT_MARGIN_TOP_PX -
+      PO007_PRINT_PADDING_BOTTOM_PX -
+      PO007_PRINT_FOOTER_GAP_PX -
+      PO007_PRINT_FOOTER_RESERVE_PX;
+    const PO007_PRINT_SHEET_HEIGHT_PX = PO007_PRINT_PAGE_HEIGHT_PX;
+    const PO007_PRINT_CONTENT_HEIGHT_PX = PO007_PRINT_BODY_MAX_PX;
+    let po007PageGuidesTimer = null;
+    let po007PageGuidesRo = null;
+
+    function po007IsPreviewMount(root) {
+      return !!root?.querySelector(".po007-preview-mode");
+    }
+
+    function po007UsePrintSheetMetrics(root) {
+      const el = root?.id === "po-print-content" ? root : root?.closest?.("#po-print-content");
+      return !!el;
+    }
+
+    function getPo007SheetHeightPx(root) {
+      return po007UsePrintSheetMetrics(root) ? PO007_PRINT_SHEET_HEIGHT_PX : PO007_PAGE_SHEET_HEIGHT_PX;
+    }
+
+    function getPo007PrintContentHeightPx() {
+      return PO007_PRINT_BODY_MAX_PX;
+    }
+
+    function getPo007PageMeasureHeight(page) {
+      const win = page.ownerDocument?.defaultView;
+      const content = page.querySelector(".po007-page-content");
+      const footer = page.querySelector(".po007-page-footer");
+      if (!content) return page.offsetHeight || 0;
+      let h = content.offsetHeight;
+      if (footer && win) {
+        const footerStyle = win.getComputedStyle(footer);
+        h += footer.offsetHeight + (parseFloat(footerStyle.marginTop) || 0);
+      }
+      return Math.max(1, h);
+    }
+
+    function measurePo007PrintSheets(root) {
+      const pages = [...(root?.querySelectorAll(".po007-page") || [])];
+      const sheetH = PO007_PRINT_SHEET_HEIGHT_PX;
+      if (!pages.length) return { total: 1, pages: [{ sheetCount: 1, startSheet: 1, endSheet: 1 }], sheetH };
+      const prevMinHeights = pages.map((p) => {
+        const prev = p.style.minHeight;
+        p.style.minHeight = "auto";
+        return prev;
+      });
+      const sheetCounts = pages.map((p) => Math.max(1, Math.ceil(getPo007PageMeasureHeight(p) / sheetH)));
+      pages.forEach((p, i) => {
+        if (prevMinHeights[i]) p.style.minHeight = prevMinHeights[i];
+        else p.style.removeProperty("min-height");
+      });
+      const total = Math.max(1, sheetCounts.reduce((sum, n) => sum + n, 0));
+      let cursor = 0;
+      const pageMeta = sheetCounts.map((sheetCount) => {
+        const startSheet = cursor + 1;
+        const endSheet = cursor + sheetCount;
+        cursor = endSheet;
+        return { sheetCount, startSheet, endSheet };
+      });
+      return { total, pages: pageMeta, sheetH };
+    }
+
+    function estimatePo007PageSheetCount(pageEl, printContext) {
+      const h = printContext ? getPo007PageMeasureHeight(pageEl) : pageEl?.offsetHeight || 0;
+      const sheetH = printContext ? PO007_PRINT_SHEET_HEIGHT_PX : PO007_PAGE_SHEET_HEIGHT_PX;
+      return Math.max(1, Math.ceil(h / sheetH));
+    }
+
+    function formatPo007PageNumLabel(docLang, start, total, end) {
+      const lbl = tPo007(docLang, "genPo007Page");
+      if (end && end > start) return `${lbl} ${start}–${end} / ${total}`;
+      return `${lbl} ${start} / ${total}`;
+    }
+
+    function getPo007DocLangFromRoot(root) {
+      return root?.querySelector(".po007-doc")?.getAttribute("dir") === "rtl" ? "ar" : "en";
+    }
+
+    function updatePo007PrintPageNumbers(rootEl) {
+      const root = rootEl || getGeneralPo007Mount() || $("po-print-content");
+      if (!root?.querySelector(".po007-doc")) return;
+      const usePrintMetrics = po007UsePrintSheetMetrics(root);
+      const docLang = usePrintMetrics ? getPo007DocLangFromRoot(root) : getPo007DocumentLang();
+      const pages = [...root.querySelectorAll(".po007-page")];
+      if (!pages.length) return;
+
+      if (usePrintMetrics) {
+        const { total, pages: sheetMeta } = measurePo007PrintSheets(root);
+        pages.forEach((page, i) => {
+          const numEl = page.querySelector(".po007-pf-num");
+          if (numEl && sheetMeta[i]) {
+            numEl.textContent = formatPo007PageNumLabel(docLang, sheetMeta[i].endSheet, total);
+          }
+        });
+        return;
+      }
+
+      const sheetCounts = pages.map((p) => estimatePo007PageSheetCount(p, false));
+      const total = sheetCounts.reduce((sum, n) => sum + n, 0);
+      let cursor = 0;
+      pages.forEach((page, i) => {
+        const sheets = sheetCounts[i];
+        const start = cursor + 1;
+        const end = cursor + sheets;
+        cursor = end;
+        const numEl = page.querySelector(".po007-pf-num");
+        if (numEl) {
+          numEl.textContent = formatPo007PageNumLabel(docLang, start, total, sheets > 1 ? end : null);
+        }
+      });
+    }
+
+    function buildPo007SheetFooterHtml(poLine, buyer, pageNum, total, docLang, poLineIsHtml) {
+      const pageLbl = formatPo007PageNumLabel(docLang, pageNum, total);
+      const poPart = poLineIsHtml ? poLine : escapeHtml(poLine);
+      return `<span data-po007-footer="po-line">${poPart}</span><span data-po007-footer="buyer">${escapeHtml(buyer)}</span><span class="po007-pf-num">${escapeHtml(pageLbl)}</span>`;
+    }
+
+    function po007FooterPoPlainText(poLineHtml) {
+      return (poLineHtml || "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function buildPo007PrintPageFooterHtml(pageNum, total, docLang) {
+      const pageLbl = formatPo007PageNumLabel(docLang, pageNum, total);
+      return `<span class="po007-pf-num po007-print-page-only-num">${escapeHtml(pageLbl)}</span>`;
+    }
+
+    function extractPo007FooterMeta(previewDoc) {
+      const pageFooter = previewDoc.querySelector(".po007-page-footer");
+      return {
+        poLineHtml: pageFooter?.querySelector("[data-po007-footer='po-line']")?.innerHTML?.trim() || "",
+        buyer: pageFooter?.querySelector("[data-po007-footer='buyer']")?.textContent?.trim() || "",
+      };
+    }
+
+    function po007GetTableMeta(wrap, table) {
+      return {
+        tableRef: table,
+        wrapClass: wrap.getAttribute("class") || "po007-items-table-wrap",
+        wrapAttrs: [...wrap.attributes].filter((a) => a.name !== "class").map((a) => [a.name, a.value]),
+        tableAttrs: [...table.attributes].map((a) => [a.name, a.value]),
+        colgroupHtml: table.querySelector("colgroup")?.outerHTML || "",
+        thead: table.querySelector("thead"),
+      };
+    }
+
+    function po007BuildPartialNoteSection(sectionEl, listItems, withHeading) {
+      const doc = sectionEl.ownerDocument;
+      const noteList = sectionEl.querySelector(".po007-section-body .po007-note-list");
+      const section = doc.createElement("div");
+      section.className = sectionEl.className;
+      [...sectionEl.attributes].forEach((a) => {
+        if (a.name !== "class") section.setAttribute(a.name, a.value);
+      });
+      if (!withHeading) section.classList.add("po007-section--continued");
+      if (withHeading) {
+        const heading = sectionEl.querySelector(".po007-section-heading");
+        if (heading) section.appendChild(heading.cloneNode(true));
+      }
+      const body = doc.createElement("div");
+      body.className = "po007-section-body";
+      const ol = doc.createElement("ol");
+      ol.className = noteList?.className || "po007-note-list";
+      if (noteList) {
+        [...noteList.attributes].forEach((a) => {
+          if (a.name !== "class") ol.setAttribute(a.name, a.value);
+        });
+      }
+      listItems.forEach((li) => ol.appendChild(li.cloneNode(true)));
+      body.appendChild(ol);
+      section.appendChild(body);
+      return section;
+    }
+
+    function po007ExpandBlockPrintUnits(child, logicalIdx) {
+      if (!child.classList.contains("po007-section")) {
+        return [
+          {
+            kind: "block",
+            el: child,
+            logicalIdx,
+            isMiniHeader: child.classList.contains("po007-mini-header"),
+          },
+        ];
+      }
+      const noteList = child.querySelector(".po007-section-body .po007-note-list");
+      if (noteList) {
+        const items = [...noteList.children].filter((el) => el.tagName === "LI");
+        if (items.length > 1) {
+          return items.map((li, idx) => ({
+            kind: "block",
+            el: po007BuildPartialNoteSection(child, [li], idx === 0),
+            logicalIdx,
+            isMiniHeader: false,
+          }));
+        }
+      }
+      return [{ kind: "block", el: child, logicalIdx, isMiniHeader: false }];
+    }
+
+    function po007CollectPrintUnits(previewDoc) {
+      const units = [];
+      [...previewDoc.querySelectorAll(".po007-page")].forEach((page, logicalIdx) => {
+        const content = page.querySelector(".po007-page-content");
+        if (!content) return;
+        [...content.children].forEach((child) => {
+          if (child.classList.contains("po007-items-table-wrap")) {
+            const table = child.querySelector("table");
+            if (!table) return;
+            const meta = po007GetTableMeta(child, table);
+            const rows = [...table.querySelectorAll("tbody tr")];
+            let i = 0;
+            while (i < rows.length) {
+              const row = rows[i];
+              if (row.classList.contains("po007-total-num-row")) {
+                const bundle = [row];
+                if (rows[i + 1]?.classList.contains("po007-total-row")) {
+                  bundle.push(rows[i + 1]);
+                  i += 2;
+                } else {
+                  i += 1;
+                }
+                units.push({ kind: "table-rows", rows: bundle, meta, logicalIdx });
+                continue;
+              }
+              units.push({ kind: "table-rows", rows: [row], meta, logicalIdx });
+              i += 1;
+            }
+          } else {
+            po007ExpandBlockPrintUnits(child, logicalIdx).forEach((unit) => units.push(unit));
+          }
+        });
+      });
+      return units;
+    }
+
+    function po007BuildTableNode(rows, meta, doc) {
+      const wrap = doc.createElement("div");
+      wrap.setAttribute("class", meta.wrapClass);
+      meta.wrapAttrs.forEach(([n, v]) => wrap.setAttribute(n, v));
+      const table = doc.createElement("table");
+      meta.tableAttrs.forEach(([n, v]) => table.setAttribute(n, v));
+      if (meta.colgroupHtml) table.insertAdjacentHTML("afterbegin", meta.colgroupHtml);
+      if (meta.thead) table.appendChild(meta.thead.cloneNode(true));
+      const tbody = doc.createElement("tbody");
+      rows.forEach((row) => tbody.appendChild(row.cloneNode(true)));
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+      return wrap;
+    }
+
+    function po007CreateMeasureCtx(doc) {
+      const host = doc.createElement("div");
+      host.className = "po007-print-measure-host";
+      host.setAttribute("aria-hidden", "true");
+      host.style.cssText = `position:absolute;left:-20000px;top:0;width:${PO007_A4_WIDTH_PX}px;font-size:10pt;line-height:1.35;visibility:hidden;pointer-events:none;box-sizing:border-box;`;
+      doc.body.appendChild(host);
+
+      const bodyShell = doc.createElement("div");
+      bodyShell.className = "po007-print-page-body";
+      bodyShell.style.cssText = `box-sizing:border-box;width:${PO007_PRINT_CONTENT_WIDTH_PX}px;margin:0;padding:0;`;
+      host.appendChild(bodyShell);
+
+      const measureInBody = () => bodyShell.scrollHeight || bodyShell.offsetHeight || 0;
+
+      const measureEl = (el) => {
+        bodyShell.replaceChildren(el.cloneNode(true));
+        return measureInBody();
+      };
+
+      const measureBody = (bodyEl) => {
+        bodyShell.replaceChildren();
+        [...bodyEl.childNodes].forEach((n) => bodyShell.appendChild(n.cloneNode(true)));
+        return measureInBody();
+      };
+
+      return { host, measureEl, measureBody, destroy: () => host.remove() };
+    }
+
+    function po007ClonePrintRunningHeader(miniHeaderEl, doc) {
+      if (!miniHeaderEl) return null;
+      const node = miniHeaderEl.cloneNode(true);
+      node.classList.remove("po007-mini-header");
+      node.classList.add("po007-print-continuation-header");
+      return node;
+    }
+
+    function po007GetPrintRunningHeader(previewDoc) {
+      return previewDoc?.querySelector(".po007-mini-header") || null;
+    }
+
+    function po007NewPrintPage(doc) {
+      const el = doc.createElement("div");
+      el.className = "po007-print-page";
+      const body = doc.createElement("div");
+      body.className = "po007-print-page-body";
+      const footer = doc.createElement("div");
+      footer.className = "po007-print-page-footer";
+      el.appendChild(body);
+      el.appendChild(footer);
+      return { el, body, footer };
+    }
+
+    function po007PackUnitsToPages(units, measCtx, doc, opts) {
+      const { miniHeader } = opts;
+      const pages = [];
+      let page = po007NewPrintPage(doc);
+      let miniOnPage = false;
+      let pendingRows = [];
+      let pendingMeta = null;
+      const bodyLimit = () => PO007_PRINT_BODY_MAX_PX - PO007_PRINT_BODY_SAFETY_PX;
+
+      const bodyUsed = () => measCtx.measureBody(page.body);
+
+      const pageHasTable = () => !!page.body.querySelector(".po007-items-table-wrap");
+
+      const isContinuationSheet = () => pages.length > 0;
+
+      const startNewPage = () => {
+        if (page.body.childNodes.length) pages.push(page);
+        page = po007NewPrintPage(doc);
+        miniOnPage = false;
+      };
+
+      const addContinuationHeader = () => {
+        if (!miniHeader || miniOnPage || !isContinuationSheet()) return;
+        const node = po007ClonePrintRunningHeader(miniHeader, doc);
+        if (!node) return;
+        page.body.appendChild(node);
+        miniOnPage = true;
+      };
+
+      const appendNode = (node) => {
+        const h = measCtx.measureEl(node);
+        const used = bodyUsed();
+        if (used + h > bodyLimit() && page.body.childNodes.length > 0) {
+          startNewPage();
+          addContinuationHeader();
+        }
+        page.body.appendChild(node);
+        if (measCtx.measureBody(page.body) > bodyLimit() && page.body.childNodes.length > 1) {
+          page.body.removeChild(node);
+          startNewPage();
+          addContinuationHeader();
+          page.body.appendChild(node);
+        }
+      };
+
+      const measureTable = (rows, meta) => {
+        const node = po007BuildTableNode(rows, meta, doc);
+        return { node, h: measCtx.measureEl(node) };
+      };
+
+      const tableFitsOnPage = (rows, meta) => {
+        if (!rows.length) return true;
+        const { h } = measureTable(rows, meta);
+        return bodyUsed() + h <= bodyLimit();
+      };
+
+      const placeTable = (rows, meta) => {
+        if (!rows.length) return;
+        if (pageHasTable()) {
+          startNewPage();
+          addContinuationHeader();
+        }
+        appendNode(po007BuildTableNode(rows, meta, doc));
+      };
+
+      const flushTable = () => {
+        if (!pendingRows.length || !pendingMeta) return;
+        placeTable(pendingRows, pendingMeta);
+        pendingRows = [];
+      };
+
+      const appendBlock = (el, isMini) => {
+        flushTable();
+        if (isMini) {
+          if (miniOnPage) return;
+          if (page.body.querySelector(".po007-print-continuation-header")) return;
+          appendNode(el.cloneNode(true));
+          miniOnPage = true;
+          return;
+        }
+        if (page.body.childNodes.length === 0) addContinuationHeader();
+        appendNode(el.cloneNode(true));
+      };
+
+      units.forEach((unit) => {
+        if (unit.kind === "block") {
+          appendBlock(unit.el, unit.isMiniHeader);
+          return;
+        }
+
+        if (unit.kind !== "table-rows") return;
+
+        if (pendingMeta && pendingMeta.tableRef !== unit.meta.tableRef) {
+          flushTable();
+          pendingMeta = null;
+        }
+        if (!pendingMeta) pendingMeta = unit.meta;
+
+        if (page.body.childNodes.length === 0 && !pendingRows.length) addContinuationHeader();
+
+        const trial = [...pendingRows, ...unit.rows];
+        if (tableFitsOnPage(trial, unit.meta)) {
+          pendingRows = trial;
+          return;
+        }
+
+        if (pendingRows.length) {
+          flushTable();
+          startNewPage();
+          addContinuationHeader();
+          pendingMeta = unit.meta;
+          pendingRows = [...unit.rows];
+          return;
+        }
+
+        if (page.body.childNodes.length > 0) {
+          startNewPage();
+          addContinuationHeader();
+        }
+        pendingMeta = unit.meta;
+        pendingRows = [...unit.rows];
+      });
+
+      flushTable();
+      if (page.body.childNodes.length) pages.push(page);
+      return pages;
+    }
+
+    function buildPo007PrintLayout(previewRoot, doc) {
+      const previewDoc = previewRoot.querySelector(
+        ".po007-print-source .po007-doc, .po007-preview-mode .po007-doc, .po007-doc"
+      );
+      const surface = previewRoot.querySelector(".po007-surface");
+      if (!previewDoc || !surface) return false;
+
+      const docLang = getPo007DocLangFromRoot(previewDoc);
+      const dir = previewDoc.getAttribute("dir") || "ltr";
+      const miniHeader = po007GetPrintRunningHeader(previewDoc);
+      const units = po007CollectPrintUnits(previewDoc);
+      const measCtx = po007CreateMeasureCtx(doc);
+
+      try {
+        const pages = po007PackUnitsToPages(units, measCtx, doc, { miniHeader });
+        const total = Math.max(1, pages.length);
+        const printDoc = doc.createElement("div");
+        printDoc.className = "po007-doc po007-print-doc";
+        printDoc.setAttribute("dir", dir);
+
+        pages.forEach((p, idx) => {
+          p.footer.innerHTML = buildPo007PrintPageFooterHtml(idx + 1, total, docLang);
+          printDoc.appendChild(p.el);
+        });
+
+        surface.className = "po007-surface po007-print-output";
+        surface.innerHTML = "";
+        surface.appendChild(printDoc);
+        return true;
+      } finally {
+        measCtx.destroy();
+      }
+    }
+
+    function getPo007PrintStylesForIframe() {
+      return [...document.querySelectorAll("style")].map((s) => s.textContent || "").join("\n");
+    }
+
+    function getPo007PrintHeadLinks() {
+      return [...document.querySelectorAll('link[rel="stylesheet"]')]
+        .map((l) => l.outerHTML)
+        .join("");
+    }
+
+    function buildPo007IframePrintBody(innerHtml) {
+      return `<div id="modal-po-print-view" class="modal-overlay"><div class="modal"><div id="po-print-content" class="po-print-sheet">${innerHtml}</div></div></div>`;
+    }
+
+    function buildPo007IframePrintExtras() {
+      const pageH = PO007_PRINT_PAGE_HEIGHT_PX;
+      const padT = PO007_PRINT_MARGIN_TOP_PX;
+      const padX = PO007_PRINT_MARGIN_X_PX;
+      const padB = PO007_PRINT_PADDING_BOTTOM_PX;
+      const footerH = PO007_PRINT_FOOTER_RESERVE_PX;
+      const footerGap = PO007_PRINT_FOOTER_GAP_PX;
+      const bodyH = PO007_PRINT_BODY_MAX_PX;
+      const pageW = PO007_A4_WIDTH_PX;
+      return `
+    #modal-po-print-view.modal-overlay,
+    #modal-po-print-view .modal,
+    #modal-po-print-view .po-print-sheet:has(.po007-print-output) {
+      padding: 0 !important; margin: 0 !important; background: #fff !important;
+      border: none !important; max-width: none !important; box-shadow: none !important;
+    }
+    #modal-po-print-view .po007-page-break-guide,
+    #modal-po-print-view .po007-items-table-page-break,
+    #modal-po-print-view .po007-preview-mode { display: none !important; }
+    #modal-po-print-view .po007-surface.po007-print-output {
+      width: ${pageW}px;
+      max-width: ${pageW}px;
+      margin: 0 auto;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-doc {
+      display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0;
+      width: ${pageW}px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
+      position: relative;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      width: ${pageW}px;
+      height: ${pageH}px;
+      min-height: ${pageH}px;
+      max-height: ${pageH}px;
+      padding: ${padT}px ${padX}px ${padB}px;
+      margin: 0;
+      background: #fff;
+      page-break-after: always;
+      break-after: page;
+      overflow: hidden;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page:last-child {
+      page-break-after: auto; break-after: auto;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-body {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      flex: 1 1 0;
+      min-height: 0;
+      max-height: ${bodyH}px;
+      overflow: hidden;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-footer {
+      box-sizing: border-box;
+      width: 100%;
+      flex: 0 0 ${footerH}px;
+      height: ${footerH}px;
+      min-height: ${footerH}px;
+      max-height: ${footerH}px;
+      margin: ${footerGap}px 0 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-top: none;
+      font-size: 7pt;
+      line-height: 1.1;
+      color: #64748b;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-section--continued {
+      margin-top: 0 !important;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-footer .po007-pf-num {
+      color: #1c4587;
+      font-weight: 700;
+      font-size: 8pt;
+      white-space: nowrap;
+    }
+    #modal-po-print-view .po007-print-continuation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #1c4587;
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc-header {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #1c3557;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      direction: ltr;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-dh-logo {
+      flex-shrink: 0;
+      min-width: 72px;
+      max-width: 200px;
+      padding-inline-end: 10px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-logo {
+      display: block;
+      height: auto;
+      max-height: 56px;
+      width: auto;
+      max-width: 200px;
+      min-width: 56px;
+      object-fit: contain;
+      object-position: left center;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-dh-meta {
+      margin-left: auto;
+      margin-right: 0;
+      min-width: 42%;
+      max-width: 58%;
+      flex-shrink: 0;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-buyer-title {
+      font-size: 11pt;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-dh-po {
+      font-size: 8.5pt;
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-dh-po strong {
+      font-size: 9pt;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-parties {
+      margin-bottom: 10px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-title,
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-po {
+      font-size: 8.5pt;
+      line-height: 1.3;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-title {
+      font-weight: 700;
+      color: #1c4587;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-po {
+      color: #444;
+      text-align: end;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc[dir="rtl"] .po007-print-continuation-header {
+      direction: rtl;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc[dir="ltr"] .po007-print-continuation-header {
+      direction: ltr;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc[dir="rtl"] .po007-dh-meta,
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc[dir="rtl"] .po007-buyer-title,
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc[dir="rtl"] .po007-dh-po {
+      direction: rtl;
+      text-align: right;
+    }
+    @page { size: A4 portrait; margin: 0; }
+    @media print {
+      html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+      .no-print, .po007-page-break-guide, .po007-items-table-page-break { display: none !important; }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
+        display: flex !important;
+        flex-direction: column !important;
+        width: ${pageW}px !important;
+        height: ${pageH}px !important;
+        min-height: ${pageH}px !important;
+        max-height: ${pageH}px !important;
+        padding: ${padT}px ${padX}px ${padB}px !important;
+        page-break-after: always;
+        break-after: page;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-page:last-child {
+        page-break-after: auto; break-after: auto;
+      }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-body {
+        flex: 1 1 0 !important;
+        min-height: 0 !important;
+        max-height: ${bodyH}px !important;
+        overflow: hidden !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-footer {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        position: static !important;
+        flex: 0 0 ${footerH}px !important;
+        height: ${footerH}px !important;
+        min-height: ${footerH}px !important;
+        max-height: ${footerH}px !important;
+        margin: ${footerGap}px 0 0 !important;
+        border-top: none !important;
+        background: #fff !important;
+      }
+      #modal-po-print-view .po007-items-table tbody tr[data-po007-line] {
+        break-inside: auto !important; page-break-inside: auto !important;
+      }
+      #modal-po-print-view .po007-items-table tbody tr.po007-total-num-row,
+      #modal-po-print-view .po007-items-table tbody tr.po007-total-row {
+        break-inside: avoid !important; page-break-inside: avoid !important;
+      }
+      #modal-po-print-view .po007-items-table thead { display: table-header-group; }
+      #modal-po-print-view .po007-section-heading { break-after: avoid; page-break-after: avoid; }
+    }`;
+    }
+
+    function printPo007InIframe() {
+      const src = lastPo007PrintSource;
+      if (!src) {
+        window.print();
+        return;
+      }
+      let frame = document.getElementById("po007-print-frame");
+      if (!frame) {
+        frame = document.createElement("iframe");
+        frame.id = "po007-print-frame";
+        frame.setAttribute("aria-hidden", "true");
+        frame.style.cssText =
+          "position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none;left:0;bottom:0";
+        document.body.appendChild(frame);
+      }
+      const doc = frame.contentDocument;
+      const win = frame.contentWindow;
+      if (!doc || !win) {
+        window.print();
+        return;
+      }
+      const printSurfaceHtml = renderGeneralPo007Html(src.po, src.g, { printSource: true });
+      const docLang = src.g.documentLang === "en" ? "en" : "ar";
+      const dir = docLang === "ar" ? "rtl" : "ltr";
+      const lang = docLang;
+      const styles = getPo007PrintStylesForIframe();
+      const extra = buildPo007IframePrintExtras();
+      const headLinks = getPo007PrintHeadLinks();
+      doc.open();
+      doc.write(
+        `<!DOCTYPE html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title></title>${headLinks}<style>${styles}\n${extra}</style></head><body>${buildPo007IframePrintBody(printSurfaceHtml)}</body></html>`
+      );
+      doc.close();
+
+      const printRoot = doc.getElementById("po-print-content");
+      const waitForImages = () =>
+        Promise.all(
+          [...doc.images].map(
+            (img) =>
+              new Promise((resolve) => {
+                if (img.complete) resolve();
+                else {
+                  img.onload = resolve;
+                  img.onerror = resolve;
+                }
+              })
+          )
+        );
+      const cleanup = () => {
+        win.removeEventListener("afterprint", cleanup);
+        try {
+          doc.body.innerHTML = "";
+        } catch (e) {
+          /* ignore */
+        }
+      };
+      const runPrint = () => {
+        if (!buildPo007PrintLayout(printRoot, doc)) {
+          window.print();
+          return;
+        }
+        requestAnimationFrame(() => {
+          try {
+            win.focus();
+            win.print();
+          } catch (e) {
+            cleanup();
+            window.print();
+          }
+        });
+      };
+      win.addEventListener("afterprint", cleanup);
+      waitForImages().then(() => setTimeout(runPrint, 250));
+    }
+
+    function estimatePo007PrintTotalSheets(root) {
+      return measurePo007PrintSheets(root).total;
+    }
+
+    function restorePo007PrintFooters() {
+      schedulePo007PageBreakGuides($("po-print-content"));
+    }
+
+    function schedulePo007PageBreakGuides(rootEl) {
+      clearTimeout(po007PageGuidesTimer);
+      po007PageGuidesTimer = setTimeout(() => updatePo007PageBreakGuides(rootEl), 60);
+    }
+
+    function clearPo007ItemsTablePageBreaks(root) {
+      root?.querySelectorAll(".po007-items-table-wrap").forEach((wrap) => {
+        wrap.classList.remove("po007-items-table--page-split");
+        wrap.querySelectorAll(".po007-items-table-page-break").forEach((g) => g.remove());
+        wrap.querySelectorAll(".po007-row-page-break-end, .po007-row-page-break-start").forEach((tr) => {
+          tr.classList.remove("po007-row-page-break-end", "po007-row-page-break-start");
+        });
+      });
+    }
+
+    function applyPo007ItemsTablePageBreaks(page, pageRect, pageH, sheetCount) {
+      const tables = page.querySelectorAll('.po007-items-table-wrap:has([data-po007="items-table"])');
+      if (!tables.length) return;
+      for (let i = 1; i < sheetCount; i++) {
+        const breakY = i * pageH;
+        tables.forEach((wrap) => {
+          const wrapRect = wrap.getBoundingClientRect();
+          const wrapTop = wrapRect.top - pageRect.top;
+          const wrapBottom = wrapTop + wrap.offsetHeight;
+          if (breakY <= wrapTop + 4 || breakY >= wrapBottom - 4) return;
+          wrap.classList.add("po007-items-table--page-split");
+          const relTop = breakY - wrapTop;
+          const guide = document.createElement("div");
+          guide.className = "po007-items-table-page-break";
+          guide.setAttribute("aria-hidden", "true");
+          guide.style.top = `${relTop}px`;
+          wrap.appendChild(guide);
+          const table = wrap.querySelector("table");
+          if (!table) return;
+          const rows = [...table.querySelectorAll("tbody tr")];
+          let endRow = null;
+          let startRow = null;
+          rows.forEach((tr) => {
+            const trRect = tr.getBoundingClientRect();
+            const trMid = trRect.top + trRect.height / 2 - wrapRect.top;
+            if (trMid < relTop) endRow = tr;
+            if (!startRow && trMid >= relTop) startRow = tr;
+          });
+          if (endRow) endRow.classList.add("po007-row-page-break-end");
+          if (startRow) startRow.classList.add("po007-row-page-break-start");
+        });
+      }
+    }
+
+    function updatePo007PageBreakGuides(rootEl) {
+      const root = rootEl || getGeneralPo007Mount() || $("po-print-content");
+      if (!root) return;
+      const usePrintMetrics = po007UsePrintSheetMetrics(root);
+      clearPo007ItemsTablePageBreaks(root);
+      const docLang = usePrintMetrics ? getPo007DocLangFromRoot(root) : getPo007DocumentLang();
+      const breakLbl = tPo007(docLang, "genPo007PageBreakGuide");
+      const visualSheetH = getPo007SheetHeightPx(root);
+      const contentH = usePrintMetrics ? PO007_PRINT_BODY_MAX_PX : PO007_PAGE_SHEET_HEIGHT_PX;
+      const printSheets = usePrintMetrics ? measurePo007PrintSheets(root) : null;
+      root.querySelectorAll(".po007-page").forEach((page, pageIdx) => {
+        page.querySelectorAll(".po007-page-break-guide").forEach((g) => g.remove());
+        page.classList.remove("po007-page--multi-sheet");
+        const sheetCount = usePrintMetrics
+          ? printSheets.pages[pageIdx]?.sheetCount || 1
+          : Math.max(1, Math.ceil((page.offsetHeight || 0) / visualSheetH));
+        if (sheetCount <= 1) return;
+        page.classList.add("po007-page--multi-sheet");
+        const pageRect = page.getBoundingClientRect();
+        applyPo007ItemsTablePageBreaks(page, pageRect, contentH, sheetCount);
+        const pageStartSheet = usePrintMetrics ? printSheets.pages[pageIdx].startSheet : 1;
+        const printTotal = usePrintMetrics ? printSheets.total : null;
+        for (let i = 1; i < sheetCount; i++) {
+          const guide = document.createElement("div");
+          guide.className = "po007-page-break-guide";
+          guide.setAttribute("aria-hidden", "true");
+          guide.style.top = `${i * visualSheetH}px`;
+          const sheetNum = usePrintMetrics ? pageStartSheet + i : i + 1;
+          const lbl = usePrintMetrics
+            ? formatPo007PageNumLabel(docLang, sheetNum, printTotal)
+            : `${breakLbl} ${sheetNum}`;
+          guide.innerHTML = `<span class="po007-page-break-guide-lbl">${escapeHtml(lbl)}</span>`;
+          page.appendChild(guide);
+        }
+      });
+      updatePo007PrintPageNumbers(root);
+    }
+
+    function bindPo007PageBreakGuidesObserver(rootEl) {
+      const root = rootEl || getGeneralPo007Mount();
+      if (!root || typeof ResizeObserver === "undefined") return;
+      po007PageGuidesRo?.disconnect();
+      po007PageGuidesRo = new ResizeObserver(() => schedulePo007PageBreakGuides(root));
+      root.querySelectorAll(".po007-page").forEach((page) => po007PageGuidesRo.observe(page));
+      root
+        .querySelectorAll('.po007-items-table-wrap:has([data-po007="items-table"])')
+        .forEach((wrap) => po007PageGuidesRo.observe(wrap));
+    }
     function po007ItemsTableLabels(docLang, curSuffix) {
       const ar = docLang === "ar";
       return {
@@ -11688,6 +12828,7 @@
         totalWordsEl.textContent = formatPo007TotalWordsDisplay(sum, getPo007MetaCurrency(), docLang);
       }
       renumberGeneralPo007ItemRows();
+      schedulePo007PageBreakGuides(mount);
     }
 
     function updateGeneralPo007ItemHeaders() {
@@ -12425,6 +13566,8 @@
         }
       }
       patchPo007FootersAndMiniHeader();
+      schedulePo007PageBreakGuides(mount);
+      bindPo007PageBreakGuidesObserver(mount);
     }
 
     function buildGeneralFormFromEditor() {
@@ -12563,6 +13706,7 @@
 
     function renderGeneralPo007Html(po, gIn, opts) {
       const editorMode = !!(opts && opts.editor);
+      const printSource = !!(opts && opts.printSource);
       const g = enrichGeneralFormPo007(gIn || normalizeGeneralFormFromPo(po));
       const lines = Array.isArray(g.lines) ? g.lines : [];
       const logoRaw = (po.companyLogoDataUrlSnapshot || po.companyLogoUrlSnapshot || "").trim();
@@ -12692,6 +13836,16 @@
       const partiesBlock = renderPo007PartiesBlock(docLang, v, buyerName, be, buyerEmails, editorMode);
 
       const docDir = docLang === "ar" ? "rtl" : "ltr";
+      const page1Footer = printSource
+        ? ""
+        : `<div class="po007-page-footer">
+            <span class="po007-pf-num" data-po007-page-num="1">${escapeHtml(tPo007(docLang, "genPo007Page"))} 1 / 2</span>
+          </div>`;
+      const page2Footer = printSource
+        ? ""
+        : `<div class="po007-page-footer">
+            <span class="po007-pf-num" data-po007-page-num="2">${escapeHtml(tPo007(docLang, "genPo007Page"))} 2 / 2</span>
+          </div>`;
       const docHtml = `<div class="po007-doc" dir="${docDir}">
         <div class="po007-page">
           <div class="po007-page-content">
@@ -12700,11 +13854,7 @@
             ${itemsTableHtml}
             ${page1Sections.join("")}
           </div>
-          <div class="po007-page-footer">
-            <span data-po007-footer="po-line">${poLine}</span>
-            <span data-po007-footer="buyer">${escapeHtml(buyerName)}</span>
-            <span class="po007-pf-num">${tPo007(docLang, "genPo007Page")} 1 / 2</span>
-          </div>
+          ${page1Footer}
         </div>
         <div class="po007-page">
           <div class="po007-page-content">
@@ -12715,16 +13865,16 @@
             ${page2Sections.join("")}
             ${signaturesBlock}
           </div>
-          <div class="po007-page-footer">
-            <span data-po007-footer="po-line">${poLine}</span>
-            <span data-po007-footer="buyer">${escapeHtml(buyerName)}</span>
-            <span class="po007-pf-num">${tPo007(docLang, "genPo007Page")} 2 / 2</span>
-          </div>
+          ${page2Footer}
         </div>
       </div>`;
-      return editorMode
-        ? `<div class="po007-surface po007-edit-mode">${docHtml}</div>`
-        : `<div class="po007-surface po007-print-mode">${docHtml}</div>`;
+      if (editorMode) {
+        return `<div class="po007-surface po007-edit-mode">${docHtml}</div>`;
+      }
+      if (printSource) {
+        return `<div class="po007-surface po007-print-source">${docHtml}</div>`;
+      }
+      return `<div class="po007-surface po007-preview-mode">${docHtml}</div>`;
     }
 
     let generalPo007PendingLoad = null;
@@ -13100,7 +14250,19 @@
       if (!el) return;
       const html = renderGeneralPo007Html(poRender, g);
       el.innerHTML = html;
+      lastPo007PrintSource = { po: poRender, g };
       lastPoPrintDoc = { title: refText, html };
+      const docLang = g.documentLang === "en" ? "en" : "ar";
+      const hint = $("po007-preview-hint");
+      if (hint) {
+        hint.textContent =
+          docLang === "ar"
+            ? "معاينة تقديرية — عند الطباعة يُعاد بناء المستند من بيانات الأمر مباشرةً على ورقات A4"
+            : "Preview only — printing rebuilds the document from order data directly as A4 pages";
+        hint.classList.remove("hidden");
+      }
+      schedulePo007PageBreakGuides(el);
+      bindPo007PageBreakGuidesObserver(el);
       $("modal-po-print-view")?.classList.remove("hidden");
     }
 
@@ -17629,18 +18791,29 @@
     }
 
     function closePoPrintViewModal() {
+      restorePo007PrintFooters();
       $("modal-po-print-view")?.classList.add("hidden");
+      $("po007-preview-hint")?.classList.add("hidden");
       const el = $("po-print-content");
       if (el) el.innerHTML = "";
       lastPoPrintDoc = null;
+      lastPo007PrintSource = null;
     }
 
     function triggerPoPrint() {
+      if (lastPo007PrintSource || $("po-print-content")?.querySelector(".po007-preview-mode")) {
+        printPo007InIframe();
+        return;
+      }
       window.print();
     }
 
     function exportPoPdf() {
       alert(t("poPrintExportPdfHint"));
+      if (lastPo007PrintSource || $("po-print-content")?.querySelector(".po007-preview-mode")) {
+        printPo007InIframe();
+        return;
+      }
       window.print();
     }
 
@@ -21631,6 +22804,7 @@
     $("modal-po-print-close")?.addEventListener("click", closePoPrintViewModal);
     $("modal-po-print-do")?.addEventListener("click", () => triggerPoPrint());
     $("modal-po-export-pdf")?.addEventListener("click", () => exportPoPdf());
+    window.addEventListener("afterprint", restorePo007PrintFooters);
 
     $("btn-new-po-project").addEventListener("click", async () => {
       const allowed = await getProjectAllowlistForProjectPo();
