@@ -2806,6 +2806,60 @@
       white-space: nowrap;
       font-size: 12px;
       min-width: 34px;
+      flex-shrink: 0;
+    }
+    .po007-surface .po007-payment-list .po007-pay-body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .po007-surface .po007-payment-list .po007-pay-amount-num {
+      font-weight: 700;
+      color: #1a1a1a;
+      font-size: 10px;
+    }
+    .po007-surface .po007-payment-list .po007-pay-amount-words {
+      font-style: italic;
+      color: #555;
+      font-size: 9px;
+      line-height: 1.45;
+    }
+    .po007-surface .po007-payment-list .po007-pay-desc {
+      color: #444;
+    }
+    .po007-surface.po007-edit-mode .po007-payment-list li {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+    .po007-surface.po007-edit-mode .po007-pay-mode-select {
+      font: inherit;
+      font-size: 10px;
+      padding: 2px 4px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .po007-surface.po007-edit-mode .po007-pay-fields {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .po007-surface.po007-edit-mode .po007-pay-auto-field {
+      background: #f1f5f9;
+      color: #334155;
+      border-radius: 3px;
+      padding: 2px 4px;
+    }
+    .po-gen-pay-mode { min-width: 5.5rem; font: inherit; }
+    .po-gen-pay-amount-num[readonly],
+    .po-gen-pay-amount-words[readonly] {
+      background: #f1f5f9;
+      color: #334155;
     }
     .po007-surface .po007-delivery-table { width: 100%; border-collapse: collapse; }
     .po007-surface .po007-delivery-table thead tr { background: #1c4587; }
@@ -2913,6 +2967,33 @@
     }
     .po-gen-list-table input,
     .po-gen-list-table textarea { width: 100%; font: inherit; }
+    .po-gen-payment-pct-summary-wrap,
+    .po007-payment-pct-summary-wrap {
+      margin: 0.5rem 0 0.35rem;
+      min-height: 1.35rem;
+    }
+    .po-payment-pct-summary {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.65rem;
+      padding: 0.4rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+    .po-payment-pct-summary.is-ok {
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      color: #1b5e20;
+    }
+    .po-payment-pct-summary.is-warn {
+      background: #fff3e0;
+      border: 1px solid #ffcc80;
+      color: #e65100;
+    }
+    .po-payment-pct-summary-value { font-weight: 700; }
+    .po-payment-pct-summary-hint { opacity: 0.92; }
     .po-gen-line-desc { min-height: 3.5rem; resize: vertical; }
     .gen-line-included-lbl {
       display: inline-flex;
@@ -5463,7 +5544,10 @@
                 <thead>
                   <tr>
                     <th style="width:4rem" data-i18n="genPoColPaymentPct">النسبة</th>
-                    <th data-i18n="genPoColPaymentText">الشرط</th>
+                    <th style="width:5.5rem" data-i18n="genPoColPaymentMode">الوضع</th>
+                    <th style="width:8rem" data-i18n="genPoColPaymentAmount">المبلغ رقماً</th>
+                    <th data-i18n="genPoColPaymentAmountWords">المبلغ كتابةً</th>
+                    <th data-i18n="genPoColPaymentText">الوصف / الشرط</th>
                     <th aria-hidden="true"></th>
                   </tr>
                 </thead>
@@ -5471,6 +5555,7 @@
               </table>
             </div>
             <button type="button" class="btn btn-secondary btn-sm" id="btn-po-gen-add-payment" data-i18n="genPoAddPayment">إضافة دفعة</button>
+            <div class="po-gen-payment-pct-summary-wrap" id="po-gen-payment-pct-summary" aria-live="polite"></div>
           </div>
           <div class="po-form-section">
             <div class="po-form-section-head" data-i18n="genPoSectionDelivery">جدول التسليم (DELIVERY)</div>
@@ -6897,7 +6982,16 @@
         genPoAddDocList: "إضافة مستند",
         genPoSectionPayment: "شروط الدفع (PAYMENT)",
         genPoColPaymentPct: "النسبة",
-        genPoColPaymentText: "الشرط",
+        genPoColPaymentMode: "الوضع",
+        genPoColPaymentAmount: "المبلغ رقماً",
+        genPoColPaymentAmountWords: "المبلغ كتابةً",
+        genPoColPaymentText: "الوصف / الشرط",
+        genPoPayModeAuto: "تلقائي",
+        genPoPayModeManual: "يدوي",
+        genPoPaymentPctTotal: "مجموع النسب:",
+        genPoPaymentPctOk: "مطابق 100%",
+        genPoPaymentPctMust100: "يجب أن يساوي 100%",
+        alertPaymentPctNot100: "مجموع نسب الدفعات يجب أن يساوي 100%. المجموع الحالي: {total}%",
         genPoAddPayment: "إضافة دفعة",
         genPoSectionDelivery: "جدول التسليم (DELIVERY)",
         genPoColLeadTime: "مدة التسليم (يوم)",
@@ -7805,7 +7899,16 @@
         genPoAddDocList: "Add document",
         genPoSectionPayment: "Payment terms",
         genPoColPaymentPct: "Percent",
-        genPoColPaymentText: "Condition",
+        genPoColPaymentMode: "Mode",
+        genPoColPaymentAmount: "Amount",
+        genPoColPaymentAmountWords: "Amount in words",
+        genPoColPaymentText: "Description / terms",
+        genPoPayModeAuto: "Auto",
+        genPoPayModeManual: "Manual",
+        genPoPaymentPctTotal: "Total percent:",
+        genPoPaymentPctOk: "Equals 100%",
+        genPoPaymentPctMust100: "Must equal 100%",
+        alertPaymentPctNot100: "Payment percentages must total 100%. Current total: {total}%",
         genPoAddPayment: "Add payment term",
         genPoSectionDelivery: "Delivery schedule",
         genPoColLeadTime: "Lead time (days)",
@@ -8925,12 +9028,13 @@
             .split(/\n/)
             .map((line) => {
               const m = line.trim().match(/^(\d+(?:\.\d+)?)\s*%?\s*(.*)$/);
-              if (m) return { pct: `${m[1]}%`, text: (m[2] || "").trim() };
-              return { pct: "", text: line.trim() };
+              if (m) return normalizePaymentTerm({ pct: `${m[1]}%`, text: (m[2] || "").trim(), mode: "auto" });
+              return normalizePaymentTerm({ pct: "", text: line.trim(), mode: "auto" });
             })
             .filter((p) => p.text || p.pct);
         } else x.paymentTerms = [];
       }
+      x.paymentTerms = (Array.isArray(x.paymentTerms) ? x.paymentTerms : []).map(normalizePaymentTerm);
       if (!Array.isArray(x.deliveryRows)) x.deliveryRows = [];
       if (!x.shippingDocsIntro) x.shippingDocsIntro = "";
       if (!Array.isArray(x.shippingDocsRows)) x.shippingDocsRows = [];
@@ -9194,25 +9298,272 @@
         .filter(Boolean);
     }
 
+    function normalizePaymentTerm(p) {
+      const x = p && typeof p === "object" ? p : {};
+      return {
+        pct: String(x.pct ?? "").trim(),
+        mode: x.mode === "manual" ? "manual" : "auto",
+        text: String(x.text ?? "").trim(),
+        amountNum: String(x.amountNum ?? "").trim(),
+        amountWords: String(x.amountWords ?? "").trim(),
+      };
+    }
+
+    function parsePaymentPctValue(pctStr) {
+      const m = String(pctStr || "").match(/(\d+(?:\.\d+)?)/);
+      return m ? parseFloat(m[1]) : 0;
+    }
+
+    const PO007_PAYMENT_PCT_TARGET = 100;
+
+    function sumPaymentPctValues(terms) {
+      return (terms || []).reduce((sum, term) => {
+        const pct = typeof term === "string" ? term : term?.pct;
+        return sum + parsePaymentPctValue(pct);
+      }, 0);
+    }
+
+    function paymentPctTotalIsValid(total) {
+      return Math.abs((Number(total) || 0) - PO007_PAYMENT_PCT_TARGET) < 0.001;
+    }
+
+    function assessPaymentPctTotal(terms) {
+      const list = Array.isArray(terms) ? terms : [];
+      const hasPct = list.some((term) => parsePaymentPctValue(typeof term === "string" ? term : term?.pct) > 0);
+      const total = sumPaymentPctValues(list);
+      return { total, hasPct, isValid: !hasPct || paymentPctTotalIsValid(total) };
+    }
+
+    function formatPaymentPctTotalNum(total) {
+      const n = Number(total) || 0;
+      if (Math.abs(n - Math.round(n)) < 0.001) return String(Math.round(n));
+      return n.toFixed(2).replace(/\.?0+$/, "");
+    }
+
+    function renderPaymentPctSummaryHtml(total, isValid, docLang) {
+      const label = t("genPoPaymentPctTotal");
+      const cls = isValid ? "po-payment-pct-summary is-ok" : "po-payment-pct-summary is-warn";
+      const totalStr = `${formatPaymentPctTotalNum(total)}%`;
+      const detail = isValid ? t("genPoPaymentPctOk") : t("genPoPaymentPctMust100");
+      return `<div class="${cls}" data-po-payment-pct-summary role="status">
+        <span class="po-payment-pct-summary-label">${escapeHtml(label)}</span>
+        <strong class="po-payment-pct-summary-value">${escapeHtml(totalStr)}</strong>
+        <span class="po-payment-pct-summary-hint">${escapeHtml(detail)}</span>
+      </div>`;
+    }
+
+    function updatePoGenPaymentPctSummary() {
+      const el = $("po-gen-payment-pct-summary");
+      if (!el) return;
+      const terms = collectGeneralPaymentTerms();
+      const { total, hasPct, isValid } = assessPaymentPctTotal(terms);
+      if (!hasPct) {
+        el.innerHTML = "";
+        return;
+      }
+      const docLang = lang === "en" ? "en" : "ar";
+      el.innerHTML = renderPaymentPctSummaryHtml(total, isValid, docLang);
+    }
+
+    function updatePo007PaymentPctSummary(mount) {
+      mount = mount || getGeneralPo007Mount();
+      if (!mount) return;
+      const el = mount.querySelector("[data-po007-payment-pct-summary]");
+      if (!el) return;
+      const terms = [...mount.querySelectorAll('[data-po007="payment-list"] [data-po007-pay-item]')].map((li) =>
+        normalizePaymentTerm({
+          pct: (li.querySelector("[data-po007-pay-pct]")?.textContent || "").trim(),
+        })
+      );
+      const { total, hasPct, isValid } = assessPaymentPctTotal(terms);
+      if (!hasPct) {
+        el.innerHTML = "";
+        return;
+      }
+      el.innerHTML = renderPaymentPctSummaryHtml(total, isValid, getPo007DocumentLang());
+    }
+
+    function validatePaymentPctTotalOrAlert(terms, docLang) {
+      const { total, hasPct, isValid } = assessPaymentPctTotal(terms);
+      if (!hasPct || isValid) return true;
+      const msg = t("alertPaymentPctNot100").replace("{total}", formatPaymentPctTotalNum(total));
+      alert(msg);
+      return false;
+    }
+
+    function po007PaymentModeLabel(docLang, mode) {
+      const ar = docLang === "ar";
+      return mode === "manual" ? (ar ? "يدوي" : "Manual") : ar ? "تلقائي" : "Auto";
+    }
+
+    function po007PaymentModeSelectHtml(docLang, mode) {
+      const auto = mode !== "manual" ? " selected" : "";
+      const manual = mode === "manual" ? " selected" : "";
+      return `<select class="po007-pay-mode-select" data-po007-pay-mode-select>
+        <option value="auto"${auto}>${escapeHtml(po007PaymentModeLabel(docLang, "auto"))}</option>
+        <option value="manual"${manual}>${escapeHtml(po007PaymentModeLabel(docLang, "manual"))}</option>
+      </select>`;
+    }
+
+    function po007ResolvePaymentAmounts(term, g, docLang) {
+      const norm = normalizePaymentTerm(term);
+      if (norm.mode === "manual") {
+        return { amountNum: norm.amountNum, amountWords: norm.amountWords };
+      }
+      const total = generalLinesBillableTotal(g?.lines || []);
+      const pct = parsePaymentPctValue(norm.pct);
+      const amount = total * (pct / 100);
+      const curCode = g?.currency === "USD" ? "USD" : "IQD";
+      const curSuffix = po007CurrencySuffix(curCode, docLang);
+      if (amount <= 0 || pct <= 0) return { amountNum: "", amountWords: "" };
+      return {
+        amountNum: formatPo007GrandTotalDisplay(amount, curSuffix, docLang),
+        amountWords: formatPo007TotalWordsDisplay(amount, curCode, docLang),
+      };
+    }
+
+    function po007PaymentPrintBodyHtml(term, g, docLang) {
+      const norm = normalizePaymentTerm(term);
+      const amounts = po007ResolvePaymentAmounts(norm, g, docLang);
+      const numHtml = amounts.amountNum
+        ? `<span class="po007-pay-amount-num">${escapeHtml(amounts.amountNum)}</span>`
+        : "";
+      const wordsHtml = amounts.amountWords
+        ? `<span class="po007-pay-amount-words">${escapeHtml(amounts.amountWords)}</span>`
+        : "";
+      const descHtml = norm.text ? `<span class="po007-pay-desc">${escapeHtml(norm.text)}</span>` : "";
+      return `<span class="po007-pay-body">${numHtml}${wordsHtml}${descHtml}</span>`;
+    }
+
+    function po007PaymentEditorRowHtml(p, docLang) {
+      const norm = normalizePaymentTerm(p);
+      return `<li data-po007-pay-item data-po007-pay-mode="${escapeHtml(norm.mode)}">
+        <button type="button" class="del-btn po007-del-pay-item">✕</button>
+        <span class="pct po007-sec-field po007-sec-field--pct" contenteditable="true" spellcheck="false" data-po007-pay-pct>${escapeHtml(norm.pct || "")}</span>
+        ${po007PaymentModeSelectHtml(docLang, norm.mode)}
+        <div class="po007-pay-fields">
+          <span class="po007-pay-amount-num po007-sec-field po007-pay-manual-field" contenteditable="true" spellcheck="false" data-po007-pay-amount-num>${escapeHtml(norm.amountNum || "")}</span>
+          <span class="po007-pay-amount-words po007-sec-field po007-pay-manual-field" contenteditable="true" spellcheck="false" data-po007-pay-amount-words>${escapeHtml(norm.amountWords || "")}</span>
+          <span class="po007-pay-desc po007-sec-field" contenteditable="true" spellcheck="false" data-po007-pay-desc>${escapeHtml(norm.text || "")}</span>
+        </div>
+      </li>`;
+    }
+
+    function applyPo007PaymentRowModeUi(li, g, docLang) {
+      if (!li) return;
+      const mode = li.querySelector("[data-po007-pay-mode-select]")?.value === "manual" ? "manual" : "auto";
+      li.setAttribute("data-po007-pay-mode", mode);
+      const numEl = li.querySelector("[data-po007-pay-amount-num]");
+      const wordsEl = li.querySelector("[data-po007-pay-amount-words]");
+      const pct = (li.querySelector("[data-po007-pay-pct]")?.textContent || "").trim();
+      const term = normalizePaymentTerm({
+        pct,
+        mode,
+        amountNum: (numEl?.textContent || "").trim(),
+        amountWords: (wordsEl?.textContent || "").trim(),
+        text: (li.querySelector("[data-po007-pay-desc]")?.textContent || "").trim(),
+      });
+      const amounts = po007ResolvePaymentAmounts(term, g, docLang);
+      const auto = mode === "auto";
+      [numEl, wordsEl].forEach((el) => {
+        if (!el) return;
+        el.contentEditable = auto ? "false" : "true";
+        el.classList.toggle("po007-pay-auto-field", auto);
+        if (auto) {
+          el.textContent = el === numEl ? amounts.amountNum : amounts.amountWords;
+        }
+      });
+    }
+
+    function syncPo007EditorPaymentAutoAmounts(mount) {
+      if (!mount) return;
+      const docLang = getPo007DocumentLang();
+      const g = enrichGeneralFormPo007({
+        lines: readGeneralPo007LinesFromMount(),
+        currency: getPo007MetaCurrency(),
+      });
+      mount.querySelectorAll("[data-po007-pay-item]").forEach((li) => applyPo007PaymentRowModeUi(li, g, docLang));
+      updatePo007PaymentPctSummary(mount);
+    }
+
+    function getGeneralFormCurrencyForPayments() {
+      return $("po-general-block")?.dataset?.poCurrency === "USD" ? "USD" : "IQD";
+    }
+
+    function getGeneralFormSnapshotForPayments() {
+      return enrichGeneralFormPo007({
+        ...buildGeneralFormPayloadFromInputs(),
+        currency: getGeneralFormCurrencyForPayments(),
+      });
+    }
+
+    function applyGeneralPaymentRowModeUi(tr) {
+      if (!tr) return;
+      const mode = tr.querySelector(".po-gen-pay-mode")?.value === "manual" ? "manual" : "auto";
+      const numInp = tr.querySelector(".po-gen-pay-amount-num");
+      const wordsInp = tr.querySelector(".po-gen-pay-amount-words");
+      const term = normalizePaymentTerm({
+        pct: tr.querySelector(".po-gen-pay-pct")?.value?.trim() || "",
+        mode,
+        amountNum: numInp?.value?.trim() || "",
+        amountWords: wordsInp?.value?.trim() || "",
+        text: tr.querySelector(".po-gen-pay-text")?.value?.trim() || "",
+      });
+      const amounts = po007ResolvePaymentAmounts(term, getGeneralFormSnapshotForPayments(), lang === "en" ? "en" : "ar");
+      const auto = mode === "auto";
+      if (numInp) {
+        numInp.readOnly = auto;
+        if (auto) numInp.value = amounts.amountNum;
+      }
+      if (wordsInp) {
+        wordsInp.readOnly = auto;
+        if (auto) wordsInp.value = amounts.amountWords;
+      }
+    }
+
+    function syncGeneralFormPaymentAutoAmounts() {
+      const tbody = $("po-gen-payment-tbody");
+      if (!tbody) return;
+      [...tbody.querySelectorAll("tr")].forEach((tr) => applyGeneralPaymentRowModeUi(tr));
+    }
+
     function addGeneralPaymentRow(row) {
       const tbody = $("po-gen-payment-tbody");
       if (!tbody) return;
-      const r = row || {};
+      const r = normalizePaymentTerm(row || {});
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td><input type="text" class="po-gen-pay-pct" value="${escapeAttr((r.pct || "").trim())}" placeholder="10%" /></td><td><input type="text" class="po-gen-pay-text" value="${escapeAttr((r.text || "").trim())}" /></td><td><button type="button" class="btn btn-secondary btn-sm po-gen-list-remove">×</button></td>`;
-      wireGenListRemove(tr, tbody);
+      const docLang = lang === "en" ? "en" : "ar";
+      tr.innerHTML = `<td><input type="text" class="po-gen-pay-pct" value="${escapeAttr(r.pct)}" placeholder="10%" /></td>
+        <td><select class="po-gen-pay-mode">
+          <option value="auto"${r.mode !== "manual" ? " selected" : ""}>${escapeHtml(po007PaymentModeLabel(docLang, "auto"))}</option>
+          <option value="manual"${r.mode === "manual" ? " selected" : ""}>${escapeHtml(po007PaymentModeLabel(docLang, "manual"))}</option>
+        </select></td>
+        <td><input type="text" class="po-gen-pay-amount-num" value="${escapeAttr(r.amountNum)}" /></td>
+        <td><input type="text" class="po-gen-pay-amount-words" value="${escapeAttr(r.amountWords)}" /></td>
+        <td><input type="text" class="po-gen-pay-text" value="${escapeAttr(r.text)}" /></td>
+        <td><button type="button" class="btn btn-secondary btn-sm po-gen-list-remove">×</button></td>`;
+      tr.querySelector(".po-gen-pay-mode")?.addEventListener("change", () => applyGeneralPaymentRowModeUi(tr));
+      tr.querySelector(".po-gen-pay-pct")?.addEventListener("input", () => applyGeneralPaymentRowModeUi(tr));
+      wireGenListRemove(tr, tbody, () => updatePoGenPaymentPctSummary());
       tbody.appendChild(tr);
+      applyGeneralPaymentRowModeUi(tr);
+      updatePoGenPaymentPctSummary();
     }
 
     function collectGeneralPaymentTerms() {
       const tbody = $("po-gen-payment-tbody");
       if (!tbody) return [];
       return [...tbody.querySelectorAll("tr")]
-        .map((tr) => ({
-          pct: tr.querySelector(".po-gen-pay-pct")?.value?.trim() || "",
-          text: tr.querySelector(".po-gen-pay-text")?.value?.trim() || "",
-        }))
-        .filter((p) => p.pct || p.text);
+        .map((tr) =>
+          normalizePaymentTerm({
+            pct: tr.querySelector(".po-gen-pay-pct")?.value?.trim() || "",
+            mode: tr.querySelector(".po-gen-pay-mode")?.value === "manual" ? "manual" : "auto",
+            amountNum: tr.querySelector(".po-gen-pay-amount-num")?.value?.trim() || "",
+            amountWords: tr.querySelector(".po-gen-pay-amount-words")?.value?.trim() || "",
+            text: tr.querySelector(".po-gen-pay-text")?.value?.trim() || "",
+          })
+        )
+        .filter((p) => p.pct || p.text || p.amountNum || p.amountWords);
     }
 
     function addGeneralDeliveryRow(row) {
@@ -9286,10 +9637,11 @@
       const x = enrichGeneralFormPo007(g);
       (x.noteItems.length ? x.noteItems : [""]).forEach((t) => addGeneralNoteRow(t));
       (x.docListItems.length ? x.docListItems : [""]).forEach((t) => addGeneralDocListRow(t));
-      (x.paymentTerms.length ? x.paymentTerms : [{ pct: "", text: "" }]).forEach((p) => addGeneralPaymentRow(p));
+      (x.paymentTerms.length ? x.paymentTerms : [normalizePaymentTerm({})]).forEach((p) => addGeneralPaymentRow(p));
       (x.deliveryRows.length ? x.deliveryRows : [{ item: "", description: "", leadTime: "" }]).forEach((r) => addGeneralDeliveryRow(r));
       (x.inspectionItems.length ? x.inspectionItems : [""]).forEach((t) => addGeneralInspectionRow(t));
       (x.effectiveDateItems.length ? x.effectiveDateItems : [""]).forEach((t) => addGeneralEffectiveRow(t));
+      updatePoGenPaymentPctSummary();
     }
 
     function clearGeneralDocRows() {
@@ -9549,6 +9901,8 @@
 
     function loadGeneralPoFormFromDoc(po) {
       const g = normalizeGeneralFormFromPo(po);
+      const genBlock = $("po-general-block");
+      if (genBlock) genBlock.dataset.poCurrency = g.currency === "USD" ? "USD" : "IQD";
       if ($("po-gen-po-number")) $("po-gen-po-number").value = g.poNumber || (po.title || "").trim();
       if ($("po-gen-po-date")) $("po-gen-po-date").value = g.poDate || "";
       if ($("po-gen-po-rev")) $("po-gen-po-rev").value = g.poRev || "A";
@@ -10602,7 +10956,7 @@
     }
 
     function renderPo007PaymentSectionBody(g, docLang, editorMode) {
-      const terms = g.paymentTerms?.length ? g.paymentTerms : editorMode ? [{ pct: "", text: "" }] : [];
+      const terms = g.paymentTerms?.length ? g.paymentTerms.map(normalizePaymentTerm) : editorMode ? [normalizePaymentTerm({})] : [];
       if (!terms.length) {
         if (!editorMode && (g.termsPayment || "").trim()) {
           return `<p class="po007-text-block">${escapeHtml(g.termsPayment)}</p>`;
@@ -10610,19 +10964,16 @@
         return "";
       }
       if (editorMode) {
-        const rows = terms
-          .map(
-            (p) =>
-              `<li data-po007-pay-item><button type="button" class="del-btn po007-del-pay-item">✕</button>
-              <span class="pct po007-sec-field po007-sec-field--pct" contenteditable="true" spellcheck="false">${escapeHtml(p.pct || "")}</span>
-              <span class="po007-sec-field" contenteditable="true" spellcheck="false">${escapeHtml(p.text || "")}</span></li>`
-          )
-          .join("");
+        const rows = terms.map((p) => po007PaymentEditorRowHtml(p, docLang)).join("");
         return `<ul class="po007-payment-list" data-po007="payment-list">${rows}</ul>
+         <div class="po007-payment-pct-summary-wrap" data-po007-payment-pct-summary aria-live="polite"></div>
          <button type="button" class="add-row-btn po007-add-pay-item">${escapeHtml(po007SecAddLbl(docLang, "pay"))}</button>`;
       }
       return `<ul class="po007-payment-list">${terms
-        .map((p) => `<li><span class="pct">${escapeHtml(p.pct || "")}</span><span>${escapeHtml(p.text || "")}</span></li>`)
+        .map(
+          (p) =>
+            `<li><span class="pct">${escapeHtml(p.pct || "")}</span>${po007PaymentPrintBodyHtml(p, g, docLang)}</li>`
+        )
         .join("")}</ul>`;
     }
 
@@ -10979,11 +11330,16 @@
       const noteItems = readList('[data-po007="note-list"] [data-po007-note-item] .po007-sec-field');
       const docListItems = readList('[data-po007="doc-list"] [data-po007-doc-item] .po007-sec-field');
       const paymentTerms = [...(mount?.querySelectorAll('[data-po007="payment-list"] [data-po007-pay-item]') || [])]
-        .map((li) => ({
-          pct: (li.querySelector(".po007-sec-field--pct")?.textContent || "").trim(),
-          text: (li.querySelector(".po007-sec-field:not(.po007-sec-field--pct)")?.textContent || "").trim(),
-        }))
-        .filter((p) => p.pct || p.text);
+        .map((li) =>
+          normalizePaymentTerm({
+            pct: (li.querySelector("[data-po007-pay-pct]")?.textContent || "").trim(),
+            mode: li.querySelector("[data-po007-pay-mode-select]")?.value === "manual" ? "manual" : "auto",
+            amountNum: (li.querySelector("[data-po007-pay-amount-num]")?.textContent || "").trim(),
+            amountWords: (li.querySelector("[data-po007-pay-amount-words]")?.textContent || "").trim(),
+            text: (li.querySelector("[data-po007-pay-desc]")?.textContent || "").trim(),
+          })
+        )
+        .filter((p) => p.pct || p.text || p.amountNum || p.amountWords);
       const deliveryRows = [...(mount?.querySelectorAll("[data-po007-delivery-row]") || [])]
         .map((tr) => {
           const fields = tr.querySelectorAll(".po007-cell-field");
@@ -11219,7 +11575,9 @@
         return;
       }
       const docLang = getPo007DocumentLang();
-      const payload = pickGeneralPoTemplatePayload(buildGeneralFormFromEditor());
+      const gDraft = buildGeneralFormFromEditor();
+      if (!validatePaymentPctTotalOrAlert(gDraft.paymentTerms || [], docLang)) return;
+      const payload = pickGeneralPoTemplatePayload(gDraft);
       try {
         const ref = generalPoTemplateDocRef();
         const snap = await getDoc(ref);
@@ -12829,6 +13187,7 @@
       }
       renumberGeneralPo007ItemRows();
       schedulePo007PageBreakGuides(mount);
+      syncPo007EditorPaymentAutoAmounts(mount);
     }
 
     function updateGeneralPo007ItemHeaders() {
@@ -13301,13 +13660,30 @@
           e.preventDefault();
           const list = mount.querySelector('[data-po007="payment-list"]');
           if (!list) return;
-          const li = document.createElement("li");
-          li.setAttribute("data-po007-pay-item", "");
-          li.innerHTML = `<button type="button" class="del-btn po007-del-pay-item">✕</button>
-            <span class="pct po007-sec-field po007-sec-field--pct" contenteditable="true" spellcheck="false"></span>
-            <span class="po007-sec-field" contenteditable="true" spellcheck="false"></span>`;
+          const docLang = getPo007DocumentLang();
+          const wrap = document.createElement("div");
+          wrap.innerHTML = po007PaymentEditorRowHtml(normalizePaymentTerm({}), docLang);
+          const li = wrap.firstElementChild;
+          if (!li) return;
           list.appendChild(li);
-          li.querySelector(".po007-sec-field--pct")?.focus();
+          li.querySelector("[data-po007-pay-pct]")?.focus();
+          syncPo007EditorPaymentAutoAmounts(mount);
+          return;
+        }
+        if (e.target.matches("[data-po007-pay-mode-select]")) {
+          const li = e.target.closest("[data-po007-pay-item]");
+          const g = enrichGeneralFormPo007({ lines: readGeneralPo007LinesFromMount(), currency: getPo007MetaCurrency() });
+          applyPo007PaymentRowModeUi(li, g, getPo007DocumentLang());
+          updatePo007PaymentPctSummary(mount);
+          return;
+        }
+        if (e.target.matches("[data-po007-pay-pct]")) {
+          const li = e.target.closest("[data-po007-pay-item]");
+          if (li?.getAttribute("data-po007-pay-mode") === "auto") {
+            const g = enrichGeneralFormPo007({ lines: readGeneralPo007LinesFromMount(), currency: getPo007MetaCurrency() });
+            applyPo007PaymentRowModeUi(li, g, getPo007DocumentLang());
+          }
+          updatePo007PaymentPctSummary(mount);
           return;
         }
         if (e.target.closest(".po007-del-pay-item")) {
@@ -13315,6 +13691,7 @@
           const li = e.target.closest("[data-po007-pay-item]");
           const list = mount.querySelector('[data-po007="payment-list"]');
           if (list && list.querySelectorAll("[data-po007-pay-item]").length > 1) li?.remove();
+          updatePo007PaymentPctSummary(mount);
           return;
         }
         if (e.target.closest(".po007-add-delivery-row")) {
@@ -13402,6 +13779,18 @@
           } else {
             el.dataset.po007Manual = "1";
           }
+          return;
+        }
+        if (e.target.matches("[data-po007-pay-pct]")) {
+          const li = e.target.closest("[data-po007-pay-item]");
+          if (li?.getAttribute("data-po007-pay-mode") === "auto") {
+            const gSnap = enrichGeneralFormPo007({
+              lines: readGeneralPo007LinesFromMount(),
+              currency: getPo007MetaCurrency(),
+            });
+            applyPo007PaymentRowModeUi(li, gSnap, getPo007DocumentLang());
+          }
+          updatePo007PaymentPctSummary(mount);
           return;
         }
         triggerRecalc(e);
@@ -14163,12 +14552,13 @@
         alert(t("genPoLabelBuyerCompany") + ": " + t("dash"));
         return;
       }
+      const docLangSave = g.documentLang === "en" ? "en" : "ar";
+      if (!validatePaymentPctTotalOrAlert(g.paymentTerms || [], docLangSave)) return;
       const lines = g.lines.length ? g.lines : [{ itemTag: "—", description: "", qty: 0, priceText: "", lineTotal: 0 }];
       const totalAmount = generalLinesBillableTotal(lines);
       let companyNameSnapshot = null;
       let companyLogoDataUrlSnapshot = null;
       let companyLogoUrlSnapshot = null;
-      const docLangSave = g.documentLang === "en" ? "en" : "ar";
       const cs = await getDoc(doc(db, "companies", companyId));
       if (cs.exists()) {
         const comp = { id: cs.id, ...cs.data() };
@@ -22599,6 +22989,7 @@
           alert(t("alertSelectSupplier"));
           return;
         }
+        if (!validatePaymentPctTotalOrAlert(g.paymentTerms || [], lang === "en" ? "en" : "ar")) return;
         let companyNameSnapshot = null;
         let companyLogoDataUrlSnapshot = null;
         let companyLogoUrlSnapshot = null;
@@ -22674,6 +23065,18 @@
     $("btn-po-gen-add-note")?.addEventListener("click", () => addGeneralNoteRow());
     $("btn-po-gen-add-doclist")?.addEventListener("click", () => addGeneralDocListRow());
     $("btn-po-gen-add-payment")?.addEventListener("click", () => addGeneralPaymentRow());
+    $("po-gen-payment-tbody")?.addEventListener("change", (e) => {
+      if (e.target.matches(".po-gen-pay-mode, .po-gen-pay-pct")) applyGeneralPaymentRowModeUi(e.target.closest("tr"));
+      if (e.target.matches(".po-gen-pay-mode, .po-gen-pay-pct")) updatePoGenPaymentPctSummary();
+    });
+    $("po-gen-payment-tbody")?.addEventListener("input", (e) => {
+      if (e.target.matches(".po-gen-pay-pct")) applyGeneralPaymentRowModeUi(e.target.closest("tr"));
+      if (e.target.matches(".po-gen-pay-pct")) updatePoGenPaymentPctSummary();
+    });
+    $("po-gen-lines-tbody")?.addEventListener("input", () => syncGeneralFormPaymentAutoAmounts());
+    $("po-gen-lines-tbody")?.addEventListener("change", (e) => {
+      if (e.target.matches(".gen-line-included")) syncGeneralFormPaymentAutoAmounts();
+    });
     $("btn-po-gen-add-delivery")?.addEventListener("click", () => addGeneralDeliveryRow());
     $("btn-po-gen-add-inspection")?.addEventListener("click", () => addGeneralInspectionRow());
     $("btn-po-gen-add-effective")?.addEventListener("click", () => addGeneralEffectiveRow());
