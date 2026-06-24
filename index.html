@@ -6258,7 +6258,7 @@
         loading: "جاري التحميل…",
         noOrdersYet: "لا توجد طلبات بعد.",
         poProjectsSearchLabel: "بحث",
-        poProjectsSearchPlaceholder: "مرجع، مشروع، شركة، عقد، منطقة، مرحلة…",
+        poProjectsSearchPlaceholder: "مرجع، مشروع، شركة، عقد، منطقة، مرحلة، مادة…",
         filterWorkflowLabel: "مرحلة المسار",
         filterPriorityLabel: "الأولوية",
         filterCompanyLabel: "الشركة",
@@ -7173,7 +7173,7 @@
         loading: "Loading…",
         noOrdersYet: "No orders yet.",
         poProjectsSearchLabel: "Search",
-        poProjectsSearchPlaceholder: "Reference, project, company, contract, region, stage…",
+        poProjectsSearchPlaceholder: "Reference, project, company, contract, region, stage, material…",
         filterWorkflowLabel: "Workflow stage",
         filterPriorityLabel: "Priority",
         filterCompanyLabel: "Company",
@@ -20124,6 +20124,24 @@
       return `<td class="po-table-reason-cell" title="${escapeAttr(full)}">${escapeHtml(full)}</td>`;
     }
 
+    function projectPoLinesSearchText(r) {
+      const lines = Array.isArray(r?.lines) ? r.lines : [];
+      return lines
+        .map((l) => {
+          const x = l || {};
+          return [
+            (x.item || "").trim(),
+            (x.itemTag || "").trim(),
+            (x.description || x.remark || "").trim(),
+            (x.remarks || x.lineRemarks || "").trim(),
+            (x.unit || "").trim(),
+          ]
+            .filter(Boolean)
+            .join(" ");
+        })
+        .join(" ");
+    }
+
     function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg) {
       if (wf && (r.workflowStatus || "") !== wf) return false;
       if (pri && (r.priority || "normal") !== pri) return false;
@@ -20131,7 +20149,7 @@
       if (co && cDisp !== co) return false;
       const rName = projectPoRegionDisplayName(r);
       if (reg && rName !== reg) return false;
-      const q = (qRaw || "").trim().toLowerCase();
+      const q = (qRaw || "").trim();
       if (!q) return true;
       const hay = [
         (r.poReference || r.title || "").trim(),
@@ -20147,11 +20165,9 @@
         (r.vehicleNumber || "").trim(),
         workflowLabelForDocument(r),
         poRowDisplayDate(r),
-      ]
-        .join(" ")
-        .toLowerCase();
-      const words = q.split(/\s+/).filter(Boolean);
-      return words.every((w) => hay.includes(w));
+        projectPoLinesSearchText(r),
+      ].join(" ");
+      return matchesQueryAllWords(hay, q);
     }
 
     function populateProjectPoFilterOptions() {
