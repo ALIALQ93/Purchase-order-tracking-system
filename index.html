@@ -963,6 +963,7 @@
       color: var(--muted);
       grid-column: 1 / -1;
     }
+    .badge-priority-urgent {
       background: rgba(245, 158, 11, 0.14);
       color: #b45309;
       border: 1px solid rgba(245, 158, 11, 0.25);
@@ -1991,7 +1992,10 @@
         break-after: avoid;
         page-break-after: avoid;
       }
-      #modal-po-print-view .po007-section,
+      #modal-po-print-view .po007-section {
+        break-inside: auto;
+        page-break-inside: auto;
+      }
       #modal-po-print-view .po007-signatures,
       #modal-po-print-view .po007-doc-header,
       #modal-po-print-view .po007-parties {
@@ -2094,7 +2098,7 @@
     /* PO007 — معاينة A4 مطابقة للطباعة */
     #modal-po-print-view .po007-surface.po007-preview-mode {
       --po007-a4-w: 794px;
-      --po007-a4-sheet-h: 980px;
+      --po007-a4-sheet-h: 1046px;
       --po007-print-pad-top: 11px;
       --po007-print-pad-x: 30px;
       --po007-print-pad-bottom: 38px;
@@ -2113,8 +2117,8 @@
       padding: var(--po007-print-pad-top) var(--po007-print-pad-x) var(--po007-print-pad-bottom);
       box-sizing: border-box;
       box-shadow: 0 4px 22px rgba(15, 23, 42, 0.12);
-      font-size: 10.5pt;
-      line-height: 1.35;
+      font-size: 12px;
+      line-height: 1.45;
     }
     #modal-po-print-view .po007-page.po007-page--multi-sheet {
       box-shadow: 0 4px 22px rgba(15, 23, 42, 0.12);
@@ -11699,15 +11703,14 @@
     const PO007_PRINT_MARGIN_X_PX = Math.round((8 / 25.4) * 96);
     const PO007_PRINT_MARGIN_BOTTOM_PX = Math.round((10 / 25.4) * 96);
     const PO007_PRINT_PAGE_HEIGHT_PX = PO007_A4_HEIGHT_PX;
-    const PO007_PRINT_PADDING_BOTTOM_PX = 8;
     const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
-    const PO007_PRINT_FOOTER_GAP_PX = 4;
-    const PO007_PRINT_FOOTER_RESERVE_PX = 18;
-    const PO007_PRINT_BODY_SAFETY_PX = 12;
+    const PO007_PRINT_FOOTER_GAP_PX = 6;
+    const PO007_PRINT_FOOTER_RESERVE_PX = 22;
+    const PO007_PRINT_BODY_SAFETY_PX = 20;
     const PO007_PRINT_BODY_MAX_PX =
       PO007_PRINT_PAGE_HEIGHT_PX -
       PO007_PRINT_MARGIN_TOP_PX -
-      PO007_PRINT_PADDING_BOTTOM_PX -
+      PO007_PRINT_MARGIN_BOTTOM_PX -
       PO007_PRINT_FOOTER_GAP_PX -
       PO007_PRINT_FOOTER_RESERVE_PX;
     const PO007_PRINT_SHEET_HEIGHT_PX = PO007_PRINT_PAGE_HEIGHT_PX;
@@ -11847,7 +11850,7 @@
       };
     }
 
-    function po007GetTableMeta(wrap, table) {
+    function po007GetTableMeta(wrap, table, sectionEl) {
       return {
         tableRef: table,
         wrapClass: wrap.getAttribute("class") || "po007-items-table-wrap",
@@ -11855,12 +11858,21 @@
         tableAttrs: [...table.attributes].map((a) => [a.name, a.value]),
         colgroupHtml: table.querySelector("colgroup")?.outerHTML || "",
         thead: table.querySelector("thead"),
+        sectionEl: sectionEl || null,
+        headingPlaced: false,
       };
     }
 
-    function po007BuildPartialNoteSection(sectionEl, listItems, withHeading) {
+    const PO007_SPLIT_LIST_SELECTORS = [
+      ".po007-note-list",
+      ".po007-payment-list",
+      ".po007-doc-list",
+      ".po007-bullet-list",
+      ".po007-custom-list",
+    ];
+
+    function po007BuildPartialBodySection(sectionEl, bodyNodes, withHeading) {
       const doc = sectionEl.ownerDocument;
-      const noteList = sectionEl.querySelector(".po007-section-body .po007-note-list");
       const section = doc.createElement("div");
       section.className = sectionEl.className;
       [...sectionEl.attributes].forEach((a) => {
@@ -11873,43 +11885,119 @@
       }
       const body = doc.createElement("div");
       body.className = "po007-section-body";
-      const ol = doc.createElement("ol");
-      ol.className = noteList?.className || "po007-note-list";
-      if (noteList) {
-        [...noteList.attributes].forEach((a) => {
-          if (a.name !== "class") ol.setAttribute(a.name, a.value);
-        });
-      }
-      listItems.forEach((li) => ol.appendChild(li.cloneNode(true)));
-      body.appendChild(ol);
+      bodyNodes.forEach((n) => body.appendChild(n.cloneNode(true)));
       section.appendChild(body);
       return section;
     }
 
-    function po007ExpandBlockPrintUnits(child, logicalIdx) {
-      if (!child.classList.contains("po007-section")) {
-        return [
-          {
-            kind: "block",
-            el: child,
-            logicalIdx,
-            isMiniHeader: child.classList.contains("po007-mini-header"),
-          },
-        ];
+    function po007BuildPartialListSection(sectionEl, listEl, listItems, withHeading) {
+      const doc = sectionEl.ownerDocument;
+      const section = doc.createElement("div");
+      section.className = sectionEl.className;
+      [...sectionEl.attributes].forEach((a) => {
+        if (a.name !== "class") section.setAttribute(a.name, a.value);
+      });
+      if (!withHeading) section.classList.add("po007-section--continued");
+      if (withHeading) {
+        const heading = sectionEl.querySelector(".po007-section-heading");
+        if (heading) section.appendChild(heading.cloneNode(true));
       }
-      const noteList = child.querySelector(".po007-section-body .po007-note-list");
-      if (noteList) {
-        const items = [...noteList.children].filter((el) => el.tagName === "LI");
+      const body = doc.createElement("div");
+      body.className = "po007-section-body";
+      const list = doc.createElement(listEl.tagName.toLowerCase() === "ol" ? "ol" : "ul");
+      list.className = listEl.className || "";
+      [...listEl.attributes].forEach((a) => {
+        if (a.name !== "class") list.setAttribute(a.name, a.value);
+      });
+      listItems.forEach((li) => list.appendChild(li.cloneNode(true)));
+      body.appendChild(list);
+      section.appendChild(body);
+      return section;
+    }
+
+    function po007BuildPartialNoteSection(sectionEl, listItems, withHeading) {
+      const noteList = sectionEl.querySelector(".po007-section-body .po007-note-list");
+      return po007BuildPartialListSection(sectionEl, noteList || sectionEl, listItems, withHeading);
+    }
+
+    function po007AppendTableRowUnits(units, wrap, logicalIdx, sectionEl) {
+      const table = wrap.querySelector("table");
+      if (!table) return;
+      const meta = po007GetTableMeta(wrap, table, sectionEl);
+      const rows = [...table.querySelectorAll("tbody tr")];
+      let i = 0;
+      while (i < rows.length) {
+        const row = rows[i];
+        if (row.classList.contains("po007-total-num-row")) {
+          const bundle = [row];
+          if (rows[i + 1]?.classList.contains("po007-total-row")) {
+            bundle.push(rows[i + 1]);
+            i += 2;
+          } else {
+            i += 1;
+          }
+          units.push({ kind: "table-rows", rows: bundle, meta, logicalIdx });
+          continue;
+        }
+        units.push({ kind: "table-rows", rows: [row], meta, logicalIdx });
+        i += 1;
+      }
+    }
+
+    function po007ExpandSectionPrintUnits(sectionEl, logicalIdx) {
+      const body = sectionEl.querySelector(".po007-section-body");
+      if (!body) return [{ kind: "block", el: sectionEl, logicalIdx, isMiniHeader: false }];
+
+      for (const sel of PO007_SPLIT_LIST_SELECTORS) {
+        const list = body.querySelector(sel);
+        if (!list) continue;
+        const items = [...list.children].filter((el) => el.tagName === "LI");
         if (items.length > 1) {
           return items.map((li, idx) => ({
             kind: "block",
-            el: po007BuildPartialNoteSection(child, [li], idx === 0),
+            el: po007BuildPartialListSection(sectionEl, list, [li], idx === 0),
             logicalIdx,
             isMiniHeader: false,
           }));
         }
       }
-      return [{ kind: "block", el: child, logicalIdx, isMiniHeader: false }];
+
+      const tableWrap = body.querySelector(".po007-items-table-wrap");
+      if (tableWrap) {
+        const units = [];
+        po007AppendTableRowUnits(units, tableWrap, logicalIdx, sectionEl);
+        if (units.length) return units;
+      }
+
+      const bodyKids = [...body.children].filter((n) => n.nodeType === 1);
+      if (bodyKids.length > 1) {
+        return bodyKids.map((ch, idx) => ({
+          kind: "block",
+          el: po007BuildPartialBodySection(sectionEl, [ch], idx === 0),
+          logicalIdx,
+          isMiniHeader: false,
+        }));
+      }
+
+      return [{ kind: "block", el: sectionEl, logicalIdx, isMiniHeader: false }];
+    }
+
+    function po007ExpandBlockPrintUnits(child, logicalIdx) {
+      if (child.classList.contains("po007-section")) {
+        return po007ExpandSectionPrintUnits(child, logicalIdx);
+      }
+      return [
+        {
+          kind: "block",
+          el: child,
+          logicalIdx,
+          isMiniHeader: child.classList.contains("po007-mini-header"),
+        },
+      ];
+    }
+
+    function po007WrapTableNodeInSection(sectionEl, tableNode, withHeading) {
+      return po007BuildPartialBodySection(sectionEl, [tableNode], withHeading);
     }
 
     function po007CollectPrintUnits(previewDoc) {
@@ -11919,33 +12007,70 @@
         if (!content) return;
         [...content.children].forEach((child) => {
           if (child.classList.contains("po007-items-table-wrap")) {
-            const table = child.querySelector("table");
-            if (!table) return;
-            const meta = po007GetTableMeta(child, table);
-            const rows = [...table.querySelectorAll("tbody tr")];
-            let i = 0;
-            while (i < rows.length) {
-              const row = rows[i];
-              if (row.classList.contains("po007-total-num-row")) {
-                const bundle = [row];
-                if (rows[i + 1]?.classList.contains("po007-total-row")) {
-                  bundle.push(rows[i + 1]);
-                  i += 2;
-                } else {
-                  i += 1;
-                }
-                units.push({ kind: "table-rows", rows: bundle, meta, logicalIdx });
-                continue;
-              }
-              units.push({ kind: "table-rows", rows: [row], meta, logicalIdx });
-              i += 1;
-            }
+            po007AppendTableRowUnits(units, child, logicalIdx, null);
           } else {
             po007ExpandBlockPrintUnits(child, logicalIdx).forEach((unit) => units.push(unit));
           }
         });
       });
       return units;
+    }
+
+    function po007IsTableLeadBlockUnit(unit) {
+      if (unit.kind !== "block" || unit.isMiniHeader) return false;
+      const el = unit.el;
+      return (
+        el?.classList?.contains("po007-doc-header") ||
+        el?.classList?.contains("po007-parties") ||
+        el?.classList?.contains("po007-offer-badge")
+      );
+    }
+
+    /** اربط الرأس + البائع/المشتري ببداية جدول المواد حتى لا يُعزلان في صفحة وحدها */
+    function po007CoalescePrintUnits(units) {
+      const out = [];
+      const leadEls = [];
+      let leadAttached = false;
+
+      const flushOrphanLeads = () => {
+        while (leadEls.length) {
+          const el = leadEls.shift();
+          out.push({ kind: "block", el, logicalIdx: 0, isMiniHeader: false });
+        }
+        leadAttached = false;
+      };
+
+      for (const unit of units) {
+        if (po007IsTableLeadBlockUnit(unit)) {
+          leadEls.push(unit.el);
+          continue;
+        }
+        if (unit.kind === "table-rows" && leadEls.length && !leadAttached && !unit.meta?.sectionEl) {
+          out.push({
+            ...unit,
+            meta: {
+              ...unit.meta,
+              leadBlocks: [...leadEls],
+              leadPlaced: false,
+            },
+          });
+          leadEls.length = 0;
+          leadAttached = true;
+          continue;
+        }
+        if (leadEls.length) flushOrphanLeads();
+        out.push(unit);
+      }
+      flushOrphanLeads();
+      return out;
+    }
+
+    function po007BundleLeadBlocks(leadBlocks, contentNode, doc) {
+      const bundle = doc.createElement("div");
+      bundle.className = "po007-print-lead-bundle";
+      leadBlocks.forEach((el) => bundle.appendChild(el.cloneNode(true)));
+      bundle.appendChild(contentNode);
+      return bundle;
     }
 
     function po007BuildTableNode(rows, meta, doc) {
@@ -11967,13 +12092,19 @@
       const host = doc.createElement("div");
       host.className = "po007-print-measure-host";
       host.setAttribute("aria-hidden", "true");
-      host.style.cssText = `position:absolute;left:-20000px;top:0;width:${PO007_A4_WIDTH_PX}px;font-size: 10.5pt;line-height:1.35;visibility:hidden;pointer-events:none;box-sizing:border-box;`;
+      host.style.cssText =
+        "position:absolute;left:-20000px;top:0;visibility:hidden;pointer-events:none;box-sizing:border-box;";
       doc.body.appendChild(host);
+
+      const surface = doc.createElement("div");
+      surface.className = "po007-surface po007-print-output";
+      surface.style.cssText = `width:${PO007_A4_WIDTH_PX}px;margin:0;padding:0;`;
+      host.appendChild(surface);
 
       const bodyShell = doc.createElement("div");
       bodyShell.className = "po007-print-page-body";
-      bodyShell.style.cssText = `box-sizing:border-box;width:${PO007_PRINT_CONTENT_WIDTH_PX}px;margin:0;padding:0;`;
-      host.appendChild(bodyShell);
+      bodyShell.style.cssText = `box-sizing:border-box;width:${PO007_PRINT_CONTENT_WIDTH_PX}px;margin:0;padding:0;font-size:12px;line-height:1.45;`;
+      surface.appendChild(bodyShell);
 
       const measureInBody = () => bodyShell.scrollHeight || bodyShell.offsetHeight || 0;
 
@@ -12061,7 +12192,13 @@
       };
 
       const measureTable = (rows, meta) => {
-        const node = po007BuildTableNode(rows, meta, doc);
+        let node = po007BuildTableNode(rows, meta, doc);
+        if (meta.sectionEl) {
+          node = po007WrapTableNodeInSection(meta.sectionEl, node, !meta.headingPlaced);
+        }
+        if (meta.leadBlocks?.length && !meta.leadPlaced) {
+          node = po007BundleLeadBlocks(meta.leadBlocks, node, doc);
+        }
         return { node, h: measCtx.measureEl(node) };
       };
 
@@ -12077,7 +12214,16 @@
           startNewPage();
           addContinuationHeader();
         }
-        appendNode(po007BuildTableNode(rows, meta, doc));
+        let node = po007BuildTableNode(rows, meta, doc);
+        if (meta.sectionEl) {
+          node = po007WrapTableNodeInSection(meta.sectionEl, node, !meta.headingPlaced);
+          meta.headingPlaced = true;
+        }
+        if (meta.leadBlocks?.length && !meta.leadPlaced) {
+          node = po007BundleLeadBlocks(meta.leadBlocks, node, doc);
+          meta.leadPlaced = true;
+        }
+        appendNode(node);
       };
 
       const flushTable = () => {
@@ -12153,7 +12299,7 @@
       const docLang = getPo007DocLangFromRoot(previewDoc);
       const dir = previewDoc.getAttribute("dir") || "ltr";
       const miniHeader = po007GetPrintRunningHeader(previewDoc);
-      const units = po007CollectPrintUnits(previewDoc);
+      const units = po007CoalescePrintUnits(po007CollectPrintUnits(previewDoc));
       const measCtx = po007CreateMeasureCtx(doc);
 
       try {
@@ -12195,7 +12341,7 @@
       const pageH = PO007_PRINT_PAGE_HEIGHT_PX;
       const padT = PO007_PRINT_MARGIN_TOP_PX;
       const padX = PO007_PRINT_MARGIN_X_PX;
-      const padB = PO007_PRINT_PADDING_BOTTOM_PX;
+      const padB = PO007_PRINT_MARGIN_BOTTOM_PX;
       const footerH = PO007_PRINT_FOOTER_RESERVE_PX;
       const footerGap = PO007_PRINT_FOOTER_GAP_PX;
       const bodyH = PO007_PRINT_BODY_MAX_PX;
@@ -12246,6 +12392,8 @@
       min-height: 0;
       max-height: ${bodyH}px;
       overflow: hidden;
+      font-size: 12px;
+      line-height: 1.45;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-footer {
       box-sizing: border-box;
@@ -12269,6 +12417,14 @@
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-section--continued {
       margin-top: 0 !important;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-section {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-section-heading {
+      break-after: avoid;
+      page-break-after: avoid;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-footer .po007-pf-num {
       color: #1c4587;
@@ -12554,7 +12710,13 @@
       clearPo007ItemsTablePageBreaks(root);
       const docLang = usePrintMetrics ? getPo007DocLangFromRoot(root) : getPo007DocumentLang();
       const breakLbl = tPo007(docLang, "genPo007PageBreakGuide");
-      const visualSheetH = getPo007SheetHeightPx(root);
+      const visualSheetH = usePrintMetrics
+        ? PO007_PRINT_MARGIN_TOP_PX +
+          PO007_PRINT_BODY_MAX_PX +
+          PO007_PRINT_FOOTER_GAP_PX +
+          PO007_PRINT_FOOTER_RESERVE_PX +
+          PO007_PRINT_MARGIN_BOTTOM_PX
+        : getPo007SheetHeightPx(root);
       const contentH = usePrintMetrics ? PO007_PRINT_BODY_MAX_PX : PO007_PAGE_SHEET_HEIGHT_PX;
       const printSheets = usePrintMetrics ? measurePo007PrintSheets(root) : null;
       root.querySelectorAll(".po007-page").forEach((page, pageIdx) => {
