@@ -12682,6 +12682,14 @@
         break-inside: avoid !important; page-break-inside: avoid !important;
       }
       #modal-po-print-view .po007-items-table thead { display: table-header-group; }
+      #modal-po-print-view .po007-surface.po007-print-flow .po007-page {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-flow .po007-page + .po007-page {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
     }`;
     }
 
