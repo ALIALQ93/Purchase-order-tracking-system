@@ -5135,7 +5135,7 @@
                 <select id="rep-purch-request-type">
                   <option value="" data-i18n="reportAllOpt">الكل</option>
                   <option value="materials" data-i18n="poRequestType_materials">شراء مواد</option>
-                  <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">صيانة آلية - سيارة</option>
+                  <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">محروقات - صيانة - زيوت (آلية - سيارة)</option>
                 </select>
               </label>
               <label class="po-filter-field">
@@ -5228,7 +5228,7 @@
                 <select id="rep-mat-request-type">
                   <option value="" data-i18n="reportAllOpt">الكل</option>
                   <option value="materials" selected data-i18n="poRequestType_materials">شراء مواد</option>
-                  <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">صيانة آلية - سيارة</option>
+                  <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">محروقات - صيانة - زيوت (آلية - سيارة)</option>
                 </select>
               </label>
               <label class="po-filter-field">
@@ -5742,19 +5742,19 @@
                   <select id="po-request-type">
                     <option value="">—</option>
                     <option value="materials" data-i18n="poRequestType_materials">شراء مواد</option>
-                    <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">صيانة آلية - سيارة</option>
+                    <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">محروقات - صيانة - زيوت (آلية - سيارة)</option>
                   </select>
                 </div>
                 <div class="field hidden" id="po-vehicle-block">
                   <span class="field-label-like" data-i18n="poVehicleInfoLabel">بيانات الآلية/السيارة</span>
                   <div class="po-vehicle-grid">
-                    <div>
-                      <label for="po-vehicle-type" class="sr-only" data-i18n="poVehicleTypeLabel">نوع الآلية/السيارة</label>
-                      <input type="text" id="po-vehicle-type" data-i18n-placeholder="poVehicleTypePlaceholder" placeholder="نوع الآلية/السيارة" />
+                    <div class="field" style="margin:0">
+                      <label for="po-vehicle-type" data-i18n="poVehicleTypeLabel">نوع الآلية/السيارة</label>
+                      <input type="text" id="po-vehicle-type" data-i18n-placeholder="poVehicleTypePlaceholder" placeholder="نوع الآلية/السيارة" autocomplete="off" />
                     </div>
-                    <div>
-                      <label for="po-vehicle-number" class="sr-only" data-i18n="poVehicleNumberLabel">رقم الآلية/السيارة</label>
-                      <input type="text" id="po-vehicle-number" data-i18n-placeholder="poVehicleNumberPlaceholder" placeholder="رقمها" />
+                    <div class="field" style="margin:0">
+                      <label for="po-vehicle-number" data-i18n="poVehicleNumberLabel">رقم الآلية/السيارة</label>
+                      <input type="text" id="po-vehicle-number" data-i18n-placeholder="poVehicleNumberPlaceholder" placeholder="رقمها" autocomplete="off" />
                     </div>
                   </div>
                 </div>
@@ -6310,7 +6310,7 @@
         poUsageLabel: "الاستخدام",
         poRequestTypeLabel: "نوع الطلب",
         poRequestType_materials: "شراء مواد",
-        poRequestType_maintenanceVehicle: "صيانة آلية - سيارة",
+        poRequestType_maintenanceVehicle: "محروقات - صيانة - زيوت (آلية - سيارة)",
         poVehicleInfoLabel: "بيانات الآلية/السيارة",
         poVehicleTypeLabel: "نوع الآلية/السيارة",
         poVehicleTypePlaceholder: "نوع الآلية/السيارة",
@@ -6329,6 +6329,8 @@
         alertPoReasonRequired: "سبب الطلب مطلوب.",
         alertPoRequestTypeRequired: "اختر نوع الطلب.",
         alertPoVehicleInfoRequired: "أدخل نوع الآلية/السيارة ورقمها.",
+        alertPoVehicleTypeRequired: "نوع الآلية/السيارة مطلوب لهذا النوع من الطلب.",
+        alertPoVehicleNumberRequired: "رقم الآلية/السيارة مطلوب لهذا النوع من الطلب.",
         cancel: "إلغاء",
         save: "حفظ",
         alertSelectProject: "اختر المشروع.",
@@ -7225,7 +7227,7 @@
         poUsageLabel: "Usage",
         poRequestTypeLabel: "Request type",
         poRequestType_materials: "Materials purchase",
-        poRequestType_maintenanceVehicle: "Vehicle / equipment maintenance",
+        poRequestType_maintenanceVehicle: "Fuels - maintenance - oils (vehicle / equipment)",
         poVehicleInfoLabel: "Vehicle / equipment info",
         poVehicleTypeLabel: "Vehicle / equipment type",
         poVehicleTypePlaceholder: "Type",
@@ -7244,6 +7246,8 @@
         alertPoReasonRequired: "Reason is required.",
         alertPoRequestTypeRequired: "Select a request type.",
         alertPoVehicleInfoRequired: "Enter the vehicle/equipment type and number.",
+        alertPoVehicleTypeRequired: "Vehicle/equipment type is required for this request type.",
+        alertPoVehicleNumberRequired: "Vehicle/equipment number is required for this request type.",
         cancel: "Cancel",
         save: "Save",
         alertSelectProject: "Select a project.",
@@ -19997,8 +20001,8 @@
         en: "When a request is rejected, the recorded reason tells the requester what to fix before resubmitting.",
       },
       {
-        ar: "طلبات صيانة الآليات تحتاج نوع ورقم المركبة — بدونها يصعب تتبع التكاليف والصيانة.",
-        en: "Vehicle maintenance requests need type and number — without them cost and maintenance tracking is difficult.",
+        ar: "طلبات محروقات وصيانة وزيوت (آلية - سيارة) تحتاج نوع ورقم المركبة — بدونها يصعب تتبع التكاليف والصيانة.",
+        en: "Fuels, maintenance, and oils (vehicle/equipment) requests need type and number — without them cost and maintenance tracking is difficult.",
       },
       {
         ar: "تابع مرحلة المسار في قائمة الطلبات — تعرف أين توقف الطلب ومن المسؤول عن الخطوة التالية.",
@@ -23158,13 +23162,24 @@
     function syncProjectPoRequestTypeUi() {
       const sel = $("po-request-type");
       const block = $("po-vehicle-block");
+      const vType = $("po-vehicle-type");
+      const vNum = $("po-vehicle-number");
       if (!sel || !block) return;
       const isMaint = String(sel.value || "").trim() === "maintenance_vehicle";
-      if (isMaint) block.classList.remove("hidden");
-      else {
+      if (isMaint) {
+        block.classList.remove("hidden");
+        vType?.setAttribute("required", "required");
+        vNum?.setAttribute("required", "required");
+        vType?.setAttribute("aria-required", "true");
+        vNum?.setAttribute("aria-required", "true");
+      } else {
         block.classList.add("hidden");
-        if ($("po-vehicle-type")) $("po-vehicle-type").value = "";
-        if ($("po-vehicle-number")) $("po-vehicle-number").value = "";
+        vType?.removeAttribute("required");
+        vNum?.removeAttribute("required");
+        vType?.removeAttribute("aria-required");
+        vNum?.removeAttribute("aria-required");
+        if (vType) vType.value = "";
+        if (vNum) vNum.value = "";
       }
     }
 
@@ -23207,8 +23222,14 @@
         const isMaint = requestType === "maintenance_vehicle";
         const vehicleType = ($("po-vehicle-type")?.value || "").trim();
         const vehicleNumber = ($("po-vehicle-number")?.value || "").trim();
-        if (isMaint && (!vehicleType || !vehicleNumber)) {
-          alert(t("alertPoVehicleInfoRequired"));
+        if (isMaint && !vehicleType) {
+          alert(t("alertPoVehicleTypeRequired"));
+          $("po-vehicle-type")?.focus();
+          return;
+        }
+        if (isMaint && !vehicleNumber) {
+          alert(t("alertPoVehicleNumberRequired"));
+          $("po-vehicle-number")?.focus();
           return;
         }
         const requestDate = ($("po-request-date").value || formatTodayYmd()).slice(0, 10);
