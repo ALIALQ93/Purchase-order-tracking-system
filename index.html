@@ -11706,7 +11706,7 @@
     const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
     const PO007_PRINT_FOOTER_GAP_PX = 6;
     const PO007_PRINT_FOOTER_RESERVE_PX = 22;
-    const PO007_PRINT_BODY_SAFETY_PX = 20;
+    const PO007_PRINT_BODY_SAFETY_PX = 36;
     const PO007_PRINT_BODY_MAX_PX =
       PO007_PRINT_PAGE_HEIGHT_PX -
       PO007_PRINT_MARGIN_TOP_PX -
@@ -11860,6 +11860,8 @@
         thead: table.querySelector("thead"),
         sectionEl: sectionEl || null,
         headingPlaced: false,
+        sectionLeadNodes: null,
+        sectionLeadPlaced: false,
       };
     }
 
@@ -11870,6 +11872,104 @@
       ".po007-bullet-list",
       ".po007-custom-list",
     ];
+
+    function po007ShouldSkipPrintLeadNode(node) {
+      if (!node || node.nodeType !== 1) return true;
+      const cls = node.classList;
+      return (
+        cls.contains("add-row-btn") ||
+        cls.contains("add-item-btn") ||
+        cls.contains("po007-custom-table-tools") ||
+        cls.contains("po007-custom-table-col-bar") ||
+        cls.contains("po007-payment-pct-summary-wrap")
+      );
+    }
+
+    function po007CollectSectionLeadBeforeTable(body, tableWrap) {
+      const leads = [];
+      let stop = false;
+      const walk = (parent) => {
+        for (const ch of [...parent.children]) {
+          if (stop) return;
+          if (ch === tableWrap) {
+            stop = true;
+            return;
+          }
+          if (ch.contains(tableWrap)) {
+            walk(ch);
+            return;
+          }
+          if (po007ShouldSkipPrintLeadNode(ch)) continue;
+          leads.push(ch);
+        }
+      };
+      walk(body);
+      return leads;
+    }
+
+    function po007IsSplittableTextBlock(el) {
+      return (
+        el?.classList?.contains("po007-text-block") ||
+        el?.classList?.contains("po007-sec-field--block") ||
+        el?.classList?.contains("po007-shipping-docs-intro")
+      );
+    }
+
+    function po007ExpandTextBlockPrintUnits(sectionEl, logicalIdx) {
+      const body = sectionEl.querySelector(".po007-section-body");
+      if (!body) return null;
+      const kids = [...body.children].filter((n) => n.nodeType === 1 && !po007ShouldSkipPrintLeadNode(n));
+      if (kids.length !== 1 || !po007IsSplittableTextBlock(kids[0])) return null;
+      const lines = (kids[0].innerText || kids[0].textContent || "")
+        .split(/\n+/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+      if (lines.length <= 1) return null;
+      const doc = sectionEl.ownerDocument;
+      return lines.map((line, idx) => {
+        const block = kids[0].cloneNode(false);
+        block.textContent = line;
+        return {
+          kind: "block",
+          el: po007BuildPartialBodySection(sectionEl, [block], idx === 0),
+          logicalIdx,
+          isMiniHeader: false,
+        };
+      });
+    }
+
+    function po007WrapTablePrintNode(meta, tableNode, doc) {
+      let node = tableNode;
+      if (meta.sectionEl) {
+        const bodyNodes = [];
+        if (meta.sectionLeadNodes?.length && !meta.sectionLeadPlaced) {
+          meta.sectionLeadNodes.forEach((n) => bodyNodes.push(n.cloneNode(true)));
+          meta.sectionLeadPlaced = true;
+        }
+        bodyNodes.push(node);
+        node = po007BuildPartialBodySection(meta.sectionEl, bodyNodes, !meta.headingPlaced);
+        if (!meta.headingPlaced) meta.headingPlaced = true;
+      }
+      if (meta.leadBlocks?.length && !meta.leadPlaced) {
+        node = po007BundleLeadBlocks(meta.leadBlocks, node, doc);
+        meta.leadPlaced = true;
+      }
+      return node;
+    }
+
+    function po007SnapshotTableMetaFlags(meta) {
+      return {
+        headingPlaced: meta.headingPlaced,
+        sectionLeadPlaced: meta.sectionLeadPlaced,
+        leadPlaced: meta.leadPlaced,
+      };
+    }
+
+    function po007RestoreTableMetaFlags(meta, snap) {
+      meta.headingPlaced = snap.headingPlaced;
+      meta.sectionLeadPlaced = snap.sectionLeadPlaced;
+      meta.leadPlaced = snap.leadPlaced;
+    }
 
     function po007BuildPartialBodySection(sectionEl, bodyNodes, withHeading) {
       const doc = sectionEl.ownerDocument;
@@ -11915,16 +12015,21 @@
       return section;
     }
 
-    function po007BuildPartialNoteSection(sectionEl, listItems, withHeading) {
-      const noteList = sectionEl.querySelector(".po007-section-body .po007-note-list");
-      return po007BuildPartialListSection(sectionEl, noteList || sectionEl, listItems, withHeading);
+    function po007FilterPrintTableRows(rows) {
+      return rows.filter((tr) => {
+        if (!tr || tr.nodeType !== 1) return false;
+        if (tr.classList.contains("po007-items-add-row")) return false;
+        if (tr.querySelector(".po007-add-item-row, .add-items-row-btn")) return false;
+        return true;
+      });
     }
 
-    function po007AppendTableRowUnits(units, wrap, logicalIdx, sectionEl) {
+    function po007AppendTableRowUnits(units, wrap, logicalIdx, sectionEl, sectionLeadNodes) {
       const table = wrap.querySelector("table");
       if (!table) return;
       const meta = po007GetTableMeta(wrap, table, sectionEl);
-      const rows = [...table.querySelectorAll("tbody tr")];
+      if (sectionLeadNodes?.length) meta.sectionLeadNodes = sectionLeadNodes;
+      const rows = po007FilterPrintTableRows([...table.querySelectorAll("tbody tr")]);
       let i = 0;
       while (i < rows.length) {
         const row = rows[i];
@@ -11962,14 +12067,18 @@
         }
       }
 
+      const textUnits = po007ExpandTextBlockPrintUnits(sectionEl, logicalIdx);
+      if (textUnits?.length) return textUnits;
+
       const tableWrap = body.querySelector(".po007-items-table-wrap");
       if (tableWrap) {
+        const sectionLeadNodes = po007CollectSectionLeadBeforeTable(body, tableWrap);
         const units = [];
-        po007AppendTableRowUnits(units, tableWrap, logicalIdx, sectionEl);
+        po007AppendTableRowUnits(units, tableWrap, logicalIdx, sectionEl, sectionLeadNodes);
         if (units.length) return units;
       }
 
-      const bodyKids = [...body.children].filter((n) => n.nodeType === 1);
+      const bodyKids = [...body.children].filter((n) => n.nodeType === 1 && !po007ShouldSkipPrintLeadNode(n));
       if (bodyKids.length > 1) {
         return bodyKids.map((ch, idx) => ({
           kind: "block",
@@ -11994,10 +12103,6 @@
           isMiniHeader: child.classList.contains("po007-mini-header"),
         },
       ];
-    }
-
-    function po007WrapTableNodeInSection(sectionEl, tableNode, withHeading) {
-      return po007BuildPartialBodySection(sectionEl, [tableNode], withHeading);
     }
 
     function po007CollectPrintUnits(previewDoc) {
@@ -12046,17 +12151,10 @@
           continue;
         }
         if (unit.kind === "table-rows" && leadEls.length && !leadAttached && !unit.meta?.sectionEl) {
-          out.push({
-            ...unit,
-            meta: {
-              ...unit.meta,
-              leadBlocks: [...leadEls],
-              leadPlaced: false,
-            },
-          });
+          unit.meta.leadBlocks = [...leadEls];
+          unit.meta.leadPlaced = false;
           leadEls.length = 0;
           leadAttached = true;
-          continue;
         }
         if (leadEls.length) flushOrphanLeads();
         out.push(unit);
@@ -12177,10 +12275,11 @@
 
       const appendNode = (node) => {
         const h = measCtx.measureEl(node);
-        const used = bodyUsed();
+        let used = bodyUsed();
         if (used + h > bodyLimit() && page.body.childNodes.length > 0) {
           startNewPage();
           addContinuationHeader();
+          used = bodyUsed();
         }
         page.body.appendChild(node);
         if (measCtx.measureBody(page.body) > bodyLimit() && page.body.childNodes.length > 1) {
@@ -12192,14 +12291,30 @@
       };
 
       const measureTable = (rows, meta) => {
-        let node = po007BuildTableNode(rows, meta, doc);
-        if (meta.sectionEl) {
-          node = po007WrapTableNodeInSection(meta.sectionEl, node, !meta.headingPlaced);
+        const snap = po007SnapshotTableMetaFlags(meta);
+        const node = po007WrapTablePrintNode(meta, po007BuildTableNode(rows, meta, doc), doc);
+        const h = measCtx.measureEl(node);
+        po007RestoreTableMetaFlags(meta, snap);
+        return { node, h };
+      };
+
+      const countFittingTableRows = (rows, meta) => {
+        if (!rows.length) return 0;
+        const used = bodyUsed();
+        let lo = 1;
+        let hi = rows.length;
+        let best = 0;
+        while (lo <= hi) {
+          const mid = (lo + hi) >> 1;
+          const { h } = measureTable(rows.slice(0, mid), meta);
+          if (used + h <= bodyLimit()) {
+            best = mid;
+            lo = mid + 1;
+          } else {
+            hi = mid - 1;
+          }
         }
-        if (meta.leadBlocks?.length && !meta.leadPlaced) {
-          node = po007BundleLeadBlocks(meta.leadBlocks, node, doc);
-        }
-        return { node, h: measCtx.measureEl(node) };
+        return best;
       };
 
       const tableFitsOnPage = (rows, meta) => {
@@ -12210,20 +12325,30 @@
 
       const placeTable = (rows, meta) => {
         if (!rows.length) return;
-        if (pageHasTable()) {
-          startNewPage();
-          addContinuationHeader();
+        let remaining = [...rows];
+        while (remaining.length) {
+          if (pageHasTable()) {
+            startNewPage();
+            addContinuationHeader();
+          }
+          let snap = po007SnapshotTableMetaFlags(meta);
+          let fitCount = countFittingTableRows(remaining, meta);
+          po007RestoreTableMetaFlags(meta, snap);
+          if (fitCount === 0) {
+            if (page.body.childNodes.length > 0) {
+              startNewPage();
+              addContinuationHeader();
+              snap = po007SnapshotTableMetaFlags(meta);
+              fitCount = countFittingTableRows(remaining, meta);
+              po007RestoreTableMetaFlags(meta, snap);
+            }
+            if (fitCount === 0) fitCount = 1;
+          }
+          const chunk = remaining.slice(0, fitCount);
+          remaining = remaining.slice(fitCount);
+          const node = po007WrapTablePrintNode(meta, po007BuildTableNode(chunk, meta, doc), doc);
+          appendNode(node);
         }
-        let node = po007BuildTableNode(rows, meta, doc);
-        if (meta.sectionEl) {
-          node = po007WrapTableNodeInSection(meta.sectionEl, node, !meta.headingPlaced);
-          meta.headingPlaced = true;
-        }
-        if (meta.leadBlocks?.length && !meta.leadPlaced) {
-          node = po007BundleLeadBlocks(meta.leadBlocks, node, doc);
-          meta.leadPlaced = true;
-        }
-        appendNode(node);
       };
 
       const flushTable = () => {
@@ -12261,8 +12386,9 @@
 
         if (page.body.childNodes.length === 0 && !pendingRows.length) addContinuationHeader();
 
+        const activeMeta = pendingMeta || unit.meta;
         const trial = [...pendingRows, ...unit.rows];
-        if (tableFitsOnPage(trial, unit.meta)) {
+        if (tableFitsOnPage(trial, activeMeta)) {
           pendingRows = trial;
           return;
         }
@@ -12271,8 +12397,11 @@
           flushTable();
           startNewPage();
           addContinuationHeader();
-          pendingMeta = unit.meta;
+          pendingMeta = activeMeta;
           pendingRows = [...unit.rows];
+          if (!tableFitsOnPage(pendingRows, pendingMeta)) {
+            flushTable();
+          }
           return;
         }
 
@@ -12280,8 +12409,11 @@
           startNewPage();
           addContinuationHeader();
         }
-        pendingMeta = unit.meta;
+        pendingMeta = activeMeta;
         pendingRows = [...unit.rows];
+        if (!tableFitsOnPage(pendingRows, pendingMeta)) {
+          flushTable();
+        }
       });
 
       flushTable();
@@ -12688,7 +12820,7 @@
           wrap.appendChild(guide);
           const table = wrap.querySelector("table");
           if (!table) return;
-          const rows = [...table.querySelectorAll("tbody tr")];
+          const rows = po007FilterPrintTableRows([...table.querySelectorAll("tbody tr")]);
           let endRow = null;
           let startRow = null;
           rows.forEach((tr) => {
