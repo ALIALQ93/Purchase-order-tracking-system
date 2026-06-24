@@ -11779,7 +11779,8 @@
 
     function measurePo007PrintSheets(root) {
       const pages = [...(root?.querySelectorAll(".po007-page") || [])];
-      const sheetH = PO007_PRINT_SHEET_HEIGHT_PX;
+      const useFlowBody = !!root?.querySelector(".po007-print-flow");
+      const sheetH = useFlowBody ? PO007_PRINT_BODY_MAX_PX : PO007_PRINT_SHEET_HEIGHT_PX;
       if (!pages.length) return { total: 1, pages: [{ sheetCount: 1, startSheet: 1, endSheet: 1 }], sheetH };
       const prevMinHeights = pages.map((p) => {
         const prev = p.style.minHeight;
@@ -12555,8 +12556,11 @@
     }
 
     function buildPo007IframePrintExtras() {
+      const pageMarginTopMm = (PO007_PRINT_MARGIN_TOP_PX / 96) * 25.4;
+      const pageMarginXMm = (PO007_PRINT_MARGIN_X_PX / 96) * 25.4;
+      const pageMarginBottomMm = ((PO007_PRINT_MARGIN_BOTTOM_PX + PO007_PRINT_FOOTER_RESERVE_PX) / 96) * 25.4;
       return `
-    @page { size: A4 portrait; margin: 8mm 8mm 12mm; }
+    @page { size: A4 portrait; margin: ${pageMarginTopMm.toFixed(2)}mm ${pageMarginXMm.toFixed(2)}mm ${pageMarginBottomMm.toFixed(2)}mm; }
     #modal-po-print-view.modal-overlay,
     #modal-po-print-view .modal,
     #modal-po-print-view .po-print-sheet {
