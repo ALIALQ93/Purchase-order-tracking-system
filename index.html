@@ -1786,12 +1786,8 @@
 
       /* اطبع فقط محتوى مودال الطباعة */
       /* ملاحظة: visibility:hidden يُبقي العناصر تأخذ مساحة وقد ينتج صفحات بيضاء */
-      body > *:not(#modal-po-print-view):not(.po007-print-running-footer-detached):not(.po007-print-flow-running-footer) {
+      body > *:not(#modal-po-print-view):not(.po007-print-running-footer-detached) {
         display: none !important;
-      }
-      body > .po007-print-flow-running-footer {
-        display: block !important;
-        visibility: visible !important;
       }
       #modal-po-print-view {
         display: block !important;
@@ -2108,9 +2104,9 @@
       width: 100%;
     }
     #modal-po-print-view .po007-surface.po007-preview-mode .po007-doc {
-      gap: 10px;
+      gap: 0;
       padding: 0;
-      align-items: center;
+      align-items: stretch;
     }
     #modal-po-print-view .po007-surface.po007-preview-mode .po007-page {
       width: var(--po007-a4-w);
@@ -2122,6 +2118,17 @@
       box-shadow: 0 4px 22px rgba(15, 23, 42, 0.12);
       font-size: 12px;
       line-height: 1.38;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-page--continuous {
+      width: var(--po007-a4-w);
+      max-width: calc(100vw - 1.5rem);
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-mini-header {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    #modal-po-print-view .po007-surface.po007-preview-mode .po007-page-footer {
+      display: none;
     }
     #modal-po-print-view .po007-page.po007-page--multi-sheet {
       box-shadow: 0 4px 22px rgba(15, 23, 42, 0.12);
@@ -2191,11 +2198,14 @@
       padding: 0 2px;
     }
     .po007-surface.po007-preview-mode .po007-doc {
-      gap: 10px;
+      gap: 0;
       padding: 0;
     }
     .po007-surface.po007-preview-mode .po007-page {
       margin: 0 auto;
+      min-height: auto;
+    }
+    .po007-surface.po007-preview-mode .po007-page--continuous {
       min-height: auto;
     }
     .po007-surface.po007-preview-mode .po007-section {
@@ -11735,13 +11745,9 @@
     const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
     const PO007_PRINT_FOOTER_GAP_PX = 6;
     const PO007_PRINT_FOOTER_RESERVE_PX = 22;
-    const PO007_PRINT_BODY_SAFETY_PX = 20;
+    const PO007_PRINT_BODY_SAFETY_PX = 6;
     const PO007_PRINT_BODY_MAX_PX =
-      PO007_PRINT_PAGE_HEIGHT_PX -
-      PO007_PRINT_MARGIN_TOP_PX -
-      PO007_PRINT_MARGIN_BOTTOM_PX -
-      PO007_PRINT_FOOTER_GAP_PX -
-      PO007_PRINT_FOOTER_RESERVE_PX;
+      PO007_PRINT_PAGE_HEIGHT_PX - PO007_PRINT_MARGIN_TOP_PX - PO007_PRINT_MARGIN_BOTTOM_PX;
     const PO007_PRINT_SHEET_HEIGHT_PX = PO007_PRINT_PAGE_HEIGHT_PX;
     const PO007_PRINT_CONTENT_HEIGHT_PX = PO007_PRINT_BODY_MAX_PX;
     let po007PageGuidesTimer = null;
@@ -11867,9 +11873,32 @@
         .trim();
     }
 
-    function buildPo007PrintPageFooterHtml(pageNum, total, docLang) {
+    function po007InjectPrintPageNumInHeader(pageBody, pageNum, total, docLang, doc) {
       const pageLbl = formatPo007PageNumLabel(docLang, pageNum, total);
-      return `<span class="po007-pf-num po007-print-page-only-num">${escapeHtml(pageLbl)}</span>`;
+      const numInner = `<span class="po007-pf-num po007-print-page-only-num">${escapeHtml(pageLbl)}</span>`;
+      const docHeader = pageBody.querySelector(".po007-doc-header");
+      if (docHeader) {
+        const dhPo = docHeader.querySelector(".po007-dh-po");
+        if (dhPo) {
+          let slot = dhPo.querySelector(".po007-print-page-num-slot");
+          if (!slot) {
+            slot = doc.createElement("div");
+            slot.className = "po007-print-page-num-slot po007-print-page-num-slot--below-ref";
+            dhPo.appendChild(slot);
+          }
+          slot.innerHTML = numInner;
+          return;
+        }
+      }
+      const contHead = pageBody.querySelector(".po007-print-continuation-header, .po007-mini-header");
+      if (!contHead) return;
+      const poLineEl = contHead.querySelector(".po007-mh-po");
+      if (!poLineEl) return;
+      poLineEl.querySelectorAll(".po007-print-page-num-slot").forEach((n) => n.remove());
+      const slot = doc.createElement("span");
+      slot.className = "po007-print-page-num-slot po007-print-page-num-slot--inline";
+      slot.innerHTML = ` &nbsp;|&nbsp; ${numInner}`;
+      poLineEl.appendChild(slot);
     }
 
     function extractPo007FooterMeta(previewDoc) {
@@ -12218,6 +12247,7 @@
 
     function po007CompactPrintMeasureCss() {
       return `
+    .po007-print-measure-host .po007-print-page-body { font-size: 11px; line-height: 1.42; }
     .po007-print-measure-host .po007-section { margin-top: 9px; }
     .po007-print-measure-host .po007-section:first-child { margin-top: 0; }
     .po007-print-measure-host .po007-section-heading { padding: 4px 9px; margin-bottom: 5px; font-size: 10.5px; }
@@ -12255,7 +12285,7 @@
 
       const bodyShell = doc.createElement("div");
       bodyShell.className = "po007-print-page-body";
-      bodyShell.style.cssText = `box-sizing:border-box;width:${PO007_PRINT_CONTENT_WIDTH_PX}px;margin:0;padding:0;font-size:12px;line-height:1.42;`;
+      bodyShell.style.cssText = `box-sizing:border-box;width:${PO007_PRINT_CONTENT_WIDTH_PX}px;margin:0;padding:0;font-size:11px;line-height:1.42;`;
       surface.appendChild(bodyShell);
 
       const measureInBody = () => bodyShell.scrollHeight || bodyShell.offsetHeight || 0;
@@ -12291,11 +12321,8 @@
       el.className = "po007-print-page";
       const body = doc.createElement("div");
       body.className = "po007-print-page-body";
-      const footer = doc.createElement("div");
-      footer.className = "po007-print-page-footer";
       el.appendChild(body);
-      el.appendChild(footer);
-      return { el, body, footer };
+      return { el, body };
     }
 
     function po007PackUnitsToPages(units, measCtx, doc, opts) {
@@ -12496,7 +12523,7 @@
         printDoc.setAttribute("dir", dir);
 
         pages.forEach((p, idx) => {
-          p.footer.innerHTML = buildPo007PrintPageFooterHtml(idx + 1, total, docLang);
+          po007InjectPrintPageNumInHeader(p.body, idx + 1, total, docLang, doc);
           printDoc.appendChild(p.el);
         });
 
@@ -12541,24 +12568,108 @@
       }
     }
 
-    function applyPo007FlowPrintPageNumbers(doc, docLang) {
-      const printRoot = doc.getElementById("po-print-content");
-      if (!printRoot?.querySelector(".po007-print-flow")) return;
+    function preparePo007IframePrint(doc, docLang) {
       po007SetIframePrintDimensions(doc);
-      const { total } = measurePo007PrintSheets(printRoot);
-      doc.documentElement.style.setProperty("--po007-print-pages", String(Math.max(1, total)));
-      const numEl = doc.querySelector(".po007-print-flow-running-footer .po007-pf-num");
-      if (numEl) numEl.textContent = "";
+      const printRoot = doc.getElementById("po-print-content");
+      if (!printRoot) return;
+      buildPo007PrintLayout(printRoot, doc);
+    }
+
+    function buildPo007PrintOutputIframeCss() {
+      const bodyH = PO007_PRINT_BODY_MAX_PX;
+      const padTop = PO007_PRINT_MARGIN_TOP_PX;
+      const padX = PO007_PRINT_MARGIN_X_PX;
+      const padBottom = PO007_PRINT_MARGIN_BOTTOM_PX;
+      return `
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-doc {
+      display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
+      box-sizing: border-box; width: 100%; max-width: 100%;
+      min-height: auto;
+      padding: ${padTop}px ${padX}px ${padBottom}px;
+      margin: 0; background: #fff;
+      display: block;
+      page-break-after: always; break-after: page;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page:last-child {
+      page-break-after: auto; break-after: auto;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-body {
+      max-height: ${bodyH}px;
+      overflow: hidden; font-size: 11px; line-height: 1.42;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-num-slot--below-ref {
+      margin-top: 2px;
+      font-size: 9px;
+      line-height: 1.35;
+      color: #64748b;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-num-slot--inline {
+      font-size: 9px;
+      white-space: nowrap;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-only-num {
+      color: #1c4587; font-weight: 700; font-size: 8.5pt;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header {
+      display: flex !important; justify-content: space-between; align-items: center; gap: 8px;
+      border-bottom: 2px solid #1c4587; padding-bottom: 5px; margin-bottom: 8px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-title,
+    #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header .po007-mh-title {
+      font-weight: 700; font-size: 10px; color: #1c4587;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-po,
+    #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header .po007-mh-po {
+      font-size: 9px; color: #444; text-align: end;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header {
+      display: flex !important; justify-content: space-between; align-items: center; gap: 8px;
+      border-bottom: 2px solid #1c4587; padding-bottom: 5px; margin-bottom: 8px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-section { margin-top: 9px; }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-section:first-child { margin-top: 0; }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-section-heading {
+      padding: 4px 9px; margin-bottom: 5px; font-size: 10.5px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-doc-header {
+      padding-bottom: 7px; margin-bottom: 8px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-parties { margin-bottom: 8px; }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-party-cell { padding: 7px 9px; }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-items-table thead th {
+      padding: 5px 7px; font-size: 10px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-items-table td {
+      padding: 4px 7px; font-size: 10px; line-height: 1.4;
+    }
+    @media print {
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
+        box-shadow: none !important; width: 100% !important;
+        min-height: 0 !important; height: auto !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-body {
+        max-height: none !important; overflow: visible !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header,
+      #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header {
+        display: flex !important;
+        break-inside: avoid !important; page-break-inside: avoid !important;
+      }
+    }`;
     }
 
     function buildPo007IframePrintBody(innerHtml) {
-      return `<div id="modal-po-print-view" class="modal-overlay"><div class="modal"><div id="po-print-content" class="po-print-sheet">${innerHtml}</div></div></div><div class="po007-print-flow-running-footer"><span class="po007-pf-num"></span></div>`;
+      return `<div id="modal-po-print-view" class="modal-overlay"><div class="modal"><div id="po-print-content" class="po-print-sheet">${innerHtml}</div></div></div>`;
     }
 
     function buildPo007IframePrintExtras() {
       const pageMarginTopMm = (PO007_PRINT_MARGIN_TOP_PX / 96) * 25.4;
       const pageMarginXMm = (PO007_PRINT_MARGIN_X_PX / 96) * 25.4;
-      const pageMarginBottomMm = ((PO007_PRINT_MARGIN_BOTTOM_PX + PO007_PRINT_FOOTER_RESERVE_PX) / 96) * 25.4;
+      const pageMarginBottomMm = (PO007_PRINT_MARGIN_BOTTOM_PX / 96) * 25.4;
       return `
     @page { size: A4 portrait; margin: ${pageMarginTopMm.toFixed(2)}mm ${pageMarginXMm.toFixed(2)}mm ${pageMarginBottomMm.toFixed(2)}mm; }
     #modal-po-print-view.modal-overlay,
@@ -12570,8 +12681,7 @@
     #modal-po-print-view .po007-page-break-guide,
     #modal-po-print-view .po007-items-table-page-break,
     #modal-po-print-view .po007-preview-mode,
-    #modal-po-print-view .po007-page-footer,
-    .po007-print-flow-running-footer { display: none; }
+    #modal-po-print-view .po007-page-footer { display: none; }
     #modal-po-print-view .po007-surface.po007-print-flow .po007-doc {
       gap: 0; padding: 0; margin: 0;
     }
@@ -12640,31 +12750,6 @@
     @media print {
       html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
       .no-print, .po007-page-break-guide, .po007-items-table-page-break { display: none !important; }
-      body > .po007-print-flow-running-footer {
-        display: block !important;
-        visibility: visible !important;
-        position: fixed;
-        bottom: 3mm;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 8pt;
-        line-height: 1.1;
-        color: #64748b;
-        z-index: 9999;
-        pointer-events: none;
-      }
-      .po007-print-flow-running-footer .po007-pf-num {
-        color: #1c4587;
-        font-weight: 700;
-        font-size: 8.5pt;
-      }
-      html[lang="ar"] .po007-print-flow-running-footer .po007-pf-num::after {
-        content: "صفحة " counter(page) " / " var(--po007-print-pages, counter(pages));
-      }
-      html[lang="en"] .po007-print-flow-running-footer .po007-pf-num::after {
-        content: "Page " counter(page) " / " var(--po007-print-pages, counter(pages));
-      }
       #modal-po-print-view .po007-items-table thead,
       #modal-po-print-view .po007-sec-data-table thead,
       #modal-po-print-view .po007-section-heading,
@@ -12690,7 +12775,7 @@
         page-break-before: always !important;
         break-before: page !important;
       }
-    }`;
+    }${buildPo007PrintOutputIframeCss()}`;
     }
 
     function printPo007InIframe() {
@@ -12704,17 +12789,17 @@
         frame = document.createElement("iframe");
         frame.id = "po007-print-frame";
         frame.setAttribute("aria-hidden", "true");
-        frame.style.cssText =
-          "position:fixed;left:-12000px;top:0;width:794px;min-height:100vh;border:0;opacity:0;pointer-events:none;visibility:hidden;";
         document.body.appendChild(frame);
       }
+      frame.style.cssText =
+        "position:fixed;left:-12000px;top:0;width:794px;min-height:100vh;border:0;opacity:0;pointer-events:none;visibility:hidden;";
       const doc = frame.contentDocument;
       const win = frame.contentWindow;
       if (!doc || !win) {
         window.print();
         return;
       }
-      const printSurfaceHtml = renderGeneralPo007Html(src.po, src.g, { printFlow: true });
+      const printSurfaceHtml = renderGeneralPo007Html(src.po, src.g);
       const docLang = src.g.documentLang === "en" ? "en" : "ar";
       const dir = docLang === "ar" ? "rtl" : "ltr";
       const lang = docLang;
@@ -12749,7 +12834,7 @@
         }
       };
       const runPrint = () => {
-        applyPo007FlowPrintPageNumbers(doc, docLang);
+        preparePo007IframePrint(doc, docLang);
         requestAnimationFrame(() => {
           try {
             win.focus();
@@ -14539,7 +14624,7 @@
       </div>`;
         return `<div class="po007-surface po007-print-source po007-print-flow">${flowDocHtml}</div>`;
       }
-      const docHtml = `<div class="po007-doc" dir="${docDir}">
+      const twoPageDocHtml = `<div class="po007-doc" dir="${docDir}">
         <div class="po007-page">
           <div class="po007-page-content">
             ${headerBlock}
@@ -14561,13 +14646,29 @@
           ${page2Footer}
         </div>
       </div>`;
+      const continuousPreviewHtml = `<div class="po007-doc" dir="${docDir}">
+        <div class="po007-page po007-page--continuous">
+          <div class="po007-page-content">
+            ${headerBlock}
+            ${partiesBlock}
+            ${itemsTableHtml}
+            ${page1Sections.join("")}
+            <div class="po007-mini-header">
+              <span class="po007-mh-title" data-po007-mini="title">${miniHeader}</span>
+              <span class="po007-mh-po" data-po007-mini="po-line">${poLine}</span>
+            </div>
+            ${page2Sections.join("")}
+            ${signaturesBlock}
+          </div>
+        </div>
+      </div>`;
       if (editorMode) {
-        return `<div class="po007-surface po007-edit-mode">${docHtml}</div>`;
+        return `<div class="po007-surface po007-edit-mode">${twoPageDocHtml}</div>`;
       }
       if (printSource) {
-        return `<div class="po007-surface po007-print-source">${docHtml}</div>`;
+        return `<div class="po007-surface po007-print-source">${twoPageDocHtml}</div>`;
       }
-      return `<div class="po007-surface po007-preview-mode">${docHtml}</div>`;
+      return `<div class="po007-surface po007-preview-mode">${continuousPreviewHtml}</div>`;
     }
 
     let generalPo007PendingLoad = null;
@@ -14947,16 +15048,7 @@
       lastPo007PrintSource = { po: poRender, g };
       lastPoPrintDoc = { title: refText, html };
       const docLang = g.documentLang === "en" ? "en" : "ar";
-      const hint = $("po007-preview-hint");
-      if (hint) {
-        hint.textContent =
-          docLang === "ar"
-            ? "معاينة الصفحتين — الطباعة/PDF بدون تقسيم يدوي؛ المتصفح يوزّع المحتوى مع ترقيم تلقائي"
-            : "Two-page preview — print/PDF uses browser flow (no manual split) with auto page numbers";
-        hint.classList.remove("hidden");
-      }
-      schedulePo007PageBreakGuides(el);
-      bindPo007PageBreakGuidesObserver(el);
+      $("po007-preview-hint")?.classList.add("hidden");
       $("modal-po-print-view")?.classList.remove("hidden");
     }
 
