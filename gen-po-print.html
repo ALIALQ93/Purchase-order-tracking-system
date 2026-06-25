@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أمر شراء — طباعة احترافية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1c3557;
+      --navy-mid: #1c4587;
+      --navy-light: #e8eef7;
+      --ink: #1a1a1a;
+      --muted: #5c6570;
+      --border: #b8c4d4;
+      --row-alt: #f4f7fb;
+      --paper: #fff;
+      --toolbar-h: 52px;
+    }
+    html[dir="ltr"] body { font-family: "IBM Plex Sans", "IBM Plex Sans Arabic", sans-serif; }
+    html[dir="rtl"] body { font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif; }
+    body {
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--ink);
+      background: #d8dee8;
+      padding-top: calc(var(--toolbar-h) + 16px);
+      padding-bottom: 24px;
+    }
+    #toolbar {
+      position: fixed; inset: 0 0 auto 0; height: var(--toolbar-h);
+      background: var(--navy);
+      color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,.22);
+    }
+    #toolbar .title { font-weight: 600; font-size: 14px; }
+    #toolbar .actions { display: flex; gap: 8px; }
+    #toolbar button {
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font: inherit; font-weight: 600; cursor: pointer;
+    }
+    #toolbar button.primary { background: #fff; color: var(--navy); border-color: #fff; }
+    #toolbar button:hover { background: rgba(255,255,255,.2); }
+    #toolbar button.primary:hover { background: #f0f4fa; }
+    #status {
+      max-width: 210mm; margin: 0 auto 12px;
+      padding: 12px 16px; border-radius: 8px;
+      background: #fff3cd; color: #664d03; text-align: center;
+    }
+    #status.error { background: #f8d7da; color: #842029; }
+    #status.hidden { display: none; }
+    .sheet-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .print-page {
+      width: 210mm;
+      height: 297mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      background: var(--paper);
+      box-shadow: 0 6px 28px rgba(15,23,42,.14);
+      padding: 10mm 12mm 10mm;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .print-page-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .print-page-footer {
+      flex: 0 0 auto;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 8pt;
+      line-height: 1.3;
+      color: var(--muted);
+    }
+    .print-page-footer .pf-meta {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .print-page-footer .pf-num {
+      flex: 0 0 auto;
+      color: var(--navy-mid);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .section--split { margin-top: 10px; }
+    .print-measure-host {
+      position: absolute; left: -99999px; top: 0;
+      visibility: hidden; pointer-events: none; overflow: hidden;
+    }
+    .print-measure-host .measure-body { font-size: 11px; line-height: 1.45; }
+    .accent-bar { height: 4px; background: linear-gradient(90deg, var(--navy-mid), #2a6cb8); margin: -10mm -12mm 10px; width: calc(100% + 24mm); }
+    .doc-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 16px; padding-bottom: 10px;
+      border-bottom: 2px solid var(--navy-mid);
+      margin-bottom: 12px;
+    }
+    .doc-header .logo img { max-height: 56px; max-width: 160px; object-fit: contain; }
+    .doc-header .meta { text-align: end; min-width: 46%; font-size: 10.5px; color: var(--muted); }
+    html[dir="ltr"] .doc-header .meta { text-align: right; }
+    .doc-header .buyer { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .doc-header .po-line { font-size: 11.5px; font-weight: 700; color: var(--navy-mid); margin-top: 4px; }
+    .doc-title {
+      text-align: center; font-size: 15px; font-weight: 700;
+      color: var(--navy); letter-spacing: .02em;
+      margin: 4px 0 12px;
+    }
+    .parties {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .party {
+      border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden;
+    }
+    .party-head {
+      background: var(--navy-light);
+      color: var(--navy-mid);
+      font-weight: 700; font-size: 10px;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .party-body { padding: 8px 10px; font-size: 10.5px; color: var(--muted); }
+    .party-body strong { color: var(--ink); }
+    .party-body p { margin-bottom: 3px; }
+    .offer-badge {
+      display: inline-block; margin-top: 5px;
+      background: var(--navy-light); color: var(--navy-mid);
+      border: 1px solid #c5d3eb; border-radius: 4px;
+      padding: 2px 8px; font-size: 9.5px; font-weight: 600;
+    }
+    table.data {
+      width: 100%; border-collapse: collapse;
+      margin-bottom: 12px; font-size: 10px;
+      table-layout: fixed;
+    }
+    table.data thead th {
+      background: var(--navy);
+      color: #fff; font-weight: 600;
+      padding: 6px 8px; border: 1px solid #152a47;
+      text-align: start;
+      word-break: break-word;
+    }
+    table.data thead th.num, table.data tbody td.num { text-align: center; }
+    table.data thead th.r, table.data tbody td.r { text-align: end; white-space: nowrap; }
+    table.data tbody td {
+      border: 1px solid var(--border);
+      padding: 5px 8px; vertical-align: top;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    table.data tbody td .multiline { white-space: pre-wrap; }
+    table.data tbody tr.zebra td { background: var(--row-alt); }
+    table.data tbody tr.included td { color: var(--muted); font-style: italic; }
+    table.data tfoot td {
+      background: var(--navy);
+      color: #fff; font-weight: 700;
+      border: 1px solid #152a47; padding: 7px 10px;
+    }
+    table.data tfoot td.lbl { text-align: end; }
+    table.data tfoot td.r { text-align: end; font-size: 12px; }
+    table.data tfoot tr.sub td { background: #254a70; font-size: 10.5px; }
+    table.data tfoot tr.say td {
+      background: #1a2d4a; font-size: 10px; font-weight: 500;
+      text-align: start;
+    }
+    .section { margin-top: 14px; }
+    .section-head {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--navy-mid); color: #fff;
+      padding: 5px 10px; border-radius: 4px 4px 0 0;
+      font-weight: 700; font-size: 10.5px;
+    }
+    .section-head .num {
+      background: rgba(255,255,255,.2);
+      border-radius: 3px; padding: 1px 7px; font-size: 9.5px;
+    }
+    .section-body {
+      border: 1px solid var(--border); border-top: none;
+      padding: 8px 10px; border-radius: 0 0 4px 4px;
+    }
+    .section-body p.text-block { color: var(--muted); line-height: 1.65; margin: 0; }
+    .section-body .multiline { color: var(--muted); line-height: 1.65; }
+    .note-list { list-style: none; padding: 0; margin: 0; }
+    .note-list li {
+      position: relative;
+      padding: 3px 0 3px 22px;
+      color: var(--muted);
+      line-height: 1.55;
+      border-bottom: 1px dashed #e5e8ee;
+      font-size: 10.5px;
+      margin-bottom: 4px;
+    }
+    html[dir="rtl"] .note-list li { padding: 3px 22px 3px 0; }
+    .note-list li::before {
+      content: attr(data-n);
+      position: absolute;
+      left: 0; top: 3px;
+      font-weight: 700; color: var(--navy-mid); font-size: 10.5px;
+    }
+    html[dir="rtl"] .note-list li::before { left: auto; right: 0; }
+    .doc-list, .bullet-list { list-style: none; padding: 0 4px; margin: 0; }
+    .doc-list li, .bullet-list li {
+      display: flex; align-items: flex-start; gap: 7px;
+      color: var(--muted); line-height: 1.65; font-size: 10.5px;
+      margin-bottom: 6px;
+    }
+    .doc-list li::before, .bullet-list li::before {
+      content: "•"; color: var(--navy-mid); font-size: 14px;
+      line-height: 1.2; flex-shrink: 0;
+    }
+    .payment-list { list-style: none; padding: 0; margin: 0; }
+    .payment-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      color: var(--muted); line-height: 1.55;
+      padding: 6px 10px; background: var(--row-alt);
+      border-inline-start: 4px solid var(--navy-mid);
+      border-radius: 0 4px 4px 0; font-size: 10.5px;
+      margin-bottom: 6px;
+    }
+    .payment-list .pct {
+      font-weight: 700; color: var(--navy-mid);
+      white-space: nowrap; font-size: 12px; min-width: 34px; flex-shrink: 0;
+    }
+    .payment-list .pay-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .payment-list .pay-amount-num { font-weight: 700; color: var(--ink); }
+    .payment-list .pay-amount-words { font-style: italic; color: #555; font-size: 10px; }
+    .section-body table.sec { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .section-body table.sec th, .section-body table.sec td {
+      border: 1px solid var(--border); padding: 4px 6px;
+    }
+    .section-body table.sec th.num, .section-body table.sec td.num { text-align: center; }
+    .section-body table.sec thead th { background: var(--navy-light); color: var(--navy); }
+    .signatures {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      margin-top: 18px; break-inside: avoid;
+    }
+    .sig-box {
+      border: 1.5px solid var(--border); border-radius: 6px;
+      padding: 12px 14px; min-height: 88px;
+    }
+    .sig-box .cname { font-weight: 700; font-size: 11px; margin-bottom: 14px; }
+    .sig-line { display: flex; gap: 6px; margin-bottom: 8px; font-size: 10px; color: var(--muted); }
+    .sig-line .lbl { font-weight: 600; color: var(--ink); min-width: 5.5rem; }
+
+    /* الحفاظ على الألوان عند الطباعة / PDF */
+    .print-page,
+    .print-page * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        background: #fff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 11px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      #toolbar, #status { display: none !important; }
+      .sheet-wrap {
+        gap: 0;
+        display: block;
+        align-items: stretch;
+      }
+      /* نفس أبعاد و حشو المعاينة — الهوامش داخل .print-page وليس @page */
+      .print-page {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 10mm 12mm 10mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .print-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      .accent-bar {
+        background: linear-gradient(90deg, #1c4587, #2a6cb8) !important;
+      }
+      img { max-width: 100% !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <span class="title" id="toolbar-title">أمر شراء — نموذج طباعة احترافي</span>
+    <div class="actions">
+      <button type="button" id="btn-back">← رجوع</button>
+      <button type="button" class="primary" id="btn-print">طباعة / PDF</button>
+    </div>
+  </div>
+  <p id="status" class="hidden"></p>
+  <div class="sheet-wrap" id="root"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4l5WeDYjdAOMtP_I9qja8uFhj5A2MxW8",
+      authDomain: "purchase-order-tracking-system.firebaseapp.com",
+      projectId: "purchase-order-tracking-system",
+      storageBucket: "purchase-order-tracking-system.firebasestorage.app",
+      messagingSenderId: "534892171795",
+      appId: "1:534892171795:web:f4c7444b97fdb42011e5e6",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const BUILTIN_SECTIONS = [
+      { id: "note", titleKey: "secNote" },
+      { id: "doc", titleKey: "secDocList" },
+      { id: "payment", titleKey: "secPayment" },
+      { id: "delivery", titleKey: "secDelivery" },
+      { id: "shippingDocs", titleKey: "secShippingDocs" },
+      { id: "packing", titleKey: "secPacking" },
+      { id: "warranty", titleKey: "secWarranty" },
+      { id: "inspection", titleKey: "secInspection" },
+      { id: "effective", titleKey: "secEffective" },
+    ];
+
+    const I18N = {
+      ar: {
+        toolbarTitle: "أمر شراء — نموذج طباعة احترافي",
+        back: "← رجوع",
+        print: "طباعة / PDF",
+        loading: "جاري تحميل أمر الشراء…",
+        noAuth: "يجب تسجيل الدخول من التطبيق الرئيسي أولاً.",
+        noId: "معرّف أمر الشراء غير موجود في الرابط.",
+        notFound: "أمر الشراء غير موجود.",
+        notGeneral: "هذا النموذج مخصّص لأوامر شراء الإدارة العامة فقط.",
+        loadError: "تعذّر تحميل البيانات.",
+        purchaseOrder: "أمر شراء",
+        project: "المشروع",
+        poDate: "تاريخ أمر الشراء",
+        rev: "المراجعة",
+        supplier: "المورّد",
+        buyer: "الفاتورة والشحن إلى",
+        attn: "عناية",
+        phone: "الهاتف",
+        email: "البريد",
+        offer: "العرض",
+        colNo: "م",
+        colItem: "البند",
+        colDesc: "الوصف",
+        colQty: "الكمية",
+        colUnitPrice: "سعر الوحدة",
+        colTotal: "الإجمالي",
+        included: "مشمول بالسعر",
+        total: "المجموع",
+        discount: "الخصم",
+        net: "الصافي",
+        totalSay: "المبلغ الإجمالي كتابةً",
+        secNote: "ملاحظات",
+        secDocList: "الوثائق المشمولة في الأسعار",
+        secPayment: "شروط الدفع",
+        secDelivery: "جدول التسليم",
+        secShippingDocs: "مستندات الشحن",
+        secPacking: "التغليف",
+        secWarranty: "الضمان",
+        secInspection: "الفحص والاختبارات",
+        secEffective: "تاريخ السريان",
+        sigByDate: "بتاريخ",
+        sigStamp: "التوقيع والختم",
+        page: "صفحة",
+        dash: "—",
+      },
+      en: {
+        toolbarTitle: "Purchase Order — Professional Print",
+        back: "← Back",
+        print: "Print / PDF",
+        loading: "Loading purchase order…",
+        noAuth: "Please sign in from the main application first.",
+        noId: "Purchase order ID is missing from the URL.",
+        notFound: "Purchase order not found.",
+        notGeneral: "This template is for general administration POs only.",
+        loadError: "Failed to load data.",
+        purchaseOrder: "Purchase Order",
+        project: "Project",
+        poDate: "PO Date",
+        rev: "Rev.",
+        supplier: "Supplier",
+        buyer: "Invoice & Ship To",
+        attn: "Attn",
+        phone: "Phone",
+        email: "E-Mail",
+        offer: "Offer",
+        colNo: "No.",
+        colItem: "Item",
+        colDesc: "Description",
+        colQty: "Qty",
+        colUnitPrice: "Unit Price",
+        colTotal: "Total",
+        included: "Included in base price",
+        total: "Total",
+        discount: "Discount",
+        net: "Net Total",
+        totalSay: "Total amount in words",
+        secNote: "Notes",
+        secDocList: "Documentation included in prices",
+        secPayment: "Payment Terms",
+        secDelivery: "Delivery Schedule",
+        secShippingDocs: "Shipping Documents",
+        secPacking: "Packing",
+        secWarranty: "Warranty",
+        secInspection: "Inspection & Tests",
+        secEffective: "Effective Date",
+        sigByDate: "By Date",
+        sigStamp: "Signature & Stamped",
+        page: "Page",
+        dash: "—",
+      },
+    };
+
+    const params = new URLSearchParams(location.search);
+    const poId = (params.get("id") || "").trim();
+    const statusEl = document.getElementById("status");
+    const rootEl = document.getElementById("root");
+
+    function showStatus(msg, isError) {
+      statusEl.textContent = msg;
+      statusEl.classList.toggle("error", !!isError);
+      statusEl.classList.remove("hidden");
+    }
+
+    function esc(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function t(lang, key) {
+      return I18N[lang]?.[key] ?? I18N.en[key] ?? key;
+    }
+
+    function fmtDate(raw, lang) {
+      const s = String(raw || "").trim();
+      if (!s) return t(lang, "dash");
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const [y, m, d] = s.slice(0, 10).split("-");
+        return lang === "ar" ? `${d}.${m}.${y}` : `${d}/${m}/${y}`;
+      }
+      return s;
+    }
+
+    function fmtNum(n, lang) {
+      const v = Number(n) || 0;
+      return v.toLocaleString(lang === "ar" ? "ar-IQ" : "en-US", { maximumFractionDigits: 2 });
+    }
+
+    function curSuffix(code, lang) {
+      return code === "USD" ? "USD" : lang === "ar" ? "د.ع" : "IQD";
+    }
+
+    function lineIncluded(l) {
+      return !!(l?.includedInBasePrice || l?.priceIncluded);
+    }
+
+    function billableTotal(lines) {
+      return (lines || []).reduce((s, l) => (lineIncluded(l) ? s : s + (Number(l.lineTotal) || 0)), 0);
+    }
+
+    function discountAmt(raw) {
+      const n = parseFloat(String(raw ?? "").replace(/,/g, "")) || 0;
+      return n > 0 ? n : 0;
+    }
+
+    function multilineHtml(text) {
+      return esc(text || "").replace(/\n/g, "<br/>");
+    }
+
+    function splitLines(text) {
+      return String(text || "").split(/\n/).map((s) => s.trim()).filter(Boolean);
+    }
+
+    function tableRowToCells(row) {
+      if (Array.isArray(row)) return row.map((c) => String(c ?? ""));
+      if (row?.cells && Array.isArray(row.cells)) return row.cells.map((c) => String(c ?? ""));
+      return [];
+    }
+
+    function normalizePaymentTerm(p) {
+      const x = p && typeof p === "object" ? p : {};
+      return {
+        pct: String(x.pct ?? "").trim(),
+        mode: x.mode === "manual" ? "manual" : "auto",
+        text: String(x.text ?? "").trim(),
+        amountNum: String(x.amountNum ?? "").trim(),
+        amountWords: String(x.amountWords ?? "").trim(),
+      };
+    }
+
+    function parsePaymentPct(pctStr) {
+      const m = String(pctStr || "").match(/(\d+(?:\.\d+)?)/);
+      return m ? parseFloat(m[1]) : 0;
+    }
+
+    function billableNetTotal(g) {
+      return Math.max(0, billableTotal(g.lines) - discountAmt(g.discountAmount));
+    }
+
+    function formatAmountDisplay(sum, cur, lang) {
+      const n = Number(sum) || 0;
+      const suffix = curSuffix(cur, lang);
+      return n > 0 ? `${fmtNum(n, lang)} ${suffix}` : `0 ${suffix}`;
+    }
+
+    function numberToEnglishWords(n) {
+      n = Math.floor(Number(n) || 0);
+      if (n === 0) return "Zero";
+      const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+      const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+      const chunk = (num) => {
+        if (num < 20) return ones[num];
+        if (num < 100) { const t = Math.floor(num / 10), u = num % 10; return tens[t] + (u ? " " + ones[u] : ""); }
+        const h = Math.floor(num / 100), r = num % 100;
+        return ones[h] + " Hundred" + (r ? " " + chunk(r) : "");
+      };
+      const parts = []; let x = n;
+      const billion = Math.floor(x / 1e9); x %= 1e9;
+      const million = Math.floor(x / 1e6); x %= 1e6;
+      const thousand = Math.floor(x / 1e3); x %= 1e3;
+      if (billion) parts.push(chunk(billion) + " Billion");
+      if (million) parts.push(chunk(million) + " Million");
+      if (thousand) parts.push(chunk(thousand) + " Thousand");
+      if (x) parts.push(chunk(x));
+      return parts.join(" ");
+    }
+
+    function numberToArabicWords(n) {
+      n = Math.floor(Number(n) || 0);
+      if (n === 0) return "صفر";
+      const ones = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
+      const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
+      const teens = ["عشرة", "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر", "ستة عشر", "سبعة عشر", "ثمانية عشر", "تسعة عشر"];
+      const below100 = (x) => {
+        if (x < 10) return ones[x];
+        if (x < 20) return teens[x - 10];
+        const u = x % 10, t = Math.floor(x / 10);
+        return u ? ones[u] + " و" + tens[t] : tens[t];
+      };
+      const below1000 = (x) => {
+        if (x < 100) return below100(x);
+        const h = Math.floor(x / 100), r = x % 100;
+        let hw = h === 1 ? "مائة" : h === 2 ? "مائتان" : ones[h] + "مائة";
+        return r ? hw + " و" + below100(r) : hw;
+      };
+      const scale = (x, sing, dual, plural) => {
+        if (!x) return "";
+        if (x === 1) return sing;
+        if (x === 2) return dual;
+        if (x >= 3 && x <= 10) return below1000(x) + " " + plural;
+        return below1000(x) + " " + sing;
+      };
+      const parts = []; let rem = n;
+      const billion = Math.floor(rem / 1e9); rem %= 1e9;
+      const million = Math.floor(rem / 1e6); rem %= 1e6;
+      const thousand = Math.floor(rem / 1e3); rem %= 1e3;
+      if (billion) parts.push(scale(billion, "مليار", "ملياران", "مليارات"));
+      if (million) parts.push(scale(million, "مليون", "مليونان", "ملايين"));
+      if (thousand) parts.push(scale(thousand, "ألف", "ألفان", "آلاف"));
+      if (rem) parts.push(below1000(rem));
+      return parts.join(" و");
+    }
+
+    function formatTotalWords(sum, currency, lang) {
+      const n = Number(sum) || 0;
+      const cur = currency === "USD" ? "USD" : "IQD";
+      if (n <= 0) return lang === "ar" ? "صفر" : "Zero";
+      const intPart = Math.floor(n);
+      const frac = Math.round((n - intPart) * 100);
+      if (lang === "ar") {
+        let w = numberToArabicWords(intPart) + (cur === "USD" ? " دولار أمريكي" : " دينار عراقي");
+        if (frac > 0) w += " و" + numberToArabicWords(frac) + (cur === "USD" ? " سنت" : " فلس");
+        return w;
+      }
+      let w = numberToEnglishWords(intPart) + (cur === "USD" ? " US Dollars" : " Iraqi Dinars");
+      if (frac > 0) w += " and " + numberToEnglishWords(frac) + " Cents";
+      return w;
+    }
+
+    function resolvePaymentAmounts(term, g, lang) {
+      const norm = normalizePaymentTerm(term);
+      if (norm.mode === "manual") return { amountNum: norm.amountNum, amountWords: norm.amountWords };
+      const total = billableNetTotal(g);
+      const pct = parsePaymentPct(norm.pct);
+      const amount = total * (pct / 100);
+      if (amount <= 0 || pct <= 0) return { amountNum: "", amountWords: "" };
+      return {
+        amountNum: formatAmountDisplay(amount, g.currency, lang),
+        amountWords: formatTotalWords(amount, g.currency, lang),
+      };
+    }
+
+    function paymentPrintBody(term, g, lang) {
+      const norm = normalizePaymentTerm(term);
+      const amounts = resolvePaymentAmounts(norm, g, lang);
+      const numHtml = amounts.amountNum ? `<span class="pay-amount-num">${esc(amounts.amountNum)}</span>` : "";
+      const wordsHtml = amounts.amountWords ? `<span class="pay-amount-words">${esc(amounts.amountWords)}</span>` : "";
+      const descHtml = norm.text ? `<span class="pay-desc">${esc(norm.text)}</span>` : "";
+      return `<span class="pay-body">${numHtml}${wordsHtml}${descHtml}</span>`;
+    }
+
+    function defaultSectionOrder(g) {
+      const builtin = BUILTIN_SECTIONS.map((s) => s.id);
+      const custom = (g.customSections || []).map((c) => c.id);
+      return [...builtin, ...custom];
+    }
+
+    function normalizeSectionOrder(order, g) {
+      const base = defaultSectionOrder(g);
+      const out = [];
+      const seen = new Set();
+      (Array.isArray(order) ? order : []).forEach((id) => {
+        if (base.includes(id) && !seen.has(id)) { out.push(id); seen.add(id); }
+      });
+      base.forEach((id) => { if (!seen.has(id)) out.push(id); });
+      return out;
+    }
+
+    function normalizeCustomSection(cs, lang) {
+      if (!cs?.id) return cs;
+      const type = cs.type === "table" ? "table" : "list";
+      const intro = (cs.intro || "").trim();
+      if (type === "table") {
+        const columns = Array.isArray(cs.columns) && cs.columns.length
+          ? cs.columns.map((c) => String(c ?? ""))
+          : [lang === "ar" ? "العمود 1" : "Column 1"];
+        let rows = Array.isArray(cs.rows) ? cs.rows : [];
+        rows = rows.map((row) => {
+          const cells = tableRowToCells(row);
+          return columns.map((_, ci) => cells[ci] != null ? String(cells[ci]) : "");
+        });
+        return { ...cs, type: "table", intro, columns, rows, showHeader: cs.showHeader !== false };
+      }
+      const items = Array.isArray(cs.items) ? cs.items.map((i) => String(i ?? "")).filter(Boolean) : [];
+      return { ...cs, type: "list", intro, items };
+    }
+
+    function enrichForm(po) {
+      const g = po.generalForm && typeof po.generalForm === "object" ? { ...po.generalForm } : {};
+      if (!g.lines?.length && Array.isArray(po.lines)) g.lines = po.lines;
+      if (!g.poNumber) g.poNumber = (po.title || "").trim();
+      if (!g.vendor) g.vendor = {};
+      if (!g.vendor.name) g.vendor.name = (po.supplierName || "").trim();
+      if (!g.buyerExtra) g.buyerExtra = {};
+      if (!g.currency) g.currency = po.currency === "USD" ? "USD" : "IQD";
+      if (!g.documentLang || (g.documentLang !== "ar" && g.documentLang !== "en")) g.documentLang = "ar";
+
+      if (!Array.isArray(g.noteItems)) {
+        g.noteItems = splitLines(g.notes);
+      }
+      if (!Array.isArray(g.docListItems)) {
+        const fromRows = Array.isArray(g.docRows) ? g.docRows.map((r) => (r.description || "").trim()).filter(Boolean) : [];
+        g.docListItems = fromRows.length ? fromRows : splitLines(g.termsShipping);
+      }
+      if (!Array.isArray(g.paymentTerms)) {
+        const legacy = (g.termsPayment || "").trim();
+        if (legacy) {
+          g.paymentTerms = legacy.split(/\n/).map((line) => {
+            const m = line.trim().match(/^(\d+(?:\.\d+)?)\s*%?\s*(.*)$/);
+            if (m) return normalizePaymentTerm({ pct: `${m[1]}%`, text: (m[2] || "").trim(), mode: "auto" });
+            return normalizePaymentTerm({ pct: "", text: line.trim(), mode: "auto" });
+          }).filter((p) => p.text || p.pct);
+        } else g.paymentTerms = [];
+      }
+      g.paymentTerms = (g.paymentTerms || []).map(normalizePaymentTerm);
+      if (!Array.isArray(g.deliveryRows)) g.deliveryRows = [];
+      if (!g.shippingDocsIntro) g.shippingDocsIntro = "";
+      if (!Array.isArray(g.shippingDocsRows)) g.shippingDocsRows = [];
+      if (!Array.isArray(g.inspectionItems)) g.inspectionItems = [];
+      if (!Array.isArray(g.effectiveDateItems)) g.effectiveDateItems = [];
+      if (!Array.isArray(g.customSections)) g.customSections = [];
+      const lang = g.documentLang === "en" ? "en" : "ar";
+      g.customSections = g.customSections.map((cs) => normalizeCustomSection(cs, lang));
+
+      const vis = { delivery: "deleted", ...(g.sectionVisibility || {}) };
+      BUILTIN_SECTIONS.forEach((sec) => {
+        const v = vis[sec.id];
+        if (v === false || v === "deleted") vis[sec.id] = "deleted";
+        else if (v === "hidden") vis[sec.id] = "hidden";
+        else if (v) vis[sec.id] = "visible";
+        else if (sec.id !== "delivery") vis[sec.id] = "visible";
+      });
+      (g.customSections || []).forEach((cs) => {
+        const v = vis[cs.id];
+        if (v === false || v === "deleted") vis[cs.id] = "deleted";
+        else if (v === "hidden") vis[cs.id] = "hidden";
+        else vis[cs.id] = "visible";
+      });
+      g.sectionVisibility = vis;
+      g.sectionOrder = normalizeSectionOrder(g.sectionOrder, g);
+
+      g.lines = (g.lines || []).map((l) => ({
+        itemTag: (l.itemTag || l.item || "").trim(),
+        description: (l.description || l.remark || "").trim(),
+        qty: Number(l.qty) || 0,
+        priceText: l.priceText ?? l.price ?? "",
+        lineTotal: Number(l.lineTotal) || 0,
+        includedInBasePrice: lineIncluded(l),
+        unit: (l.unit || "").trim(),
+      }));
+      return g;
+    }
+
+    function sectionState(g, id) {
+      const v = g.sectionVisibility?.[id];
+      if (v === "hidden" || v === false) return "hidden";
+      if (v === "deleted") return "deleted";
+      return "visible";
+    }
+
+    function sectionTitle(g, id, lang) {
+      const custom = g.sectionTitles?.[id];
+      if (custom?.trim()) return custom.trim();
+      const builtin = BUILTIN_SECTIONS.find((s) => s.id === id);
+      if (builtin) return t(lang, builtin.titleKey);
+      const cs = (g.customSections || []).find((c) => c.id === id);
+      return cs?.title || t(lang, "dash");
+    }
+
+    function buildSectionNumberMap(g, lang) {
+      const map = new Map();
+      let num = 0;
+      for (const id of g.sectionOrder || []) {
+        if (sectionState(g, id) !== "visible") continue;
+        const body = renderSectionBody(id, g, lang);
+        if (!body) continue;
+        num += 1;
+        map.set(id, num);
+      }
+      return map;
+    }
+
+    function renderSectionBody(id, g, lang) {
+      if (id === "note") {
+        const items = (g.noteItems || []).map((x) => String(x || "").trim()).filter(Boolean);
+        if (!items.length) return "";
+        return `<ol class="note-list">${items.map((n, i) => `<li data-n="${i + 1})">${esc(n)}</li>`).join("")}</ol>`;
+      }
+      if (id === "doc") {
+        const items = (g.docListItems || []).map((x) => String(x || "").trim()).filter(Boolean);
+        if (!items.length) return "";
+        return `<ul class="doc-list">${items.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>`;
+      }
+      if (id === "payment") {
+        const terms = g.paymentTerms || [];
+        if (!terms.length) {
+          const legacy = (g.termsPayment || "").trim();
+          return legacy ? `<p class="text-block multiline">${multilineHtml(legacy)}</p>` : "";
+        }
+        return `<ul class="payment-list">${terms.map((p) => {
+          const norm = normalizePaymentTerm(p);
+          return `<li><span class="pct">${esc(norm.pct || "")}</span>${paymentPrintBody(norm, g, lang)}</li>`;
+        }).join("")}</ul>`;
+      }
+      if (id === "delivery") {
+        const rows = g.deliveryRows || [];
+        if (!rows.length) {
+          const legacy = (g.termsDelivery || "").trim();
+          return legacy ? `<p class="text-block multiline">${multilineHtml(legacy)}</p>` : "";
+        }
+        const thLead = lang === "ar" ? "مدة التسليم" : "Delivery Lead Time";
+        return `<table class="sec"><thead><tr>
+          <th class="num">${esc(t(lang, "colNo"))}</th>
+          <th>${lang === "ar" ? "الصنف" : "Item"}</th>
+          <th>${esc(t(lang, "colDesc"))}</th>
+          <th class="num">${esc(thLead)}</th>
+        </tr></thead><tbody>${rows.map((r, i) => `<tr>
+          <td class="num">${i + 1}</td>
+          <td>${esc(r.item || "")}</td>
+          <td><div class="multiline">${multilineHtml(r.description || "")}</div></td>
+          <td class="num">${esc(r.leadTime != null ? String(r.leadTime) : "")}</td>
+        </tr>`).join("")}</tbody></table>`;
+      }
+      if (id === "shippingDocs") {
+        const intro = (g.shippingDocsIntro || "").trim();
+        const rows = (g.shippingDocsRows || []).map((r, i) => ({
+          sn: (r.sn != null ? String(r.sn) : "").trim() || String(i + 1),
+          description: (r.description || "").trim(),
+          original: r.original != null ? String(r.original).trim() : "",
+          copy: r.copy != null ? String(r.copy).trim() : "",
+          notes: (r.notes || "").trim(),
+        }));
+        if (!intro && !rows.length) return "";
+        let html = intro ? `<p class="text-block multiline">${multilineHtml(intro)}</p>` : "";
+        if (rows.length) {
+          html += `<table class="sec"><thead><tr>
+            <th class="num">${lang === "ar" ? "م" : "S/N"}</th>
+            <th>${lang === "ar" ? "وصف المستند" : "Document Description"}</th>
+            <th class="num">${lang === "ar" ? "أصل" : "Original"}</th>
+            <th class="num">${lang === "ar" ? "نسخة" : "Copy"}</th>
+            <th>${lang === "ar" ? "ملاحظات" : "Notes"}</th>
+          </tr></thead><tbody>${rows.map((r) => `<tr>
+            <td class="num">${esc(r.sn)}</td>
+            <td>${esc(r.description)}</td>
+            <td class="num">${esc(r.original)}</td>
+            <td class="num">${esc(r.copy)}</td>
+            <td><div class="multiline">${multilineHtml(r.notes)}</div></td>
+          </tr>`).join("")}</tbody></table>`;
+        }
+        return html;
+      }
+      if (id === "packing") {
+        const val = (g.termsPacking || "").trim();
+        return val ? `<p class="text-block multiline">${multilineHtml(val)}</p>` : "";
+      }
+      if (id === "warranty") {
+        const val = (g.warranty || "").trim();
+        return val ? `<p class="text-block multiline">${multilineHtml(val)}</p>` : "";
+      }
+      if (id === "inspection") {
+        const items = (g.inspectionItems || []).map((x) => String(x || "").trim()).filter(Boolean);
+        if (!items.length) return "";
+        return `<ul class="bullet-list">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+      }
+      if (id === "effective") {
+        const items = (g.effectiveDateItems || []).map((x) => String(x || "").trim()).filter(Boolean);
+        if (!items.length) return "";
+        return `<ul class="bullet-list">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+      }
+      const cs = (g.customSections || []).find((c) => c.id === id);
+      if (!cs) return "";
+      const intro = (cs.intro || "").trim();
+      const introHtml = intro ? `<p class="text-block multiline">${multilineHtml(intro)}</p>` : "";
+      if (cs.type === "table") {
+        const columns = cs.columns || [];
+        const rows = cs.rows || [];
+        if (!rows.length && !intro) return "";
+        const showHeader = cs.showHeader !== false;
+        const head = showHeader && columns.length
+          ? `<thead><tr>${columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead>`
+          : "";
+        const body = rows.length
+          ? `<tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td><div class="multiline">${multilineHtml(cell)}</div></td>`).join("")}</tr>`).join("")}</tbody>`
+          : "";
+        return `${introHtml}<table class="sec">${head}${body}</table>`;
+      }
+      const items = (cs.items || []).map((x) => String(x || "").trim()).filter(Boolean);
+      if (!items.length) return introHtml || "";
+      return `${introHtml}<ul class="bullet-list">${items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+    }
+
+    function renderLines(g, lang) {
+      const lines = g.lines || [];
+      const cur = curSuffix(g.currency, lang);
+      const gross = billableTotal(lines);
+      const disc = discountAmt(g.discountAmount);
+      const net = Math.max(0, gross - disc);
+      const say = (g.totalWords || "").trim() || (net > 0 ? `${fmtNum(net, lang)} ${cur}` : t(lang, "dash"));
+
+      const rows = lines.length
+        ? lines.map((l, i) => {
+            const incl = lineIncluded(l);
+            const price = incl ? t(lang, "included") : esc(String(l.priceText || ""));
+            const total = incl ? t(lang, "dash") : fmtNum(l.lineTotal, lang);
+            const cls = [i % 2 === 1 ? "zebra" : "", incl ? "included" : ""].filter(Boolean).join(" ");
+            return `<tr${cls ? ` class="${cls}"` : ""}><td class="num">${i + 1}</td><td>${esc(l.itemTag)}</td><td><div class="multiline">${multilineHtml(l.description)}</div></td><td class="num">${l.qty || ""}</td><td class="r">${price}</td><td class="r">${total}</td></tr>`;
+          }).join("")
+        : `<tr><td colspan="6" class="num">${t(lang, "dash")}</td></tr>`;
+
+      const discRow = disc > 0
+        ? `<tr class="sub"><td colspan="5" class="lbl">${esc(t(lang, "discount"))}</td><td class="r">${fmtNum(disc, lang)} ${esc(cur)}</td></tr>
+           <tr class="sub"><td colspan="5" class="lbl">${esc(t(lang, "net"))}</td><td class="r">${fmtNum(net, lang)} ${esc(cur)}</td></tr>`
+        : "";
+
+      return `<table class="data">
+        <colgroup>
+          <col style="width:5%" />
+          <col style="width:18%" />
+          <col style="width:39%" />
+          <col style="width:9%" />
+          <col style="width:14.5%" />
+          <col style="width:14.5%" />
+        </colgroup>
+        <thead><tr>
+          <th class="num">${esc(t(lang, "colNo"))}</th>
+          <th>${esc(t(lang, "colItem"))}</th>
+          <th>${esc(t(lang, "colDesc"))}</th>
+          <th class="num">${esc(t(lang, "colQty"))}</th>
+          <th class="r">${esc(t(lang, "colUnitPrice"))} (${esc(cur)})</th>
+          <th class="r">${esc(t(lang, "colTotal"))} (${esc(cur)})</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr><td colspan="5" class="lbl">${esc(t(lang, "total"))}</td><td class="r">${fmtNum(gross, lang)} ${esc(cur)}</td></tr>
+          ${discRow}
+          <tr class="say"><td colspan="6">${esc(t(lang, "totalSay"))}: ${esc(say)}</td></tr>
+        </tfoot>
+      </table>`;
+    }
+
+    function renderSections(g, lang) {
+      const nums = buildSectionNumberMap(g, lang);
+      return (g.sectionOrder || [])
+        .filter((id) => sectionState(g, id) === "visible" && nums.has(id))
+        .map((id) => {
+          const body = renderSectionBody(id, g, lang);
+          if (!body) return "";
+          return `<section class="section" data-print-unit="section">
+          <div class="section-head"><span class="num">${nums.get(id)}</span><span>${esc(sectionTitle(g, id, lang))}</span></div>
+          <div class="section-body">${body}</div>
+        </section>`;
+        })
+        .join("");
+    }
+
+    function renderSignatures(g, buyerName, lang) {
+      const v = g.vendor || {};
+      return `<div class="signatures">
+        <div class="sig-box">
+          <div class="cname">${esc(v.name || t(lang, "dash"))}</div>
+          <div class="sig-line"><span class="lbl">${esc(t(lang, "sigByDate"))}</span><span>${esc(g.signVendor || "")}</span></div>
+          <div class="sig-line"><span class="lbl">${esc(t(lang, "sigStamp"))}</span><span></span></div>
+        </div>
+        <div class="sig-box">
+          <div class="cname">${esc(buyerName || t(lang, "dash"))}</div>
+          <div class="sig-line"><span class="lbl">${esc(t(lang, "sigByDate"))}</span><span>${esc(g.signBuyer || "")}</span></div>
+          <div class="sig-line"><span class="lbl">${esc(t(lang, "sigStamp"))}</span><span></span></div>
+        </div>
+      </div>`;
+    }
+
+    function companyLogo(po, company) {
+      const d = (po.companyLogoDataUrlSnapshot || "").trim();
+      if (d.startsWith("data:")) return d;
+      const u = (po.companyLogoUrlSnapshot || "").trim();
+      if (u) return u;
+      if (company) {
+        const cd = (company.logoDataUrl || "").trim();
+        if (cd) return cd;
+        return (company.logoUrl || "").trim();
+      }
+      return "";
+    }
+
+    function companyName(po, company, lang) {
+      if (company) {
+        const ar = (company.nameAr || "").trim();
+        const en = (company.nameEn || company.name || "").trim();
+        if (lang === "ar") return ar || en;
+        return en || ar;
+      }
+      return (po.companyNameSnapshot || "").trim() || t(lang, "dash");
+    }
+
+    const PRINT_MARGIN_TOP_MM = 10;
+    const PRINT_MARGIN_X_MM = 12;
+    const PRINT_MARGIN_BOTTOM_MM = 10;
+    const PRINT_FOOTER_RESERVE_MM = 12;
+
+    function mmToPx(mm) {
+      return Math.round((mm * 96) / 25.4);
+    }
+
+    const PRINT_CONTENT_WIDTH_PX = mmToPx(210 - 2 * PRINT_MARGIN_X_MM);
+    const PRINT_BODY_MAX_PX =
+      mmToPx(297 - PRINT_MARGIN_TOP_MM - PRINT_MARGIN_BOTTOM_MM - PRINT_FOOTER_RESERVE_MM);
+
+    // الارتفاع الحقيقي المتاح للجسم = ارتفاع .print-page-body بعد حجز التذييل (flex)
+    function readPrintBodyLimitPx() {
+      const body = document.querySelector(".print-page .print-page-body");
+      if (!body) return PRINT_BODY_MAX_PX;
+      const h = body.getBoundingClientRect().height;
+      return h > 200 ? Math.floor(h) : PRINT_BODY_MAX_PX;
+    }
+
+    function readPrintBodyWidthPx() {
+      const body = document.querySelector(".print-page .print-page-body");
+      if (!body) return PRINT_CONTENT_WIDTH_PX;
+      const w = body.clientWidth;
+      return w > 100 ? w : PRINT_CONTENT_WIDTH_PX;
+    }
+
+    function formatPageLabel(lang, n, total) {
+      return `${t(lang, "page")} ${n} / ${total}`;
+    }
+
+    function buildPrintMeta(po, g, company, lang) {
+      const buyer = companyName(po, company, lang);
+      const vendor = (g.vendor?.name || po.supplierName || "").trim() || t(lang, "dash");
+      const ref = (g.poNumber || po.title || "").trim() || t(lang, "dash");
+      const project = (g.projectName || po.projectNameSnapshot || "").trim() || t(lang, "dash");
+      const poDate = fmtDate(g.poDate || po.generalPoDate, lang);
+      const rev = (g.poRev || "A").trim();
+      return { buyer, vendor, ref, project, poDate, rev };
+    }
+
+    function buildPageFooterHtml(meta, lang, pageNum, total) {
+      const metaLine = `${meta.ref} | ${meta.buyer} | ${meta.vendor}`;
+      return `<div class="print-page-footer">
+        <span class="pf-meta">${esc(metaLine)}</span>
+        <span class="pf-num">${esc(formatPageLabel(lang, pageNum, total))}</span>
+      </div>`;
+    }
+
+    function createMeasureCtx(lang, widthPx) {
+      const host = document.createElement("div");
+      host.className = "print-measure-host";
+      host.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+      const shell = document.createElement("div");
+      shell.className = "print-page-body measure-body";
+      shell.style.width = `${widthPx || PRINT_CONTENT_WIDTH_PX}px`;
+      shell.style.boxSizing = "border-box";
+      shell.style.overflow = "visible";
+      host.appendChild(shell);
+      document.body.appendChild(host);
+      return {
+        shell,
+        measureNode(node) {
+          shell.innerHTML = "";
+          shell.appendChild(node.cloneNode(true));
+          return shell.offsetHeight;
+        },
+        measureBody(bodyEl) {
+          shell.innerHTML = "";
+          [...bodyEl.childNodes].forEach((n) => shell.appendChild(n.cloneNode(true)));
+          return shell.offsetHeight;
+        },
+        destroy() {
+          host.remove();
+        },
+      };
+    }
+
+    // هامش أمان لتعويض الهوامش بين العناصر التي لا يحسبها offsetHeight منفرداً
+    const PRINT_SAFETY_PX = 16;
+
+    function paginatePrintDocument(sourceEl, meta, lang, bodyLimitPx, bodyWidthPx) {
+      const bodyMax = Math.max(200, (bodyLimitPx || PRINT_BODY_MAX_PX) - PRINT_SAFETY_PX);
+      const meas = createMeasureCtx(lang, bodyWidthPx);
+      const pages = [];
+      let current = { body: document.createElement("div") };
+      current.body.className = "print-page-body";
+
+      const bodyUsed = () => meas.measureBody(current.body);
+
+      const flushPage = () => {
+        if (current.body.childNodes.length) pages.push(current);
+        current = { body: document.createElement("div") };
+        current.body.className = "print-page-body";
+      };
+
+      const appendNode = (node) => {
+        const place = () => {
+          const h = meas.measureNode(node);
+          const used = bodyUsed();
+          if (used + h > bodyMax && current.body.childNodes.length > 0) {
+            flushPage();
+            return place();
+          }
+          current.body.appendChild(node.cloneNode(true));
+        };
+        place();
+      };
+
+      const appendTable = (tableEl) => {
+        const colgroup = tableEl.querySelector("colgroup");
+        const thead = tableEl.querySelector("thead");
+        const tbody = tableEl.querySelector("tbody");
+        const tfoot = tableEl.querySelector("tfoot");
+        const rows = tbody ? [...tbody.querySelectorAll("tr")] : [];
+
+        const newChunk = () => {
+          const table = document.createElement("table");
+          table.className = tableEl.className;
+          if (colgroup) table.appendChild(colgroup.cloneNode(true));
+          if (thead) table.appendChild(thead.cloneNode(true));
+          const tb = document.createElement("tbody");
+          table.appendChild(tb);
+          return { table, tb };
+        };
+
+        let chunk = null;
+
+        const flushChunk = () => {
+          if (chunk?.tb.children.length) {
+            appendNode(chunk.table);
+            chunk = null;
+          }
+        };
+
+        for (const row of rows) {
+          if (!chunk) chunk = newChunk();
+          chunk.tb.appendChild(row.cloneNode(true));
+          const h = meas.measureNode(chunk.table);
+          const used = bodyUsed();
+          if (used + h > bodyMax) {
+            chunk.tb.removeChild(chunk.tb.lastChild);
+            if (chunk.tb.children.length) {
+              // ثبّت الصفوف التي تتسع في الصفحة الحالية ثم انتقل لصفحة جديدة
+              appendNode(chunk.table);
+            }
+            // كل ما تبقّى من الجدول يبدأ في صفحة جديدة برأس واحد فقط
+            flushPage();
+            chunk = newChunk();
+            chunk.tb.appendChild(row.cloneNode(true));
+          }
+        }
+        flushChunk();
+
+        if (tfoot) {
+          const footTable = document.createElement("table");
+          footTable.className = tableEl.className;
+          if (colgroup) footTable.appendChild(colgroup.cloneNode(true));
+          footTable.appendChild(tfoot.cloneNode(true));
+          appendNode(footTable);
+        }
+      };
+
+      const appendSection = (sectionEl) => {
+        if (!sectionEl) return;
+        const probe = sectionEl.cloneNode(true);
+        if (bodyUsed() + meas.measureNode(probe) <= bodyMax || !current.body.childNodes.length) {
+          appendNode(sectionEl);
+          return;
+        }
+        const head = sectionEl.querySelector(".section-head");
+        const body = sectionEl.querySelector(".section-body");
+        if (!body) {
+          appendNode(sectionEl);
+          return;
+        }
+        const kids = [...body.children];
+        if (!kids.length) {
+          appendNode(sectionEl);
+          return;
+        }
+        let headUsed = false;
+        for (const child of kids) {
+          if (child.matches("ul, ol") && child.children.length > 1) {
+            for (const li of [...child.children]) {
+              const wrap = document.createElement("section");
+              wrap.className = "section section--split";
+              if (head && !headUsed) {
+                wrap.appendChild(head.cloneNode(true));
+                headUsed = true;
+              }
+              const bodyWrap = document.createElement("div");
+              bodyWrap.className = "section-body";
+              const list = document.createElement(child.tagName.toLowerCase());
+              list.className = child.className;
+              list.appendChild(li.cloneNode(true));
+              bodyWrap.appendChild(list);
+              wrap.appendChild(bodyWrap);
+              appendNode(wrap);
+            }
+            continue;
+          }
+          const wrap = document.createElement("section");
+          wrap.className = "section section--split";
+          if (head && !headUsed) {
+            wrap.appendChild(head.cloneNode(true));
+            headUsed = true;
+          }
+          const bodyWrap = document.createElement("div");
+          bodyWrap.className = "section-body";
+          bodyWrap.appendChild(child.cloneNode(true));
+          wrap.appendChild(bodyWrap);
+          appendNode(wrap);
+        }
+      };
+
+      sourceEl.querySelectorAll("[data-print-unit]").forEach((unit) => {
+        const type = unit.dataset.printUnit || "block";
+        if (type === "table") {
+          const table = unit.querySelector("table");
+          if (table) appendTable(table);
+          return;
+        }
+        if (type === "section") {
+          appendSection(unit.classList.contains("section") ? unit : unit.querySelector(".section"));
+          return;
+        }
+        [...unit.children].forEach((child) => appendNode(child.cloneNode(true)));
+      });
+
+      flushPage();
+      meas.destroy();
+
+      if (!pages.length) {
+        pages.push({ body: document.createElement("div") });
+        pages[0].body.className = "print-page-body";
+      }
+
+      const total = pages.length;
+      const wrap = document.createElement("div");
+      wrap.className = "sheet-wrap";
+      pages.forEach((p, i) => {
+        const pageEl = document.createElement("article");
+        pageEl.className = "print-page";
+        pageEl.appendChild(p.body);
+        const footWrap = document.createElement("div");
+        footWrap.innerHTML = buildPageFooterHtml(meta, lang, i + 1, total);
+        pageEl.appendChild(footWrap.firstElementChild);
+        wrap.appendChild(pageEl);
+      });
+      return wrap.outerHTML;
+    }
+
+    function renderDocument(po, g, company) {
+      const lang = g.documentLang === "en" ? "en" : "ar";
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      document.getElementById("toolbar-title").textContent = t(lang, "toolbarTitle");
+      document.getElementById("btn-back").textContent = t(lang, "back");
+      document.getElementById("btn-print").textContent = t(lang, "print");
+      document.title = `${t(lang, "purchaseOrder")} ${g.poNumber || ""}`.trim();
+
+      const buyer = companyName(po, company, lang);
+      const vendor = g.vendor || {};
+      const be = g.buyerExtra || {};
+      const emails = String(be.emails || "").split(/\n/).map((e) => e.trim()).filter(Boolean);
+      const logo = companyLogo(po, company);
+      const cur = g.currency;
+      const ref = (g.poNumber || po.title || "").trim() || t(lang, "dash");
+      const meta = buildPrintMeta(po, g, company, lang);
+
+      const partiesHtml = `<div class="parties">
+          <div class="party">
+            <div class="party-head">${esc(t(lang, "supplier"))}</div>
+            <div class="party-body">
+              <p><strong>${esc(vendor.name || t(lang, "dash"))}</strong></p>
+              ${vendor.address ? `<p>${esc(vendor.address)}</p>` : ""}
+              ${vendor.attn ? `<p>${esc(t(lang, "attn"))}: ${esc(vendor.attn)}</p>` : ""}
+              ${vendor.phone ? `<p>${esc(t(lang, "phone"))}: ${esc(vendor.phone)}</p>` : ""}
+              ${vendor.email ? `<p>${esc(t(lang, "email"))}: ${esc(vendor.email)}</p>` : ""}
+              ${vendor.extraNotes ? `<p class="multiline">${multilineHtml(vendor.extraNotes)}</p>` : ""}
+              ${g.offerType ? `<span class="offer-badge">${esc(t(lang, "offer"))}: ${esc(g.offerType)}</span>` : ""}
+            </div>
+          </div>
+          <div class="party">
+            <div class="party-head">${esc(t(lang, "buyer"))}</div>
+            <div class="party-body">
+              <p><strong>${esc(buyer)}</strong></p>
+              ${be.attn || be.contact ? `<p>${esc(t(lang, "attn"))}: ${esc(be.attn || be.contact)}</p>` : ""}
+              ${be.phone ? `<p>${esc(t(lang, "phone"))}: ${esc(be.phone)}</p>` : ""}
+              ${emails.map((em, i) => `<p>${i === 0 ? esc(t(lang, "email")) + ": " : ""}${esc(em)}</p>`).join("")}
+              ${be.extraNotes ? `<p class="multiline">${multilineHtml(be.extraNotes)}</p>` : ""}
+            </div>
+          </div>
+        </div>`;
+
+      const sectionsHtml = renderSections(g, lang);
+      const signaturesHtml = renderSignatures(g, buyer, lang);
+
+      const source = document.createElement("div");
+      source.innerHTML = `
+        <div data-print-unit="block">
+          <div class="accent-bar"></div>
+          <header class="doc-header">
+            <div class="logo">${logo ? `<img src="${esc(logo)}" alt="" />` : ""}</div>
+            <div class="meta">
+              <div class="buyer">${esc(buyer)}</div>
+              <div>${esc(t(lang, "project"))}: ${esc(g.projectName || po.projectNameSnapshot || t(lang, "dash"))}</div>
+              <div class="po-line">${esc(t(lang, "purchaseOrder"))} ${esc(ref)}</div>
+              <div>${esc(t(lang, "poDate"))}: ${esc(fmtDate(g.poDate || po.generalPoDate, lang))} &nbsp;|&nbsp; ${esc(t(lang, "rev"))}: ${esc(g.poRev || "A")}</div>
+            </div>
+          </header>
+          <h1 class="doc-title">${esc(t(lang, "purchaseOrder"))}</h1>
+        </div>
+        <div data-print-unit="block">${partiesHtml}</div>
+        <div data-print-unit="table">${renderLines(g, lang)}</div>
+        ${sectionsHtml}
+        <div data-print-unit="block">${signaturesHtml}</div>`;
+
+      layoutPrintPages(source, meta, lang);
+    }
+
+    function layoutPrintPages(source, meta, lang) {
+      // تمرير أولي بقيم تقديرية لإنشاء صفحة فعلية نقيس منها
+      rootEl.innerHTML = paginatePrintDocument(
+        source,
+        meta,
+        lang,
+        PRINT_BODY_MAX_PX,
+        PRINT_CONTENT_WIDTH_PX
+      );
+
+      // معايرة من الأبعاد الحقيقية للصفحة المعروضة (تطابق صندوق الطباعة)
+      let limit = readPrintBodyLimitPx();
+      let width = readPrintBodyWidthPx();
+      for (let pass = 0; pass < 2; pass++) {
+        rootEl.innerHTML = paginatePrintDocument(source, meta, lang, limit, width);
+        const newLimit = readPrintBodyLimitPx();
+        const newWidth = readPrintBodyWidthPx();
+        if (Math.abs(newLimit - limit) <= 2 && Math.abs(newWidth - width) <= 2) break;
+        limit = newLimit;
+        width = newWidth;
+      }
+    }
+
+    async function loadPo() {
+      if (!poId) {
+        showStatus(I18N.ar.noId, true);
+        return;
+      }
+      showStatus(I18N.ar.loading, false);
+      try {
+        const snap = await getDoc(doc(db, "purchaseOrders", poId));
+        if (!snap.exists()) {
+          showStatus(I18N.ar.notFound, true);
+          return;
+        }
+        const po = { id: snap.id, ...snap.data() };
+        if (po.scope !== "general") {
+          showStatus(I18N.ar.notGeneral, true);
+          return;
+        }
+        const g = enrichForm(po);
+        let company = null;
+        const cid = (g.companyId || po.companyId || "").trim();
+        if (cid) {
+          const cs = await getDoc(doc(db, "companies", cid));
+          if (cs.exists()) company = { id: cs.id, ...cs.data() };
+        }
+        statusEl.classList.add("hidden");
+        renderDocument(po, g, company);
+      } catch (e) {
+        console.error(e);
+        showStatus(`${I18N.ar.loadError} ${e.message || ""}`, true);
+      }
+    }
+
+    document.getElementById("btn-print").addEventListener("click", () => window.print());
+    document.getElementById("btn-back").addEventListener("click", () => {
+      if (history.length > 1) history.back();
+      else window.close();
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        showStatus(I18N.ar.noAuth, true);
+        return;
+      }
+      loadPo();
+    });
+  </script>
+</body>
+</html>

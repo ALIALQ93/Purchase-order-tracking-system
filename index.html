@@ -1781,7 +1781,7 @@
 
       @page {
         size: A4 portrait;
-        margin: 3mm 8mm 10mm 8mm;
+        margin: 3mm 8mm 5mm 8mm;
       }
 
       /* اطبع فقط محتوى مودال الطباعة */
@@ -1974,6 +1974,8 @@
         page-break-inside: auto;
       }
       #modal-po-print-view .po007-items-table tbody tr.po007-total-num-row,
+      #modal-po-print-view .po007-items-table tbody tr.po007-discount-row,
+      #modal-po-print-view .po007-items-table tbody tr.po007-net-row,
       #modal-po-print-view .po007-items-table tbody tr.po007-total-row {
         break-inside: avoid;
         page-break-inside: avoid;
@@ -2011,6 +2013,8 @@
       #modal-po-print-view .po007-delivery-table thead tr,
       #modal-po-print-view .po007-section-heading,
       #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-discount-row td,
+      #modal-po-print-view .po007-net-row td,
       #modal-po-print-view .po007-total-row td,
       #modal-po-print-view .po007-items-table tbody tr:nth-child(even),
       #modal-po-print-view .po007-sec-data-table tbody tr:nth-child(even) {
@@ -2025,8 +2029,12 @@
       #modal-po-print-view .po007-sec-data-table thead th,
       #modal-po-print-view .po007-delivery-table thead th,
       #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-discount-row td,
+      #modal-po-print-view .po007-net-row td,
       #modal-po-print-view .po007-total-row td,
       #modal-po-print-view .po007-total-num-row td *,
+      #modal-po-print-view .po007-discount-row td *,
+      #modal-po-print-view .po007-net-row td *,
       #modal-po-print-view .po007-total-row td * {
         color: #fff !important;
         -webkit-text-fill-color: #fff !important;
@@ -2046,23 +2054,30 @@
         background: #2a5490 !important;
       }
       #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-discount-row td,
+      #modal-po-print-view .po007-net-row td,
       #modal-po-print-view .po007-total-row td {
         background: #254a70 !important;
       }
-      #modal-po-print-view .po007-total-num-row .po007-total-num-lbl {
+      #modal-po-print-view .po007-total-num-row .po007-total-num-lbl,
+      #modal-po-print-view .po007-discount-row .po007-discount-lbl,
+      #modal-po-print-view .po007-net-row .po007-net-lbl {
         font-size: 10px !important;
         font-weight: 600 !important;
         padding: 5px 8px !important;
-        width: 99%;
+        width: auto;
       }
-      #modal-po-print-view .po007-total-num-row .po007-col-total {
-        width: 1%;
+      #modal-po-print-view .po007-total-num-row .po007-col-total,
+      #modal-po-print-view .po007-discount-row .po007-col-total,
+      #modal-po-print-view .po007-net-row .po007-col-total {
+        width: auto;
         white-space: nowrap;
-        min-width: 10.5rem;
+        min-width: 14rem;
         padding: 8px 12px !important;
         text-align: end !important;
       }
-      #modal-po-print-view .po007-total-num-row [data-po007="grand-total"] {
+      #modal-po-print-view .po007-total-num-row [data-po007="grand-total"],
+      #modal-po-print-view .po007-net-row [data-po007="net-total"] {
         font-size: 16px !important;
         font-weight: 800 !important;
         line-height: 1.2 !important;
@@ -2573,6 +2588,8 @@
     .po007-surface .po007-col-price,
     .po007-surface .po007-col-total { font-weight: 600; }
     .po007-surface .po007-total-num-row td,
+    .po007-surface .po007-discount-row td,
+    .po007-surface .po007-net-row td,
     .po007-surface .po007-total-row td {
       background: #1c3557;
       color: #fff;
@@ -2580,22 +2597,27 @@
       font-size: 11.5px;
       border: 1px solid #8fa3b8;
     }
-    .po007-surface .po007-total-num-row .po007-total-num-lbl {
+    .po007-surface .po007-total-num-row .po007-total-num-lbl,
+    .po007-surface .po007-discount-row .po007-discount-lbl,
+    .po007-surface .po007-net-row .po007-net-lbl {
       text-align: end;
       font-size: 10px;
       font-weight: 600;
       padding: 6px 8px;
-      width: 99%;
+      width: auto;
     }
-    .po007-surface .po007-total-num-row .po007-col-total {
-      width: 1%;
+    .po007-surface .po007-total-num-row .po007-col-total,
+    .po007-surface .po007-discount-row .po007-col-total,
+    .po007-surface .po007-net-row .po007-col-total {
+      width: auto;
       white-space: nowrap;
-      min-width: 10.5rem;
+      min-width: 14rem;
       padding: 8px 12px;
       text-align: end;
       vertical-align: middle;
     }
-    .po007-surface .po007-total-num-row [data-po007="grand-total"] {
+    .po007-surface .po007-total-num-row [data-po007="grand-total"],
+    .po007-surface .po007-net-row [data-po007="net-total"] {
       font-size: 16px;
       font-weight: 800;
       line-height: 1.2;
@@ -2604,6 +2626,18 @@
       text-align: end;
       direction: ltr;
       unicode-bidi: isolate;
+    }
+    .po007-surface .po007-discount-row [data-po007="discount-amount"] {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      display: block;
+      text-align: end;
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+    .po007-surface.po007-edit-mode .po007-summary-row--hidden {
+      display: none;
     }
     .po007-surface .po007-section { margin-top: 20px; }
     .po007-surface .po007-section-heading {
@@ -3358,6 +3392,7 @@
     }
     .po007-surface.po007-edit-mode .po007-items-bulk-insert-btn,
     .po007-surface.po007-edit-mode .po007-items-add-col-btn,
+    .po007-surface.po007-edit-mode .po007-items-discount-btn,
     .po007-surface.po007-edit-mode .po007-items-col-vis-btn,
     .po007-surface.po007-edit-mode .po007-items-renumber-btn {
       padding: 6px 12px;
@@ -3371,6 +3406,7 @@
     }
     .po007-surface.po007-edit-mode .po007-items-bulk-insert-btn:hover,
     .po007-surface.po007-edit-mode .po007-items-add-col-btn:hover,
+    .po007-surface.po007-edit-mode .po007-items-discount-btn:hover,
     .po007-surface.po007-edit-mode .po007-items-col-vis-btn:hover,
     .po007-surface.po007-edit-mode .po007-items-renumber-btn:hover {
       background: #e8eef7;
@@ -3641,27 +3677,35 @@
       line-height: 1;
     }
     .po007-surface.po007-edit-mode .po007-total-num-row td,
+    .po007-surface.po007-edit-mode .po007-discount-row td,
+    .po007-surface.po007-edit-mode .po007-net-row td,
     .po007-surface.po007-edit-mode .po007-total-row td {
       padding: 8px 10px !important;
       vertical-align: middle;
     }
-    .po007-surface.po007-edit-mode .po007-total-num-row td {
+    .po007-surface.po007-edit-mode .po007-total-num-row td,
+    .po007-surface.po007-edit-mode .po007-discount-row td,
+    .po007-surface.po007-edit-mode .po007-net-row td {
       background: #1c3557;
       color: #fff;
       font-weight: 700;
       font-size: 12px;
     }
-    .po007-surface.po007-edit-mode .po007-total-num-row .po007-total-num-lbl {
+    .po007-surface.po007-edit-mode .po007-total-num-row .po007-total-num-lbl,
+    .po007-surface.po007-edit-mode .po007-discount-row .po007-discount-lbl,
+    .po007-surface.po007-edit-mode .po007-net-row .po007-net-lbl {
       text-align: end;
       font-size: 11px;
       font-weight: 600;
       padding: 6px 8px !important;
-      width: 99%;
+      width: auto;
     }
-    .po007-surface.po007-edit-mode .po007-total-num-row .po007-col-total {
-      width: 1%;
+    .po007-surface.po007-edit-mode .po007-total-num-row .po007-col-total,
+    .po007-surface.po007-edit-mode .po007-discount-row .po007-col-total,
+    .po007-surface.po007-edit-mode .po007-net-row .po007-col-total {
+      width: auto;
       white-space: nowrap;
-      min-width: 11.5rem;
+      min-width: 16rem;
       padding: 8px 14px !important;
       text-align: end;
     }
@@ -3688,7 +3732,8 @@
       border-color: #1c4587;
       box-shadow: 0 0 0 3px rgba(28, 69, 135, 0.15);
     }
-    .po007-surface.po007-edit-mode .po007-total-num-row [data-po007="grand-total"] {
+    .po007-surface.po007-edit-mode .po007-total-num-row [data-po007="grand-total"],
+    .po007-surface.po007-edit-mode .po007-net-row [data-po007="net-total"] {
       font-size: 19px;
       font-weight: 800;
       display: block;
@@ -3699,6 +3744,52 @@
       color: #fff;
       line-height: 1.15;
       letter-spacing: 0.02em;
+    }
+    .po007-surface.po007-edit-mode .po007-discount-row [data-po007="discount-amount"] {
+      min-width: 6rem;
+      min-height: 1.6em;
+      background: #fff;
+      border: 2px solid #7ba3d4;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      outline: none;
+      text-align: end;
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+    .po007-surface.po007-edit-mode .po007-discount-row [data-po007="discount-amount"]:focus {
+      border-color: #1c4587;
+      box-shadow: 0 0 0 3px rgba(28, 69, 135, 0.15);
+    }
+    .po007-surface.po007-edit-mode .po007-del-discount-btn {
+      margin-inline-start: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(231, 76, 60, 0.35);
+      color: #fff;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      font-family: inherit;
+      line-height: 1.3;
+      vertical-align: middle;
+    }
+    .po007-surface.po007-edit-mode .po007-items-discount-btn {
+      cursor: pointer;
+      border: 1px solid #c8a84a;
+      background: #fffdf0;
+      color: #5c4a00;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      font-family: inherit;
+      line-height: 1.3;
+      white-space: nowrap;
     }
     .po007-surface.po007-edit-mode .po007-total-row [data-po007="total-words"][data-po007-manual="1"] {
       border-color: #c8960a;
@@ -6618,6 +6709,7 @@
         btnReject: "رفض",
         btnViewPoRequest: "عرض الطلب",
         btnPoPrintView: "عرض وطباعة",
+        btnGenPoProPrint: "النموذج الاحترافي",
         poPrintViewTitle: "طلب شراء — عرض للطباعة",
         poPrintPrintBtn: "طباعة",
         poPrintExportPdfBtn: "تصدير PDF",
@@ -7094,6 +7186,9 @@
         genPo007PartyExtra: "معلومات إضافية:",
         genPo007OfferLabel: "العرض:",
         genPo007TotalNumeric: "المجموع:",
+        genPo007Discount: "الخصم:",
+        genPo007NetTotal: "الصافي:",
+        genPo007AddDiscount: "إضافة خصم",
         genPo007TotalPriceSay: "المبلغ الإجمالي كتابةً:",
         genPo007PurchaseOrder: "أمر شراء رقم ",
         genPo007PoDate: "تاريخ أمر الشراء",
@@ -7535,6 +7630,7 @@
         btnReject: "Reject",
         btnViewPoRequest: "View request",
         btnPoPrintView: "View & print",
+        btnGenPoProPrint: "Pro print",
         poPrintViewTitle: "Purchase request — print view",
         poPrintPrintBtn: "Print",
         poPrintExportPdfBtn: "Export PDF",
@@ -8013,6 +8109,9 @@
         genPo007PartyExtra: "Additional information:",
         genPo007OfferLabel: "Offer:",
         genPo007TotalNumeric: "Total:",
+        genPo007Discount: "Discount:",
+        genPo007NetTotal: "Net:",
+        genPo007AddDiscount: "Add discount",
         genPo007TotalPriceSay: "Total Price Say:",
         genPo007PurchaseOrder: "Purchase Order (PO) No.",
         genPo007PoDate: "PO Date",
@@ -8616,6 +8715,22 @@
       }, 0);
     }
 
+    function generalPo007DiscountAmount(raw) {
+      const n = typeof raw === "number" ? raw : parsePo007EditorNum(String(raw ?? ""));
+      return n > 0 ? n : 0;
+    }
+
+    function generalPo007BillableNetTotal(lines, discount) {
+      const gross = generalLinesBillableTotal(lines);
+      const disc = generalPo007DiscountAmount(discount);
+      return Math.max(0, gross - disc);
+    }
+
+    function readGeneralPo007DiscountFromMount(mount) {
+      const el = (mount || getGeneralPo007Mount())?.querySelector('[data-po007="discount-amount"]');
+      return generalPo007DiscountAmount(el?.textContent);
+    }
+
     function applyGeneralLineIncludedRowUi(tr, docLang) {
       if (!tr) return;
       const included = !!tr.querySelector(".gen-line-included")?.checked;
@@ -8931,8 +9046,12 @@
         ? po007ItemsVisibleColumnOrder(cfg, true, docLang)
         : po007ItemsPrintColumnOrder(cfg, docLang);
       const totalIdx = order.indexOf("total");
-      if (totalIdx < 0) return po007ItemsTableColCount(cfg, editorMode, docLang);
-      return 1 + totalIdx;
+      if (totalIdx < 0) return Math.max(1, po007ItemsTableColCount(cfg, editorMode, docLang) - 2);
+      return Math.max(1, totalIdx);
+    }
+
+    function po007ItemsTotalAmountColspan() {
+      return 2;
     }
 
     function movePo007ItemsColumnOrder(cfg, colId, dir, docLang) {
@@ -9004,7 +9123,7 @@
         : po007ItemsPrintColumnOrder(cfg, docLang);
       const totalIdx = order.indexOf("total");
       if (totalIdx < 0) return 0;
-      return order.length - totalIdx - 1;
+      return Math.max(0, order.length - totalIdx - 2);
     }
 
     function parsePo007BulkIncludedValue(raw) {
@@ -9091,6 +9210,7 @@
       }
       x.currency = x.currency === "USD" ? "USD" : "IQD";
       x.lines = (Array.isArray(x.lines) ? x.lines : []).map(normalizeGeneralLineRow);
+      x.discountAmount = generalPo007DiscountAmount(x.discountAmount);
       x.itemsTableConfig = normalizePo007ItemsTableConfig(x.itemsTableConfig, x.documentLang);
       if (x.sectionCustomDefaults && typeof x.sectionCustomDefaults === "object") {
         x.sectionCustomDefaults = deserializeSectionCustomDefaultsFromFirestore(
@@ -9453,7 +9573,7 @@
       if (norm.mode === "manual") {
         return { amountNum: norm.amountNum, amountWords: norm.amountWords };
       }
-      const total = generalLinesBillableTotal(g?.lines || []);
+      const total = generalPo007BillableNetTotal(g?.lines || [], g?.discountAmount);
       const pct = parsePaymentPctValue(norm.pct);
       const amount = total * (pct / 100);
       const curCode = g?.currency === "USD" ? "USD" : "IQD";
@@ -9524,6 +9644,7 @@
       const g = enrichGeneralFormPo007({
         lines: readGeneralPo007LinesFromMount(),
         currency: getPo007MetaCurrency(),
+        discountAmount: readGeneralPo007DiscountFromMount(mount),
       });
       mount.querySelectorAll("[data-po007-pay-item]").forEach((li) => applyPo007PaymentRowModeUi(li, g, docLang));
       updatePo007PaymentPctSummary(mount);
@@ -11504,6 +11625,7 @@
         buyerExtra: { ...(x.buyerExtra || {}) },
         offerType: (x.offerType || "").trim(),
         totalWords: (x.totalWords || "").trim(),
+        discountAmount: generalPo007DiscountAmount(x.discountAmount),
         signVendor: (x.signVendor || "").trim(),
         signBuyer: (x.signBuyer || "").trim(),
       };
@@ -11546,6 +11668,7 @@
       if (saved.buyerExtra) base.buyerExtra = { ...saved.buyerExtra };
       if (saved.offerType != null) base.offerType = saved.offerType;
       if (saved.totalWords != null) base.totalWords = saved.totalWords;
+      if (saved.discountAmount != null) base.discountAmount = generalPo007DiscountAmount(saved.discountAmount);
       if (saved.signVendor != null) base.signVendor = saved.signVendor;
       if (saved.signBuyer != null) base.signBuyer = saved.signBuyer;
       if (saved.itemsTableConfig) {
@@ -11738,18 +11861,27 @@
     const PO007_A4_WIDTH_PX = 794;
     const PO007_A4_HEIGHT_PX = 1123;
     const PO007_PAGE_SHEET_HEIGHT_PX = PO007_A4_HEIGHT_PX;
-    const PO007_PRINT_MARGIN_TOP_PX = Math.round((3 / 25.4) * 96);
-    const PO007_PRINT_MARGIN_X_PX = Math.round((8 / 25.4) * 96);
-    const PO007_PRINT_MARGIN_BOTTOM_PX = Math.round((10 / 25.4) * 96);
+    const PO007_PRINT_MARGIN_TOP_MM = 3;
+    const PO007_PRINT_MARGIN_X_MM = 8;
+    const PO007_PRINT_MARGIN_BOTTOM_MM = 5;
+    function po007MmToPx(mm) {
+      return Math.round((mm / 25.4) * 96);
+    }
+    const PO007_PRINT_MARGIN_TOP_PX = po007MmToPx(PO007_PRINT_MARGIN_TOP_MM);
+    const PO007_PRINT_MARGIN_X_PX = po007MmToPx(PO007_PRINT_MARGIN_X_MM);
+    const PO007_PRINT_MARGIN_BOTTOM_PX = po007MmToPx(PO007_PRINT_MARGIN_BOTTOM_MM);
     const PO007_PRINT_PAGE_HEIGHT_PX = PO007_A4_HEIGHT_PX;
     const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
     const PO007_PRINT_FOOTER_GAP_PX = 6;
     const PO007_PRINT_FOOTER_RESERVE_PX = 22;
-    const PO007_PRINT_BODY_SAFETY_PX = 6;
+    /** ارتفاع منطقة المحتوى داخل صفحة A4 (بعد هوامش الطباعة) */
     const PO007_PRINT_BODY_MAX_PX =
       PO007_PRINT_PAGE_HEIGHT_PX - PO007_PRINT_MARGIN_TOP_PX - PO007_PRINT_MARGIN_BOTTOM_PX;
     const PO007_PRINT_SHEET_HEIGHT_PX = PO007_PRINT_PAGE_HEIGHT_PX;
     const PO007_PRINT_CONTENT_HEIGHT_PX = PO007_PRINT_BODY_MAX_PX;
+    function po007PrintBodyLimitPx() {
+      return PO007_PRINT_BODY_MAX_PX;
+    }
     let po007PageGuidesTimer = null;
     let po007PageGuidesRo = null;
 
@@ -12094,12 +12226,20 @@
         const row = rows[i];
         if (row.classList.contains("po007-total-num-row")) {
           const bundle = [row];
-          if (rows[i + 1]?.classList.contains("po007-total-row")) {
-            bundle.push(rows[i + 1]);
-            i += 2;
-          } else {
-            i += 1;
+          let j = i + 1;
+          while (j < rows.length) {
+            const next = rows[j];
+            if (
+              next.classList.contains("po007-discount-row") ||
+              next.classList.contains("po007-net-row") ||
+              next.classList.contains("po007-total-row")
+            ) {
+              bundle.push(next);
+              j += 1;
+              if (next.classList.contains("po007-total-row")) break;
+            } else break;
           }
+          i = j;
           units.push({ kind: "table-rows", rows: bundle, meta, logicalIdx });
           continue;
         }
@@ -12325,6 +12465,36 @@
       return { el, body };
     }
 
+    function po007BundleContinuationContent(node, miniHeaderEl, doc) {
+      const bundled = doc.createElement("div");
+      bundled.className = "po007-print-continuation-bundle";
+      const hdr = po007ClonePrintRunningHeader(miniHeaderEl, doc);
+      if (hdr) bundled.appendChild(hdr);
+      bundled.appendChild(node);
+      return bundled;
+    }
+
+    /** صفحة تحتوي رأس استمرار فقط — تُطبع كصفحة فارغة إن دُفعت إلى pages */
+    function po007PrintPageIsOrphanHeader(pageObj) {
+      const body = pageObj?.body;
+      if (!body) return false;
+      const els = [...body.children].filter((n) => n.nodeType === 1);
+      if (!els.length) return true;
+      if (els.length === 1) {
+        const el = els[0];
+        if (el.classList.contains("po007-print-continuation-header")) return true;
+        if (el.classList.contains("po007-print-continuation-bundle")) {
+          const inner = [...el.children].filter((n) => n.nodeType === 1);
+          return inner.length === 1 && inner[0].classList.contains("po007-print-continuation-header");
+        }
+      }
+      if (els.length === 2 && els[0].classList.contains("po007-print-continuation-header")) {
+        const sec = els[1];
+        if (sec.classList?.contains("po007-section--continued") && !(sec.textContent || "").trim()) return true;
+      }
+      return false;
+    }
+
     function po007PackUnitsToPages(units, measCtx, doc, opts) {
       const { miniHeader } = opts;
       const pages = [];
@@ -12332,7 +12502,7 @@
       let miniOnPage = false;
       let pendingRows = [];
       let pendingMeta = null;
-      const bodyLimit = () => PO007_PRINT_BODY_MAX_PX - PO007_PRINT_BODY_SAFETY_PX;
+      const bodyLimit = () => po007PrintBodyLimitPx();
 
       const bodyUsed = () => measCtx.measureBody(page.body);
 
@@ -12340,35 +12510,48 @@
 
       const isContinuationSheet = () => pages.length > 0;
 
+      const continuationWrapReservePx = () => {
+        if (!miniHeader || miniOnPage || !isContinuationSheet() || page.body.childNodes.length > 0) return 0;
+        const dummy = doc.createElement("div");
+        return measCtx.measureEl(po007BundleContinuationContent(dummy, miniHeader, doc));
+      };
+
       const startNewPage = () => {
-        if (page.body.childNodes.length) pages.push(page);
+        if (page.body.childNodes.length && !po007PrintPageIsOrphanHeader(page)) pages.push(page);
         page = po007NewPrintPage(doc);
         miniOnPage = false;
       };
 
-      const addContinuationHeader = () => {
-        if (!miniHeader || miniOnPage || !isContinuationSheet()) return;
-        const node = po007ClonePrintRunningHeader(miniHeader, doc);
-        if (!node) return;
-        page.body.appendChild(node);
-        miniOnPage = true;
+      const wrapContinuationIfNeeded = (node) => {
+        if (!miniHeader || miniOnPage || !isContinuationSheet()) return node;
+        if (page.body.childNodes.length > 0) return node;
+        return po007BundleContinuationContent(node, miniHeader, doc);
       };
 
       const appendNode = (node) => {
-        const h = measCtx.measureEl(node);
-        let used = bodyUsed();
-        if (used + h > bodyLimit() && page.body.childNodes.length > 0) {
-          startNewPage();
-          addContinuationHeader();
-          used = bodyUsed();
-        }
-        page.body.appendChild(node);
-        if (measCtx.measureBody(page.body) > bodyLimit() && page.body.childNodes.length > 1) {
-          page.body.removeChild(node);
-          startNewPage();
-          addContinuationHeader();
-          page.body.appendChild(node);
-        }
+        const placeOnce = (rawNode, allowRetry) => {
+          const toPlace = wrapContinuationIfNeeded(rawNode);
+          const h = measCtx.measureEl(toPlace);
+          let used = bodyUsed();
+          if (used + h > bodyLimit() && page.body.childNodes.length > 0) {
+            startNewPage();
+            return placeOnce(rawNode, true);
+          }
+          page.body.appendChild(toPlace);
+          if (toPlace.classList.contains("po007-print-continuation-bundle")) miniOnPage = true;
+          if (measCtx.measureBody(page.body) > bodyLimit() && page.body.childNodes.length > 0) {
+            page.body.removeChild(toPlace);
+            if (toPlace.classList.contains("po007-print-continuation-bundle")) miniOnPage = false;
+            if (!allowRetry || page.body.childNodes.length === 0) {
+              page.body.appendChild(toPlace);
+              if (toPlace.classList.contains("po007-print-continuation-bundle")) miniOnPage = true;
+              return;
+            }
+            startNewPage();
+            placeOnce(rawNode, false);
+          }
+        };
+        placeOnce(node, true);
       };
 
       const measureTable = (rows, meta) => {
@@ -12381,7 +12564,7 @@
 
       const countFittingTableRows = (rows, meta) => {
         if (!rows.length) return 0;
-        const used = bodyUsed();
+        const used = bodyUsed() + continuationWrapReservePx();
         let lo = 1;
         let hi = rows.length;
         let best = 0;
@@ -12401,7 +12584,7 @@
       const tableFitsOnPage = (rows, meta) => {
         if (!rows.length) return true;
         const { h } = measureTable(rows, meta);
-        return bodyUsed() + h <= bodyLimit();
+        return bodyUsed() + continuationWrapReservePx() + h <= bodyLimit();
       };
 
       const placeTable = (rows, meta) => {
@@ -12410,7 +12593,6 @@
         while (remaining.length) {
           if (pageHasTable()) {
             startNewPage();
-            addContinuationHeader();
           }
           let snap = po007SnapshotTableMetaFlags(meta);
           let fitCount = countFittingTableRows(remaining, meta);
@@ -12418,7 +12600,6 @@
           if (fitCount === 0) {
             if (page.body.childNodes.length > 0) {
               startNewPage();
-              addContinuationHeader();
               snap = po007SnapshotTableMetaFlags(meta);
               fitCount = countFittingTableRows(remaining, meta);
               po007RestoreTableMetaFlags(meta, snap);
@@ -12442,12 +12623,11 @@
         flushTable();
         if (isMini) {
           if (miniOnPage) return;
-          if (page.body.querySelector(".po007-print-continuation-header")) return;
+          if (page.body.querySelector(".po007-print-continuation-header, .po007-print-continuation-bundle")) return;
           appendNode(el.cloneNode(true));
           miniOnPage = true;
           return;
         }
-        if (page.body.childNodes.length === 0) addContinuationHeader();
         appendNode(el.cloneNode(true));
       };
 
@@ -12465,8 +12645,6 @@
         }
         if (!pendingMeta) pendingMeta = unit.meta;
 
-        if (page.body.childNodes.length === 0 && !pendingRows.length) addContinuationHeader();
-
         const activeMeta = pendingMeta || unit.meta;
         const trial = [...pendingRows, ...unit.rows];
         if (tableFitsOnPage(trial, activeMeta)) {
@@ -12477,7 +12655,6 @@
         if (pendingRows.length) {
           flushTable();
           startNewPage();
-          addContinuationHeader();
           pendingMeta = activeMeta;
           pendingRows = [...unit.rows];
           if (!tableFitsOnPage(pendingRows, pendingMeta)) {
@@ -12488,7 +12665,6 @@
 
         if (page.body.childNodes.length > 0) {
           startNewPage();
-          addContinuationHeader();
         }
         pendingMeta = activeMeta;
         pendingRows = [...unit.rows];
@@ -12498,7 +12674,7 @@
       });
 
       flushTable();
-      if (page.body.childNodes.length) pages.push(page);
+      if (page.body.childNodes.length && !po007PrintPageIsOrphanHeader(page)) pages.push(page);
       return pages;
     }
 
@@ -12580,13 +12756,14 @@
       const padTop = PO007_PRINT_MARGIN_TOP_PX;
       const padX = PO007_PRINT_MARGIN_X_PX;
       const padBottom = PO007_PRINT_MARGIN_BOTTOM_PX;
+      const pageH = PO007_A4_HEIGHT_PX;
       return `
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-doc {
       display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
       box-sizing: border-box; width: 100%; max-width: 100%;
-      min-height: auto;
+      min-height: ${pageH}px;
       padding: ${padTop}px ${padX}px ${padBottom}px;
       margin: 0; background: #fff;
       display: block;
@@ -12615,6 +12792,12 @@
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header {
       display: flex !important; justify-content: space-between; align-items: center; gap: 8px;
       border-bottom: 2px solid #1c4587; padding-bottom: 5px; margin-bottom: 8px;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-bundle {
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-bundle > .po007-print-continuation-header {
+      margin-bottom: 8px;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header .po007-mh-title,
     #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header .po007-mh-title {
@@ -12647,17 +12830,23 @@
     @media print {
       #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
         box-shadow: none !important; width: 100% !important;
-        min-height: 0 !important; height: auto !important;
-        padding: 0 !important;
+        box-sizing: border-box !important;
+        min-height: 0 !important;
+        height: auto !important;
+        padding: ${padTop}px ${padX}px ${padBottom}px !important;
         display: block !important;
       }
       #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-body {
         max-height: none !important; overflow: visible !important;
       }
       #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header,
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-bundle,
+      #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header {
+        break-inside: avoid !important; page-break-inside: avoid !important;
+      }
+      #modal-po-print-view .po007-surface.po007-print-output .po007-print-continuation-header,
       #modal-po-print-view .po007-surface.po007-print-output .po007-mini-header {
         display: flex !important;
-        break-inside: avoid !important; page-break-inside: avoid !important;
       }
     }`;
     }
@@ -12667,11 +12856,8 @@
     }
 
     function buildPo007IframePrintExtras() {
-      const pageMarginTopMm = (PO007_PRINT_MARGIN_TOP_PX / 96) * 25.4;
-      const pageMarginXMm = (PO007_PRINT_MARGIN_X_PX / 96) * 25.4;
-      const pageMarginBottomMm = (PO007_PRINT_MARGIN_BOTTOM_PX / 96) * 25.4;
       return `
-    @page { size: A4 portrait; margin: ${pageMarginTopMm.toFixed(2)}mm ${pageMarginXMm.toFixed(2)}mm ${pageMarginBottomMm.toFixed(2)}mm; }
+    @page { size: A4 portrait; margin: 0; }
     #modal-po-print-view.modal-overlay,
     #modal-po-print-view .modal,
     #modal-po-print-view .po-print-sheet {
@@ -12744,6 +12930,8 @@
       display: table-header-group;
     }
     #modal-po-print-view .po007-surface.po007-print-flow .po007-items-table tbody tr.po007-total-num-row,
+    #modal-po-print-view .po007-surface.po007-print-flow .po007-items-table tbody tr.po007-discount-row,
+    #modal-po-print-view .po007-surface.po007-print-flow .po007-items-table tbody tr.po007-net-row,
     #modal-po-print-view .po007-surface.po007-print-flow .po007-items-table tbody tr.po007-total-row {
       break-inside: avoid; page-break-inside: avoid;
     }
@@ -12755,6 +12943,8 @@
       #modal-po-print-view .po007-section-heading,
       #modal-po-print-view .po007-items-table thead th,
       #modal-po-print-view .po007-total-num-row td,
+      #modal-po-print-view .po007-discount-row td,
+      #modal-po-print-view .po007-net-row td,
       #modal-po-print-view .po007-total-row td {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -12763,6 +12953,8 @@
         break-inside: auto !important; page-break-inside: auto !important;
       }
       #modal-po-print-view .po007-items-table tbody tr.po007-total-num-row,
+      #modal-po-print-view .po007-items-table tbody tr.po007-discount-row,
+      #modal-po-print-view .po007-items-table tbody tr.po007-net-row,
       #modal-po-print-view .po007-items-table tbody tr.po007-total-row {
         break-inside: avoid !important; page-break-inside: avoid !important;
       }
@@ -12776,6 +12968,21 @@
         break-before: page !important;
       }
     }${buildPo007PrintOutputIframeCss()}`;
+    }
+
+    function buildPo007PrintPdfTitle(po, g) {
+      const vendor = ((g?.vendor?.name || po?.supplierNameSnapshot || po?.supplierName || "") + "").trim();
+      const ref = ((g?.poNumber || po?.title || "") + "").trim();
+      const parts = [];
+      if (vendor) parts.push(vendor);
+      if (ref) parts.push(ref);
+      const raw = parts.join(" - ") || "PO";
+      return raw
+        .replace(/[\\/:*?"<>|]/g, "_")
+        .replace(/[\u0000-\u001f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 150);
     }
 
     function printPo007InIframe() {
@@ -12803,14 +13010,16 @@
       const docLang = src.g.documentLang === "en" ? "en" : "ar";
       const dir = docLang === "ar" ? "rtl" : "ltr";
       const lang = docLang;
+      const printTitle = buildPo007PrintPdfTitle(src.po, src.g);
       const styles = getPo007PrintStylesForIframe();
       const extra = buildPo007IframePrintExtras();
       const headLinks = getPo007PrintHeadLinks();
       doc.open();
       doc.write(
-        `<!DOCTYPE html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title></title>${headLinks}<style>${styles}\n${extra}</style></head><body>${buildPo007IframePrintBody(printSurfaceHtml)}</body></html>`
+        `<!DOCTYPE html><html dir="${dir}" lang="${lang}"><head><meta charset="utf-8"><title>${escapeHtml(printTitle)}</title>${headLinks}<style>${styles}\n${extra}</style></head><body>${buildPo007IframePrintBody(printSurfaceHtml)}</body></html>`
       );
       doc.close();
+      doc.title = printTitle;
 
       const waitForImages = () =>
         Promise.all(
@@ -12837,6 +13046,7 @@
         preparePo007IframePrint(doc, docLang);
         requestAnimationFrame(() => {
           try {
+            doc.title = printTitle;
             win.focus();
             win.print();
           } catch (e) {
@@ -13182,7 +13392,12 @@
       const colCount = cfg.columnOrder.length;
       const fullColspan = po007ItemsTableColCount(cfg, true, docLang);
       const totalLabelColspan = po007ItemsTotalLabelColspan(cfg, true, docLang);
+      const totalAmountColspan = po007ItemsTotalAmountColspan();
       const afterTotalCols = po007ItemsColsAfterTotal(cfg, true, docLang);
+      const discountAmt = generalPo007DiscountAmount(g.discountAmount);
+      const discountHidden = discountAmt > 0 ? "" : " po007-summary-row--hidden";
+      const discountDisp =
+        discountAmt > 0 ? formatPo007EditorAmount(discountAmt, docLang) : "";
       const colgroup = `<col class="po007-col-no" />${cfg.columnOrder
         .map(
           (colId) =>
@@ -13209,6 +13424,9 @@
           <button type="button" class="po007-items-bulk-insert-btn" data-po007="items-bulk-insert">${escapeHtml(
             tPo007(docLang, "genPo007ItemsBulkInsert")
           )}</button>
+          <button type="button" class="po007-items-discount-btn" data-po007="items-add-discount">${escapeHtml(
+            tPo007(docLang, "genPo007AddDiscount")
+          )}</button>
           <div class="po007-items-col-vis-panel" data-po007="items-col-vis-panel">${colVisPanel}</div>
         </div>
         <table class="po007-items-table" data-po007="items-table">
@@ -13226,8 +13444,28 @@
               <td colspan="${totalLabelColspan}" class="po007-col-desc po007-total-num-lbl">${escapeHtml(
         tPo007(docLang, "genPo007TotalNumeric")
       )}</td>
-              <td class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>${
+              <td colspan="${totalAmountColspan}" class="po007-col-total"><span data-po007="grand-total">0 ${escapeHtml(curSuffix)}</span></td>${
         afterTotalCols > 0 ? `<td colspan="${afterTotalCols}" data-po007-after-total></td>` : ""
+      }
+            </tr>
+            <tr class="po007-discount-row po007-summary-row${discountHidden}">
+              <td colspan="${totalLabelColspan}" class="po007-col-desc po007-discount-lbl">${escapeHtml(
+        tPo007(docLang, "genPo007Discount")
+      )}<button type="button" class="po007-del-discount-btn" data-po007="clear-discount" title="${escapeAttr(
+        tPo007(docLang, "dash")
+      )}">✕</button></td>
+              <td colspan="${totalAmountColspan}" class="po007-col-total"><span class="po007-discount-input" contenteditable="true" spellcheck="false" data-po007="discount-amount">${escapeHtml(
+        discountDisp
+      )}</span> <span class="po007-discount-cur">${escapeHtml(curSuffix)}</span></td>${
+        afterTotalCols > 0 ? `<td colspan="${afterTotalCols}" data-po007-after-discount></td>` : ""
+      }
+            </tr>
+            <tr class="po007-net-row po007-summary-row${discountHidden}">
+              <td colspan="${totalLabelColspan}" class="po007-col-desc po007-net-lbl">${escapeHtml(
+        tPo007(docLang, "genPo007NetTotal")
+      )}</td>
+              <td colspan="${totalAmountColspan}" class="po007-col-total"><span data-po007="net-total">0 ${escapeHtml(curSuffix)}</span></td>${
+        afterTotalCols > 0 ? `<td colspan="${afterTotalCols}" data-po007-after-net></td>` : ""
       }
             </tr>
             <tr class="po007-total-row">
@@ -13310,28 +13548,53 @@
       syncPo007ItemsTableColspans(mount, cfg, docLang);
     }
 
+    function po007SyncSummaryRowColspans(row, totalLabelColspan, totalAmountColspan, afterTotalCols, afterAttr) {
+      if (!row) return;
+      const lbl = row.querySelector("td.po007-col-desc");
+      if (lbl) lbl.colSpan = totalLabelColspan;
+      const val = row.querySelector("td.po007-col-total");
+      if (val) val.colSpan = totalAmountColspan;
+      let filler = row.querySelector(`[${afterAttr}]`);
+      if (afterTotalCols > 0) {
+        if (!filler) {
+          filler = document.createElement("td");
+          filler.setAttribute(afterAttr, "");
+          row.appendChild(filler);
+        }
+        filler.colSpan = afterTotalCols;
+      } else if (filler) filler.remove();
+    }
+
     function syncPo007ItemsTableColspans(mount, cfg, docLang) {
       if (!mount) return;
       const norm = normalizePo007ItemsTableConfig(cfg, docLang);
       const fullColspan = po007ItemsTableColCount(norm, true, docLang);
       const totalLabelColspan = po007ItemsTotalLabelColspan(norm, true, docLang);
+      const totalAmountColspan = po007ItemsTotalAmountColspan();
       const afterTotalCols = po007ItemsColsAfterTotal(norm, true, docLang);
       const addRowTd = mount.querySelector(".po007-items-add-row td");
       if (addRowTd) addRowTd.colSpan = fullColspan;
-      const totalNumLbl = mount.querySelector(".po007-total-num-row .po007-total-num-lbl");
-      if (totalNumLbl) totalNumLbl.colSpan = totalLabelColspan;
-      const totalNumRow = mount.querySelector(".po007-total-num-row");
-      if (totalNumRow) {
-        let filler = totalNumRow.querySelector("[data-po007-after-total]");
-        if (afterTotalCols > 0) {
-          if (!filler) {
-            filler = document.createElement("td");
-            filler.setAttribute("data-po007-after-total", "");
-            totalNumRow.appendChild(filler);
-          }
-          filler.colSpan = afterTotalCols;
-        } else if (filler) filler.remove();
-      }
+      po007SyncSummaryRowColspans(
+        mount.querySelector(".po007-total-num-row"),
+        totalLabelColspan,
+        totalAmountColspan,
+        afterTotalCols,
+        "data-po007-after-total"
+      );
+      po007SyncSummaryRowColspans(
+        mount.querySelector(".po007-discount-row"),
+        totalLabelColspan,
+        totalAmountColspan,
+        afterTotalCols,
+        "data-po007-after-discount"
+      );
+      po007SyncSummaryRowColspans(
+        mount.querySelector(".po007-net-row"),
+        totalLabelColspan,
+        totalAmountColspan,
+        afterTotalCols,
+        "data-po007-after-net"
+      );
       const totalSayTd = mount.querySelector(".po007-total-row td");
       if (totalSayTd) totalSayTd.colSpan = fullColspan;
     }
@@ -13546,9 +13809,26 @@
       const grandDisp = formatPo007GrandTotalDisplay(sum, curSuffix, docLang);
       const grand = mount.querySelector('[data-po007="grand-total"]');
       if (grand) grand.textContent = grandDisp;
+      const discount = readGeneralPo007DiscountFromMount(mount);
+      const discEl = mount.querySelector('[data-po007="discount-amount"]');
+      if (discEl && document.activeElement !== discEl) {
+        discEl.textContent = discount > 0 ? formatPo007EditorAmount(discount, docLang) : "";
+      }
+      const netTotal = Math.max(0, sum - discount);
+      const netEl = mount.querySelector('[data-po007="net-total"]');
+      if (netEl) netEl.textContent = formatPo007GrandTotalDisplay(netTotal, curSuffix, docLang);
+      const showDiscount = discount > 0;
+      const discountOpen = mount.dataset.po007DiscountOpen === "1";
+      const discRow = mount.querySelector(".po007-discount-row");
+      const netRow = mount.querySelector(".po007-net-row");
+      if (discRow) discRow.classList.toggle("po007-summary-row--hidden", !showDiscount && !discountOpen);
+      if (netRow) netRow.classList.toggle("po007-summary-row--hidden", !showDiscount);
+      if (showDiscount) delete mount.dataset.po007DiscountOpen;
+      const addDiscBtn = mount.querySelector('[data-po007="items-add-discount"]');
+      if (addDiscBtn) addDiscBtn.style.display = showDiscount || discountOpen ? "none" : "";
       const totalWordsEl = mount.querySelector('[data-po007="total-words"]');
       if (totalWordsEl && totalWordsEl.dataset.po007Manual !== "1") {
-        totalWordsEl.textContent = formatPo007TotalWordsDisplay(sum, getPo007MetaCurrency(), docLang);
+        totalWordsEl.textContent = formatPo007TotalWordsDisplay(netTotal, getPo007MetaCurrency(), docLang);
       }
       renumberGeneralPo007ItemRows();
       schedulePo007PageBreakGuides(mount);
@@ -13770,7 +14050,11 @@
       if (Array.isArray(patch?.lines) && !wasManual) {
         const docLang = getPo007DocumentLang();
         const cur = g.currency || getPo007MetaCurrency();
-        g.totalWords = formatPo007TotalWordsDisplay(generalLinesBillableTotal(patch.lines), cur, docLang);
+        g.totalWords = formatPo007TotalWordsDisplay(
+          generalPo007BillableNetTotal(patch.lines, g.discountAmount),
+          cur,
+          docLang
+        );
         g.totalWordsManual = false;
       }
       mountGeneralPo007Editor(g, generalPo007EditorPo || {});
@@ -13927,6 +14211,23 @@
         if (e.target.closest('[data-po007="items-bulk-insert"]')) {
           e.preventDefault();
           openPo007ItemsBulkInsertModal();
+          return;
+        }
+        if (e.target.closest('[data-po007="items-add-discount"]')) {
+          e.preventDefault();
+          mount.dataset.po007DiscountOpen = "1";
+          mount.querySelector(".po007-discount-row")?.classList.remove("po007-summary-row--hidden");
+          const addDiscBtn = mount.querySelector('[data-po007="items-add-discount"]');
+          if (addDiscBtn) addDiscBtn.style.display = "none";
+          mount.querySelector('[data-po007="discount-amount"]')?.focus();
+          return;
+        }
+        if (e.target.closest('[data-po007="clear-discount"]')) {
+          e.preventDefault();
+          delete mount.dataset.po007DiscountOpen;
+          const discEl = mount.querySelector('[data-po007="discount-amount"]');
+          if (discEl) discEl.textContent = "";
+          recalcGeneralPo007ItemsTable();
           return;
         }
         if (e.target.closest('[data-po007="items-col-visibility"]')) {
@@ -14128,6 +14429,7 @@
       };
       const triggerRecalc = (e) => {
         if (e.target.closest(".po007-items-table [data-po007-line]")) recalcGeneralPo007ItemsTable();
+        if (e.target.matches('[data-po007="discount-amount"]')) recalcGeneralPo007ItemsTable();
       };
       mount.oninput = (e) => {
         if (
@@ -14152,6 +14454,7 @@
             const gSnap = enrichGeneralFormPo007({
               lines: readGeneralPo007LinesFromMount(),
               currency: getPo007MetaCurrency(),
+              discountAmount: readGeneralPo007DiscountFromMount(mount),
             });
             applyPo007PaymentRowModeUi(li, gSnap, getPo007DocumentLang());
           }
@@ -14174,9 +14477,18 @@
         "focusout",
         (e) => {
           const priceEl = e.target.closest(".po007-unit-price");
-          if (!priceEl) return;
-          applyPo007AmountFieldFormat(priceEl, getPo007DocumentLang());
-          recalcGeneralPo007ItemsTable();
+          const discEl = e.target.closest('[data-po007="discount-amount"]');
+          const docLang = getPo007DocumentLang();
+          if (priceEl) {
+            applyPo007AmountFieldFormat(priceEl, docLang);
+            recalcGeneralPo007ItemsTable();
+            return;
+          }
+          if (discEl) {
+            applyPo007AmountFieldFormat(discEl, docLang);
+            if (!readGeneralPo007DiscountFromMount(mount)) delete mount.dataset.po007DiscountOpen;
+            recalcGeneralPo007ItemsTable();
+          }
         },
         true
       );
@@ -14305,7 +14617,7 @@
       const totalWordsEl = mount.querySelector('[data-po007="total-words"]');
       if (totalWordsEl) {
         const docLang = model.documentLang === "en" ? "en" : "ar";
-        const sum = generalLinesBillableTotal(model.lines || []);
+        const sum = generalPo007BillableNetTotal(model.lines || [], model.discountAmount);
         const auto = formatPo007TotalWordsDisplay(sum, model.currency, docLang);
         const savedTotalWords = (model.totalWords || "").trim();
         if (model.totalWordsManual && savedTotalWords) {
@@ -14375,7 +14687,7 @@
       const totalWords = totalWordsManual
         ? totalWordsTxt
         : formatPo007TotalWordsDisplay(
-            generalLinesBillableTotal(lines),
+            generalPo007BillableNetTotal(lines, readGeneralPo007DiscountFromMount(mount)),
             getPo007MetaCurrency(),
             getPo007DocumentLang()
           );
@@ -14401,6 +14713,7 @@
           extraNotes: read("buyer-extra"),
         },
         totalWords,
+        discountAmount: readGeneralPo007DiscountFromMount(mount),
         ...sections,
         sectionTitles,
         sectionVisibility,
@@ -14438,6 +14751,7 @@
         lines,
         totalWords,
         totalWordsManual,
+        discountAmount: readGeneralPo007DiscountFromMount(mount),
         ...sections,
         sectionTitles,
         sectionVisibility,
@@ -14491,6 +14805,7 @@
       const printColOrder = po007ItemsPrintColumnOrder(itemsCfg, docLang);
       const printColCount = po007ItemsTableColCount(itemsCfg, false, docLang);
       const printTotalLabelColspan = po007ItemsTotalLabelColspan(itemsCfg, false, docLang);
+      const printTotalAmountColspan = po007ItemsTotalAmountColspan();
       const printAfterTotalCols = po007ItemsColsAfterTotal(itemsCfg, false, docLang);
       const printFullColspan = po007ItemsTableColCount(itemsCfg, false, docLang);
       const lineRows = lines.length
@@ -14510,20 +14825,36 @@
         : `<tr><td colspan="${printColCount}">${escapeHtml(tPo007(docLang, "dash"))}</td></tr>`;
 
       const totalNum = generalLinesBillableTotal(lines);
+      const discountAmt = generalPo007DiscountAmount(g.discountAmount);
+      const netNum = generalPo007BillableNetTotal(lines, discountAmt);
       const totalWords = (g.totalWords || "").trim();
+      const totalSayBase = discountAmt > 0 ? netNum : totalNum;
       const totalSay =
         totalWords ||
-        (totalNum > 0 ? formatPo007TotalWordsDisplay(totalNum, curCode, docLang) : docLang === "ar" ? "صفر" : "Zero");
+        (totalSayBase > 0 ? formatPo007TotalWordsDisplay(totalSayBase, curCode, docLang) : docLang === "ar" ? "صفر" : "Zero");
       const numericTotalDisp = formatPo007GrandTotalDisplay(totalNum, curSuffix, docLang);
       const totalNumRow = `<tr class="po007-total-num-row"><td colspan="${printTotalLabelColspan}" class="po007-col-desc po007-total-num-lbl">${escapeHtml(
         tPo007(docLang, "genPo007TotalNumeric")
-      )}</td><td class="po007-col-total">${escapeHtml(numericTotalDisp)}</td>${
+      )}</td><td colspan="${printTotalAmountColspan}" class="po007-col-total">${escapeHtml(numericTotalDisp)}</td>${
         printAfterTotalCols > 0 ? `<td colspan="${printAfterTotalCols}"></td>` : ""
       }</tr>`;
+      const discountRows =
+        discountAmt > 0
+          ? `<tr class="po007-discount-row"><td colspan="${printTotalLabelColspan}" class="po007-col-desc po007-discount-lbl">${escapeHtml(
+              tPo007(docLang, "genPo007Discount")
+            )}</td><td colspan="${printTotalAmountColspan}" class="po007-col-total">${escapeHtml(
+              formatPo007GrandTotalDisplay(discountAmt, curSuffix, docLang)
+            )}</td>${printAfterTotalCols > 0 ? `<td colspan="${printAfterTotalCols}"></td>` : ""}</tr>
+            <tr class="po007-net-row"><td colspan="${printTotalLabelColspan}" class="po007-col-desc po007-net-lbl">${escapeHtml(
+              tPo007(docLang, "genPo007NetTotal")
+            )}</td><td colspan="${printTotalAmountColspan}" class="po007-col-total">${escapeHtml(
+              formatPo007GrandTotalDisplay(netNum, curSuffix, docLang)
+            )}</td>${printAfterTotalCols > 0 ? `<td colspan="${printAfterTotalCols}"></td>` : ""}</tr>`
+          : "";
       const totalSayRow = `<tr class="po007-total-row"><td colspan="${printFullColspan}" class="po007-col-desc">${escapeHtml(
         tPo007(docLang, "genPo007TotalPriceSay")
       )} ${escapeHtml(totalSay)}</td></tr>`;
-      const totalRow = totalNumRow + totalSayRow;
+      const totalRow = totalNumRow + discountRows + totalSayRow;
 
       const gSec = editorMode ? mergePo007TemplateIntoForm(g, docLang) : g;
       const sectionNums = buildPo007SectionNumberMap(gSec, docLang, editorMode);
@@ -14960,7 +15291,7 @@
       const docLangSave = g.documentLang === "en" ? "en" : "ar";
       if (!validatePaymentPctTotalOrAlert(g.paymentTerms || [], docLangSave)) return;
       const lines = g.lines.length ? g.lines : [{ itemTag: "—", description: "", qty: 0, priceText: "", lineTotal: 0 }];
-      const totalAmount = generalLinesBillableTotal(lines);
+      const totalAmount = generalPo007BillableNetTotal(lines, g.discountAmount);
       let companyNameSnapshot = null;
       let companyLogoDataUrlSnapshot = null;
       let companyLogoUrlSnapshot = null;
@@ -15046,10 +15377,17 @@
       const html = renderGeneralPo007Html(poRender, g);
       el.innerHTML = html;
       lastPo007PrintSource = { po: poRender, g };
-      lastPoPrintDoc = { title: refText, html };
+      lastPoPrintDoc = { title: buildPo007PrintPdfTitle(poRender, g), html };
       const docLang = g.documentLang === "en" ? "en" : "ar";
       $("po007-preview-hint")?.classList.add("hidden");
       $("modal-po-print-view")?.classList.remove("hidden");
+    }
+
+    function openGeneralPoProPrint(poId) {
+      if (!poId) return;
+      const url = new URL("gen-po-print.html", window.location.href);
+      url.searchParams.set("id", poId);
+      window.open(url.toString(), "_blank", "noopener");
     }
 
     function syncPoModalBlocks(scope) {
@@ -20478,6 +20816,11 @@
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
+                      scope === "general"
+                        ? `<button type="button" class="btn btn-primary btn-sm btn-gen-po-pro-print" data-id="${r.id}">${t("btnGenPoProPrint")}</button>`
+                        : ""
+                    }
+                    ${
                       canEdit
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t(
                             "edit"
@@ -20497,6 +20840,9 @@
         });
         wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
           btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-gen-po-pro-print").forEach((btn) => {
+          btn.addEventListener("click", () => openGeneralPoProPrint(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
           btn.addEventListener("click", () => deletePo(btn.dataset.id));
@@ -23432,7 +23778,7 @@
             else if (csrc.startsWith("http")) companyLogoUrlSnapshot = csrc;
           }
         }
-        const totalAmount = generalLinesBillableTotal(lines);
+        const totalAmount = generalPo007BillableNetTotal(lines, g.discountAmount);
         payload = {
           title: g.poNumber,
           supplierId: (g.supplierId || "").trim() || null,
