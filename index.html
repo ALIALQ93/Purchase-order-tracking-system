@@ -5183,6 +5183,39 @@
         <p style="margin:0 0 1rem;color:var(--muted);font-size:0.9rem;" data-i18n="accountingQueueHint">
           سلفة ثم إقفال؛ وقسم المتابعة يعرض الطلبات بعد إطلاق السلفة وحتى اكتمال المسار.
         </p>
+        <div class="po-projects-toolbar-strip" style="margin-bottom:1rem">
+          <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+            <label class="po-filter-field po-filter-field-search">
+              <span data-i18n="warehouseReceiptSearchLabel">بحث</span>
+              <input
+                type="search"
+                id="accq-search"
+                class="po-projects-filter-search"
+                data-i18n-placeholder="accountingSearchPlaceholder"
+                autocomplete="off"
+              />
+            </label>
+            <label class="po-filter-field">
+              <span data-i18n="warehouseReceiptFilterProjectLabel">المشروع</span>
+              <select id="accq-filter-project"></select>
+            </label>
+            <label class="po-filter-field">
+              <span data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</span>
+              <select id="accq-filter-rep"></select>
+            </label>
+            <label class="po-filter-field">
+              <span data-i18n="filterPriorityLabel">الأولوية</span>
+              <select id="accq-filter-priority">
+                <option value="" data-i18n="filterAll">الكل</option>
+                <option value="urgent" data-i18n="poPriorityUrgent">عاجل</option>
+                <option value="normal" data-i18n="poPriorityNormal">عادي</option>
+              </select>
+            </label>
+            <button type="button" class="btn btn-secondary btn-sm" id="accq-filter-reset" data-i18n="warehouseReceiptClearFilters">
+              مسح الفلاتر
+            </button>
+          </div>
+        </div>
         <div class="card" style="margin-bottom:1rem">
           <h2 style="margin:0 0 0.5rem;font-size:1.05rem" data-i18n="accountingAdvanceSectionTitle">سلفة عمل</h2>
           <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.9rem;" data-i18n="accountingAdvanceSectionHint">
@@ -6570,7 +6603,9 @@
         labelEmailPrimary: "البريد الإلكتروني الأول",
         labelEmailSecondary: "البريد الإلكتروني الثاني",
         labelPhone: "رقم الهاتف",
-        labelLogo: "شعار الشركة (صورة)",
+        labelLogo: "رفع صورة الشعار (تُخزَّن في قاعدة البيانات)",
+        labelLogoUrl: "مسار/رابط الشعار (من المستودع)",
+        labelLogoUrlHint: "الطريقة الموصى بها: ضع ملف الشعار في مجلد assets/logos داخل المستودع واكتب مساره هنا، مثل: assets/logos/company.png — يُفضّل صورة PNG عالية الدقة بخلفية شفافة. أوضح من رفع الصورة المضغوطة إلى قاعدة البيانات.",
         colLogo: "الشعار",
         colEmail: "البريد",
         companiesFilterSearch: "بحث: رمز، اسم، بريد، هاتف…",
@@ -6994,6 +7029,7 @@
         alertWarehouseSupervisorRegionsRequired: "حدّد المناطق المسندة لمسؤول استلام المستودع من الإدارة.",
         accountingQueueTitle: "الحسابات",
         accountingQueueHint: "سلفة ثم إقفال؛ وقسم المتابعة يعرض الطلبات بعد إطلاق السلفة وحتى اكتمال المسار.",
+        accountingSearchPlaceholder: "رقم الطلب، المشروع، المندوب، مقدم الطلب، المورّد…",
         accountingTrackSectionTitle: "متابعة المسار",
         accountingTrackSectionHint:
           "بعد تسليم السلفة: بانتظار استلام المستودع. بعد إقفالكم: الطلبات المكتملة محاسبياً — عرض وطباعة فقط.",
@@ -7492,7 +7528,9 @@
         labelEmailPrimary: "Primary email",
         labelEmailSecondary: "Secondary email",
         labelPhone: "Phone number",
-        labelLogo: "Company logo (image)",
+        labelLogo: "Upload logo image (stored in the database)",
+        labelLogoUrl: "Logo path / URL (from repository)",
+        labelLogoUrlHint: "Recommended: place the logo file in the assets/logos folder in the repo and enter its path here, e.g. assets/logos/company.png — a high-resolution PNG with a transparent background is best. Clearer than uploading a compressed image into the database.",
         colLogo: "Logo",
         colEmail: "Email",
         companiesFilterSearch: "Search: code, name, email, phone…",
@@ -7917,6 +7955,7 @@
         alertWarehouseSupervisorRegionsSave: "Assign at least one region for this warehouse receipt supervisor.",
         accountingQueueTitle: "Accounting",
         accountingQueueHint: "Advance and closure; follow-up shows requests after advance release through completion.",
+        accountingSearchPlaceholder: "PO ref, project, representative, requester, supplier…",
         accountingTrackSectionTitle: "Pipeline follow-up",
         accountingTrackSectionHint:
           "After advance release: awaiting warehouse receipt. After you close: accounting-completed requests — view and print only.",
@@ -8645,6 +8684,19 @@
       const d = (company.logoDataUrl || "").trim();
       if (d) return d;
       return (company.logoUrl || "").trim();
+    }
+
+    // يحوّل مسار شعار نسبياً (مثل assets/logos/x.png) إلى رابط مطلق
+    // حتى يعمل منطق لقطة أمر الشراء (الذي يحفظ روابط http فقط) بشكل صحيح.
+    function resolveCompanyLogoUrlInput(value) {
+      const s = (value || "").trim();
+      if (!s) return "";
+      if (s.startsWith("data:") || /^https?:\/\//i.test(s)) return s;
+      try {
+        return new URL(s, location.href).href;
+      } catch {
+        return s;
+      }
     }
 
     function compressImageFileToDataUrl(file, maxEdge = 360, quality = 0.78, maxChars = 720000) {
@@ -22417,11 +22469,295 @@
       }
     }
 
+    let accountingQueueDataCache = null;
+
+    function invalidateAccountingQueueCache() {
+      accountingQueueDataCache = null;
+    }
+
+    function accountingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority) {
+      if (projectId && (po?.projectId || "") !== projectId) return false;
+      if (priority) {
+        const pr = po?.priority === "urgent" ? "urgent" : "normal";
+        if (pr !== priority) return false;
+      }
+      if (repIdOrName) {
+        const pid = (po?.purchasingRepresentativeId || "").trim();
+        const pn = (po?.purchasingRepresentativeName || "").trim();
+        if (repIdOrName !== pid && repIdOrName !== pn) return false;
+      }
+      const queryText = (q || "").trim().toLowerCase();
+      if (!queryText) return true;
+      const hay = [
+        (po?.poReference || po?.title || "").trim(),
+        (projectName || "").trim(),
+        (po?.purchasingRepresentativeName || "").trim(),
+        (po?.requesterName || "").trim(),
+        (po?.supplierName || "").trim(),
+        workflowLabelForDocument(po),
+        poRowDisplayDate(po),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return matchesQueryAllWords(hay, queryText);
+    }
+
+    function wireAccountingFiltersOnce() {
+      const search = $("accq-search");
+      const proj = $("accq-filter-project");
+      const rep = $("accq-filter-rep");
+      const priority = $("accq-filter-priority");
+      const reset = $("accq-filter-reset");
+      if (!search || !proj || !rep || !priority || !reset) return;
+      if (reset.dataset.wired) return;
+      reset.dataset.wired = "1";
+      const rerender = () => {
+        if (accountingQueueDataCache) renderAccountingQueueTables(accountingQueueDataCache);
+        else void loadAccountingQueue();
+      };
+      search.addEventListener("input", debounceFn(rerender, 260));
+      proj.addEventListener("change", rerender);
+      rep.addEventListener("change", rerender);
+      priority.addEventListener("change", rerender);
+      reset.addEventListener("click", () => {
+        search.value = "";
+        proj.value = "";
+        rep.value = "";
+        priority.value = "";
+        rerender();
+      });
+    }
+
+    function populateAccountingFilterSelects(cache) {
+      const { rowsAdv, rowsFin, rowsTrack, projectNames } = cache;
+      const all = [...rowsAdv, ...rowsFin, ...rowsTrack];
+      const projSel = $("accq-filter-project");
+      if (projSel) {
+        const ids = [...new Set(all.map((r) => r.projectId).filter(Boolean))];
+        ids.sort((a, b) =>
+          (projectNames[a] || a).localeCompare(projectNames[b] || b, lang === "ar" ? "ar" : "en")
+        );
+        const cur = projSel.value;
+        projSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          ids.map((id) => `<option value="${escapeAttr(id)}">${escapeHtml(projectNames[id] || id)}</option>`).join("");
+        projSel.value = ids.includes(cur) ? cur : "";
+      }
+      const repSel = $("accq-filter-rep");
+      if (repSel) {
+        const reps = all
+          .map((r) => ({
+            id: (r.purchasingRepresentativeId || "").trim(),
+            name: (r.purchasingRepresentativeName || "").trim(),
+          }))
+          .filter((x) => x.id || x.name);
+        const uniq = [];
+        const seen = new Set();
+        reps.forEach((x) => {
+          const key = x.id || x.name;
+          if (seen.has(key)) return;
+          seen.add(key);
+          uniq.push(x);
+        });
+        uniq.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id, lang === "ar" ? "ar" : "en"));
+        const cur = repSel.value;
+        repSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          uniq
+            .map((r) => `<option value="${escapeAttr(r.id || r.name)}">${escapeHtml(r.name || r.id)}</option>`)
+            .join("");
+        repSel.value = uniq.some((x) => (x.id || x.name) === cur) ? cur : "";
+      }
+    }
+
+    function renderAccountingQueueTables(cache) {
+      const advWrap = $("accounting-advance-queue-wrap");
+      const finWrap = $("accounting-final-queue-wrap");
+      const trackWrap = $("accounting-track-queue-wrap");
+      if (!advWrap || !finWrap || !trackWrap || !cache) return;
+      const { rowsAdv, rowsFin, rowsTrack, projectNames, role } = cache;
+      const qText = ($("accq-search")?.value || "").trim();
+      const fProject = ($("accq-filter-project")?.value || "").trim();
+      const fRep = ($("accq-filter-rep")?.value || "").trim();
+      const fPriority = ($("accq-filter-priority")?.value || "").trim();
+      const rowOk = (r) =>
+        accountingRowMatchesFilters(r, projectNames[r.projectId] || r.projectId || "", qText, fProject, fRep, fPriority);
+      const advF = rowsAdv.filter(rowOk);
+      const finF = rowsFin.filter(rowOk);
+      const trackF = rowsTrack.filter(rowOk);
+      const hasFilters = !!(qText || fProject || fRep || fPriority);
+      const canAcct = role === "accountant" || hasAdminAccess();
+      const emptyMsg = (filteredEmpty, totalHas, emptyKey) =>
+        `<p class="empty-state">${escapeHtml(
+          t(filteredEmpty && hasFilters && totalHas ? "warehouseReceiptNoFilterResults" : emptyKey)
+        )}</p>`;
+
+      if (!advF.length) {
+        advWrap.innerHTML = emptyMsg(true, rowsAdv.length > 0, "emptyAccountingAdvanceQueue");
+      } else {
+        advWrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
+            <th>${t("colPoReference")}</th>
+            <th>${t("colRequestDate")}</th>
+            <th>${t("colProject")}</th>
+            <th>${t("colPriority")}</th>
+            <th>${t("colWorkflow")}</th>
+            <th>${t("colPurchasingRepresentative")}</th>
+            <th></th>
+          </tr></thead><tbody>
+            ${advF
+              .map(
+                (r) => `
+              <tr>
+                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                <td>${priorityBadge(r.priority)}</td>
+                <td>${formatWorkflowTableCellForPo(r)}</td>
+                <td>${purchasingRepresentativeCellHtml(r)}</td>
+                <td class="td-approval-actions">
+                  <div class="approval-actions-cell">
+                    <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                      canAcct
+                        ? `<button type="button" class="btn btn-primary btn-sm btn-advance-accounting-release" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmAdvanceRelease"))}</button>`
+                        : ""
+                    }
+                  </div>
+                </td>
+              </tr>`
+              )
+              .join("")}
+          </tbody></table></div>`;
+        advWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
+          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        if (canAcct) {
+          advWrap.querySelectorAll(".btn-advance-accounting-release").forEach((btn) => {
+            btn.addEventListener("click", () => runAdvanceAccountingRelease(btn.dataset.id));
+          });
+        }
+      }
+
+      if (!finF.length) {
+        finWrap.innerHTML = emptyMsg(true, rowsFin.length > 0, "emptyAccountingFinalQueue");
+      } else {
+        finWrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
+            <th>${t("colPoReference")}</th>
+            <th>${t("colRequestDate")}</th>
+            <th>${t("colProject")}</th>
+            <th>${t("colPriority")}</th>
+            <th>${t("colWorkflow")}</th>
+            <th>${t("colPurchasingRepresentative")}</th>
+            <th></th>
+          </tr></thead><tbody>
+            ${finF
+              .map(
+                (r) => `
+              <tr>
+                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                <td>${priorityBadge(r.priority)}</td>
+                <td>${formatWorkflowTableCellForPo(r)}</td>
+                <td>${purchasingRepresentativeCellHtml(r)}</td>
+                <td class="td-approval-actions">
+                  <div class="approval-actions-cell">
+                    ${
+                      canAcct
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button><button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnAccountingRecordValues"))}</button><button type="button" class="btn btn-primary btn-sm btn-accounting-close" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmAccountingClose"))}</button>`
+                        : `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>`
+                    }
+                  </div>
+                </td>
+              </tr>`
+              )
+              .join("")}
+          </tbody></table></div>`;
+        finWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
+          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        if (canAcct) {
+          finWrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
+            btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+          });
+          finWrap.querySelectorAll(".btn-accounting-close").forEach((btn) => {
+            btn.addEventListener("click", () => runAccountingClose(btn.dataset.id));
+          });
+        }
+      }
+
+      if (!trackF.length) {
+        trackWrap.innerHTML = emptyMsg(true, rowsTrack.length > 0, "emptyAccountingTrackQueue");
+      } else {
+        trackWrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
+            <th>${t("colPoReference")}</th>
+            <th>${t("colRequestDate")}</th>
+            <th>${t("colProject")}</th>
+            <th>${t("colPriority")}</th>
+            <th>${t("colWorkflow")}</th>
+            <th>${t("colPurchasingRepresentative")}</th>
+            <th></th>
+          </tr></thead><tbody>
+            ${trackF
+              .map((r) => {
+                const canReq = canAcct && r.workflowStatus === "workflow_complete" && !r.pricesAmendmentApproved;
+                const canEdit = canAcct && r.workflowStatus === "workflow_complete" && !!r.pricesAmendmentApproved;
+                const canApprove = hasAdminAccess() && r.workflowStatus === "workflow_complete" && !!r.pricesAmendmentRequested && !r.pricesAmendmentApproved;
+                const reqBtn = canReq
+                  ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-price-amend-request" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                      t("btnRequestPriceAmendment")
+                    )}</button>`
+                  : "";
+                const editBtn = canEdit
+                  ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                      t("btnAccountingRecordValues")
+                    )}</button>`
+                  : "";
+                const apprBtn = canApprove
+                  ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-price-amend-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                      t("btnApprovePriceAmendment")
+                    )}</button>`
+                  : "";
+                return `
+              <tr>
+                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                <td>${priorityBadge(r.priority)}</td>
+                <td>${formatWorkflowTableCellForPo(r)}</td>
+                <td>${purchasingRepresentativeCellHtml(r)}</td>
+                <td class="td-approval-actions">
+                  <div class="approval-actions-cell">
+                    <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                      t("btnPoPrintView")
+                    )}</button>${reqBtn}${editBtn}${apprBtn}
+                  </div>
+                </td>
+              </tr>`
+              })
+              .join("")}
+          </tbody></table></div>`;
+        trackWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
+          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        trackWrap.querySelectorAll(".btn-acc-price-amend-request").forEach((btn) => {
+          btn.addEventListener("click", () => requestPriceAmendmentForCompletedPo(btn.dataset.id));
+        });
+        trackWrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
+          btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+        });
+        trackWrap.querySelectorAll(".btn-acc-price-amend-approve").forEach((btn) => {
+          btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+        });
+      }
+    }
+
     async function loadAccountingQueue() {
       const advWrap = $("accounting-advance-queue-wrap");
       const finWrap = $("accounting-final-queue-wrap");
       const trackWrap = $("accounting-track-queue-wrap");
       if (!advWrap || !finWrap || !trackWrap) return;
+      wireAccountingFiltersOnce();
       const role = currentUserProfile?.role || userRole;
       advWrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       finWrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
@@ -22442,116 +22778,23 @@
           where("scope", "==", "project"),
           where("workflowStatus", "==", "pending_advance_accounting")
         );
-        const qTrack = query(
-          collection(db, "purchaseOrders"),
-          where("scope", "==", "project"),
-          where("workflowStatus", "in", ["pending_warehouse_receipt", "workflow_complete"])
-        );
-        const [snapAdv, snapTrack] = await Promise.all([getDocs(qAdv), getDocs(qTrack)]);
-        let rowsAdv = [];
-        snapAdv.forEach((d) => rowsAdv.push({ id: d.id, ...d.data() }));
-        sortPoRows(rowsAdv);
-        const canAcct = role === "accountant" || hasAdminAccess();
-        if (!rowsAdv.length) {
-          advWrap.innerHTML = `<p class="empty-state">${t("emptyAccountingAdvanceQueue")}</p>`;
-        } else {
-          advWrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
-              <th>${t("colPoReference")}</th>
-              <th>${t("colRequestDate")}</th>
-              <th>${t("colProject")}</th>
-              <th>${t("colPriority")}</th>
-              <th>${t("colWorkflow")}</th>
-              <th>${t("colPurchasingRepresentative")}</th>
-              <th></th>
-            </tr></thead><tbody>
-              ${rowsAdv
-                .map(
-                  (r) => `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
-                        canAcct
-                          ? `<button type="button" class="btn btn-primary btn-sm btn-advance-accounting-release" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmAdvanceRelease"))}</button>`
-                          : ""
-                      }
-                    </div>
-                  </td>
-                </tr>`
-                )
-                .join("")}
-            </tbody></table></div>`;
-          advWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
-            btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
-          });
-          if (canAcct) {
-            advWrap.querySelectorAll(".btn-advance-accounting-release").forEach((btn) => {
-              btn.addEventListener("click", () => runAdvanceAccountingRelease(btn.dataset.id));
-            });
-          }
-        }
         const qFin = query(
           collection(db, "purchaseOrders"),
           where("scope", "==", "project"),
           where("workflowStatus", "==", "pending_accounting")
         );
-        const snapFin = await getDocs(qFin);
+        const qTrack = query(
+          collection(db, "purchaseOrders"),
+          where("scope", "==", "project"),
+          where("workflowStatus", "in", ["pending_warehouse_receipt", "workflow_complete"])
+        );
+        const [snapAdv, snapFin, snapTrack] = await Promise.all([getDocs(qAdv), getDocs(qFin), getDocs(qTrack)]);
+        let rowsAdv = [];
+        snapAdv.forEach((d) => rowsAdv.push({ id: d.id, ...d.data() }));
+        sortPoRows(rowsAdv);
         let rowsFin = [];
         snapFin.forEach((d) => rowsFin.push({ id: d.id, ...d.data() }));
         sortPoRows(rowsFin);
-        if (!rowsFin.length) {
-          finWrap.innerHTML = `<p class="empty-state">${t("emptyAccountingFinalQueue")}</p>`;
-        } else {
-          finWrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
-              <th>${t("colPoReference")}</th>
-              <th>${t("colRequestDate")}</th>
-              <th>${t("colProject")}</th>
-              <th>${t("colPriority")}</th>
-              <th>${t("colWorkflow")}</th>
-              <th>${t("colPurchasingRepresentative")}</th>
-              <th></th>
-            </tr></thead><tbody>
-              ${rowsFin
-                .map(
-                  (r) => `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      ${
-                        canAcct
-                          ? `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button><button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnAccountingRecordValues"))}</button><button type="button" class="btn btn-primary btn-sm btn-accounting-close" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmAccountingClose"))}</button>`
-                          : `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>`
-                      }
-                    </div>
-                  </td>
-                </tr>`
-                )
-                .join("")}
-            </tbody></table></div>`;
-          finWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
-            btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
-          });
-          if (canAcct) {
-            finWrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
-              btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
-            });
-            finWrap.querySelectorAll(".btn-accounting-close").forEach((btn) => {
-              btn.addEventListener("click", () => runAccountingClose(btn.dataset.id));
-            });
-          }
-        }
         let rowsTrack = [];
         snapTrack.forEach((d) => rowsTrack.push({ id: d.id, ...d.data() }));
         rowsTrack = rowsTrack.filter(accountingTrackRowVisible);
@@ -22566,71 +22809,9 @@
           const tb = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
           return ta - tb;
         });
-        if (!rowsTrack.length) {
-          trackWrap.innerHTML = `<p class="empty-state">${t("emptyAccountingTrackQueue")}</p>`;
-        } else {
-          trackWrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
-              <th>${t("colPoReference")}</th>
-              <th>${t("colRequestDate")}</th>
-              <th>${t("colProject")}</th>
-              <th>${t("colPriority")}</th>
-              <th>${t("colWorkflow")}</th>
-              <th>${t("colPurchasingRepresentative")}</th>
-              <th></th>
-            </tr></thead><tbody>
-              ${rowsTrack
-                .map((r) => {
-                  const canAcct = role === "accountant" || hasAdminAccess();
-                  const canReq = canAcct && r.workflowStatus === "workflow_complete" && !r.pricesAmendmentApproved;
-                  const canEdit = canAcct && r.workflowStatus === "workflow_complete" && !!r.pricesAmendmentApproved;
-                  const canApprove = hasAdminAccess() && r.workflowStatus === "workflow_complete" && !!r.pricesAmendmentRequested && !r.pricesAmendmentApproved;
-                  const reqBtn = canReq
-                    ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-price-amend-request" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnRequestPriceAmendment")
-                      )}</button>`
-                    : "";
-                  const editBtn = canEdit
-                    ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnAccountingRecordValues")
-                      )}</button>`
-                    : "";
-                  const apprBtn = canApprove
-                    ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-price-amend-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnApprovePriceAmendment")
-                      )}</button>`
-                    : "";
-                  return `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnPoPrintView")
-                      )}</button>${reqBtn}${editBtn}${apprBtn}
-                    </div>
-                  </td>
-                </tr>`
-                })
-                .join("")}
-            </tbody></table></div>`;
-          trackWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
-            btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
-          });
-          trackWrap.querySelectorAll(".btn-acc-price-amend-request").forEach((btn) => {
-            btn.addEventListener("click", () => requestPriceAmendmentForCompletedPo(btn.dataset.id));
-          });
-          trackWrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
-            btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
-          });
-          trackWrap.querySelectorAll(".btn-acc-price-amend-approve").forEach((btn) => {
-            btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
-          });
-        }
+        accountingQueueDataCache = { rowsAdv, rowsFin, rowsTrack, projectNames, role };
+        populateAccountingFilterSelects(accountingQueueDataCache);
+        renderAccountingQueueTables(accountingQueueDataCache);
       } catch (e) {
         console.error(e);
         const msg = `<p class="error-msg">${t("loadError")} ${escapeHtml(e.message || "")}</p>`;
@@ -24684,9 +24865,11 @@
         const logoWrap = document.createElement("div");
         logoWrap.className = "field";
         logoWrap.innerHTML = `
+          <label for="ef-logoUrl">${escapeHtml(t("labelLogoUrl"))}</label>
+          <input type="text" id="ef-logoUrl" value="" dir="ltr" placeholder="assets/logos/company.png" />
+          <p style="margin:0.25rem 0 0.6rem;font-size:0.8rem;color:var(--muted)">${escapeHtml(t("labelLogoUrlHint"))}</p>
           <label for="company-logo-file">${escapeHtml(t("labelLogo"))}</label>
           <input type="file" id="company-logo-file" accept="image/*" />
-          <input type="hidden" id="ef-logoUrl" value="" />
           <img id="company-logo-preview" class="company-logo-preview hidden" alt="" />`;
         fields.appendChild(logoWrap);
         addField("active", t("labelActive"), "checkbox");
@@ -24700,6 +24883,21 @@
               if (f) {
                 prev.classList.remove("hidden");
                 prev.src = URL.createObjectURL(f);
+              }
+            });
+          }
+          const urlInp = $("ef-logoUrl");
+          if (urlInp) {
+            urlInp.addEventListener("input", () => {
+              const prev = $("company-logo-preview");
+              if (!prev) return;
+              const v = resolveCompanyLogoUrlInput(urlInp.value);
+              if (v) {
+                prev.src = v;
+                prev.classList.remove("hidden");
+              } else {
+                prev.classList.add("hidden");
+                prev.removeAttribute("src");
               }
             });
           }
@@ -25399,11 +25597,11 @@
             if (nar) nar.value = (d.nameAr || d.name || "").trim();
             if (nen) nen.value = (d.nameEn || "").trim();
             const prev = $("company-logo-preview");
-            const hiddenLogo = $("ef-logoUrl");
+            const urlField = $("ef-logoUrl");
+            const existingUrl = (d.logoUrl || "").trim();
+            if (urlField) urlField.value = existingUrl;
             const src = companyLogoSrc(d);
             if (src && prev) {
-              if (hiddenLogo && (d.logoUrl || "").trim().startsWith("http")) hiddenLogo.value = (d.logoUrl || "").trim();
-              else if (hiddenLogo) hiddenLogo.value = "";
               prev.src = src;
               prev.classList.remove("hidden");
             }
@@ -25515,17 +25713,18 @@
             return;
           }
           const fileInp = $("company-logo-file");
+          const logoUrlInput = ($("ef-logoUrl")?.value || "").trim();
           if (fileInp?.files?.length > 0) {
             try {
               data.logoDataUrl = await encodeCompanyLogoForFirestore(fileInp.files[0]);
-              data.logoUrl = deleteField();
+              if (existingId) data.logoUrl = deleteField();
             } catch (upErr) {
               alert(t("logoUploadFailed") + " " + upErr.message);
               return;
             }
-          } else if (existingId) {
-            const keepHttp = ($("ef-logoUrl")?.value || "").trim();
-            if (keepHttp.startsWith("http")) data.logoUrl = keepHttp;
+          } else if (logoUrlInput) {
+            data.logoUrl = resolveCompanyLogoUrlInput(logoUrlInput);
+            if (existingId) data.logoDataUrl = deleteField();
           }
           if (!existingId) {
             data.code = await generateNextCompanyCode();

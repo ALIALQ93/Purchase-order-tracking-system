@@ -112,13 +112,25 @@
     .print-measure-host .measure-body { font-size: 12px; line-height: 1.5; }
     .accent-bar { height: 4px; background: linear-gradient(90deg, var(--navy-mid), #2a6cb8); margin: -10mm -12mm 10px; width: calc(100% + 24mm); }
     .doc-header {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      gap: 16px; padding-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; padding-bottom: 10px;
       border-bottom: 2px solid var(--navy-mid);
       margin-bottom: 12px;
     }
-    .doc-header .logo img { max-height: 56px; max-width: 160px; object-fit: contain; }
-    .doc-header .meta { text-align: end; min-width: 46%; font-size: 11.5px; color: var(--muted); }
+    .doc-header .logo {
+      flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: flex-start;
+      max-width: 46%;
+    }
+    html[dir="ltr"] .doc-header .logo { justify-content: flex-start; }
+    .doc-header .logo img {
+      display: block;
+      max-height: 90px; max-width: 100%;
+      width: auto; height: auto;
+      object-fit: contain; object-position: center;
+      image-rendering: -webkit-optimize-contrast;
+    }
+    .doc-header .meta { flex: 1 1 auto; text-align: end; min-width: 46%; font-size: 11.5px; color: var(--muted); }
     html[dir="ltr"] .doc-header .meta { text-align: right; }
     .doc-header .buyer { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
     .doc-header .po-line { font-size: 12.5px; font-weight: 700; color: var(--navy-mid); margin-top: 4px; }
