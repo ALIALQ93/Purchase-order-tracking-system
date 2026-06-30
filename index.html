@@ -4898,6 +4898,7 @@
         <button type="button" data-view="ef-approvals" data-nav-section="ef-approvals" data-i18n="navEfApprovals">موافقات مهندس أول</button>
         <button type="button" data-view="pm-approvals" data-nav-section="pm-approvals" data-i18n="navPmApprovals">موافقات مدير المشروع</button>
         <button type="button" data-view="gm-approvals" data-nav-section="gm-approvals" data-i18n="navGmApprovals">موافقات مسؤول المجموعة</button>
+        <button type="button" class="nav-admin-only" data-view="supervisor-approvals" data-nav-section="supervisor-approvals" data-i18n="navSupervisorApprovals">موافقات المشرف</button>
         <button type="button" data-view="purchasing-queue" data-nav-section="purchasing-queue" data-i18n="navPurchasingQueue">المشتريات</button>
         <button type="button" data-view="warehouse-receipt-queue" data-nav-section="warehouse-receipt-queue" data-i18n="navWarehouseReceiptQueue">استلام المستودع</button>
         <button type="button" data-view="accounting-queue" data-nav-section="accounting-queue" data-i18n="navAccountingQueue">الحسابات</button>
@@ -4985,6 +4986,7 @@
             <button type="button" class="btn btn-secondary" data-jump="ef-approvals" data-nav-section="ef-approvals" data-i18n="shortcutEfApprovals">موافقات مهندس أول</button>
             <button type="button" class="btn btn-secondary" data-jump="pm-approvals" data-nav-section="pm-approvals" data-i18n="shortcutPmApprovals">موافقات مدير المشروع</button>
             <button type="button" class="btn btn-secondary" data-jump="gm-approvals" data-nav-section="gm-approvals" data-i18n="shortcutGmApprovals">موافقات المجموعة</button>
+            <button type="button" class="btn btn-secondary nav-admin-only" data-jump="supervisor-approvals" data-nav-section="supervisor-approvals" data-i18n="shortcutSupervisorApprovals">موافقات المشرف</button>
             <button type="button" class="btn btn-secondary" data-jump="purchasing-queue" data-nav-section="purchasing-queue" data-i18n="shortcutPurchasing">المشتريات</button>
             <button type="button" class="btn btn-secondary" data-jump="warehouse-receipt-queue" data-nav-section="warehouse-receipt-queue" data-i18n="shortcutWarehouseReceipt">استلام المستودع</button>
             <button type="button" class="btn btn-secondary" data-jump="accounting-queue" data-nav-section="accounting-queue" data-i18n="shortcutAccounting">الحسابات</button>
@@ -5130,6 +5132,17 @@
             طلبات وافق عليها مدير المشروع وبانتظار موافقتك للمناطق (المجموعات) المسندة لك.
           </p>
           <div id="gm-approvals-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
+        </div>
+      </section>
+
+      <!-- موافقات المشرف -->
+      <section id="screen-supervisor-approvals" class="app-screen hidden">
+        <h1 class="page-title" data-i18n="supervisorApprovalsTitle">موافقات المشرف</h1>
+        <div class="card">
+          <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.9rem;" data-i18n="supervisorApprovalsHint">
+            طلبات وافق عليها مسؤول المجموعة وبانتظار موافقتك النهائية كمشرف. بعد موافقتك يُحوَّل الطلب للمشتريات، أو يمكنك إرجاعه لمسؤول المجموعة لإعادة المراجعة.
+          </p>
+          <div id="supervisor-approvals-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
       </section>
 
@@ -6252,6 +6265,17 @@
     </div>
   </div>
 
+  <!-- إشعار التحديث: ما الجديد -->
+  <div id="modal-whats-new" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="modal-whats-new-title" data-i18n="whatsNewTitle">تحديث جديد</h3>
+      <div id="modal-whats-new-body" style="margin:0.75rem 0 0;line-height:1.6;color:var(--muted)"></div>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button type="button" class="btn btn-primary" id="modal-whats-new-ok" data-i18n="whatsNewGotIt">فهمت</button>
+      </div>
+    </div>
+  </div>
+
   <!-- نموذج كيان إداري عام -->
   <div id="modal-entity" class="modal-overlay hidden">
     <div class="modal">
@@ -6685,6 +6709,7 @@
         workflowStatus_pending_engineer_first: "بانتظار مهندس أول",
         workflowStatus_pending_project_manager: "بانتظار مدير المشروع",
         workflowStatus_pending_group_manager: "بانتظار مسؤول المجموعة",
+        workflowStatus_pending_supervisor: "بانتظار موافقة المشرف",
         workflowStatus_pending_purchasing: "بانتظار المشتريات",
         workflowStatus_in_progress_purchasing: "قيد الشراء",
         workflowStatus_pending_advance_accounting: "بانتظار الحسابات (سلفة عمل)",
@@ -6704,9 +6729,11 @@
         navEfApprovals: "موافقات مهندس أول",
         navPmApprovals: "موافقات مدير المشروع",
         navGmApprovals: "موافقات مسؤول المجموعة",
+        navSupervisorApprovals: "موافقات المشرف",
         shortcutEfApprovals: "موافقات مهندس أول",
         shortcutPmApprovals: "موافقات مدير المشروع",
         shortcutGmApprovals: "موافقات المجموعة",
+        shortcutSupervisorApprovals: "موافقات المشرف",
         efApprovalsTitle: "موافقات مهندس أول",
         efApprovalsHint:
           "طلبات مشاريعك المسندة التي بانتظار موافقتك كـ «مهندس أول». بعد موافقتك ينتقل الطلب لمدير المشروع.",
@@ -6716,6 +6743,9 @@
         gmApprovalsTitle: "موافقات مسؤول المجموعة",
         gmApprovalsHint:
           "طلبات مشاريع مناطقك المسندة. يمكنك الموافقة أو الرفض من أي مرحلة قبل المشتريات (بما فيها تجاوز المستودع أو مدير المشروع).",
+        supervisorApprovalsTitle: "موافقات المشرف",
+        supervisorApprovalsHint:
+          "طلبات وافق عليها مسؤول المجموعة وبانتظار موافقتك النهائية كمشرف. بعد موافقتك يُحوَّل الطلب للمشتريات، أو يمكنك إرجاعه لمسؤول المجموعة لإعادة المراجعة.",
         labelManagedProjectsPm: "المشاريع المسندة (مدير مشروع)",
         managedProjectsPmHint: "وافق فقط على طلبات هذه المشاريع.",
         labelManagedProjectsEf: "المشاريع المسندة (مهندس أول)",
@@ -6731,6 +6761,11 @@
         emptyPmQueue: "لا توجد طلبات بانتظار موافقتك.",
         emptyEfQueue: "لا توجد طلبات بانتظار موافقتك.",
         emptyGmQueue: "لا توجد طلبات بانتظار موافقتك.",
+        emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
+        whatsNewTitle: "تحديث جديد",
+        whatsNewBody:
+          "<p style=\"margin:0 0 .5rem\">تمت إضافة مرحلة موافقة جديدة في مسار أوامر شراء المشاريع:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>موافقات المشرف:</strong> بعد موافقة مسؤول المجموعة يُحوَّل الطلب الآن إلى المشرف لاعتماده نهائياً قبل المشتريات.</li><li>يستطيع المشرف <strong>الموافقة</strong> (يُمرَّر الطلب للمشتريات) أو <strong>الإرجاع</strong> لمسؤول المجموعة لإعادة المراجعة.</li></ul>",
+        whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
         alertGmRegionsRequired: "حدّد المناطق المسندة لمسؤول المجموعة من الإدارة.",
@@ -6742,6 +6777,7 @@
         confirmRejectPoEf: "رفض هذا الطلب؟ سيتم إيقاف المسار عند مهندس أول.",
         btnApprove: "موافقة",
         btnReject: "رفض",
+        btnReturnToGm: "إرجاع لمسؤول المجموعة",
         btnViewPoRequest: "عرض الطلب",
         btnPoPrintView: "عرض وطباعة",
         btnGenPoProPrint: "النموذج الاحترافي",
@@ -6782,6 +6818,7 @@
         poPrintStageEngineerFirst: "موافقة مهندس أول",
         poPrintStagePm: "موافقة مدير المشروع",
         poPrintStageGm: "موافقة مسؤول المجموعة",
+        poPrintStageSupervisor: "موافقة المشرف",
         poPrintStagePurchasing: "قيد التنفيذ — المشتريات",
         poPrintStageAdvance: "تسليم سلفة العمل (حسابات)",
         workflowPoModalTitle: "تفاصيل طلب الشراء",
@@ -6792,6 +6829,7 @@
         workflowPoSaveLinesBtn: "حفظ البنود",
         confirmRejectPoPm: "رفض هذا الطلب؟ سيتم إيقاف المسار عند مدير المشروع.",
         confirmRejectPoGm: "رفض هذا الطلب؟ سيتم إيقاف المسار عند مسؤول المجموعة.",
+        confirmReturnPoSupervisor: "إرجاع هذا الطلب إلى مسؤول المجموعة لإعادة المراجعة؟",
         btnWorkflowBypassConfirm: "متابعة",
         modalBypassPmWarehouseTitle: "تجاوز تحقق المستودع",
         modalBypassPmWarehouseApproveBody:
@@ -6863,9 +6901,11 @@
         helpNavItem7:
           "<strong>موافقات مدير المشروع:</strong> بعد مهندس أول (أو عند التجاوز المسموح) — الموافقة على طلبات المشاريع المسندة.",
         helpNavItem8:
-          "<strong>موافقات مسؤول المجموعة:</strong> بعد مدير المشروع — الموافقة على مستوى المناطق المسندة.",
+          "<strong>موافقات مسؤول المجموعة:</strong> بعد مدير المشروع — الموافقة على مستوى المناطق المسندة، ثم يُحوَّل الطلب لموافقة المشرف.",
+        helpNavItemSupervisor:
+          "<strong>موافقات المشرف:</strong> المرحلة النهائية بعد مسؤول المجموعة — للمشرف فقط؛ الموافقة تمرّر الطلب للمشتريات، والإرجاع يعيده لمسؤول المجموعة لإعادة المراجعة.",
         helpNavItem9:
-          "<strong>المشتريات:</strong> بعد موافقة المجموعة — اختر مندوب المشتريات ثم انقل الطلب إلى «قيد الشراء»، وبعدها أرسله للحسابات لسلفة العمل. يظهر اسم المندوب في شاشتي المشتريات والحسابات.",
+          "<strong>المشتريات:</strong> بعد موافقة المشرف — اختر مندوب المشتريات ثم انقل الطلب إلى «قيد الشراء»، وبعدها أرسله للحسابات لسلفة العمل. يظهر اسم المندوب في شاشتي المشتريات والحسابات.",
         helpNavItem10:
           "<strong>استلام المستودع:</strong> بعد تسليم السلفة — سجّل الكميات المستلمة فعلياً لكل بند (يمكن أكثر من المطلوب). عند الاستلام الجزئي سيطلب منك النظام قرار الإغلاق أو إبقاء الطلب مفتوحاً.",
         helpNavItem11:
@@ -7292,6 +7332,8 @@
         notif_po_stock_complete: "طلب {{ref}} اكتمل من المخزون.",
         notif_po_pm: "طلب {{ref}} بانتظار موافقة مدير المشروع.",
         notif_po_gm: "طلب {{ref}} بانتظار موافقة مسؤول المجموعة.",
+        notif_po_supervisor: "طلب {{ref}} بانتظار موافقة المشرف.",
+        notif_po_supervisor_returned: "طلب {{ref}} أُعيد من المشرف لإعادة مراجعة مسؤول المجموعة.",
         notif_po_purchasing: "طلب {{ref}} في طابور المشتريات.",
         notif_po_accounting_advance: "طلب {{ref}} بانتظار الحسابات (سلفة عمل).",
         notif_po_warehouse_receipt: "طلب {{ref}} بانتظار تأكيد استلام المستودع.",
@@ -7609,6 +7651,7 @@
         workflowStatus_pending_engineer_first: "Awaiting engineer first",
         workflowStatus_pending_project_manager: "Awaiting project manager",
         workflowStatus_pending_group_manager: "Awaiting group manager",
+        workflowStatus_pending_supervisor: "Awaiting supervisor",
         workflowStatus_pending_purchasing: "Awaiting purchasing",
         workflowStatus_in_progress_purchasing: "In progress (purchasing)",
         workflowStatus_pending_advance_accounting: "Awaiting accounting (work advance)",
@@ -7628,9 +7671,11 @@
         navEfApprovals: "Engineer first approvals",
         navPmApprovals: "Project manager approvals",
         navGmApprovals: "Group manager approvals",
+        navSupervisorApprovals: "Supervisor approvals",
         shortcutEfApprovals: "Engineer first approvals",
         shortcutPmApprovals: "PM approvals",
         shortcutGmApprovals: "Group approvals",
+        shortcutSupervisorApprovals: "Supervisor approvals",
         efApprovalsTitle: "Engineer first approvals",
         efApprovalsHint:
           "Requests for your assigned projects awaiting your «engineer first» approval. After you approve, the request moves to project manager.",
@@ -7640,6 +7685,9 @@
         gmApprovalsTitle: "Group manager approvals",
         gmApprovalsHint:
           "Requests for projects in your assigned regions. You may approve or reject from any stage before purchasing (including skipping warehouse or project manager).",
+        supervisorApprovalsTitle: "Supervisor approvals",
+        supervisorApprovalsHint:
+          "Requests approved by the group manager awaiting your final supervisor approval. After you approve, the request moves to purchasing, or you can return it to the group manager for re-review.",
         labelManagedProjectsPm: "Managed projects (project manager)",
         managedProjectsPmHint: "You approve requests only for these projects.",
         labelManagedProjectsEf: "Managed projects (engineer first)",
@@ -7655,6 +7703,11 @@
         emptyPmQueue: "No requests awaiting your approval.",
         emptyEfQueue: "No requests awaiting your approval.",
         emptyGmQueue: "No requests awaiting your approval.",
+        emptySupervisorQueue: "No requests awaiting your approval.",
+        whatsNewTitle: "What's new",
+        whatsNewBody:
+          "<p style=\"margin:0 0 .5rem\">A new approval stage was added to the project purchase order workflow:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Supervisor approvals:</strong> after the group manager approves, the request now goes to the supervisor for final approval before purchasing.</li><li>The supervisor can <strong>approve</strong> (sends to purchasing) or <strong>return</strong> it to the group manager for re-review.</li></ul>",
+        whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
         alertGmRegionsRequired: "Assign managed regions for this group manager in Administration.",
@@ -7666,6 +7719,7 @@
         confirmRejectPoEf: "Reject this request? The workflow will stop at engineer first review.",
         btnApprove: "Approve",
         btnReject: "Reject",
+        btnReturnToGm: "Return to group manager",
         btnViewPoRequest: "View request",
         btnPoPrintView: "View & print",
         btnGenPoProPrint: "Pro print",
@@ -7706,6 +7760,7 @@
         poPrintStageEngineerFirst: "Engineer first approval",
         poPrintStagePm: "Project manager approval",
         poPrintStageGm: "Group manager approval",
+        poPrintStageSupervisor: "Supervisor approval",
         poPrintStagePurchasing: "Purchasing — in progress",
         poPrintStageAdvance: "Work advance (accounting)",
         workflowPoModalTitle: "Purchase request details",
@@ -7716,6 +7771,7 @@
         workflowPoSaveLinesBtn: "Save line items",
         confirmRejectPoPm: "Reject this request? The workflow stops at project manager review.",
         confirmRejectPoGm: "Reject this request? The workflow stops at group manager review.",
+        confirmReturnPoSupervisor: "Return this request to the group manager for re-review?",
         btnWorkflowBypassConfirm: "Continue",
         modalBypassPmWarehouseTitle: "Skipping warehouse verification",
         modalBypassPmWarehouseApproveBody:
@@ -7788,9 +7844,11 @@
         helpNavItem7:
           "<strong>Project manager approvals:</strong> After engineer first (or when bypass allows) — approve assigned project requests.",
         helpNavItem8:
-          "<strong>Group manager approvals:</strong> After the project manager — approve at assigned region level.",
+          "<strong>Group manager approvals:</strong> After the project manager — approve at assigned region level, then the request goes to supervisor approval.",
+        helpNavItemSupervisor:
+          "<strong>Supervisor approvals:</strong> Final stage after the group manager — for the supervisor (admin) only; approve sends the request to purchasing, return sends it back to the group manager for re-review.",
         helpNavItem9:
-          "<strong>Purchasing:</strong> After group approval — choose the purchasing representative, move to in progress, then send to accounting for the work advance. The representative name appears on Purchasing and Accounting.",
+          "<strong>Purchasing:</strong> After supervisor approval — choose the purchasing representative, move to in progress, then send to accounting for the work advance. The representative name appears on Purchasing and Accounting.",
         helpNavItem10:
           "<strong>Warehouse receipt:</strong> After the advance is released — record actual received quantities per line (may exceed requested). If receipt is partial, you’ll be asked whether to close or keep it open.",
         helpNavItem11:
@@ -8218,6 +8276,8 @@
         notif_po_stock_complete: "Request {{ref}} fulfilled from warehouse stock.",
         notif_po_pm: "Request {{ref}} awaits project manager approval.",
         notif_po_gm: "Request {{ref}} awaits group manager approval.",
+        notif_po_supervisor: "Request {{ref}} awaits supervisor approval.",
+        notif_po_supervisor_returned: "Request {{ref}} returned by supervisor for group manager re-review.",
         notif_po_purchasing: "Request {{ref}} is in the purchasing queue.",
         notif_po_accounting_advance: "Request {{ref}} awaits accounting (work advance).",
         notif_po_warehouse_receipt: "Request {{ref}} awaits warehouse receipt confirmation.",
@@ -8336,6 +8396,11 @@
         const li = document.createElement("li");
         li.innerHTML = t("helpNavItem" + i);
         ul.appendChild(li);
+        if (i === 8) {
+          const liSup = document.createElement("li");
+          liSup.innerHTML = t("helpNavItemSupervisor");
+          ul.appendChild(liSup);
+        }
       }
     }
 
@@ -8363,6 +8428,7 @@
       if (id === "screen-warehouse-review") loadWarehouseReviewQueue();
       if (id === "screen-pm-approvals") loadPmApprovalQueue();
       if (id === "screen-gm-approvals") loadGmApprovalQueue();
+      if (id === "screen-supervisor-approvals") loadSupervisorApprovalQueue();
       if (id === "screen-purchasing-queue") loadPurchasingQueue();
       if (id === "screen-warehouse-receipt-queue") {
         invalidateWarehouseReceiptQueueCache();
@@ -16028,6 +16094,7 @@
 
     async function workflowPoLinesPermission(po, mode) {
       if (!po || po.scope !== "project") return false;
+      if (mode === "supervisor") return hasAdminAccess() && supervisorCanActOnWorkflowStatus(po.workflowStatus);
       if (isPoEditorRoleBlocked()) return false;
       if (hasAdminAccess()) {
         return mode === "pm" ? pmCanActOnWorkflowStatus(po.workflowStatus) : gmCanActOnWorkflowStatus(po.workflowStatus);
@@ -16061,7 +16128,7 @@
     }
 
     async function openWorkflowPoDetailModal(poId, mode) {
-      if (!poId || (mode !== "pm" && mode !== "gm")) return;
+      if (!poId || (mode !== "pm" && mode !== "gm" && mode !== "supervisor")) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -16658,6 +16725,7 @@
           "pending_engineer_first",
           "pending_project_manager",
           "pending_group_manager",
+          "pending_supervisor",
           "pending_purchasing",
           "in_progress_purchasing",
           "pending_advance_accounting",
@@ -17039,9 +17107,14 @@
           prev: ["projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
         },
         {
+          key: "supervisorApprovedAt",
+          labelKey: "poPrintStageSupervisor",
+          prev: ["groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+        },
+        {
           key: "purchasingInProgressAt",
           labelKey: "workflowStatus_in_progress_purchasing",
-          prev: ["groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+          prev: ["supervisorApprovedAt", "groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
         },
         {
           key: "purchasingSentToAdvanceAt",
@@ -17816,6 +17889,7 @@
           "pending_engineer_first",
           "pending_project_manager",
           "pending_group_manager",
+          "pending_supervisor",
           "pending_purchasing",
           "in_progress_purchasing",
           "pending_advance_accounting",
@@ -19792,8 +19866,11 @@
         Array.isArray(currentUserProfile?.visibleSections) && currentUserProfile.visibleSections.length > 0
           ? currentUserProfile.visibleSections
           : [...DEFAULT_VISIBLE_SECTIONS];
+      const adminAccess = hasAdminAccess();
       document.querySelectorAll("[data-nav-section]").forEach((el) => {
-        if (list.includes(el.dataset.navSection)) el.classList.remove("nav-section-hidden");
+        const section = el.dataset.navSection;
+        const visible = list.includes(section) || (section === "supervisor-approvals" && adminAccess);
+        if (visible) el.classList.remove("nav-section-hidden");
         else el.classList.add("nav-section-hidden");
       });
     }
@@ -19862,6 +19939,7 @@
       if (a.id === "screen-ef-approvals") loadEfApprovalQueue();
       if (a.id === "screen-pm-approvals") loadPmApprovalQueue();
       if (a.id === "screen-gm-approvals") loadGmApprovalQueue();
+      if (a.id === "screen-supervisor-approvals") loadSupervisorApprovalQueue();
       if (a.id === "screen-purchasing-queue") loadPurchasingQueue();
       if (a.id === "screen-warehouse-receipt-queue") {
         invalidateWarehouseReceiptQueueCache();
@@ -20195,6 +20273,7 @@
         { stage: t("poPrintStageEngineerFirst"), uid: po.engineerFirstApprovedBy, at: po.engineerFirstApprovedAt },
         { stage: t("poPrintStagePm"), uid: po.projectManagerApprovedBy, at: po.projectManagerApprovedAt },
         { stage: t("poPrintStageGm"), uid: po.groupManagerApprovedBy, at: po.groupManagerApprovedAt },
+        { stage: t("poPrintStageSupervisor"), uid: po.supervisorApprovedBy, at: po.supervisorApprovedAt },
       ];
       if (po.purchasingInProgressBy || po.purchasingInProgressAt) {
         appr.push({
@@ -20312,6 +20391,11 @@
       return false;
     }
 
+    /** موافقة المشرف: المرحلة النهائية قبل المشتريات — للمشرف (admin) فقط. */
+    function supervisorCanActOnWorkflowStatus(ws) {
+      return ws === "pending_supervisor" && hasAdminAccess();
+    }
+
     function setRoleUI() {
       applyNavVisibility();
     }
@@ -20335,6 +20419,8 @@
                     ? "pm-approvals"
                     : name === "gm-approvals"
                       ? "gm-approvals"
+                      : name === "supervisor-approvals"
+                        ? "supervisor-approvals"
                       : name === "purchasing-queue"
                         ? "purchasing-queue"
                         : name === "warehouse-receipt-queue"
@@ -20351,7 +20437,8 @@
             Array.isArray(currentUserProfile?.visibleSections) && currentUserProfile.visibleSections.length > 0
               ? currentUserProfile.visibleSections
               : [...DEFAULT_VISIBLE_SECTIONS];
-          if (!list.includes(key)) return;
+          const allowed = list.includes(key) || (key === "supervisor-approvals" && hasAdminAccess());
+          if (!allowed) return;
         }
       }
       closeMobileNav();
@@ -20368,6 +20455,7 @@
         "ef-approvals": "screen-ef-approvals",
         "pm-approvals": "screen-pm-approvals",
         "gm-approvals": "screen-gm-approvals",
+        "supervisor-approvals": "screen-supervisor-approvals",
         "purchasing-queue": "screen-purchasing-queue",
         "warehouse-receipt-queue": "screen-warehouse-receipt-queue",
         "accounting-queue": "screen-accounting-queue",
@@ -20385,6 +20473,7 @@
         if (name === "ef-approvals") loadEfApprovalQueue();
         if (name === "pm-approvals") loadPmApprovalQueue();
         if (name === "gm-approvals") loadGmApprovalQueue();
+        if (name === "supervisor-approvals") loadSupervisorApprovalQueue();
         if (name === "purchasing-queue") loadPurchasingQueue();
         if (name === "warehouse-receipt-queue") {
           invalidateWarehouseReceiptQueueCache();
@@ -21590,17 +21679,16 @@
       const doApprove = async () => {
         try {
           await updateDoc(ref, {
-            workflowStatus: "pending_purchasing",
+            workflowStatus: "pending_supervisor",
             groupManagerApprovedAt: serverTimestamp(),
             groupManagerApprovedBy: currentUser.uid,
             updatedAt: serverTimestamp(),
           });
-          void notifyAllRole(
+          void notifyAdmins(
             poId,
             poNotifRefText({ ...po, id: poId }),
-            "purchasing_officer",
-            "purchasing-queue",
-            "notif_po_purchasing"
+            "notif_po_supervisor",
+            "supervisor-approvals"
           );
           refreshWorkflowQueuesByActiveScreen();
           refreshActiveProjectPoListIfAny();
@@ -21858,6 +21946,136 @@
       }
     }
 
+    async function runSupervisorApprove(poId) {
+      if (!poId) return;
+      const ref = doc(db, "purchaseOrders", poId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const po = snap.data();
+      if (!supervisorCanActOnWorkflowStatus(po.workflowStatus)) {
+        alert(t("alertWarehouseReviewStale"));
+        return;
+      }
+      try {
+        await updateDoc(ref, {
+          workflowStatus: "pending_purchasing",
+          supervisorApprovedAt: serverTimestamp(),
+          supervisorApprovedBy: currentUser.uid,
+          updatedAt: serverTimestamp(),
+        });
+        void notifyAllRole(
+          poId,
+          poNotifRefText({ ...po, id: poId }),
+          "purchasing_officer",
+          "purchasing-queue",
+          "notif_po_purchasing"
+        );
+        refreshWorkflowQueuesByActiveScreen();
+        refreshActiveProjectPoListIfAny();
+      } catch (err) {
+        alert(t("saveFailed") + " " + err.message);
+      }
+    }
+
+    async function runSupervisorReject(poId) {
+      if (!poId) return;
+      const ref = doc(db, "purchaseOrders", poId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const po = snap.data();
+      if (!supervisorCanActOnWorkflowStatus(po.workflowStatus)) {
+        alert(t("alertWarehouseReviewStale"));
+        return;
+      }
+      if (!confirm(t("confirmReturnPoSupervisor"))) return;
+      try {
+        await updateDoc(ref, {
+          workflowStatus: "pending_group_manager",
+          supervisorReturnedAt: serverTimestamp(),
+          supervisorReturnedBy: currentUser.uid,
+          updatedAt: serverTimestamp(),
+        });
+        const regId = await resolveRegionIdForPo(po);
+        void notifyGroupManagersForRegion(
+          poId,
+          regId,
+          poNotifRefText({ ...po, id: poId }),
+          "notif_po_supervisor_returned",
+          "gm-approvals"
+        );
+        refreshWorkflowQueuesByActiveScreen();
+        refreshActiveProjectPoListIfAny();
+      } catch (err) {
+        alert(t("saveFailed") + " " + err.message);
+      }
+    }
+
+    async function loadSupervisorApprovalQueue() {
+      const wrap = $("supervisor-approvals-wrap");
+      if (!wrap) return;
+      if (!hasAdminAccess()) {
+        wrap.innerHTML = `<p class="empty-state">${t("emptySupervisorQueue")}</p>`;
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const q = query(
+          collection(db, "purchaseOrders"),
+          where("scope", "==", "project"),
+          where("workflowStatus", "==", "pending_supervisor")
+        );
+        const snap = await getDocs(q);
+        let rows = [];
+        snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+        const pSnap = await getDocs(collection(db, "projects"));
+        const projectNames = {};
+        pSnap.forEach((d) => (projectNames[d.id] = projectDisplayName(d.data())));
+        rows.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        if (!rows.length) {
+          wrap.innerHTML = `<p class="empty-state">${t("emptySupervisorQueue")}</p>`;
+          return;
+        }
+        wrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
+              <th>${t("colPoReference")}</th>
+              <th>${t("colRequestDate")}</th>
+              <th>${t("colProject")}</th>
+              <th>${t("colRegion")}</th>
+              <th>${t("colWorkflow")}</th>
+              <th></th>
+            </tr></thead><tbody>
+              ${rows
+                .map(
+                  (r) => `
+                <tr>
+                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                  <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
+                  <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
+                  <td class="td-approval-actions">
+                    <div class="approval-actions-cell">
+                      <button type="button" class="btn btn-secondary btn-sm btn-wf-open-po" data-id="${escapeHtml(r.id)}" data-mode="supervisor">${escapeHtml(t("btnViewPoRequest"))}</button><button type="button" class="btn btn-primary btn-sm btn-supervisor-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnApprove"))}</button><button type="button" class="btn btn-danger btn-sm btn-supervisor-reject" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnToGm"))}</button>
+                    </div>
+                  </td>
+                </tr>`
+                )
+                .join("")}
+            </tbody></table></div>`;
+        wrap.querySelectorAll(".btn-wf-open-po").forEach((btn) => {
+          btn.addEventListener("click", () => openWorkflowPoDetailModal(btn.dataset.id, btn.dataset.mode || "supervisor"));
+        });
+        wrap.querySelectorAll(".btn-supervisor-approve").forEach((btn) => {
+          btn.addEventListener("click", () => runSupervisorApprove(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-supervisor-reject").forEach((btn) => {
+          btn.addEventListener("click", () => runSupervisorReject(btn.dataset.id));
+        });
+      } catch (e) {
+        console.error(e);
+        wrap.innerHTML = `<p class="error-msg">${t("loadError")} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
     function filterPurchaseOrdersByStakeholder(rows, projectRegion) {
       const rStake = currentUserProfile?.role || userRole;
       if (hasAdminAccess() || rStake === "purchasing_officer") return rows;
@@ -21924,6 +22142,7 @@
             "pending_engineer_first",
             "pending_project_manager",
             "pending_group_manager",
+            "pending_supervisor",
           ])
         );
         const qAction = query(
@@ -21970,6 +22189,7 @@
             pending_engineer_first: 1,
             pending_project_manager: 2,
             pending_group_manager: 3,
+            pending_supervisor: 4,
           };
           return o[x.workflowStatus] ?? 99;
         };
@@ -23409,6 +23629,38 @@
       m.classList.remove("hidden");
     }
 
+    /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
+    const CURRENT_UPDATE_ID = "2026-06-supervisor-approval";
+    const WHATS_NEW_KEY = "pot_whatsnew_seen";
+
+    function whatsNewSeenKey() {
+      return `${WHATS_NEW_KEY}_${currentUser?.uid || "anon"}`;
+    }
+
+    function closeWhatsNewModal() {
+      $("modal-whats-new")?.classList.add("hidden");
+      try {
+        localStorage.setItem(whatsNewSeenKey(), CURRENT_UPDATE_ID);
+      } catch (_) {
+        // ignore storage errors
+      }
+    }
+
+    function maybeShowWhatsNewModal() {
+      const m = $("modal-whats-new");
+      if (!m || !currentUser) return;
+      let seen = null;
+      try {
+        seen = localStorage.getItem(whatsNewSeenKey());
+      } catch (_) {
+        return;
+      }
+      if (seen === CURRENT_UPDATE_ID) return;
+      const body = $("modal-whats-new-body");
+      if (body) body.innerHTML = t("whatsNewBody");
+      m.classList.remove("hidden");
+    }
+
     function escapeHtml(s) {
       const d = document.createElement("div");
       d.textContent = s;
@@ -23625,6 +23877,7 @@
       if (active?.id === "screen-warehouse-review") loadWarehouseReviewQueue();
       if (active?.id === "screen-pm-approvals") loadPmApprovalQueue();
       if (active?.id === "screen-gm-approvals") loadGmApprovalQueue();
+      if (active?.id === "screen-supervisor-approvals") loadSupervisorApprovalQueue();
       if (active?.id === "screen-purchasing-queue") loadPurchasingQueue();
       if (active?.id === "screen-warehouse-receipt-queue") {
         invalidateWarehouseReceiptQueueCache();
@@ -24148,6 +24401,8 @@
       closeWorkflowBypassModal();
       if (cb) await cb();
     });
+
+    $("modal-whats-new-ok")?.addEventListener("click", closeWhatsNewModal);
 
     $("modal-wf-po-cancel")?.addEventListener("click", closeWorkflowPoDetailModal);
     $("modal-wf-po-save")?.addEventListener("click", () => saveWorkflowPoLines());
@@ -26233,6 +26488,18 @@
       await pushInAppNotifications(uids, { poId, poReference, navTarget, kind });
     }
 
+    async function notifyAdmins(poId, poReference, kind, navTarget) {
+      const profiles = await getUserProfilesForNotify();
+      const uids = profiles
+        .filter(
+          (p) =>
+            p.role === "admin" ||
+            (Array.isArray(p.visibleSections) && p.visibleSections.includes("admin"))
+        )
+        .map((p) => p.uid);
+      await pushInAppNotifications(uids, { poId, poReference, navTarget: navTarget || "supervisor-approvals", kind });
+    }
+
     async function notifyWarehouseSupervisorsRegion(poId, regionId, poReference) {
       if (!regionId) return;
       const profiles = await getUserProfilesForNotify();
@@ -26504,6 +26771,7 @@
         void refreshChatUnreadState();
         refreshDashboard();
         showView(firstAllowedView());
+        maybeShowWhatsNewModal();
       } else {
         stopNotificationsListener();
         closeNotificationsPanel();
