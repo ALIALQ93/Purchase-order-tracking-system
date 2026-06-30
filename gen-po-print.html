@@ -399,9 +399,11 @@
         colNo: "م",
         colItem: "البند",
         colDesc: "الوصف",
+        colUnit: "الوحدة",
         colQty: "الكمية",
         colUnitPrice: "سعر الوحدة",
         colTotal: "الإجمالي",
+        colRemarks: "ملاحظات",
         included: "مشمول بالسعر",
         total: "المجموع",
         discount: "الخصم",
@@ -444,9 +446,11 @@
         colNo: "No.",
         colItem: "Item",
         colDesc: "Description",
+        colUnit: "Unit",
         colQty: "Qty",
         colUnitPrice: "Unit Price",
         colTotal: "Total",
+        colRemarks: "Remarks",
         included: "Included in base price",
         total: "Total",
         discount: "Discount",
@@ -525,6 +529,165 @@
 
     function multilineHtml(text) {
       return esc(text || "").replace(/\n/g, "<br/>");
+    }
+
+    const PO007_MEASURE_UNITS = [
+      { code: "m", ar: "متر", en: "Meter" },
+      { code: "pcs", ar: "قطعة", en: "Piece" },
+      { code: "km", ar: "كم", en: "Km" },
+      { code: "set", ar: "طقم", en: "Set" },
+      { code: "kg", ar: "كغ", en: "Kg" },
+      { code: "ton", ar: "طن", en: "Ton" },
+      { code: "l", ar: "لتر", en: "Liter" },
+      { code: "m2", ar: "م²", en: "m²" },
+      { code: "m3", ar: "م³", en: "m³" },
+      { code: "roll", ar: "رول", en: "Roll" },
+      { code: "box", ar: "صندوق", en: "Box" },
+      { code: "bag", ar: "كيس", en: "Bag" },
+      { code: "hr", ar: "ساعة", en: "Hour" },
+      { code: "day", ar: "يوم", en: "Day" },
+      { code: "lot", ar: "دفعة", en: "Lot" },
+      { code: "svc", ar: "خدمة", en: "Service" },
+      { code: "month", ar: "شهر", en: "Month" },
+      { code: "year", ar: "سنة", en: "Year" },
+    ];
+
+    function measureUnitLabel(code, lang) {
+      const c = String(code || "").trim();
+      if (!c) return "";
+      const u = PO007_MEASURE_UNITS.find((x) => x.code === c);
+      if (u) return lang === "ar" ? u.ar : u.en;
+      return c;
+    }
+
+    const PO007_ITEMS_BUILTIN_COL_IDS = new Set([
+      "item",
+      "desc",
+      "unit",
+      "qty",
+      "included",
+      "unitPrice",
+      "total",
+      "remarks",
+    ]);
+    const PO007_ITEMS_PROTECTED_COL_IDS = new Set(["item", "desc", "qty", "unitPrice", "total"]);
+
+    function isItemsExtraColId(id) {
+      return String(id || "").startsWith("ec_");
+    }
+
+    function defaultItemsColumnOrder() {
+      return ["item", "desc", "unit", "qty", "included", "unitPrice", "total", "remarks"];
+    }
+
+    function defaultItemsColumnVisibility() {
+      return { unit: true, included: true, remarks: true };
+    }
+
+    function mergeItemsColumnVisibility(vis, columnOrder, extraColumns) {
+      const merged = { ...defaultItemsColumnVisibility(), ...(vis || {}) };
+      PO007_ITEMS_PROTECTED_COL_IDS.forEach((id) => {
+        merged[id] = true;
+      });
+      (columnOrder || []).forEach((id) => {
+        if (merged[id] === undefined) merged[id] = true;
+      });
+      (extraColumns || []).forEach((c) => {
+        if (c?.id && merged[c.id] === undefined) merged[c.id] = true;
+      });
+      return merged;
+    }
+
+    function normalizeItemsTableConfig(cfg, lang) {
+      const ar = lang === "ar";
+      const defaultOrder = defaultItemsColumnOrder();
+      const base = cfg && typeof cfg === "object" ? cfg : {};
+      const extraColumns = (Array.isArray(base.extraColumns) ? base.extraColumns : [])
+        .map((c) => ({
+          id: String(c?.id || "").trim(),
+          label: String(c?.label ?? (ar ? "عمود" : "Column")).trim() || (ar ? "عمود" : "Column"),
+        }))
+        .filter((c) => c.id);
+      const extraIds = new Set(extraColumns.map((c) => c.id));
+      let columnOrder =
+        Array.isArray(base.columnOrder) && base.columnOrder.length ? [...base.columnOrder] : [...defaultOrder];
+      columnOrder = columnOrder.filter((id) => PO007_ITEMS_BUILTIN_COL_IDS.has(id) || extraIds.has(id));
+      defaultOrder.forEach((id) => {
+        if (!columnOrder.includes(id)) columnOrder.push(id);
+      });
+      extraColumns.forEach((c) => {
+        if (!columnOrder.includes(c.id)) columnOrder.push(c.id);
+      });
+      const columnVisibility = mergeItemsColumnVisibility(base.columnVisibility, columnOrder, extraColumns);
+      const lineNumberMode = base.lineNumberMode === "manual" ? "manual" : "auto";
+      return { columnOrder, extraColumns, columnVisibility, lineNumberMode };
+    }
+
+    function itemsColIsVisiblePrint(cfg, colId) {
+      if (cfg.columnVisibility[colId] === false) return false;
+      if (colId === "included") return false;
+      return true;
+    }
+
+    function itemsPrintColumnOrder(cfg) {
+      return cfg.columnOrder.filter((id) => itemsColIsVisiblePrint(cfg, id));
+    }
+
+    function itemsDisplayLineNo(line, index, cfg) {
+      if (cfg.lineNumberMode === "manual") {
+        const manual = (line?.lineNo || "").trim();
+        return manual || String(index + 1);
+      }
+      return String(index + 1);
+    }
+
+    function itemsColLabel(colId, cfg, lang, cur) {
+      const extra = (cfg.extraColumns || []).find((c) => c.id === colId);
+      if (extra) return extra.label;
+      const map = {
+        item: t(lang, "colItem"),
+        desc: t(lang, "colDesc"),
+        unit: t(lang, "colUnit"),
+        qty: t(lang, "colQty"),
+        unitPrice: `${t(lang, "colUnitPrice")} (${cur})`,
+        total: `${t(lang, "colTotal")} (${cur})`,
+        remarks: t(lang, "colRemarks"),
+      };
+      return map[colId] || colId;
+    }
+
+    function itemsColClass(colId) {
+      if (colId === "unitPrice" || colId === "total") return "r";
+      if (colId === "qty") return "num";
+      return "";
+    }
+
+    function itemsColWidth(colId) {
+      const map = {
+        item: "16%",
+        desc: "32%",
+        unit: "8%",
+        qty: "8%",
+        unitPrice: "13%",
+        total: "13%",
+        remarks: "12%",
+      };
+      return map[colId] || "10%";
+    }
+
+    function itemsColCellHtml(colId, l, lang) {
+      const incl = lineIncluded(l);
+      if (colId === "item") return `<td>${esc((l.itemTag || "").trim())}</td>`;
+      if (colId === "desc") return `<td><div class="multiline">${multilineHtml(l.description)}</div></td>`;
+      if (colId === "unit") return `<td>${esc(measureUnitLabel(l.unit, lang))}</td>`;
+      if (colId === "qty") return `<td class="num">${l.qty || ""}</td>`;
+      if (colId === "unitPrice")
+        return `<td class="r">${incl ? t(lang, "included") : esc(String(l.priceText || ""))}</td>`;
+      if (colId === "total")
+        return `<td class="r">${incl ? t(lang, "dash") : fmtNum(l.lineTotal, lang)}</td>`;
+      if (colId === "remarks") return `<td>${esc((l.remarks || "").trim())}</td>`;
+      const extra = l.extra && typeof l.extra === "object" ? l.extra : {};
+      return `<td>${esc(extra[colId] != null ? String(extra[colId]) : "")}</td>`;
     }
 
     function splitLines(text) {
@@ -757,7 +920,11 @@
         lineTotal: Number(l.lineTotal) || 0,
         includedInBasePrice: lineIncluded(l),
         unit: (l.unit || "").trim(),
+        remarks: (l.remarks || "").trim(),
+        lineNo: (l.lineNo || "").trim(),
+        extra: l.extra && typeof l.extra === "object" ? { ...l.extra } : {},
       }));
+      g.itemsTableConfig = normalizeItemsTableConfig(g.itemsTableConfig, lang);
       return g;
     }
 
@@ -902,48 +1069,58 @@
     function renderLines(g, lang) {
       const lines = g.lines || [];
       const cur = curSuffix(g.currency, lang);
+      const cfg = normalizeItemsTableConfig(g.itemsTableConfig, lang);
+      const order = itemsPrintColumnOrder(cfg);
       const gross = billableTotal(lines);
       const disc = discountAmt(g.discountAmount);
       const net = Math.max(0, gross - disc);
       const say = (g.totalWords || "").trim() || (net > 0 ? `${fmtNum(net, lang)} ${cur}` : t(lang, "dash"));
 
+      const totalColCount = 1 + order.length;
+      const totalIdx = order.indexOf("total");
+      const labelColspan = totalIdx >= 0 ? Math.max(1, totalIdx) : Math.max(1, totalColCount - 2);
+      const amountColspan = 2;
+      const afterTotalCols = totalIdx >= 0 ? Math.max(0, order.length - totalIdx - 2) : 0;
+      const afterTotalCell = afterTotalCols > 0 ? `<td colspan="${afterTotalCols}"></td>` : "";
+
+      const colgroup =
+        `<col style="width:5%" />` +
+        order.map((colId) => `<col style="width:${itemsColWidth(colId)}" />`).join("");
+
+      const headCells = order
+        .map((colId) => {
+          const cls = itemsColClass(colId);
+          return `<th${cls ? ` class="${cls}"` : ""}>${esc(itemsColLabel(colId, cfg, lang, cur))}</th>`;
+        })
+        .join("");
+
       const rows = lines.length
-        ? lines.map((l, i) => {
-            const incl = lineIncluded(l);
-            const price = incl ? t(lang, "included") : esc(String(l.priceText || ""));
-            const total = incl ? t(lang, "dash") : fmtNum(l.lineTotal, lang);
-            const cls = [i % 2 === 1 ? "zebra" : "", incl ? "included" : ""].filter(Boolean).join(" ");
-            return `<tr${cls ? ` class="${cls}"` : ""}><td class="num">${i + 1}</td><td>${esc(l.itemTag)}</td><td><div class="multiline">${multilineHtml(l.description)}</div></td><td class="num">${l.qty || ""}</td><td class="r">${price}</td><td class="r">${total}</td></tr>`;
-          }).join("")
-        : `<tr><td colspan="6" class="num">${t(lang, "dash")}</td></tr>`;
+        ? lines
+            .map((l, i) => {
+              const incl = lineIncluded(l);
+              const cls = [i % 2 === 1 ? "zebra" : "", incl ? "included" : ""].filter(Boolean).join(" ");
+              const cells = order.map((colId) => itemsColCellHtml(colId, l, lang)).join("");
+              return `<tr${cls ? ` class="${cls}"` : ""}><td class="num">${esc(itemsDisplayLineNo(l, i, cfg))}</td>${cells}</tr>`;
+            })
+            .join("")
+        : `<tr><td colspan="${totalColCount}" class="num">${t(lang, "dash")}</td></tr>`;
 
       const discRow = disc > 0
-        ? `<tr class="sub"><td colspan="5" class="lbl">${esc(t(lang, "discount"))}</td><td class="r">${fmtNum(disc, lang)} ${esc(cur)}</td></tr>
-           <tr class="sub"><td colspan="5" class="lbl">${esc(t(lang, "net"))}</td><td class="r">${fmtNum(net, lang)} ${esc(cur)}</td></tr>`
+        ? `<tr class="sub"><td colspan="${labelColspan}" class="lbl">${esc(t(lang, "discount"))}</td><td colspan="${amountColspan}" class="r">${fmtNum(disc, lang)} ${esc(cur)}</td>${afterTotalCell}</tr>
+           <tr class="sub"><td colspan="${labelColspan}" class="lbl">${esc(t(lang, "net"))}</td><td colspan="${amountColspan}" class="r">${fmtNum(net, lang)} ${esc(cur)}</td>${afterTotalCell}</tr>`
         : "";
 
       return `<table class="data">
-        <colgroup>
-          <col style="width:5%" />
-          <col style="width:18%" />
-          <col style="width:39%" />
-          <col style="width:9%" />
-          <col style="width:14.5%" />
-          <col style="width:14.5%" />
-        </colgroup>
+        <colgroup>${colgroup}</colgroup>
         <thead><tr>
           <th class="num">${esc(t(lang, "colNo"))}</th>
-          <th>${esc(t(lang, "colItem"))}</th>
-          <th>${esc(t(lang, "colDesc"))}</th>
-          <th class="num">${esc(t(lang, "colQty"))}</th>
-          <th class="r">${esc(t(lang, "colUnitPrice"))} (${esc(cur)})</th>
-          <th class="r">${esc(t(lang, "colTotal"))} (${esc(cur)})</th>
+          ${headCells}
         </tr></thead>
         <tbody>${rows}</tbody>
         <tfoot>
-          <tr><td colspan="5" class="lbl">${esc(t(lang, "total"))}</td><td class="r">${fmtNum(gross, lang)} ${esc(cur)}</td></tr>
+          <tr><td colspan="${labelColspan}" class="lbl">${esc(t(lang, "total"))}</td><td colspan="${amountColspan}" class="r">${fmtNum(gross, lang)} ${esc(cur)}</td>${afterTotalCell}</tr>
           ${discRow}
-          <tr class="say"><td colspan="6">${esc(t(lang, "totalSay"))}: ${esc(say)}</td></tr>
+          <tr class="say"><td colspan="${totalColCount}">${esc(t(lang, "totalSay"))}: ${esc(say)}</td></tr>
         </tfoot>
       </table>`;
     }
