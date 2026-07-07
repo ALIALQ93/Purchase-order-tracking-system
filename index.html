@@ -6167,7 +6167,8 @@
           <thead>
             <tr>
               <th data-i18n="poLineDescCol">الوصف</th>
-              <th data-i18n="poLineQtyCol">الكمية</th>
+              <th data-i18n="accRequestedQtyCol">الكمية المطلوبة</th>
+              <th data-i18n="accReceivedQtyCol">الكمية المستلمة</th>
               <th data-i18n="reportBaseCurrencyLabel">العملة</th>
               <th data-i18n="accUnitPriceCol">سعر الوحدة</th>
               <th data-i18n="accLineTotalCol">مجموع البند</th>
@@ -6764,7 +6765,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>موافقات المشرف:</strong> أُضيفت مرحلة موافقة جديدة في مسار أوامر شراء المشاريع — بعد موافقة مسؤول المجموعة يُحوَّل الطلب إلى المشرف لاعتماده نهائياً قبل المشتريات. يستطيع المشرف <strong>الموافقة</strong> (يُمرَّر للمشتريات) أو <strong>الإرجاع</strong> لمسؤول المجموعة لإعادة المراجعة.</li><li><strong>النموذج الاحترافي (أوامر الإدارة العامة):</strong> أصبحت الأعمدة الإضافية المخصّصة في جدول البنود تظهر الآن في الطباعة الاحترافية حسب كل طلب (مع قيمها وترتيبها).</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تسجيل الأسعار مبكراً:</strong> يستطيع مسؤول الشراء الآن إدخال أسعار الشراء من طابور المشتريات ابتداءً من مرحلة <strong>«قيد الشراء»</strong>، وكذلك خلال <strong>«سلفة عمل»</strong> و<strong>«بانتظار استلام المستودع»</strong> — أي قبل استلام المستودع. يبقى اعتماد الأسعار وإقفال المسار في مرحلة الحسابات كما هو.</li><li><strong>مطابقة الكمية المستلمة:</strong> نافذة تسجيل الأسعار تعرض الآن <strong>الكمية المطلوبة</strong> و<strong>الكمية المستلمة</strong> معاً، ويُحسب مجموع البند = الكمية المستلمة × سعر الوحدة (يُعاد الحساب تلقائياً بعد الاستلام).</li></ul>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -7091,6 +7092,7 @@
         btnConfirmWarehouseReceipt: "تأكيد الاستلام للحسابات",
         btnConfirmAccountingClose: "إغلاق المسار",
         btnAccountingRecordValues: "تسجيل القيم",
+        btnPurchasingRecordPrices: "تسجيل الأسعار",
         confirmPurchasingAdvance: "تأكيد استلام الطلب ونقله إلى «قيد الشراء» (قيد التنفيذ)؟",
         confirmWarehouseReceipt: "تأكيد الاستلام الفعلي في المستودع وإرسال الطلب لقسم الحسابات للإقفال؟",
         confirmAccountingClose: "إغلاق المسار محاسبياً لهذا الطلب؟",
@@ -7101,6 +7103,10 @@
           "أدخل سعر الوحدة أو مجموع البند لكل بند؛ يُحسب الحقل الآخر تلقائياً. يمكنك إضافة ملاحظة لكل بند. احفظ القيم ثم يمكنك إغلاق المسار من هنا أو من القائمة.",
         accountingPoModalHintPurchasing:
           "أدخل سعر الوحدة أو مجموع البند لكل بند؛ يُحسب الحقل الآخر تلقائياً. يمكنك إضافة ملاحظة لكل بند. احفظ القيم ثم اعتماد الأسعار عند الانتهاء.",
+        accountingPoModalHintEarlyPurchasing:
+          "أدخل أسعار الشراء المتفق عليها مع المورّد مبكراً في مرحلة الشراء واحفظ القيم. يُعتمَد السعر ويُقفَل المسار لاحقاً في مرحلة الحسابات بعد استلام المستودع.",
+        accRequestedQtyCol: "الكمية المطلوبة",
+        accReceivedQtyCol: "الكمية المستلمة",
         accUnitPriceCol: "سعر الوحدة",
         accLineTotalCol: "مجموع البند",
         accLineNoteCol: "ملاحظة البند",
@@ -7706,7 +7712,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Supervisor approvals:</strong> a new approval stage was added to the project purchase order workflow — after the group manager approves, the request goes to the supervisor for final approval before purchasing. The supervisor can <strong>approve</strong> (sends to purchasing) or <strong>return</strong> it to the group manager for re-review.</li><li><strong>Professional form (general admin POs):</strong> custom extra columns in the items table now appear in the professional print per order (with their values and order).</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Early price entry:</strong> the purchasing officer can now record purchase prices from the purchasing queue starting at the <strong>\"In progress\"</strong> stage, and also during <strong>\"Work advance\"</strong> and <strong>\"Awaiting warehouse receipt\"</strong> — i.e. before warehouse receipt. Price verification and workflow closure still happen at the accounting stage.</li><li><strong>Received-quantity matching:</strong> the price entry window now shows both <strong>requested quantity</strong> and <strong>received quantity</strong>, and the line total = received quantity × unit price (recomputed automatically after receipt).</li></ul>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -8035,6 +8041,7 @@
         btnConfirmWarehouseReceipt: "Confirm receipt (to accounting)",
         btnConfirmAccountingClose: "Close workflow",
         btnAccountingRecordValues: "Record values",
+        btnPurchasingRecordPrices: "Record prices",
         confirmPurchasingAdvance: "Confirm the request was received and move it to in progress (purchasing)?",
         confirmWarehouseReceipt: "Confirm physical warehouse receipt and send this request to accounting for closure?",
         confirmAccountingClose: "Close this request in the accounting workflow?",
@@ -8045,6 +8052,10 @@
           "Enter a unit price or line total per line; the other field updates automatically. You may add a note per line. Save values, then close the workflow from here or the list.",
         accountingPoModalHintPurchasing:
           "Enter a unit price or line total per line; the other field updates automatically. You may add a note per line. Save values, then verify prices when done.",
+        accountingPoModalHintEarlyPurchasing:
+          "Enter the supplier-agreed purchase prices early during the purchasing stage and save the values. Prices are verified and the workflow is closed later at the accounting stage after warehouse receipt.",
+        accRequestedQtyCol: "Requested qty",
+        accReceivedQtyCol: "Received qty",
         accUnitPriceCol: "Unit price",
         accLineTotalCol: "Line total",
         accLineNoteCol: "Line note",
@@ -16215,6 +16226,8 @@
     }
 
     function accLineQtyFromRow(tr) {
+      const eff = parseFloat(String(tr?.dataset?.accEffQty));
+      if (Number.isFinite(eff)) return eff;
       return parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || 0;
     }
 
@@ -16271,13 +16284,19 @@
       if (!tbody) return;
       const item = (line?.item || "").trim();
       const qty = Number(line?.qty) || 0;
+      const hasReceived = line?.receivedQty != null && !Number.isNaN(Number(line.receivedQty));
+      const receivedQty = hasReceived ? Number(line.receivedQty) : null;
+      const effQty = hasReceived ? receivedQty : qty;
       const price = line?.price != null && !Number.isNaN(Number(line.price)) ? Number(line.price) : 0;
       const lineTotal =
-        line?.lineTotal != null && !Number.isNaN(Number(line.lineTotal))
-          ? Number(line.lineTotal)
-          : qty * price;
+        price > 0
+          ? effQty * price
+          : line?.lineTotal != null && !Number.isNaN(Number(line.lineTotal))
+            ? Number(line.lineTotal)
+            : 0;
       const lineNote = (line?.lineNote || "").trim();
       const tr = document.createElement("tr");
+      tr.dataset.accEffQty = String(effQty);
       const td1 = document.createElement("td");
       const inpDesc = document.createElement("input");
       inpDesc.type = "text";
@@ -16294,6 +16313,16 @@
       inpQty.step = "any";
       inpQty.value = String(qty);
       td2.appendChild(inpQty);
+      const td2b = document.createElement("td");
+      const inpRecv = document.createElement("input");
+      inpRecv.type = "number";
+      inpRecv.className = "acc-line-qty-recv";
+      inpRecv.readOnly = true;
+      inpRecv.min = "0";
+      inpRecv.step = "any";
+      inpRecv.value = hasReceived ? String(receivedQty) : "";
+      inpRecv.placeholder = t("dash");
+      td2b.appendChild(inpRecv);
       const td3 = document.createElement("td");
       const curSel = document.createElement("select");
       curSel.className = "acc-line-cur";
@@ -16342,6 +16371,7 @@
 
       tr.appendChild(td1);
       tr.appendChild(td2);
+      tr.appendChild(td2b);
       tr.appendChild(td3);
       tr.appendChild(td4);
       tr.appendChild(td5);
@@ -16358,12 +16388,15 @@
           const item = tr.querySelector(".acc-line-desc")?.value?.trim() || base.item || "";
           const unit = (base.unit || "").trim() || null;
           const qty = parseFloat(String(tr.querySelector(".acc-line-qty")?.value)) || Number(base.qty) || 0;
+          const hasReceived = base.receivedQty != null && !Number.isNaN(Number(base.receivedQty));
+          const receivedQty = hasReceived ? Number(base.receivedQty) : null;
+          const effQty = hasReceived ? receivedQty : qty;
           const priceRaw = parseFloat(String(tr.querySelector(".acc-line-price")?.value)) || 0;
           const totalRaw = parseFloat(String(tr.querySelector(".acc-line-total-inp")?.value)) || 0;
-          let lineTotal = totalRaw > 0 ? totalRaw : qty * priceRaw;
+          let lineTotal = totalRaw > 0 ? totalRaw : effQty * priceRaw;
           let price = priceRaw;
-          if (qty > 0 && totalRaw > 0) price = totalRaw / qty;
-          else if (qty > 0 && lineTotal > 0 && priceRaw <= 0) price = lineTotal / qty;
+          if (effQty > 0 && totalRaw > 0) price = totalRaw / effQty;
+          else if (effQty > 0 && lineTotal > 0 && priceRaw <= 0) price = lineTotal / effQty;
           const currency = (tr.querySelector(".acc-line-cur")?.value || base.currency || "IQD").trim() || "IQD";
           const lineNote = (tr.querySelector(".acc-line-note")?.value || "").trim();
           const line = {
@@ -16374,6 +16407,7 @@
             price,
             lineTotal,
           };
+          if (hasReceived) line.receivedQty = receivedQty;
           if (lineNote) line.lineNote = lineNote;
           if (base.availableQty != null && base.availableQty !== "")
             line.availableQty = Number(base.availableQty);
@@ -16396,14 +16430,27 @@
 
     async function accountingPoModalAllowed(po) {
       if (!po || po.scope !== "project") return false;
-      if (hasAdminAccess()) return po.workflowStatus === "pending_accounting" || po.workflowStatus === "workflow_complete";
+      if (hasAdminAccess())
+        return (
+          po.workflowStatus === "in_progress_purchasing" ||
+          po.workflowStatus === "pending_advance_accounting" ||
+          po.workflowStatus === "pending_warehouse_receipt" ||
+          po.workflowStatus === "pending_accounting" ||
+          po.workflowStatus === "workflow_complete"
+        );
       const role = currentUserProfile?.role || userRole;
       if (role === "accountant") {
         if (po.workflowStatus === "pending_accounting") return true;
         if (po.workflowStatus === "workflow_complete") return !!po.pricesAmendmentApproved;
         return false;
       }
-      if (role === "purchasing_officer") return po.workflowStatus === "pending_accounting";
+      if (role === "purchasing_officer")
+        return (
+          po.workflowStatus === "in_progress_purchasing" ||
+          po.workflowStatus === "pending_advance_accounting" ||
+          po.workflowStatus === "pending_warehouse_receipt" ||
+          po.workflowStatus === "pending_accounting"
+        );
       return false;
     }
 
@@ -16428,7 +16475,8 @@
       accPoReadOnlyMode = isComplete && !canEditAmended;
       const canSavePrices =
         (role === "accountant" || isPurchasingOfficer || isAdmin) && (!isComplete || canEditAmended);
-      const canCloseFromModal = (role === "accountant" || isAdmin) && !isComplete;
+      const canCloseFromModal =
+        (role === "accountant" || isAdmin) && !isComplete && po.workflowStatus === "pending_accounting";
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const pname = pr.exists() ? projectDisplayName(pr.data()) : po.projectId || t("dash");
       const snapLines = Array.isArray(po.lines) ? po.lines : [];
@@ -16436,6 +16484,7 @@
         item: l.item,
         unit: (l.unit || "").trim(),
         qty: l.qty,
+        receivedQty: l.receivedQty != null && !Number.isNaN(Number(l.receivedQty)) ? Number(l.receivedQty) : undefined,
         price: l.price != null ? Number(l.price) : 0,
         currency: (l.currency || "IQD").trim() === "USD" ? "USD" : "IQD",
         lineTotal: l.lineTotal != null ? Number(l.lineTotal) : 0,
@@ -16486,7 +16535,16 @@
       if (btnReq) btnReq.classList.toggle("hidden", !mayReq);
       if (btnAppr) btnAppr.classList.toggle("hidden", !mayAppr);
       const hintEl = $("modal-accounting-po")?.querySelector(".wf-po-hint");
-      if (hintEl) hintEl.textContent = isPurchasingOfficer ? t("accountingPoModalHintPurchasing") : t("accountingPoModalHint");
+      const isEarlyPurchasing =
+        po.workflowStatus === "in_progress_purchasing" ||
+        po.workflowStatus === "pending_advance_accounting" ||
+        po.workflowStatus === "pending_warehouse_receipt";
+      if (hintEl)
+        hintEl.textContent = isEarlyPurchasing
+          ? t("accountingPoModalHintEarlyPurchasing")
+          : isPurchasingOfficer
+          ? t("accountingPoModalHintPurchasing")
+          : t("accountingPoModalHint");
       $("modal-accounting-po").classList.remove("hidden");
     }
 
@@ -16532,6 +16590,7 @@
           item: l.item,
           unit: (l.unit || "").trim(),
           qty: l.qty,
+          receivedQty: l.receivedQty != null && !Number.isNaN(Number(l.receivedQty)) ? Number(l.receivedQty) : undefined,
           price: l.price,
           currency: l.currency,
           lineTotal: l.lineTotal,
@@ -18447,6 +18506,10 @@
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
       const po = snap.data();
+      if (po.workflowStatus !== "pending_accounting") {
+        alert(t("alertWarehouseReviewStale"));
+        return;
+      }
       if (!hasAdminAccess() && !po.pricesVerified) {
         alert(t("alertPricesNotVerified"));
         return;
@@ -22258,6 +22321,11 @@
                       "</button>";
                   } else if (canAct && r.workflowStatus === "in_progress_purchasing") {
                     act =
+                      '<button type="button" class="btn btn-secondary btn-sm btn-purchasing-record-prices" data-id="' +
+                      escapeHtml(r.id) +
+                      '">' +
+                      escapeHtml(t("btnPurchasingRecordPrices")) +
+                      "</button>" +
                       '<button type="button" class="btn btn-primary btn-sm btn-purchasing-send-advance" data-id="' +
                       escapeHtml(r.id) +
                       '">' +
@@ -22287,10 +22355,13 @@
             ? `<tbody>
               ${rowsTrack
                 .map((r) => {
-                  const canRecord = canAct && r.workflowStatus === "pending_accounting";
+                  const isEarlyTrack =
+                    r.workflowStatus === "pending_advance_accounting" ||
+                    r.workflowStatus === "pending_warehouse_receipt";
+                  const canRecord = canAct && (isEarlyTrack || r.workflowStatus === "pending_accounting");
                   const recordBtn = canRecord
                     ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnAccountingRecordValues")
+                        t(isEarlyTrack ? "btnPurchasingRecordPrices" : "btnAccountingRecordValues")
                       )}</button>`
                     : "";
                   const canVerify = canAct && r.workflowStatus === "pending_accounting" && !r.pricesVerified;
@@ -22374,6 +22445,9 @@
         if (canAct) {
           wrap.querySelectorAll(".btn-purchasing-advance").forEach((btn) => {
             btn.addEventListener("click", () => void openPurchasingRepresentativeModal(btn.dataset.id));
+          });
+          wrap.querySelectorAll(".btn-purchasing-record-prices").forEach((btn) => {
+            btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
           });
           wrap.querySelectorAll(".btn-purchasing-send-advance").forEach((btn) => {
             btn.addEventListener("click", () => runPurchasingSubmitToAdvanceAccounting(btn.dataset.id));
@@ -23630,7 +23704,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-06-supervisor-approval-pro-columns";
+    const CURRENT_UPDATE_ID = "2026-07-early-price-entry-received-qty";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
