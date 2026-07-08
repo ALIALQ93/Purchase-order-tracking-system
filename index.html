@@ -955,6 +955,11 @@
     .badge-supplier-accepted { background: rgba(16, 185, 129, 0.14); color: #047857; }
     .badge-supplier-rejected { background: rgba(245, 158, 11, 0.14); color: #b45309; }
     .badge-approved-to-send { background: rgba(99, 102, 241, 0.14); color: #4338ca; }
+    .badge-under-manufacturing { background: rgba(139, 92, 246, 0.14); color: #6d28d9; }
+    .badge-ready-to-ship { background: rgba(59, 130, 246, 0.14); color: #1d4ed8; }
+    .badge-in-shipping { background: rgba(14, 165, 233, 0.14); color: #0369a1; }
+    .badge-customs-clearance { background: rgba(217, 119, 6, 0.14); color: #b45309; }
+    .badge-installment { background: rgba(20, 184, 166, 0.14); color: #0f766e; }
 
     .po007-status-hint {
       margin: 0.35rem 0 0;
@@ -4938,6 +4943,7 @@
         <button type="button" data-view="warehouse-receipt-queue" data-nav-section="warehouse-receipt-queue" data-i18n="navWarehouseReceiptQueue">استلام المستودع</button>
         <button type="button" data-view="accounting-queue" data-nav-section="accounting-queue" data-i18n="navAccountingQueue">الحسابات</button>
         <button type="button" data-view="reports" data-nav-section="reports" data-i18n="navReports">التقارير</button>
+        <button type="button" data-view="reports-general" data-nav-section="reports-general" data-i18n="navReportsGeneral">تقارير الإدارة العامة</button>
         <button type="button" class="nav-admin-only" data-view="admin" data-nav-section="admin" data-i18n="navAdmin">الإدارة</button>
         <button type="button" data-view="help" data-i18n="navHelp">المساعدة</button>
       </nav>
@@ -5600,6 +5606,119 @@
         </div>
       </section>
 
+      <!-- تقارير الإدارة العامة -->
+      <section id="screen-reports-general" class="app-screen hidden">
+        <h1 class="page-title" data-i18n="reportsGeneralTitle">تقارير أوامر شراء الإدارة العامة</h1>
+        <div class="card">
+          <h3 data-i18n="reportGenStatusTitle">تقرير حالة الطلبات</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenStatusHint">
+            توزيع أوامر شراء الإدارة العامة حسب الحالة، إجمالي القيمة، والقيمة حسب المورد والشهر — مع طباعة احترافية ورسوم بيانية.
+          </p>
+          <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-gstatus-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-gstatus-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportBaseCurrencyLabel">عملة التقرير</span>
+                <select id="rep-gstatus-base">
+                  <option value="IQD">IQD</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportCompanyLabel">الشركة</span>
+                <select id="rep-gstatus-company"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportSupplierLabel">المورد</span>
+                <select id="rep-gstatus-supplier"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportStatusLabel">الحالة</span>
+                <select id="rep-gstatus-status"></select>
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-run-gstatus-report" data-i18n="btnRunReport">
+                عرض التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-print-gstatus-report" data-i18n="btnPrintReport">
+                طباعة التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-export-gstatus-report" data-i18n="btnExportCsv">
+                تصدير CSV
+              </button>
+            </div>
+          </div>
+          <div id="reports-gstatus-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات</p></div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="reportGenMatTitle">تقرير مواد الإدارة العامة</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenMatHint">
+            بنود المواد في أوامر شراء الإدارة العامة مع الكميات والأسعار، قابلة للفلترة والتجميع والتصدير.
+          </p>
+          <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-gmat-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-gmat-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportBaseCurrencyLabel">عملة التقرير</span>
+                <select id="rep-gmat-base">
+                  <option value="IQD">IQD</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportMaterialSearchLabel">بحث عن مادة</span>
+                <input type="text" id="rep-gmat-search" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportCompanyLabel">الشركة</span>
+                <select id="rep-gmat-company"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportSupplierLabel">المورد</span>
+                <select id="rep-gmat-supplier"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportStatusLabel">الحالة</span>
+                <select id="rep-gmat-status"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportGroupByLabel">تجميع حسب</span>
+                <select id="rep-gmat-group">
+                  <option value="" data-i18n="reportGroupNone">بدون</option>
+                  <option value="item" data-i18n="reportGroupItem">المادة</option>
+                  <option value="company" data-i18n="reportGroupCompany">الشركة</option>
+                  <option value="supplier" data-i18n="reportGroupSupplier">المورد</option>
+                </select>
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-run-gmat-report" data-i18n="btnRunReport">
+                عرض التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-print-gmat-report" data-i18n="btnPrintReport">
+                طباعة التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-export-gmat-report" data-i18n="btnExportCsv">
+                تصدير CSV
+              </button>
+            </div>
+          </div>
+          <div id="reports-gmat-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات</p></div>
+        </div>
+      </section>
+
       <!-- الإدارة -->
       <section id="screen-admin" class="app-screen hidden">
         <h1 class="page-title" data-i18n="adminTitle">الإدارة</h1>
@@ -6184,6 +6303,14 @@
           <span data-i18n="poStatusLabel">الحالة</span>
           <select id="po007-meta-status"></select>
         </label>
+        <label class="po007-meta-field po007-meta-po-only">
+          <span data-i18n="genPoStatusDateLabel">تاريخ الحالة</span>
+          <input type="date" id="po007-meta-status-date" />
+        </label>
+        <label class="po007-meta-field po007-meta-po-only">
+          <span data-i18n="genPoStatusNoteLabel">ملاحظة الحالة</span>
+          <input type="text" id="po007-meta-status-note" />
+        </label>
         <p class="po007-status-hint po007-meta-po-only" id="po007-meta-status-hint" data-i18n="genPoStatusHint"></p>
         <label class="po007-meta-field">
           <span data-i18n="genPoDocumentLang">لغة المستند</span>
@@ -6370,6 +6497,40 @@
       <div id="modal-whats-new-body" style="margin:0.75rem 0 0;line-height:1.6;color:var(--muted)"></div>
       <div class="modal-actions" style="margin-top:1rem">
         <button type="button" class="btn btn-primary" id="modal-whats-new-ok" data-i18n="whatsNewGotIt">فهمت</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تحديث حالة أمر الإدارة العامة -->
+  <div id="modal-gen-po-status" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 data-i18n="genPoStatusUpdateTitle">تحديث حالة الطلب</h3>
+      <p id="gen-po-status-sub" class="muted" style="margin:.15rem 0 .75rem"></p>
+      <input type="hidden" id="gen-po-status-id" />
+      <label class="field">
+        <span data-i18n="genPoStatusCurrentLabel">الحالة الحالية</span>
+        <div id="gen-po-status-current" style="margin-top:.25rem"></div>
+      </label>
+      <label class="field">
+        <span data-i18n="genPoStatusNewLabel">الحالة الجديدة</span>
+        <select id="gen-po-status-select"></select>
+      </label>
+      <p class="po007-status-hint" id="gen-po-status-hint"></p>
+      <label class="field">
+        <span data-i18n="genPoStatusDateLabel">تاريخ الحالة</span>
+        <input type="date" id="gen-po-status-date" />
+      </label>
+      <label class="field">
+        <span data-i18n="genPoStatusNoteLabel">ملاحظة الحالة</span>
+        <textarea id="gen-po-status-note" rows="2"></textarea>
+      </label>
+      <div style="margin-top:1rem">
+        <h4 style="margin:0 0 .4rem" data-i18n="genPoStatusHistoryTitle">سجل الحالات</h4>
+        <div id="gen-po-status-history"></div>
+      </div>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button type="button" class="btn btn-secondary" id="gen-po-status-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="gen-po-status-save" data-i18n="btnSaveStatus">حفظ الحالة</button>
       </div>
     </div>
   </div>
@@ -6629,15 +6790,33 @@
         poStatus_approved_to_send: "موافق عليه للإرسال للمورد",
         poStatus_supplier_accepted: "مقبول من المورد",
         poStatus_supplier_rejected: "غير مقبول — يحتاج تعديل",
-        genPoStatusHint: "مسودة → موافق للإرسال → مرسل للمورد → مقبول/مرفوض من المورد → مستلم.",
+        poStatus_under_manufacturing: "تحت التصنيع",
+        poStatus_ready_to_ship: "جاهز للشحن",
+        poStatus_in_shipping: "قيد الشحن",
+        poStatus_customs_clearance: "قيد التخليص الجمركي",
+        genPoInstallmentSendLabel: "إرسال الدفعة {n}",
+        genPoStatusHint: "مسودة → موافق للإرسال → مرسل للمورد → مقبول/مرفوض من المورد → تحت التصنيع → إرسال الدفعات → جاهز للشحن → قيد الشحن → قيد التخليص الجمركي → مستلم.",
         genPoStatusDescTitle: "حالات أمر الإدارة العامة",
         genPoStatusDesc_draft: "مسودة: الطلب قيد الإعداد ولم يُعتمد بعد للإرسال.",
         genPoStatusDesc_approved_to_send: "موافق عليه للإرسال للمورد: اعتماد داخلي — جاهز لإرسال أمر الشراء للمورد.",
         genPoStatusDesc_sent: "مرسل للمورد: تم إرسال الأمر للمورد وبانتظار رده.",
         genPoStatusDesc_supplier_accepted: "مقبول من المورد: المورد وافق على الأمر.",
         genPoStatusDesc_supplier_rejected: "غير مقبول — يحتاج تعديل: المورد رفض أو طلب تعديلات — راجع الأمر ثم أعد الإرسال.",
+        genPoStatusDesc_under_manufacturing: "تحت التصنيع: المورد يقوم بتصنيع/تجهيز المواد.",
+        genPoStatusDesc_ready_to_ship: "جاهز للشحن: اكتمل تجهيز المواد وهي جاهزة للشحن.",
+        genPoStatusDesc_in_shipping: "قيد الشحن: تم شحن المواد وهي في الطريق.",
+        genPoStatusDesc_customs_clearance: "قيد التخليص الجمركي: المواد في مرحلة التخليص الجمركي.",
         genPoStatusDesc_received: "مستلم: اكتمل التنفيذ/الاستلام.",
         genPoStatusDesc_cancelled: "ملغى: أُلغي الطلب ولا يُتابع.",
+        genPoStatusUpdateTitle: "تحديث حالة الطلب",
+        genPoStatusCurrentLabel: "الحالة الحالية",
+        genPoStatusNewLabel: "الحالة الجديدة",
+        genPoStatusDateLabel: "تاريخ الحالة",
+        genPoStatusNoteLabel: "ملاحظة الحالة",
+        genPoStatusHistoryTitle: "سجل الحالات",
+        genPoStatusHistoryEmpty: "لا يوجد سجل حالات بعد.",
+        btnUpdateStatus: "تحديث الحالة",
+        btnSaveStatus: "حفظ الحالة",
         adminTitle: "الإدارة",
         tabCompanies: "الشركات",
         tabProjects: "المشاريع",
@@ -6862,7 +7041,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تقرير التسعير الجديد:</strong> أُضيف في شاشة التقارير تقرير تنفيذي للتسعير يعرض التغطية السعرية (البنود المسعّرة مقابل غير المسعّرة)، إجمالي القيمة المسعّرة، والقيمة حسب المشروع والشهر وحالة المسار. عند <strong>الطباعة</strong> يظهر بتصميم احترافي على صفحة A4 مع رسوم بيانية (دونات وأعمدة) وأبرز الملاحظات، ويدعم تصدير CSV.</li><li><strong>تسجيل الأسعار مبكراً:</strong> يستطيع مسؤول الشراء إدخال أسعار الشراء من طابور المشتريات ابتداءً من مرحلة «قيد الشراء» وكذلك «سلفة عمل» و«بانتظار استلام المستودع» — قبل استلام المستودع.</li><li><strong>مطابقة الكمية المستلمة:</strong> نافذة تسجيل الأسعار تعرض الكمية المطلوبة والمستلمة معاً، ويُحسب مجموع البند = الكمية المستلمة × سعر الوحدة.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات (أوامر شراء الإدارة العامة):</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>حالات جديدة للطلب:</strong> أُضيفت حالات «تحت التصنيع»، «إرسال الدفعات» (تظهر تلقائياً حسب عدد دفعات كل طلب)، «جاهز للشحن»، «قيد الشحن»، و«قيد التخليص الجمركي».</li><li><strong>سجل الحالات:</strong> زر «تحديث الحالة» في قائمة الأوامر يفتح نافذة لاختيار الحالة مع تحديد تاريخها وملاحظتها، ويُحفظ سجل متكامل لكل التغييرات.</li><li><strong>قسم تقارير الإدارة العامة:</strong> قسم جديد يضم <strong>تقرير حالة الطلبات</strong> (توزيع الحالات، القيمة حسب المورد والشهر، وجدول تفصيل الطلبات: مرجع الطلب وملخص الطلب وملخص سجل الحالة) بطباعة A4 احترافية ورسوم بيانية، و<strong>تقرير مواد الإدارة العامة</strong> — مع فلاتر وتصدير CSV.</li></ul><p style=\"margin:.5rem 0 0;color:var(--muted)\">ملاحظة: لإظهار «تقارير الإدارة العامة» فعّل القسم للمستخدم من الإدارة ← المستخدمون.</p>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -7014,6 +7193,49 @@
         navWarehouseReceiptQueue: "استلام المستودع",
         navAccountingQueue: "الحسابات",
         navReports: "التقارير",
+        navReportsGeneral: "تقارير الإدارة العامة",
+        reportsGeneralTitle: "تقارير أوامر شراء الإدارة العامة",
+        reportGenStatusTitle: "تقرير حالة الطلبات",
+        reportGenStatusHint:
+          "توزيع أوامر شراء الإدارة العامة حسب الحالة، إجمالي القيمة، والقيمة حسب المورد والشهر — مع طباعة احترافية ورسوم بيانية.",
+        reportGenMatTitle: "تقرير مواد الإدارة العامة",
+        reportGenMatHint: "بنود المواد في أوامر شراء الإدارة العامة مع الكميات والأسعار، قابلة للفلترة والتجميع والتصدير.",
+        reportSupplierLabel: "المورد",
+        reportStatusLabel: "الحالة",
+        reportGroupItem: "المادة",
+        reportGroupCompany: "الشركة",
+        reportGroupSupplier: "المورد",
+        genStatusEyebrow: "تقرير تنفيذي — الإدارة العامة",
+        genStatusTotalValueLabel: "إجمالي قيمة الطلبات",
+        genStatusKpiOrders: "عدد الطلبات",
+        genStatusKpiSuppliers: "عدد الموردين",
+        genStatusKpiReceived: "نسبة الاستلام",
+        genStatusKpiConcentration: "تركّز المورد الأول",
+        genStatusConcentrationSuffix: "أعلى مورد",
+        genStatusDistTitle: "توزيع الحالات",
+        genStatusDonutTitle: "توزيع الطلبات حسب الحالة",
+        genStatusDonutNote: "عدد الطلبات في كل حالة.",
+        genStatusBySupplierTitle: "القيمة حسب المورد",
+        genStatusBySupplierNote: "أعلى الموردين من حيث القيمة.",
+        genStatusByMonthTitle: "القيمة حسب الشهر",
+        genStatusTableTitle: "تفصيل الحالات",
+        genStatusColStatus: "الحالة",
+        genStatusColCount: "عدد الطلبات",
+        genStatusColValue: "القيمة",
+        genStatusOrdersTableTitle: "تفصيل الطلبات",
+        genStatusColRef: "مرجع الطلب",
+        genStatusColSummary: "ملخص الطلب",
+        genStatusColHistory: "ملخص سجل الحالة",
+        genStatusSummaryItems: "بند",
+        genStatusInsightsTitle: "أبرز الملاحظات",
+        genStatusInsightTopLead: "أكثر الحالات",
+        genStatusInsightTopBody: "الحالة الأكثر تكراراً هي «{status}» بعدد {count} طلب من أصل {total}.",
+        genStatusInsightReceivedLead: "نسبة الاستلام",
+        genStatusInsightReceivedBody: "نسبة الطلبات المستلمة {pct}% ({received} من {total}).",
+        genStatusInsightSupplierLead: "تركّز الموردين",
+        genStatusInsightSupplierBody: "أعلى مورد قيمةً هو «{supplier}» بقيمة {value} ({pct}% من الإجمالي).",
+        genStatusInsightMonthLead: "الزمن",
+        genStatusInsightMonthBody: "أعلى شهر من حيث القيمة هو {month} بقيمة {value}.",
         shortcutPurchasing: "المشتريات",
         shortcutWarehouseReceipt: "استلام المستودع",
         shortcutAccounting: "الحسابات",
@@ -7617,15 +7839,33 @@
         poStatus_approved_to_send: "Approved to send to supplier",
         poStatus_supplier_accepted: "Accepted by supplier",
         poStatus_supplier_rejected: "Rejected — needs revision",
-        genPoStatusHint: "Draft → approved to send → sent → supplier accepted/rejected → received.",
+        poStatus_under_manufacturing: "Under manufacturing",
+        poStatus_ready_to_ship: "Ready to ship",
+        poStatus_in_shipping: "In shipping",
+        poStatus_customs_clearance: "Customs clearance",
+        genPoInstallmentSendLabel: "Send installment {n}",
+        genPoStatusHint: "Draft → approved to send → sent → supplier accepted/rejected → under manufacturing → send installments → ready to ship → in shipping → customs clearance → received.",
         genPoStatusDescTitle: "General admin PO statuses",
         genPoStatusDesc_draft: "Draft: order is being prepared; not yet approved for sending.",
         genPoStatusDesc_approved_to_send: "Approved to send: internal approval complete; ready to send to the supplier.",
         genPoStatusDesc_sent: "Sent to supplier: PO transmitted; awaiting supplier response.",
         genPoStatusDesc_supplier_accepted: "Accepted by supplier: supplier confirmed the order.",
         genPoStatusDesc_supplier_rejected: "Rejected — needs revision: supplier declined or requested changes; revise and resend.",
+        genPoStatusDesc_under_manufacturing: "Under manufacturing: supplier is manufacturing/preparing the goods.",
+        genPoStatusDesc_ready_to_ship: "Ready to ship: goods are prepared and ready for shipment.",
+        genPoStatusDesc_in_shipping: "In shipping: goods have shipped and are in transit.",
+        genPoStatusDesc_customs_clearance: "Customs clearance: goods are undergoing customs clearance.",
         genPoStatusDesc_received: "Received: delivery/fulfillment completed.",
         genPoStatusDesc_cancelled: "Cancelled: order cancelled; no further action.",
+        genPoStatusUpdateTitle: "Update order status",
+        genPoStatusCurrentLabel: "Current status",
+        genPoStatusNewLabel: "New status",
+        genPoStatusDateLabel: "Status date",
+        genPoStatusNoteLabel: "Status note",
+        genPoStatusHistoryTitle: "Status history",
+        genPoStatusHistoryEmpty: "No status history yet.",
+        btnUpdateStatus: "Update status",
+        btnSaveStatus: "Save status",
         adminTitle: "Administration",
         tabCompanies: "Companies",
         tabProjects: "Projects",
@@ -7850,7 +8090,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>New Pricing report:</strong> a new executive pricing report was added to the Reports screen — pricing coverage (priced vs unpriced lines), total priced value, and value by project, month, and workflow status. When <strong>printed</strong> it renders as a professional A4 page with charts (donut and bars) and key observations, and supports CSV export.</li><li><strong>Early price entry:</strong> the purchasing officer can record purchase prices from the purchasing queue starting at the \"In progress\" stage, and also during \"Work advance\" and \"Awaiting warehouse receipt\" — before warehouse receipt.</li><li><strong>Received-quantity matching:</strong> the price entry window shows both requested and received quantity, and the line total = received quantity × unit price.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates (General admin POs):</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>New order statuses:</strong> added \"Under manufacturing\", \"Send installments\" (generated automatically per the order's number of installments), \"Ready to ship\", \"In shipping\", and \"Customs clearance\".</li><li><strong>Status history:</strong> an \"Update status\" button in the orders list opens a window to pick the status with its date and note, and keeps a full log of every change.</li><li><strong>General admin reports section:</strong> a new section with an <strong>Order status report</strong> (status distribution, value by supplier and month, and an orders-detail table: order reference, order summary, and status-history summary) with professional A4 print and charts, plus a <strong>General admin materials report</strong> — both with filters and CSV export.</li></ul><p style=\"margin:.5rem 0 0;color:var(--muted)\">Note: to show \"General admin reports\", enable the section for the user under Administration → Users.</p>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -8003,6 +8243,49 @@
         navWarehouseReceiptQueue: "Warehouse receipt",
         navAccountingQueue: "Accounting",
         navReports: "Reports",
+        navReportsGeneral: "General admin reports",
+        reportsGeneralTitle: "General admin purchase order reports",
+        reportGenStatusTitle: "Order status report",
+        reportGenStatusHint:
+          "General admin POs by status, total value, and value by supplier and month — with professional print and charts.",
+        reportGenMatTitle: "General admin materials report",
+        reportGenMatHint: "Material lines across general admin POs with quantities and prices; filterable, groupable and exportable.",
+        reportSupplierLabel: "Supplier",
+        reportStatusLabel: "Status",
+        reportGroupItem: "Item",
+        reportGroupCompany: "Company",
+        reportGroupSupplier: "Supplier",
+        genStatusEyebrow: "Executive report — General admin",
+        genStatusTotalValueLabel: "Total orders value",
+        genStatusKpiOrders: "Orders",
+        genStatusKpiSuppliers: "Suppliers",
+        genStatusKpiReceived: "Received rate",
+        genStatusKpiConcentration: "Top-supplier concentration",
+        genStatusConcentrationSuffix: "top supplier",
+        genStatusDistTitle: "Status distribution",
+        genStatusDonutTitle: "Orders by status",
+        genStatusDonutNote: "Number of orders in each status.",
+        genStatusBySupplierTitle: "Value by supplier",
+        genStatusBySupplierNote: "Top suppliers by value.",
+        genStatusByMonthTitle: "Value by month",
+        genStatusTableTitle: "Status breakdown",
+        genStatusColStatus: "Status",
+        genStatusColCount: "Orders",
+        genStatusColValue: "Value",
+        genStatusOrdersTableTitle: "Orders detail",
+        genStatusColRef: "Order reference",
+        genStatusColSummary: "Order summary",
+        genStatusColHistory: "Status history summary",
+        genStatusSummaryItems: "items",
+        genStatusInsightsTitle: "Key observations",
+        genStatusInsightTopLead: "Most common status",
+        genStatusInsightTopBody: "The most frequent status is \"{status}\" with {count} of {total} orders.",
+        genStatusInsightReceivedLead: "Received rate",
+        genStatusInsightReceivedBody: "Received orders are {pct}% ({received} of {total}).",
+        genStatusInsightSupplierLead: "Supplier concentration",
+        genStatusInsightSupplierBody: "The top supplier by value is \"{supplier}\" at {value} ({pct}% of total).",
+        genStatusInsightMonthLead: "Timeline",
+        genStatusInsightMonthBody: "The peak month by value is {month} at {value}.",
         shortcutPurchasing: "Purchasing",
         shortcutWarehouseReceipt: "Warehouse receipt",
         shortcutAccounting: "Accounting",
@@ -8786,6 +9069,10 @@
       "sent",
       "supplier_accepted",
       "supplier_rejected",
+      "under_manufacturing",
+      "ready_to_ship",
+      "in_shipping",
+      "customs_clearance",
       "received",
       "cancelled",
     ];
@@ -8793,8 +9080,49 @@
     function normalizeGeneralPoStatus(status) {
       const s = String(status || "draft").trim();
       if (s === "pending" || s === "approved") return "approved_to_send";
+      if (/^payment_installment_\d+$/.test(s)) return s;
       if (GENERAL_PO_STATUS_ORDER.includes(s)) return s;
       return "draft";
+    }
+
+    function parseInstallmentStatus(status) {
+      const m = /^payment_installment_(\d+)$/.exec(String(status || "").trim());
+      return m ? parseInt(m[1], 10) : 0;
+    }
+
+    function getGeneralPoPaymentTerms(po) {
+      const g = po && po.generalForm && typeof po.generalForm === "object" ? po.generalForm : null;
+      const arr = g && Array.isArray(g.paymentTerms) ? g.paymentTerms : [];
+      return arr.map((p) => normalizePaymentTerm(p));
+    }
+
+    function generalPoStatusLabel(status, po) {
+      const s = String(status || "draft").trim();
+      const n = parseInstallmentStatus(s);
+      if (n > 0) {
+        let label = t("genPoInstallmentSendLabel").replace("{n}", String(n));
+        const terms = getGeneralPoPaymentTerms(po);
+        const pct = (terms[n - 1]?.pct || "").trim();
+        if (pct) label += " (" + pct + ")";
+        return label;
+      }
+      const key = "poStatus_" + s;
+      const tr = t(key);
+      return tr && tr !== key ? tr : s || t("poStatus_draft");
+    }
+
+    function generalPoStatusOptionsForPo(po) {
+      const terms = getGeneralPoPaymentTerms(po);
+      const head = ["draft", "approved_to_send", "sent", "supplier_accepted", "supplier_rejected", "under_manufacturing"];
+      const tail = ["ready_to_ship", "in_shipping", "customs_clearance", "received", "cancelled"];
+      const opts = [];
+      head.forEach((v) => opts.push({ value: v, label: generalPoStatusLabel(v, po) }));
+      for (let i = 1; i <= terms.length; i++) {
+        const v = "payment_installment_" + i;
+        opts.push({ value: v, label: generalPoStatusLabel(v, po) });
+      }
+      tail.forEach((v) => opts.push({ value: v, label: generalPoStatusLabel(v, po) }));
+      return opts;
     }
 
     function generalPoStatusOptions() {
@@ -8805,6 +9133,7 @@
     }
 
     function generalPoStatusBadgeClass(status) {
+      if (parseInstallmentStatus(status) > 0) return "badge-installment";
       const s = normalizeGeneralPoStatus(status);
       return (
         {
@@ -8813,6 +9142,10 @@
           sent: "badge-sent",
           supplier_accepted: "badge-supplier-accepted",
           supplier_rejected: "badge-supplier-rejected",
+          under_manufacturing: "badge-under-manufacturing",
+          ready_to_ship: "badge-ready-to-ship",
+          in_shipping: "badge-in-shipping",
+          customs_clearance: "badge-customs-clearance",
           received: "badge-received",
           cancelled: "badge-cancelled",
           pending: "badge-pending",
@@ -15371,15 +15704,15 @@
         .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal);
     }
 
-    function fillPo007StatusOptions(selectedStatus) {
+    function fillPo007StatusOptions(selectedStatus, po) {
       const sel = $("po007-meta-status");
       if (!sel) return;
-      const opts = generalPoStatusOptions();
+      const opts = po ? generalPoStatusOptionsForPo(po) : generalPoStatusOptions();
       const raw = String(selectedStatus || "").trim();
       const normalized = raw ? normalizeGeneralPoStatus(raw) : "draft";
       const known = new Set(opts.map((o) => o.value));
-      if (raw && !known.has(raw) && raw !== normalized) {
-        opts.push({ value: raw, label: t("poStatus_" + raw) || raw });
+      if (raw && !known.has(raw)) {
+        opts.push({ value: raw, label: generalPoStatusLabel(raw, po) });
       }
       sel.innerHTML = opts.map((o) => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`).join("");
       if (raw && [...sel.options].some((o) => o.value === raw)) sel.value = raw;
@@ -15390,6 +15723,131 @@
         sel.addEventListener("change", () => updatePo007StatusHint());
       }
       updatePo007StatusHint();
+    }
+
+    function setPo007StatusMetaFields(po) {
+      const dateInp = $("po007-meta-status-date");
+      const noteInp = $("po007-meta-status-note");
+      if (dateInp) dateInp.value = (po && po.statusDate ? String(po.statusDate) : formatTodayYmd()).slice(0, 10);
+      if (noteInp) noteInp.value = "";
+    }
+
+    let generalPoStatusModalPo = null;
+
+    function renderGeneralPoStatusHistory(po) {
+      const wrap = $("gen-po-status-history");
+      if (!wrap) return;
+      const hist = Array.isArray(po?.statusHistory) ? [...po.statusHistory] : [];
+      if (!hist.length) {
+        wrap.innerHTML = `<p class="muted" style="margin:0">${escapeHtml(t("genPoStatusHistoryEmpty"))}</p>`;
+        return;
+      }
+      const rows = hist
+        .slice()
+        .reverse()
+        .map((h) => {
+          const label = generalPoStatusLabel(h.status, po);
+          const date = escapeHtml(String(h.date || "").slice(0, 10) || t("dash"));
+          const by = escapeHtml(String(h.byName || "").trim());
+          const note = String(h.note || "").trim();
+          return `<li style="margin:0 0 .5rem;padding-inline-start:.5rem;border-inline-start:2px solid var(--border)">
+              <div>${statusBadge(h.status || "draft", "general", po)} <span class="muted">${date}${by ? " · " + by : ""}</span></div>
+              ${note ? `<div style="margin-top:.15rem">${escapeHtml(note)}</div>` : ""}
+            </li>`;
+        })
+        .join("");
+      wrap.innerHTML = `<ul style="list-style:none;margin:0;padding:0">${rows}</ul>`;
+    }
+
+    function updateGenPoStatusHint() {
+      const sel = $("gen-po-status-select");
+      const hint = $("gen-po-status-hint");
+      if (!sel || !hint) return;
+      const val = sel.value || "draft";
+      if (parseInstallmentStatus(val) > 0) {
+        hint.textContent = "";
+        return;
+      }
+      const descKey = "genPoStatusDesc_" + normalizeGeneralPoStatus(val);
+      const desc = t(descKey);
+      hint.textContent = desc && desc !== descKey ? desc : t("genPoStatusHint");
+    }
+
+    async function openGeneralPoStatusModal(poId) {
+      const id = (poId || "").trim();
+      if (!id) return;
+      if (isPoEditorRoleBlocked()) {
+        alert(t("alertWorkflowRoleNoPoEdit"));
+        return;
+      }
+      const snap = await getDoc(doc(db, "purchaseOrders", id));
+      if (!snap.exists()) return;
+      const po = { id: snap.id, ...snap.data() };
+      generalPoStatusModalPo = po;
+      $("gen-po-status-id").value = id;
+      const g = po.generalForm && typeof po.generalForm === "object" ? po.generalForm : null;
+      const poNo = (g?.poNumber || po.title || "").trim() || t("dash");
+      const sub = $("gen-po-status-sub");
+      if (sub) sub.textContent = poNo;
+      const cur = $("gen-po-status-current");
+      if (cur) cur.innerHTML = statusBadge(po.status || "draft", "general", po);
+      const sel = $("gen-po-status-select");
+      if (sel) {
+        const opts = generalPoStatusOptionsForPo(po);
+        sel.innerHTML = opts
+          .map((o) => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`)
+          .join("");
+        const curVal = String(po.status || "draft").trim();
+        if ([...sel.options].some((o) => o.value === curVal)) sel.value = curVal;
+        if (!sel.dataset.hintWired) {
+          sel.dataset.hintWired = "1";
+          sel.addEventListener("change", () => updateGenPoStatusHint());
+        }
+      }
+      const dateInp = $("gen-po-status-date");
+      if (dateInp) dateInp.value = formatTodayYmd();
+      const noteInp = $("gen-po-status-note");
+      if (noteInp) noteInp.value = "";
+      updateGenPoStatusHint();
+      renderGeneralPoStatusHistory(po);
+      $("modal-gen-po-status")?.classList.remove("hidden");
+    }
+
+    function closeGeneralPoStatusModal() {
+      $("modal-gen-po-status")?.classList.add("hidden");
+      generalPoStatusModalPo = null;
+    }
+
+    async function saveGeneralPoStatusModal() {
+      const id = ($("gen-po-status-id")?.value || "").trim();
+      if (!id) return;
+      const po = generalPoStatusModalPo || {};
+      const newStatus = normalizeGeneralPoStatus(($("gen-po-status-select")?.value || "draft").trim());
+      const statusDate = ($("gen-po-status-date")?.value || "").slice(0, 10);
+      const statusNote = ($("gen-po-status-note")?.value || "").trim();
+      const prevHistory = Array.isArray(po.statusHistory) ? [...po.statusHistory] : [];
+      prevHistory.push({
+        status: newStatus,
+        date: statusDate || formatTodayYmd(),
+        note: statusNote,
+        byName: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+        at: new Date().toISOString(),
+      });
+      try {
+        await updateDoc(doc(db, "purchaseOrders", id), {
+          status: newStatus,
+          statusDate: statusDate || null,
+          statusNote,
+          statusHistory: prevHistory,
+          statusUpdatedAt: serverTimestamp(),
+          statusUpdatedBy: currentUser.uid,
+          updatedAt: serverTimestamp(),
+        });
+        closeGeneralPoStatusModal();
+        loadPurchaseOrders("general");
+      } catch (err) {
+        alert(t("saveFailed") + " " + err.message);
+      }
     }
 
     async function refreshPo007HeaderNumbers() {
@@ -15493,7 +15951,8 @@
         const po = { id: snap.id, ...snap.data() };
         generalPo007PendingLoad.po = po;
         generalPo007PendingLoad.g = normalizeGeneralFormFromPo(po);
-        fillPo007StatusOptions(po.status || "draft");
+        fillPo007StatusOptions(po.status || "draft", po);
+        setPo007StatusMetaFields(po);
         const langSelExisting = $("po007-meta-lang");
         if (langSelExisting) {
           langSelExisting.value =
@@ -15516,6 +15975,7 @@
         ]);
       } else {
         fillPo007StatusOptions("draft");
+        setPo007StatusMetaFields(null);
         const langSel = $("po007-meta-lang");
         if (langSel) langSel.value = "en";
         const curSel = $("po007-meta-currency");
@@ -15641,6 +16101,26 @@
         generalForm: serializeGeneralFormForFirestore(g),
         updatedAt: serverTimestamp(),
       };
+      const prevPo = generalPo007PendingLoad?.po || null;
+      const prevStatusRaw = prevPo ? String(prevPo.status || "draft").trim() : "";
+      const statusDate = ($("po007-meta-status-date")?.value || "").slice(0, 10);
+      const statusNote = ($("po007-meta-status-note")?.value || "").trim();
+      payload.statusDate = statusDate || null;
+      payload.statusNote = statusNote;
+      const statusChanged = !id || payload.status !== prevStatusRaw || !!statusNote;
+      if (statusChanged) {
+        const prevHistory = Array.isArray(prevPo?.statusHistory) ? [...prevPo.statusHistory] : [];
+        prevHistory.push({
+          status: payload.status,
+          date: statusDate || formatTodayYmd(),
+          note: statusNote,
+          byName: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+          at: new Date().toISOString(),
+        });
+        payload.statusHistory = prevHistory;
+        payload.statusUpdatedAt = serverTimestamp();
+        payload.statusUpdatedBy = currentUser.uid;
+      }
       try {
         if (id) {
           await updateDoc(doc(db, "purchaseOrders", id), payload);
@@ -18985,6 +19465,979 @@
       URL.revokeObjectURL(url);
     }
 
+    // ===== General admin PO reports (scope=general) =====
+    let lastGeneralMaterialsReportSnapshot = null;
+    let lastGeneralStatusReportSnapshot = null;
+
+    function generalLinePriceNumber(l) {
+      const raw = l && (l.priceText ?? l.price ?? "");
+      const n = parseFloat(String(raw).replace(/[^0-9.\-]/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function generalStatusOrderIndex(status) {
+      const n = parseInstallmentStatus(status);
+      if (n > 0) {
+        const base = GENERAL_PO_STATUS_ORDER.indexOf("under_manufacturing");
+        return (base < 0 ? 5 : base) + 0.5 + n / 1000;
+      }
+      const i = GENERAL_PO_STATUS_ORDER.indexOf(String(status || "").trim());
+      return i < 0 ? 99 : i;
+    }
+
+    async function buildGeneralReportSnapshot(filters) {
+      const from = (filters.from || "").slice(0, 10);
+      const to = (filters.to || "").slice(0, 10);
+      const base = (filters.base || "IQD").trim() || "IQD";
+      const fCompany = (filters.fCompany || "").trim();
+      const fSupplier = (filters.fSupplier || "").trim();
+      const fStatus = (filters.fStatus || "").trim();
+      if (!from || !to) return { error: "dates" };
+
+      const [poSnap, fxSnap, cSnap] = await Promise.all([
+        getDocs(query(collection(db, "purchaseOrders"), where("scope", "==", "general"))),
+        getDocs(query(collection(db, "fxRates"), orderBy("dateTs", "asc"))),
+        getDocs(collection(db, "companies")),
+      ]);
+      const fxRows = [];
+      fxSnap.forEach((d) => {
+        const x = d.data();
+        fxRows.push({
+          dateMs: x.dateTs?.seconds ? x.dateTs.seconds * 1000 : new Date(x.dateTs || 0).getTime(),
+          usdToIqd: Number(x.usdToIqd) || 0,
+        });
+      });
+      fxRows.sort((a, b) => (a.dateMs || 0) - (b.dateMs || 0));
+      const fxAvailable = fxRows.filter((r) => r.dateMs && r.usdToIqd > 0);
+      const pickFxForMs = (ms) => {
+        let best = null;
+        for (const r of fxAvailable) {
+          if (r.dateMs <= ms) best = r;
+          else break;
+        }
+        return best || (fxAvailable.length ? fxAvailable[fxAvailable.length - 1] : null);
+      };
+      const companyNameById = {};
+      cSnap.forEach((d) => {
+        companyNameById[d.id] = companyDisplayName(d.data());
+      });
+
+      const rows = [];
+      poSnap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      const poDateOf = (po) => {
+        const gd = (po.generalPoDate || po.generalForm?.poDate || "").slice(0, 10);
+        if (gd && /^\d{4}-\d{2}-\d{2}$/.test(gd)) return gd;
+        return po.createdAt?.seconds ? formatYmdFromFirestore(po.createdAt) : "";
+      };
+      const inRange = rows.filter((po) => {
+        const d = poDateOf(po);
+        return d && d >= from && d <= to;
+      });
+      if (!inRange.length) return { error: "noRows", from, to, base };
+
+      const convLabel = base === "USD" ? "USD" : "IQD";
+      const convertAmt = (amount, cur, rate) => {
+        if (base === "USD") return cur === "USD" ? amount : rate > 0 ? amount / rate : 0;
+        return cur === "IQD" ? amount : amount * rate;
+      };
+      const lineRowsRaw = [];
+      const reportRowsRaw = inRange.map((po) => {
+        const pd = poDateOf(po);
+        const [yy, mm, dd] = pd.split("-").map((x) => parseInt(x, 10));
+        const ms = Date.UTC(yy, (mm || 1) - 1, dd || 1, 0, 0, 0);
+        const fx = pickFxForMs(ms);
+        const rate = fx ? fx.usdToIqd : 0;
+        const cur = (po.currency || "IQD").trim() === "USD" ? "USD" : "IQD";
+        const g = po.generalForm && typeof po.generalForm === "object" ? po.generalForm : null;
+        const lines = Array.isArray(po.lines) ? po.lines : g && Array.isArray(g.lines) ? g.lines : [];
+        const status = normalizeGeneralPoStatus(po.status);
+        const statusLabel = generalPoStatusLabel(status, po);
+        const ref = (g?.poNumber || po.title || "").trim() || t("dash");
+        const company = (po.companyNameSnapshot || companyNameById[po.companyId] || "").trim() || t("dash");
+        const supplier = (po.supplierName || g?.vendor?.name || "").trim() || t("dash");
+        const project = (po.projectNameSnapshot || "").trim() || t("dash");
+        let hasLinePrices = false;
+        let lineSum = 0;
+        lines.forEach((l, idx) => {
+          const qty = Number(l.qty) || 0;
+          const price = generalLinePriceNumber(l);
+          if (price > 0) hasLinePrices = true;
+          const lineTotal = Number(l.lineTotal) || qty * price;
+          lineSum += lineTotal;
+          lineRowsRaw.push({
+            poId: po.id,
+            ref,
+            poDate: pd || t("dash"),
+            company,
+            supplier,
+            project,
+            status,
+            statusLabel,
+            lineNo: idx + 1,
+            item: (l.description || l.itemTag || "").trim(),
+            unit: (l.itemTag || "").trim(),
+            qty,
+            currency: cur,
+            price,
+            lineTotal,
+            lineConverted: convertAmt(lineTotal, cur, rate),
+            fxRate: rate > 0 ? rate : null,
+          });
+        });
+        const total = Number(po.totalAmount) || lineSum;
+        return {
+          id: po.id,
+          companyId: (po.companyId || "").trim() || null,
+          supplierId: (po.supplierId || "").trim() || null,
+          projectId: (po.projectId || "").trim() || null,
+          status,
+          statusLabel,
+          ref,
+          poDate: pd || t("dash"),
+          company,
+          supplier,
+          project,
+          currency: cur,
+          total,
+          converted: convertAmt(total, cur, rate),
+          fxRate: rate > 0 ? rate : null,
+          hasLinePrices,
+          statusDate: (po.statusDate || "").slice(0, 10),
+          installmentCount: getGeneralPoPaymentTerms(po).length,
+          lineCount: lines.length,
+          statusHistory: Array.isArray(po.statusHistory) ? po.statusHistory.map((h) => ({ ...h })) : [],
+        };
+      });
+      const reportRows = reportRowsRaw.filter((r) => {
+        if (fCompany && r.companyId !== fCompany) return false;
+        if (fSupplier && r.supplierId !== fSupplier) return false;
+        if (fStatus && r.status !== fStatus) return false;
+        return true;
+      });
+      const allowedPoIds = new Set(reportRows.map((r) => r.id));
+      const lineRows = lineRowsRaw.filter((lr) => allowedPoIds.has(lr.poId));
+
+      let sumConverted = 0;
+      let fxRateDisp = null;
+      reportRows.forEach((r) => {
+        sumConverted += r.converted;
+        if (r.fxRate != null) fxRateDisp = r.fxRate;
+      });
+
+      return {
+        from,
+        to,
+        base,
+        convLabel,
+        rows: reportRows.map((x) => ({ ...x })),
+        lineRows: lineRows.map((x) => ({ ...x })),
+        sumConverted,
+        fxRateDisp,
+        generatedAt: new Date().toISOString(),
+      };
+    }
+
+    function fillGeneralReportStatusSelect(sel) {
+      if (!sel) return;
+      sel.innerHTML =
+        `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+        GENERAL_PO_STATUS_ORDER.map(
+          (v) => `<option value="${escapeAttr(v)}">${escapeHtml(generalPoStatusLabel(v, null))}</option>`
+        ).join("");
+    }
+
+    async function fillGeneralReportFilters(prefix) {
+      try {
+        const [cSnap, sSnap] = await Promise.all([
+          getDocs(collection(db, "companies")),
+          getDocs(collection(db, "suppliers")),
+        ]);
+        const loc = lang === "ar" ? "ar" : "en";
+        const companies = [];
+        cSnap.forEach((d) => companies.push({ id: d.id, ...d.data() }));
+        companies.sort((a, b) => companyDisplayName(a).localeCompare(companyDisplayName(b), loc));
+        const coSel = $(prefix + "-company");
+        if (coSel) {
+          coSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(companyDisplayName(c))}</option>`).join("");
+        }
+        const suppliers = [];
+        sSnap.forEach((d) => suppliers.push({ id: d.id, ...d.data() }));
+        suppliers.sort((a, b) => supplierDisplayName(a).localeCompare(supplierDisplayName(b), loc));
+        const supSel = $(prefix + "-supplier");
+        if (supSel) {
+          supSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            suppliers.map((s) => `<option value="${escapeAttr(s.id)}">${escapeHtml(supplierDisplayName(s))}</option>`).join("");
+        }
+        fillGeneralReportStatusSelect($(prefix + "-status"));
+      } catch (_) {
+        // ignore filter fill errors
+      }
+    }
+
+    async function loadGeneralReportsScreen() {
+      await loadGeneralStatusReportScreen();
+      await loadGeneralMaterialsReportScreen();
+    }
+
+    // ---- General order-status report ----
+    async function loadGeneralStatusReportScreen() {
+      const wrap = $("reports-gstatus-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+      const runBtn = $("btn-run-gstatus-report");
+      const printBtn = $("btn-print-gstatus-report");
+      const exportBtn = $("btn-export-gstatus-report");
+      if (runBtn && !runBtn.dataset.wired) {
+        runBtn.dataset.wired = "1";
+        runBtn.addEventListener("click", () => void runGeneralStatusReport());
+      }
+      if (printBtn && !printBtn.dataset.wired) {
+        printBtn.dataset.wired = "1";
+        printBtn.addEventListener("click", () => printGeneralStatusReport());
+      }
+      if (exportBtn && !exportBtn.dataset.wired) {
+        exportBtn.dataset.wired = "1";
+        exportBtn.addEventListener("click", () => exportGeneralStatusReportCsv());
+      }
+      const today = formatTodayYmd();
+      const fromInp = $("rep-gstatus-from");
+      const toInp = $("rep-gstatus-to");
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
+      await fillGeneralReportFilters("rep-gstatus");
+    }
+
+    function buildGeneralStatusAggregates(snap) {
+      const poRows = snap.rows || [];
+      const totalPo = poRows.length;
+      let totalValue = 0;
+      const byStatus = new Map();
+      const byCompany = new Map();
+      const bySupplier = new Map();
+      const byMonth = new Map();
+      const suppliers = new Set();
+      let receivedCount = 0;
+      poRows.forEach((r) => {
+        const v = Number(r.converted) || 0;
+        totalValue += v;
+        const cs = byStatus.get(r.status) || { count: 0, value: 0 };
+        cs.count += 1;
+        cs.value += v;
+        byStatus.set(r.status, cs);
+        if (r.supplier && r.supplier !== t("dash")) {
+          suppliers.add(r.supplier);
+          bySupplier.set(r.supplier, (bySupplier.get(r.supplier) || 0) + v);
+        }
+        if (r.company && r.company !== t("dash")) byCompany.set(r.company, (byCompany.get(r.company) || 0) + v);
+        const ym = (r.poDate || "").slice(0, 7);
+        if (/^\d{4}-\d{2}$/.test(ym) && v > 0) byMonth.set(ym, (byMonth.get(ym) || 0) + v);
+        if (r.status === "received") receivedCount += 1;
+      });
+      const statusArr = [...byStatus.entries()].sort((a, b) => generalStatusOrderIndex(a[0]) - generalStatusOrderIndex(b[0]));
+      const supplierArr = [...bySupplier.entries()].sort((a, b) => b[1] - a[1]);
+      const companyArr = [...byCompany.entries()].sort((a, b) => b[1] - a[1]);
+      const monthArr = [...byMonth.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+      const receivedPct = totalPo ? (receivedCount / totalPo) * 100 : 0;
+      const topSup = supplierArr.length ? supplierArr[0][1] : 0;
+      const concentrationPct = totalValue > 0 ? (topSup / totalValue) * 100 : 0;
+      return {
+        totalPo,
+        totalValue,
+        statusArr,
+        supplierArr,
+        companyArr,
+        monthArr,
+        distinctSuppliers: suppliers.size,
+        receivedCount,
+        receivedPct,
+        concentrationPct,
+      };
+    }
+
+    const GEN_STATUS_PALETTE = ["#2E6E8E", "#B5652C", "#5E93AC", "#8C6239", "#4338ca", "#0f766e", "#b45309", "#6d28d9", "#0369a1", "#047857", "#b91c1c", "#B7C2CB"];
+
+    function generalOrderSummaryText(r, convLabel) {
+      const parts = [];
+      if (r.supplier && r.supplier !== t("dash")) parts.push(r.supplier);
+      parts.push(convLabel + " " + (Number(r.converted) || 0).toLocaleString(localeTag()));
+      parts.push((r.lineCount || 0) + " " + t("genStatusSummaryItems"));
+      return parts.join(" · ");
+    }
+
+    function generalStatusHistorySummaryText(r) {
+      const hist = Array.isArray(r.statusHistory) ? r.statusHistory : [];
+      if (hist.length) {
+        return hist
+          .map((h) => {
+            const d = (h.date || "").slice(0, 10);
+            return generalPoStatusLabel(h.status, null) + (d ? " (" + d + ")" : "");
+          })
+          .join(" → ");
+      }
+      const d = (r.statusDate || "").slice(0, 10);
+      return generalPoStatusLabel(r.status, null) + (d ? " (" + d + ")" : "");
+    }
+
+    function renderGeneralStatusReportHtml(snap, agg) {
+      const convLabel = snap.convLabel;
+      const money = (v) => convLabel + " " + pricingNum(Math.round(v));
+      const monthLabel = (ym) => {
+        const [y, m] = ym.split("-");
+        return m + "/" + y;
+      };
+      const supMax = agg.supplierArr.length ? agg.supplierArr[0][1] : 0;
+      const monthMax = agg.monthArr.reduce((mx, [, v]) => (v > mx ? v : mx), 0);
+      const hbar = (label, val, max) => {
+        const pct = max > 0 ? (val / max) * 100 : 0;
+        return `<div class="pricing-hbar-row">
+          <span class="hbar-label">${escapeHtml(label)}</span>
+          <span class="hbar-track"><span class="hbar-fill" style="width:${pct.toFixed(1)}%"></span></span>
+          <span class="hbar-val">${escapeHtml(money(val))}</span>
+        </div>`;
+      };
+      const supBars = agg.supplierArr.length
+        ? agg.supplierArr.slice(0, 8).map(([n, v]) => hbar(n, v, supMax)).join("")
+        : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
+      const monthBars = agg.monthArr.length
+        ? agg.monthArr.map(([ym, v]) => hbar(monthLabel(ym), v, monthMax)).join("")
+        : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
+      const statusRows = agg.statusArr
+        .map(([st, o]) => {
+          return `<tr>
+            <td>${statusBadge(st, "general", null)}</td>
+            <td>${escapeHtml(String(o.count))}</td>
+            <td>${escapeHtml(money(o.value))}</td>
+          </tr>`;
+        })
+        .join("");
+      const distBars = agg.statusArr.length
+        ? agg.statusArr
+            .map(([st, o], i) => {
+              const pct = agg.totalPo ? (o.count / agg.totalPo) * 100 : 0;
+              return `<div class="pricing-hbar-row">
+                <span class="hbar-label">${escapeHtml(generalPoStatusLabel(st, null))}</span>
+                <span class="hbar-track"><span class="hbar-fill" style="width:${pct.toFixed(1)}%;background:${GEN_STATUS_PALETTE[i % GEN_STATUS_PALETTE.length]}"></span></span>
+                <span class="hbar-val">${escapeHtml(String(o.count))}</span>
+              </div>`;
+            })
+            .join("")
+        : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
+      const loc = lang === "ar" ? "ar" : "en";
+      const orderList = [...(snap.rows || [])].sort((a, b) => {
+        const d = (b.poDate || "").localeCompare(a.poDate || "", loc);
+        if (d !== 0) return d;
+        return (a.ref || "").localeCompare(b.ref || "", loc);
+      });
+      const orderRows = orderList.length
+        ? orderList
+            .map(
+              (r) => `<tr>
+            <td>${escapeHtml(r.ref)}<div class="muted" style="font-size:11px">${escapeHtml(r.poDate || "")}</div></td>
+            <td>${escapeHtml(generalOrderSummaryText(r, convLabel))}</td>
+            <td>${statusBadge(r.status, "general", null)}<div style="margin-top:.25rem;font-size:11.5px;color:var(--muted)">${escapeHtml(
+                generalStatusHistorySummaryText(r)
+              )}</div></td>
+          </tr>`
+            )
+            .join("")
+        : `<tr><td colspan="3">${escapeHtml(t("reportNoRows"))}</td></tr>`;
+      return `
+        <div class="pricing-headline">
+          <div class="pricing-total-card">
+            <div class="label">${escapeHtml(t("genStatusTotalValueLabel"))}</div>
+            <div class="value">${escapeHtml(pricingNum(Math.round(agg.totalValue)))} <small>${escapeHtml(convLabel)}</small></div>
+            <div class="caveat">${escapeHtml(t("genStatusKpiOrders"))}: ${escapeHtml(pricingNum(agg.totalPo))}</div>
+          </div>
+          <div class="pricing-panel">
+            <h4>${escapeHtml(t("genStatusDistTitle"))}</h4>
+            <div class="pricing-hbars">${distBars}</div>
+          </div>
+        </div>
+        <div class="pricing-kpis">
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiOrders"))}</div><div class="value">${escapeHtml(
+            pricingNum(agg.totalPo)
+          )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiSuppliers"))}</div><div class="value">${escapeHtml(
+            pricingNum(agg.distinctSuppliers)
+          )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiReceived"))}</div><div class="value">${escapeHtml(
+            agg.receivedPct.toFixed(1) + "%"
+          )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiConcentration"))}</div><div class="value">${escapeHtml(
+            agg.concentrationPct.toFixed(1) + "%"
+          )} <span>${escapeHtml(t("genStatusConcentrationSuffix"))}</span></div></div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusBySupplierTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${supBars}</div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusByMonthTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${monthBars}</div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusTableTitle"))}</h4>
+          <div class="table-scroll"><table class="data-table"><thead><tr>
+            <th>${escapeHtml(t("genStatusColStatus"))}</th>
+            <th>${escapeHtml(t("genStatusColCount"))}</th>
+            <th>${escapeHtml(t("genStatusColValue"))} (${escapeHtml(convLabel)})</th>
+          </tr></thead><tbody>${statusRows}</tbody></table></div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusOrdersTableTitle"))}</h4>
+          <div class="table-scroll"><table class="data-table"><thead><tr>
+            <th>${escapeHtml(t("genStatusColRef"))}</th>
+            <th>${escapeHtml(t("genStatusColSummary"))}</th>
+            <th>${escapeHtml(t("genStatusColHistory"))}</th>
+          </tr></thead><tbody>${orderRows}</tbody></table></div>
+        </div>`;
+    }
+
+    async function runGeneralStatusReport() {
+      const wrap = $("reports-gstatus-wrap");
+      if (!wrap) return;
+      const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
+      const base = ($("rep-gstatus-base")?.value || "IQD").trim() || "IQD";
+      if (!from || !to) {
+        alert(t("alertMatReportNeedDates"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const snap = await buildGeneralReportSnapshot({
+          from,
+          to,
+          base,
+          fCompany: ($("rep-gstatus-company")?.value || "").trim(),
+          fSupplier: ($("rep-gstatus-supplier")?.value || "").trim(),
+          fStatus: ($("rep-gstatus-status")?.value || "").trim(),
+        });
+        if (snap.error === "noRows" || !(snap.rows || []).length) {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        const agg = buildGeneralStatusAggregates(snap);
+        lastGeneralStatusReportSnapshot = { ...snap, agg };
+        wrap.innerHTML = renderGeneralStatusReportHtml(snap, agg);
+      } catch (e) {
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    function printGeneralStatusReport() {
+      const snap = lastGeneralStatusReportSnapshot;
+      if (!snap || !snap.agg) return;
+      const agg = snap.agg;
+      const convLabel = snap.convLabel;
+      const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
+      const base = ($("rep-gstatus-base")?.value || "IQD").trim() || "IQD";
+      const coText = $("rep-gstatus-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const supText = $("rep-gstatus-supplier")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const stText = $("rep-gstatus-status")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const genAtSrc = snap.generatedAt || new Date().toISOString();
+      const genAt = new Date(genAtSrc).toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+      const title = t("reportGenStatusTitle");
+      const dir = document.documentElement.getAttribute("dir") || "rtl";
+      const rtl = dir === "rtl";
+      const num = (v) => (Number(v) || 0).toLocaleString(localeTag());
+      const money = (v) => convLabel + " " + num(Math.round(v));
+      const monthLabel = (ym) => {
+        const [y, m] = ym.split("-");
+        return m + "/" + y;
+      };
+      const insights = [];
+      if (agg.statusArr.length) {
+        const topStatus = [...agg.statusArr].sort((a, b) => b[1].count - a[1].count)[0];
+        insights.push([
+          t("genStatusInsightTopLead"),
+          t("genStatusInsightTopBody")
+            .replace("{status}", generalPoStatusLabel(topStatus[0], null))
+            .replace("{count}", num(topStatus[1].count))
+            .replace("{total}", num(agg.totalPo)),
+        ]);
+      }
+      insights.push([
+        t("genStatusInsightReceivedLead"),
+        t("genStatusInsightReceivedBody")
+          .replace("{pct}", agg.receivedPct.toFixed(1))
+          .replace("{received}", num(agg.receivedCount))
+          .replace("{total}", num(agg.totalPo)),
+      ]);
+      if (agg.supplierArr.length && agg.totalValue > 0) {
+        const topSup = agg.supplierArr[0];
+        const topPct = ((topSup[1] / agg.totalValue) * 100).toFixed(1);
+        insights.push([
+          t("genStatusInsightSupplierLead"),
+          t("genStatusInsightSupplierBody")
+            .replace("{supplier}", topSup[0])
+            .replace("{value}", money(topSup[1]))
+            .replace("{pct}", topPct),
+        ]);
+      }
+      if (agg.monthArr.length) {
+        const peak = agg.monthArr.reduce((a, b) => (b[1] > a[1] ? b : a));
+        insights.push([
+          t("genStatusInsightMonthLead"),
+          t("genStatusInsightMonthBody").replace("{month}", monthLabel(peak[0])).replace("{value}", money(peak[1])),
+        ]);
+      }
+      const insightsHtml = insights.map((p) => `<p><strong>${escapeHtml(p[0])}:</strong> ${escapeHtml(p[1])}</p>`).join("");
+      const metaHtml = [
+        `<span>${escapeHtml(t("reportFromDateLabel"))}: <b>${escapeHtml(from)} – ${escapeHtml(to)}</b></span>`,
+        `<span>${escapeHtml(t("reportGeneratedAtLabel"))}: <b>${escapeHtml(genAt)}</b></span>`,
+        snap.fxRateDisp != null
+          ? `<span>${escapeHtml(t("reportFxUsedLabel"))}: <b>1 USD = ${escapeHtml(num(snap.fxRateDisp))} IQD</b></span>`
+          : "",
+        `<span>${escapeHtml(t("reportBaseCurrencyLabel"))}: <b>${escapeHtml(base)}</b></span>`,
+        coText ? `<span>${escapeHtml(t("reportCompanyLabel"))}: <b>${escapeHtml(coText)}</b></span>` : "",
+        supText ? `<span>${escapeHtml(t("reportSupplierLabel"))}: <b>${escapeHtml(supText)}</b></span>` : "",
+        stText ? `<span>${escapeHtml(t("reportStatusLabel"))}: <b>${escapeHtml(stText)}</b></span>` : "",
+      ]
+        .filter(Boolean)
+        .join("");
+      const supTop = agg.supplierArr.slice(0, 6);
+      const maxSup = supTop.length ? supTop[0][1] : 0;
+      const axisDivisor = maxSup >= 1e6 ? 1e6 : maxSup >= 1e3 ? 1e3 : 1;
+      const axisSuffix = maxSup >= 1e6 ? t("pricingMillionSuffix") : maxSup >= 1e3 ? t("pricingThousandSuffix") : "";
+      const PD = {
+        rtl,
+        conv: convLabel,
+        donutLabels: agg.statusArr.map(([st, o]) => `${generalPoStatusLabel(st, null)} (${num(o.count)})`),
+        donutData: agg.statusArr.map(([, o]) => o.count),
+        donutColors: agg.statusArr.map((_, i) => GEN_STATUS_PALETTE[i % GEN_STATUS_PALETTE.length]),
+        supLabels: supTop.map((e) => e[0]),
+        supData: supTop.map((e) => Math.round(e[1])),
+        supColors: supTop.map((_, i) => GEN_STATUS_PALETTE[i % GEN_STATUS_PALETTE.length]),
+        axisDivisor,
+        axisSuffix,
+      };
+      const pdJson = JSON.stringify(PD).replace(/</g, "\\u003c");
+      const head = `
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+        <style>${PRICING_PRINT_CSS}</style>
+      `;
+      const bodyHtml =
+        `<div class="page">` +
+        `<header class="rep">` +
+        `<div class="eyebrow">${escapeHtml(t("genStatusEyebrow"))}</div>` +
+        `<h1 class="rep">${escapeHtml(title)}</h1>` +
+        `<div class="meta">${metaHtml}</div>` +
+        `</header>` +
+        `<div class="headline">` +
+        `<div class="total-card">` +
+        `<div class="label">${escapeHtml(t("genStatusTotalValueLabel"))}</div>` +
+        `<div class="value">${escapeHtml(num(Math.round(agg.totalValue)))} <small>${escapeHtml(convLabel)}</small></div>` +
+        `<div class="caveat">${escapeHtml(t("genStatusKpiOrders"))}: <b>${escapeHtml(num(agg.totalPo))}</b> · ${escapeHtml(
+          t("genStatusKpiReceived")
+        )}: <b>${escapeHtml(agg.receivedPct.toFixed(1) + "%")}</b></div>` +
+        `</div>` +
+        `<div class="pricing-panel">` +
+        `<h2>${escapeHtml(t("genStatusKpiConcentration"))}</h2>` +
+        `<div class="split-legend" style="margin-top:6px">` +
+        `<div class="item"><span class="num">${escapeHtml(num(agg.distinctSuppliers))}</span><span class="lbl">${escapeHtml(
+          t("genStatusKpiSuppliers")
+        )}</span></div>` +
+        `<div class="item"><span class="num">${escapeHtml(agg.concentrationPct.toFixed(1) + "%")}</span><span class="lbl">${escapeHtml(
+          t("genStatusConcentrationSuffix")
+        )}</span></div>` +
+        `</div></div></div>` +
+        `<div class="charts">` +
+        `<div class="panel"><h2>${escapeHtml(t("genStatusDonutTitle"))}</h2><div class="note">${escapeHtml(
+          t("genStatusDonutNote")
+        )}</div><div class="chart-box"><canvas id="genStatusDonut"></canvas></div></div>` +
+        `<div class="panel"><h2>${escapeHtml(t("genStatusBySupplierTitle"))}</h2><div class="note">${escapeHtml(
+          t("genStatusBySupplierNote")
+        )}</div><div class="chart-box"><canvas id="genStatusSup"></canvas></div></div>` +
+        `</div>` +
+        `<div class="insights"><h2>${escapeHtml(t("genStatusInsightsTitle"))}</h2>${insightsHtml}</div>` +
+        `<footer class="rep"><span>${escapeHtml(t("reportFxHint"))}</span><span>${escapeHtml(
+          from + " – " + to + " · " + base
+        )}</span></footer>` +
+        `</div>`;
+      const script =
+        `<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>` +
+        `<script>(function(){var PD=${pdJson};function draw(){if(typeof Chart==="undefined"){window.print();return;}` +
+        `Chart.defaults.font.family='"IBM Plex Sans Arabic", Tahoma, sans-serif';Chart.defaults.color="#66727C";Chart.defaults.animation=false;` +
+        `try{new Chart(document.getElementById("genStatusDonut"),{type:"doughnut",data:{labels:PD.donutLabels,datasets:[{data:PD.donutData,backgroundColor:PD.donutColors,borderWidth:2,borderColor:"#fff"}]},options:{maintainAspectRatio:false,cutout:"58%",plugins:{legend:{position:"bottom",rtl:PD.rtl,labels:{boxWidth:11,padding:8,font:{size:10}}},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8}}}});}catch(e){}` +
+        `try{new Chart(document.getElementById("genStatusSup"),{type:"bar",data:{labels:PD.supLabels,datasets:[{data:PD.supData,backgroundColor:PD.supColors,borderRadius:5,maxBarThickness:26}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8,callbacks:{label:function(c){return " "+c.parsed.x.toLocaleString()+" "+PD.conv;}}}},scales:{x:{ticks:{callback:function(v){return (v/PD.axisDivisor).toFixed(PD.axisDivisor>1?1:0)+" "+PD.axisSuffix;},font:{size:10.5}}},y:{grid:{display:false},ticks:{color:"#16232E",font:{size:11.5,weight:"500"}}}}}});}catch(e){}` +
+        `setTimeout(function(){window.focus();window.print();},400);}` +
+        `if(document.readyState==="complete")draw();else window.addEventListener("load",draw);})();<\/script>`;
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        `<!doctype html><html dir="${escapeAttr(dir)}" lang="${escapeAttr(lang === "ar" ? "ar" : "en")}"><head><meta charset="utf-8" />${head}<title>${escapeHtml(
+          title
+        )}</title></head><body>` +
+          bodyHtml +
+          script +
+          `</body></html>`
+      );
+      w.document.close();
+      w.focus();
+    }
+
+    function exportGeneralStatusReportCsv() {
+      const snap = lastGeneralStatusReportSnapshot;
+      if (!snap || !snap.agg) {
+        alert(t("reportNoRows"));
+        return;
+      }
+      const agg = snap.agg;
+      const convLabel = snap.convLabel;
+      const rows = [];
+      const esc = (v) => {
+        const s = String(v == null ? "" : v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      const line = (arr) => rows.push(arr.map(esc).join(","));
+      line([t("genStatusKpiOrders"), agg.totalPo]);
+      line([t("genStatusTotalValueLabel") + " (" + convLabel + ")", Math.round(agg.totalValue)]);
+      line([t("genStatusKpiSuppliers"), agg.distinctSuppliers]);
+      line([t("genStatusKpiReceived"), agg.receivedPct.toFixed(1) + "%"]);
+      line([t("genStatusKpiConcentration"), agg.concentrationPct.toFixed(1) + "%"]);
+      line([]);
+      line([t("genStatusColStatus"), t("genStatusColCount"), t("genStatusColValue") + " (" + convLabel + ")"]);
+      agg.statusArr.forEach(([st, o]) => line([generalPoStatusLabel(st, null), o.count, Math.round(o.value)]));
+      line([]);
+      line([t("genStatusBySupplierTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
+      agg.supplierArr.forEach(([n, v]) => line([n, Math.round(v)]));
+      line([]);
+      line([t("genStatusByMonthTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
+      agg.monthArr.forEach(([ym, v]) => line([ym, Math.round(v)]));
+      line([]);
+      line([t("genStatusColRef"), t("genStatusColSummary"), t("genStatusColHistory")]);
+      (snap.rows || []).forEach((r) => {
+        line([r.ref, generalOrderSummaryText(r, convLabel), generalStatusHistorySummaryText(r)]);
+      });
+      const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
+      const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `general_status_report_${from}_${to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- General materials report ----
+    function genMatReportGroupKey(r, groupBy) {
+      if (groupBy === "item") return (r.item || "").trim() || t("dash");
+      if (groupBy === "company") return r.company || t("dash");
+      if (groupBy === "supplier") return r.supplier || t("dash");
+      return "";
+    }
+
+    async function loadGeneralMaterialsReportScreen() {
+      const wrap = $("reports-gmat-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+      const runBtn = $("btn-run-gmat-report");
+      const printBtn = $("btn-print-gmat-report");
+      const exportBtn = $("btn-export-gmat-report");
+      if (runBtn && !runBtn.dataset.wired) {
+        runBtn.dataset.wired = "1";
+        runBtn.addEventListener("click", () => void runGeneralMaterialsReport());
+      }
+      if (printBtn && !printBtn.dataset.wired) {
+        printBtn.dataset.wired = "1";
+        printBtn.addEventListener("click", () => printGeneralMaterialsReport());
+      }
+      if (exportBtn && !exportBtn.dataset.wired) {
+        exportBtn.dataset.wired = "1";
+        exportBtn.addEventListener("click", () => exportGeneralMaterialsReportCsv());
+      }
+      const searchInp = $("rep-gmat-search");
+      if (searchInp && !searchInp.dataset.wired) {
+        searchInp.dataset.wired = "1";
+        searchInp.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter") void runGeneralMaterialsReport();
+        });
+      }
+      const today = formatTodayYmd();
+      const fromInp = $("rep-gmat-from");
+      const toInp = $("rep-gmat-to");
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
+      await fillGeneralReportFilters("rep-gmat");
+    }
+
+    async function runGeneralMaterialsReport() {
+      const wrap = $("reports-gmat-wrap");
+      if (!wrap) return;
+      const from = ($("rep-gmat-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gmat-to")?.value || "").slice(0, 10);
+      const base = ($("rep-gmat-base")?.value || "IQD").trim() || "IQD";
+      const groupBy = ($("rep-gmat-group")?.value || "").trim();
+      const searchQ = ($("rep-gmat-search")?.value || "").trim().toLowerCase();
+      if (!from || !to) {
+        alert(t("alertMatReportNeedDates"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const snap = await buildGeneralReportSnapshot({
+          from,
+          to,
+          base,
+          fCompany: ($("rep-gmat-company")?.value || "").trim(),
+          fSupplier: ($("rep-gmat-supplier")?.value || "").trim(),
+          fStatus: ($("rep-gmat-status")?.value || "").trim(),
+        });
+        if (snap.error === "noRows") {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        let lineRows = snap.lineRows || [];
+        if (searchQ) lineRows = lineRows.filter((r) => (r.item || "").toLowerCase().includes(searchQ));
+        if (!lineRows.length) {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        const convLabel = snap.convLabel;
+        let sumConverted = 0;
+        const uniqueItems = new Set();
+        lineRows.forEach((r) => {
+          sumConverted += Number(r.lineConverted) || 0;
+          const it = (r.item || "").trim();
+          if (it) uniqueItems.add(it.toLowerCase());
+        });
+        lastGeneralMaterialsReportSnapshot = {
+          ...snap,
+          lineRows: lineRows.map((x) => ({ ...x })),
+          searchQ,
+          groupBy,
+          sumLineConverted: sumConverted,
+          uniqueItemCount: uniqueItems.size,
+        };
+        const loc = lang === "ar" ? "ar" : "en";
+        const sortedRows = [...lineRows].sort((a, b) => {
+          const ga = groupBy ? genMatReportGroupKey(a, groupBy) : "";
+          const gb = groupBy ? genMatReportGroupKey(b, groupBy) : "";
+          if (ga && gb && ga !== gb) return ga.localeCompare(gb, loc);
+          if (ga && !gb) return -1;
+          if (!ga && gb) return 1;
+          const da = (a.poDate || "").localeCompare(b.poDate || "", loc);
+          if (da !== 0) return da;
+          const ra = (a.ref || "").localeCompare(b.ref || "", loc);
+          if (ra !== 0) return ra;
+          return (a.lineNo || 0) - (b.lineNo || 0);
+        });
+        const tableHead = `<thead><tr>
+            <th>${escapeHtml(t("colGenPoPoNo"))}</th>
+            <th>${escapeHtml(t("colRequestDate"))}</th>
+            <th>${escapeHtml(t("reportCompanyLabel"))}</th>
+            <th>${escapeHtml(t("reportSupplierLabel"))}</th>
+            <th>${escapeHtml(t("reportStatusLabel"))}</th>
+            <th>${escapeHtml(t("reportLinesCsvLineNo"))}</th>
+            <th>${escapeHtml(t("poLineDescCol"))}</th>
+            <th>${escapeHtml(t("poLineQtyCol"))}</th>
+            <th>${escapeHtml(t("accUnitPriceCol"))}</th>
+            <th>${escapeHtml(t("reportBaseCurrencyLabel"))}</th>
+            <th>${escapeHtml(t("accLineTotalCol"))}</th>
+            <th>${escapeHtml(t("reportMatColConvertedLine"))} (${escapeHtml(convLabel)})</th>
+          </tr></thead>`;
+        let curGroup = null;
+        let gConv = 0;
+        const flushGroup = () => {
+          if (curGroup == null) return "";
+          const html = `<tr class="report-subtotal-row">
+            <td colspan="11" style="font-weight:700">${escapeHtml(t("reportGroupSubtotal"))} — ${escapeHtml(curGroup || t("dash"))}</td>
+            <td>${escapeHtml(convLabel + " " + gConv.toLocaleString(localeTag()))}</td>
+          </tr>`;
+          gConv = 0;
+          return html;
+        };
+        const bodyHtml = [];
+        sortedRows.forEach((r) => {
+          const gk = groupBy ? genMatReportGroupKey(r, groupBy) : null;
+          if (groupBy && gk !== curGroup) {
+            if (curGroup != null) bodyHtml.push(flushGroup());
+            curGroup = gk;
+            bodyHtml.push(
+              `<tr class="report-group-row"><td colspan="12" style="font-weight:800">${escapeHtml(
+                t("reportGroupHeader")
+              )}: ${escapeHtml(curGroup || t("dash"))}</td></tr>`
+            );
+          }
+          gConv += Number(r.lineConverted) || 0;
+          const priceDisp = r.price > 0 ? r.price.toLocaleString(localeTag()) : t("dash");
+          const lineTotalDisp = r.lineTotal > 0 ? r.currency + " " + r.lineTotal.toLocaleString(localeTag()) : t("dash");
+          const convDisp = r.lineConverted > 0 ? convLabel + " " + r.lineConverted.toLocaleString(localeTag()) : t("dash");
+          bodyHtml.push(`<tr>
+            <td>${escapeHtml(r.ref)}</td>
+            <td>${escapeHtml(r.poDate)}</td>
+            <td>${escapeHtml(r.company)}</td>
+            <td>${escapeHtml(r.supplier)}</td>
+            <td>${escapeHtml(generalPoStatusLabel(r.status, null))}</td>
+            <td>${escapeHtml(String(r.lineNo))}</td>
+            <td>${escapeHtml(r.item || t("dash"))}</td>
+            <td>${escapeHtml(r.qty ? String(r.qty) : t("dash"))}</td>
+            <td>${escapeHtml(priceDisp)}</td>
+            <td>${escapeHtml(r.currency)}</td>
+            <td>${escapeHtml(lineTotalDisp)}</td>
+            <td>${escapeHtml(convDisp)}</td>
+          </tr>`);
+        });
+        if (groupBy && curGroup != null) bodyHtml.push(flushGroup());
+        wrap.innerHTML = `
+          <div class="detail-panel" style="margin-bottom:0.75rem">
+            <div class="wf-po-meta-grid">
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatSummaryLines"))}</span><span>${escapeHtml(
+                String(lineRows.length)
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatSummaryUniqueItems"))}</span><span>${escapeHtml(
+                String(uniqueItems.size)
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportFxUsedLabel"))}</span><span>${escapeHtml(
+                snap.fxRateDisp != null ? String(snap.fxRateDisp) : t("dash")
+              )}</span></div>
+              <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportMatSummaryTotalConverted"))}</span><span>${escapeHtml(
+                convLabel + " " + sumConverted.toLocaleString(localeTag())
+              )}</span></div>
+            </div>
+          </div>
+          <div class="table-scroll"><table class="data-table">${tableHead}<tbody>${bodyHtml.join("")}</tbody></table></div>`;
+      } catch (e) {
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    function printGeneralMaterialsReport() {
+      const wrap = $("reports-gmat-wrap");
+      if (!wrap) return;
+      const html = wrap.innerHTML || "";
+      if (!html.trim()) return;
+      const from = ($("rep-gmat-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gmat-to")?.value || "").slice(0, 10);
+      const base = ($("rep-gmat-base")?.value || "IQD").trim() || "IQD";
+      const searchText = ($("rep-gmat-search")?.value || "").trim();
+      const coText = $("rep-gmat-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const supText = $("rep-gmat-supplier")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const stText = $("rep-gmat-status")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const groupText = $("rep-gmat-group")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const genAtSrc = lastGeneralMaterialsReportSnapshot?.generatedAt || new Date().toISOString();
+      const genAt = new Date(genAtSrc).toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+      const title = t("reportGenMatTitle");
+      const dir = document.documentElement.getAttribute("dir") || "rtl";
+      const head = `
+        <style>
+          :root { --border:#e5e7eb; --muted:#6b7280; --bg:#f3f4f6; --ink:#111827; }
+          * { box-sizing: border-box; }
+          html, body { margin:0; padding:0; color:var(--ink); }
+          body { font-family:"Tajawal", Tahoma, Arial, sans-serif; padding:14mm 10mm; line-height:1.35; }
+          @page { size: A4 landscape; margin: 10mm; }
+          .report-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:2px solid #111827; margin-bottom:10px; }
+          .report-title { margin:0; font-size:18px; font-weight:800; }
+          .report-sub { margin:4px 0 0; color:var(--muted); font-size:12px; }
+          .report-meta { text-align:end; font-size:12px; color:var(--muted); white-space:pre-line; }
+          .detail-panel { border:1px solid var(--border); border-radius:10px; background:#fff; padding:10px 12px; margin-bottom:10px; }
+          .wf-po-meta-grid { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:8px; }
+          .wf-po-meta-block { border:1px solid var(--border); border-radius:10px; padding:8px 10px; background:#fff; }
+          .wf-po-meta-label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+          table { width:100%; border-collapse: collapse; table-layout: fixed; font-size:10px; }
+          thead { display: table-header-group; }
+          th, td { border:1px solid var(--border); padding:5px 6px; vertical-align:top; word-break:break-word; }
+          th { background: var(--bg); font-weight:800; text-align:start; }
+          tr { break-inside: avoid; }
+          button, .btn { display:none !important; }
+          .table-scroll { overflow: visible !important; }
+          html[dir="rtl"] body { direction: rtl; }
+          html[dir="rtl"] .report-meta { text-align:start; }
+        </style>
+      `;
+      const metaLines = [
+        `${from} → ${to} · ${base}`,
+        `${t("reportGeneratedAtLabel")}: ${genAt}`,
+        currentUser?.email ? `${t("reportGeneratedByLabel")}: ${currentUser.email}` : "",
+        searchText ? `${t("reportMaterialSearchLabel")}: ${searchText}` : "",
+        coText ? `${t("reportCompanyLabel")}: ${coText}` : "",
+        supText ? `${t("reportSupplierLabel")}: ${supText}` : "",
+        stText ? `${t("reportStatusLabel")}: ${stText}` : "",
+        groupText ? `${t("reportGroupByLabel")}: ${groupText}` : "",
+      ].filter(Boolean);
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        `<!doctype html><html dir="${escapeAttr(dir)}"><head><meta charset="utf-8" />${head}<title>${escapeHtml(title)}</title></head><body>` +
+          `<header class="report-head">` +
+          `<div><h1 class="report-title">${escapeHtml(title)}</h1><p class="report-sub">${escapeHtml(t("reportFxHint"))}</p></div>` +
+          `<div class="report-meta">${escapeHtml(metaLines.join("\n"))}</div>` +
+          `</header>` +
+          html +
+          `</body></html>`
+      );
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    function exportGeneralMaterialsReportCsv() {
+      const snap = lastGeneralMaterialsReportSnapshot;
+      if (!snap || !(snap.lineRows || []).length) {
+        alert(t("reportNoRows"));
+        return;
+      }
+      const convLabel = snap.convLabel;
+      const rows = [];
+      const esc = (v) => {
+        const s = String(v == null ? "" : v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      const line = (arr) => rows.push(arr.map(esc).join(","));
+      line([
+        t("colGenPoPoNo"),
+        t("colRequestDate"),
+        t("reportCompanyLabel"),
+        t("reportSupplierLabel"),
+        t("reportStatusLabel"),
+        t("reportLinesCsvLineNo"),
+        t("poLineDescCol"),
+        t("poLineQtyCol"),
+        t("accUnitPriceCol"),
+        t("reportBaseCurrencyLabel"),
+        t("accLineTotalCol"),
+        t("reportMatColConvertedLine") + " (" + convLabel + ")",
+      ]);
+      snap.lineRows.forEach((r) => {
+        line([
+          r.ref,
+          r.poDate,
+          r.company,
+          r.supplier,
+          generalPoStatusLabel(r.status, null),
+          r.lineNo,
+          r.item,
+          r.qty,
+          r.price,
+          r.currency,
+          Math.round(r.lineTotal),
+          Math.round(r.lineConverted),
+        ]);
+      });
+      const from = ($("rep-gmat-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gmat-to")?.value || "").slice(0, 10);
+      const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `general_materials_report_${from}_${to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     const MATERIAL_AGENT_URL_KEY = "poMaterialAgentUrl";
     const MATERIAL_AGENT_DEFAULT_URL = "https://po-material-agent.onrender.com";
 
@@ -19434,11 +20887,16 @@
       return escapeHtml(n || t("dash"));
     }
 
-    function statusBadge(status, scope) {
+    function statusBadge(status, scope, po) {
       const s = String(status || "draft").trim();
-      const labelKey = "poStatus_" + s;
-      const labelTry = t(labelKey);
-      const label = labelTry && labelTry !== labelKey ? labelTry : s || t("poStatus_draft");
+      let label;
+      if (scope === "general") {
+        label = generalPoStatusLabel(s, po);
+      } else {
+        const labelKey = "poStatus_" + s;
+        const labelTry = t(labelKey);
+        label = labelTry && labelTry !== labelKey ? labelTry : s || t("poStatus_draft");
+      }
       const cls =
         scope === "general"
           ? generalPoStatusBadgeClass(s)
@@ -21281,6 +22739,7 @@
         "warehouse-receipt-queue": "screen-warehouse-receipt-queue",
         "accounting-queue": "screen-accounting-queue",
         reports: "screen-reports",
+        "reports-general": "screen-reports-general",
         admin: "screen-admin",
         help: "screen-help",
       };
@@ -21302,6 +22761,7 @@
         }
         if (name === "accounting-queue") loadAccountingQueue();
         if (name === "reports") loadReportsScreen();
+        if (name === "reports-general") loadGeneralReportsScreen();
         if (name === "admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
         if (name === "dashboard") refreshDashboard();
         if (name === "help") fillHelpNavList();
@@ -21773,13 +23233,18 @@
                   <td>${escapeHtml(poNo)}</td>
                   <td>${escapeHtml(comp)}</td>
                   <td>${escapeHtml(sup)}</td>
-                  <td>${statusBadge(r.status || "draft", scope)}</td>
+                  <td>${statusBadge(r.status || "draft", scope, r)}</td>
                   <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
                       scope === "general"
                         ? `<button type="button" class="btn btn-primary btn-sm btn-gen-po-pro-print" data-id="${r.id}">${t("btnGenPoProPrint")}</button>`
+                        : ""
+                    }
+                    ${
+                      scope === "general" && canEdit
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-status" data-id="${r.id}">${t("btnUpdateStatus")}</button>`
                         : ""
                     }
                     ${
@@ -21805,6 +23270,9 @@
         });
         wrap.querySelectorAll(".btn-gen-po-pro-print").forEach((btn) => {
           btn.addEventListener("click", () => openGeneralPoProPrint(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-gen-po-status").forEach((btn) => {
+          btn.addEventListener("click", () => void openGeneralPoStatusModal(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
           btn.addEventListener("click", () => deletePo(btn.dataset.id));
@@ -24462,7 +25930,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-pricing-report";
+    const CURRENT_UPDATE_ID = "2026-07-general-status-reports";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
@@ -25265,6 +26733,8 @@
       openPoModal("project", null);
     });
     $("btn-new-po-general").addEventListener("click", () => void openGeneralPo007Modal(null));
+    $("gen-po-status-cancel")?.addEventListener("click", () => closeGeneralPoStatusModal());
+    $("gen-po-status-save")?.addEventListener("click", () => void saveGeneralPoStatusModal());
     $("btn-edit-general-po-template")?.addEventListener("click", () => void openGeneralPoTemplateEditor());
     $("po007-editor-save")?.addEventListener("click", () => void saveGeneralPo007Modal());
     $("po007-editor-cancel")?.addEventListener("click", closeGeneralPo007Modal);
@@ -26301,6 +27771,7 @@
             <label><input type="checkbox" data-section-check="warehouse-receipt-queue" /> ${escapeHtml(t("navWarehouseReceiptQueue"))}</label>
             <label><input type="checkbox" data-section-check="accounting-queue" /> ${escapeHtml(t("navAccountingQueue"))}</label>
             <label><input type="checkbox" data-section-check="reports" /> ${escapeHtml(t("navReports"))}</label>
+            <label><input type="checkbox" data-section-check="reports-general" /> ${escapeHtml(t("navReportsGeneral"))}</label>
             <label><input type="checkbox" data-section-check="admin" /> ${escapeHtml(t("navAdmin"))}</label>
           </div>`;
         navBody.appendChild(secWrap);
