@@ -1163,6 +1163,41 @@
       display: none;
     }
 
+    /* Pricing report (executive pricing summary) */
+    .pricing-headline { display:grid; grid-template-columns:1fr 1.35fr; gap:16px; margin-bottom:16px; align-items:stretch; }
+    .pricing-total-card { background:#16232E; color:#EDF2F5; border-radius:8px; padding:16px 20px; }
+    .pricing-total-card .label { font-size:12px; color:#AEBCC6; margin-bottom:2px; }
+    .pricing-total-card .value { font-weight:800; font-size:28px; color:#fff; line-height:1.25; font-variant-numeric:tabular-nums; }
+    .pricing-total-card .value small { font-size:14px; font-weight:700; color:#F0B27E; }
+    .pricing-total-card .caveat { margin-top:8px; font-size:12px; line-height:1.55; color:#D5DEE4; border-top:1px solid rgba(255,255,255,.18); padding-top:8px; }
+    .pricing-panel { border:1px solid #DCE2E7; border-radius:8px; padding:14px 18px; }
+    .pricing-panel h4 { font-size:14px; font-weight:800; margin:0 0 8px; }
+    .pricing-split-bar { display:flex; height:26px; border-radius:6px; overflow:hidden; font-size:11px; font-weight:700; color:#fff; margin-bottom:8px; }
+    .pricing-split-bar .priced { background:#B5652C; min-width:44px; display:flex; align-items:center; justify-content:center; }
+    .pricing-split-bar .unpriced { background:#B7C2CB; color:#16232E; flex:1; display:flex; align-items:center; justify-content:center; }
+    .pricing-legend { display:flex; gap:20px; flex-wrap:wrap; font-size:12px; }
+    .pricing-legend .item { display:flex; align-items:baseline; gap:6px; }
+    .pricing-legend .dot { width:9px; height:9px; border-radius:2px; display:inline-block; }
+    .pricing-legend .num { font-weight:800; font-size:16px; font-variant-numeric:tabular-nums; }
+    .pricing-legend .lbl { color:#66727C; }
+    .pricing-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+    .pricing-kpi { background:#F4F6F8; border-radius:7px; padding:9px 14px; }
+    .pricing-kpi .label { font-size:11px; color:#66727C; }
+    .pricing-kpi .value { font-weight:800; font-size:18px; font-variant-numeric:tabular-nums; }
+    .pricing-kpi .value span { font-size:10.5px; font-weight:500; color:#66727C; }
+    .pricing-section { border:1px solid #DCE2E7; border-radius:8px; padding:12px 16px; margin-bottom:16px; }
+    .pricing-section h4 { font-size:13.5px; font-weight:800; margin:0 0 10px; }
+    .pricing-hbars { display:flex; flex-direction:column; gap:8px; }
+    .pricing-hbar-row { display:grid; grid-template-columns:150px 1fr auto; align-items:center; gap:10px; font-size:12px; }
+    .pricing-hbar-row .hbar-label { color:#16232E; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pricing-hbar-row .hbar-track { background:#EDF1F4; border-radius:4px; height:16px; overflow:hidden; }
+    .pricing-hbar-row .hbar-fill { display:block; height:100%; background:#2E6E8E; border-radius:4px; }
+    .pricing-hbar-row .hbar-val { font-variant-numeric:tabular-nums; color:#16232E; white-space:nowrap; }
+    @media (max-width: 820px) {
+      .pricing-headline { grid-template-columns:1fr; }
+      .pricing-kpis { grid-template-columns:repeat(2,1fr); }
+    }
+
     .workflow-cell {
       display: inline-flex;
       align-items: center;
@@ -5462,6 +5497,68 @@
           </details>
         </div>
         <div class="card">
+          <h3 data-i18n="reportPricingTitle">تقرير التسعير</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportPricingHint">
+            ملخّص تنفيذي للتسعير: التغطية السعرية (البنود المسعّرة مقابل غير المسعّرة)، إجمالي القيمة المسعّرة، والقيمة حسب المشروع والشهر وحالة المسار ضمن الفترة المحددة.
+          </p>
+          <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-pricing-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-pricing-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportBaseCurrencyLabel">عملة التقرير</span>
+                <select id="rep-pricing-base">
+                  <option value="IQD">IQD</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportCompanyLabel">الشركة</span>
+                <select id="rep-pricing-company"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportProjectLabel">المشروع</span>
+                <select id="rep-pricing-project"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportRepresentativeLabel">مندوب المشتريات</span>
+                <select id="rep-pricing-rep"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportWorkflowLabel">حالة المسار</span>
+                <select id="rep-pricing-workflow"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportRequestTypeFilterLabel">نوع الطلب</span>
+                <select id="rep-pricing-request-type">
+                  <option value="" data-i18n="reportAllOpt">الكل</option>
+                  <option value="materials" selected data-i18n="poRequestType_materials">شراء مواد</option>
+                  <option value="maintenance_vehicle" data-i18n="poRequestType_maintenanceVehicle">محروقات - صيانة - زيوت (آلية - سيارة)</option>
+                </select>
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-run-pricing-report" data-i18n="btnRunReport">
+                عرض التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-print-pricing-report" data-i18n="btnPrintReport">
+                طباعة التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-export-pricing-report" data-i18n="btnExportCsv">
+                تصدير CSV
+              </button>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:0.25rem;color:var(--muted)" data-i18n="reportFxHint">
+            يتم تحويل العملات تلقائياً حسب آخر سعر صرف مُسجّل بتاريخ يساوي أو يسبق تاريخ الطلب.
+          </p>
+          <div id="reports-pricing-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات ضمن الفترة.</p></div>
+        </div>
+        <div class="card">
           <h3 data-i18n="reportDeptAchievementsTitle">إنجاز الأقسام (طلبات المشاريع)</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportDeptAchievementsHint">
             يعتمد هذا التقرير على تواريخ الانتقال بين مراحل المسار (المسجلة تلقائياً عند كل إجراء). يعرض عدد الإنجازات ضمن الفترة ومتوسط زمن الانتقال من المرحلة السابقة.
@@ -6765,7 +6862,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تسجيل الأسعار مبكراً:</strong> يستطيع مسؤول الشراء الآن إدخال أسعار الشراء من طابور المشتريات ابتداءً من مرحلة <strong>«قيد الشراء»</strong>، وكذلك خلال <strong>«سلفة عمل»</strong> و<strong>«بانتظار استلام المستودع»</strong> — أي قبل استلام المستودع. يبقى اعتماد الأسعار وإقفال المسار في مرحلة الحسابات كما هو.</li><li><strong>مطابقة الكمية المستلمة:</strong> نافذة تسجيل الأسعار تعرض الآن <strong>الكمية المطلوبة</strong> و<strong>الكمية المستلمة</strong> معاً، ويُحسب مجموع البند = الكمية المستلمة × سعر الوحدة (يُعاد الحساب تلقائياً بعد الاستلام).</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تقرير التسعير الجديد:</strong> أُضيف في شاشة التقارير تقرير تنفيذي للتسعير يعرض التغطية السعرية (البنود المسعّرة مقابل غير المسعّرة)، إجمالي القيمة المسعّرة، والقيمة حسب المشروع والشهر وحالة المسار. عند <strong>الطباعة</strong> يظهر بتصميم احترافي على صفحة A4 مع رسوم بيانية (دونات وأعمدة) وأبرز الملاحظات، ويدعم تصدير CSV.</li><li><strong>تسجيل الأسعار مبكراً:</strong> يستطيع مسؤول الشراء إدخال أسعار الشراء من طابور المشتريات ابتداءً من مرحلة «قيد الشراء» وكذلك «سلفة عمل» و«بانتظار استلام المستودع» — قبل استلام المستودع.</li><li><strong>مطابقة الكمية المستلمة:</strong> نافذة تسجيل الأسعار تعرض الكمية المطلوبة والمستلمة معاً، ويُحسب مجموع البند = الكمية المستلمة × سعر الوحدة.</li></ul>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -6984,6 +7081,47 @@
         reportMaterialsPricesTitle: "تقرير المواد وأسعارها",
         reportMaterialsPricesHint:
           "يعرض بنود طلبات الشراء (المواد) مع الكميات والأسعار لكل طلب ضمن الفترة المحددة أدناه.",
+        reportPricingTitle: "تقرير التسعير",
+        reportPricingHint:
+          "ملخّص تنفيذي للتسعير: التغطية السعرية (البنود المسعّرة مقابل غير المسعّرة)، إجمالي القيمة المسعّرة، والقيمة حسب المشروع والشهر وحالة المسار ضمن الفترة المحددة.",
+        pricingTotalValueLabel: "إجمالي القيمة المسعّرة (محوّلة)",
+        pricingCaveat:
+          "تشمل هذه القيمة البنود المسعّرة فقط ({priced} بنداً) ولا تشمل {unpriced} بنداً بلا سعر بعد، لذا فهي حدّ أدنى للالتزامات المتوقعة وليست الكلفة الكاملة للفترة.",
+        pricingCoveragePanelTitle: "البنود المسعّرة مقابل غير المسعّرة (من أصل {total} بنداً)",
+        pricingLegendPriced: "بنداً مسعّراً — يدخل في الإجمالي",
+        pricingLegendUnpriced: "بنداً بلا سعر — خارج الإجمالي",
+        pricingKpiLines: "عدد البنود",
+        pricingKpiItems: "مواد مميّزة",
+        pricingKpiCoverage: "نسبة التغطية السعرية",
+        pricingKpiConcentration: "تركّز الإنفاق المسعّر",
+        pricingConcentrationSuffix: "في أعلى طلبين",
+        pricingByProjectTitle: "القيمة المسعّرة حسب المشروع",
+        pricingByMonthTitle: "القيمة المسعّرة حسب الشهر",
+        pricingWorkflowTitle: "توزيع الطلبات حسب حالة المسار",
+        pricingColPoCount: "عدد الطلبات",
+        pricingColPricedPoCount: "منها مسعّرة",
+        pricingColPricedValue: "القيمة المسعّرة",
+        pricingEyebrow: "ملخّص تنفيذي · طلبات الشراء",
+        pricingDonutTitle: "حالة التسعير",
+        pricingDonutNote: "توزيع البنود حسب وجود السعر",
+        pricingDonutPriced: "بنود مسعّرة",
+        pricingDonutUnpriced: "بنود غير مسعّرة",
+        pricingByProjectNote: "بالعملة المختارة · أعلى المشاريع قيمةً",
+        pricingInsightsTitle: "أبرز الملاحظات",
+        pricingInsightCoverageLead: "التغطية السعرية",
+        pricingInsightCoverageBody:
+          "{priced} بنداً مسعّراً من أصل {total} تُكوِّن قيمة {value}؛ ومع تسعير واعتماد البنود المتبقية ({unpriced} بنداً) سترتفع القيمة الفعلية للفترة بشكل ملموس.",
+        pricingInsightConcentrationLead: "تركّز الإنفاق",
+        pricingInsightConcentrationBody:
+          "مشروع «{project}» يستحوذ على {pct}% من القيمة المسعّرة، وأعلى طلبين يشكّلان {conc}% منها.",
+        pricingInsightTimelineLead: "التوزيع الزمني",
+        pricingInsightTimelineBody:
+          "أعلى شهر هو {month} بقيمة {value}، على مدى {count} من الأشهر ذات القيمة المسعّرة.",
+        pricingInsightWorkflowLead: "حالات المسار",
+        pricingInsightWorkflowBody: "تتركّز الطلبات في «{s1}» ({n1} طلباً) و«{s2}» ({n2} طلباً).",
+        pricingInsightWorkflowBodyOne: "تتركّز الطلبات في «{s1}» ({n1} طلباً).",
+        pricingMillionSuffix: "م",
+        pricingThousandSuffix: "ألف",
         reportMatLinkAutoHint:
           "بعد «عرض التقرير» يُحلَّل ربط المواد المتشابهة تلقائياً من بيانات التقرير نفسها — دون رفع ملف.",
         reportMaterialSearchLabel: "بحث في المادة",
@@ -7712,7 +7850,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Early price entry:</strong> the purchasing officer can now record purchase prices from the purchasing queue starting at the <strong>\"In progress\"</strong> stage, and also during <strong>\"Work advance\"</strong> and <strong>\"Awaiting warehouse receipt\"</strong> — i.e. before warehouse receipt. Price verification and workflow closure still happen at the accounting stage.</li><li><strong>Received-quantity matching:</strong> the price entry window now shows both <strong>requested quantity</strong> and <strong>received quantity</strong>, and the line total = received quantity × unit price (recomputed automatically after receipt).</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>New Pricing report:</strong> a new executive pricing report was added to the Reports screen — pricing coverage (priced vs unpriced lines), total priced value, and value by project, month, and workflow status. When <strong>printed</strong> it renders as a professional A4 page with charts (donut and bars) and key observations, and supports CSV export.</li><li><strong>Early price entry:</strong> the purchasing officer can record purchase prices from the purchasing queue starting at the \"In progress\" stage, and also during \"Work advance\" and \"Awaiting warehouse receipt\" — before warehouse receipt.</li><li><strong>Received-quantity matching:</strong> the price entry window shows both requested and received quantity, and the line total = received quantity × unit price.</li></ul>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -7932,6 +8070,47 @@
         reportMaterialsPricesTitle: "Materials & prices report",
         reportMaterialsPricesHint:
           "Shows purchase order line items (materials) with quantities and prices for each request within the period selected below.",
+        reportPricingTitle: "Pricing report",
+        reportPricingHint:
+          "Executive pricing summary: pricing coverage (priced vs unpriced lines), total priced value, and value by project, month, and workflow status within the selected period.",
+        pricingTotalValueLabel: "Total priced value (converted)",
+        pricingCaveat:
+          "This value covers priced lines only ({priced} lines) and excludes {unpriced} lines with no price yet, so it is a lower bound of expected commitments — not the full period cost.",
+        pricingCoveragePanelTitle: "Priced vs unpriced lines (out of {total})",
+        pricingLegendPriced: "priced lines — counted in total",
+        pricingLegendUnpriced: "lines with no price — excluded",
+        pricingKpiLines: "Line count",
+        pricingKpiItems: "Distinct materials",
+        pricingKpiCoverage: "Pricing coverage",
+        pricingKpiConcentration: "Priced spend concentration",
+        pricingConcentrationSuffix: "in top 2 orders",
+        pricingByProjectTitle: "Priced value by project",
+        pricingByMonthTitle: "Priced value by month",
+        pricingWorkflowTitle: "Orders by workflow status",
+        pricingColPoCount: "Orders",
+        pricingColPricedPoCount: "Priced",
+        pricingColPricedValue: "Priced value",
+        pricingEyebrow: "Executive summary · Purchase orders",
+        pricingDonutTitle: "Pricing status",
+        pricingDonutNote: "Line distribution by presence of a price",
+        pricingDonutPriced: "Priced lines",
+        pricingDonutUnpriced: "Unpriced lines",
+        pricingByProjectNote: "In the selected currency · top projects by value",
+        pricingInsightsTitle: "Key observations",
+        pricingInsightCoverageLead: "Pricing coverage",
+        pricingInsightCoverageBody:
+          "{priced} priced lines out of {total} make up {value}; pricing and approving the remaining {unpriced} lines will raise the actual period value significantly.",
+        pricingInsightConcentrationLead: "Spend concentration",
+        pricingInsightConcentrationBody:
+          "Project \u201c{project}\u201d holds {pct}% of the priced value, and the top 2 orders make up {conc}% of it.",
+        pricingInsightTimelineLead: "Timeline",
+        pricingInsightTimelineBody:
+          "The peak month is {month} at {value}, across {count} months with priced value.",
+        pricingInsightWorkflowLead: "Workflow states",
+        pricingInsightWorkflowBody: "Orders cluster in \u201c{s1}\u201d ({n1}) and \u201c{s2}\u201d ({n2}).",
+        pricingInsightWorkflowBodyOne: "Orders cluster in \u201c{s1}\u201d ({n1}).",
+        pricingMillionSuffix: "M",
+        pricingThousandSuffix: "K",
         reportMatLinkAutoHint:
           "After Run report, similar materials are linked automatically from the report data — no file upload.",
         reportMaterialSearchLabel: "Search material",
@@ -16869,6 +17048,7 @@
       await loadPurchasingReportScreen();
       await loadMaterialsReportScreen();
       await loadMaterialLinkScreen();
+      await loadPricingReportScreen();
       await loadDeptAchievementsReportScreen();
     }
 
@@ -17386,6 +17566,7 @@
 
     let lastPurchasingReportSnapshot = null;
     let lastMaterialsReportSnapshot = null;
+    let lastPricingReportSnapshot = null;
     let lastDeptAchievementsSnapshot = null;
 
     async function buildPurchasingReportSnapshot(filters) {
@@ -18225,6 +18406,583 @@
       w.document.close();
       w.focus();
       w.print();
+    }
+
+    const PRICING_WF_ORDER = [
+      "warehouse_review",
+      "pending_engineer_first",
+      "pending_project_manager",
+      "pending_group_manager",
+      "pending_supervisor",
+      "pending_purchasing",
+      "in_progress_purchasing",
+      "pending_advance_accounting",
+      "pending_warehouse_receipt",
+      "pending_accounting",
+      "workflow_complete",
+    ];
+
+    async function loadPricingReportScreen() {
+      const wrap = $("reports-pricing-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+      const runBtn = $("btn-run-pricing-report");
+      const printBtn = $("btn-print-pricing-report");
+      const exportBtn = $("btn-export-pricing-report");
+      if (runBtn && !runBtn.dataset.wired) {
+        runBtn.dataset.wired = "1";
+        runBtn.addEventListener("click", () => void runPricingReport());
+      }
+      if (printBtn && !printBtn.dataset.wired) {
+        printBtn.dataset.wired = "1";
+        printBtn.addEventListener("click", () => printPricingReport());
+      }
+      if (exportBtn && !exportBtn.dataset.wired) {
+        exportBtn.dataset.wired = "1";
+        exportBtn.addEventListener("click", () => exportPricingReportCsv());
+      }
+      const today = formatTodayYmd();
+      const fromInp = $("rep-pricing-from");
+      const toInp = $("rep-pricing-to");
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
+      try {
+        const [pSnap, rSnap, cSnap] = await Promise.all([
+          getDocs(collection(db, "projects")),
+          getDocs(collection(db, "purchasingRepresentatives")),
+          getDocs(collection(db, "companies")),
+        ]);
+        const loc = lang === "ar" ? "ar" : "en";
+        const companies = [];
+        cSnap.forEach((d) => companies.push({ id: d.id, ...d.data() }));
+        companies.sort((a, b) => companyDisplayName(a).localeCompare(companyDisplayName(b), loc));
+        const coSel = $("rep-pricing-company");
+        if (coSel) {
+          coSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(companyDisplayName(c))}</option>`).join("");
+        }
+        const projects = [];
+        pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
+        sortProjectsByCode(projects);
+        const projSel = $("rep-pricing-project");
+        if (projSel) {
+          projSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            projects.map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(projectOptionLabel(p))}</option>`).join("");
+        }
+        const reps = [];
+        rSnap.forEach((d) => reps.push({ id: d.id, ...d.data() }));
+        const activeReps = reps.filter((x) => x.active !== false);
+        activeReps.sort((a, b) => (a.name || "").trim().localeCompare((b.name || "").trim(), loc));
+        const repSel = $("rep-pricing-rep");
+        if (repSel) {
+          repSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            activeReps.map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`).join("");
+        }
+        const wfSel = $("rep-pricing-workflow");
+        if (wfSel) {
+          wfSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            PRICING_WF_ORDER.map((v) => `<option value="${escapeAttr(v)}">${escapeHtml(workflowLabel(v))}</option>`).join("");
+        }
+      } catch (_) {
+        // ignore filter fill errors
+      }
+    }
+
+    function buildPricingAggregates(snap) {
+      const lineRows = snap.lineRows || [];
+      const poRows = snap.rows || [];
+      const totalLines = lineRows.length;
+      let pricedCount = 0;
+      let pricedValue = 0;
+      const uniqueItems = new Set();
+      const byProject = new Map();
+      const byMonth = new Map();
+      lineRows.forEach((r) => {
+        const it = (r.item || "").trim();
+        if (it) uniqueItems.add(it.toLowerCase());
+        const v = Number(r.lineConverted) || 0;
+        const priced = Number(r.price) > 0;
+        if (priced) pricedCount += 1;
+        if (v > 0) {
+          pricedValue += v;
+          const pk = r.project || t("dash");
+          byProject.set(pk, (byProject.get(pk) || 0) + v);
+          const ym = (r.requestDate || "").slice(0, 7);
+          if (/^\d{4}-\d{2}$/.test(ym)) byMonth.set(ym, (byMonth.get(ym) || 0) + v);
+        }
+      });
+      const unpricedCount = totalLines - pricedCount;
+      const coveragePct = totalLines ? (pricedCount / totalLines) * 100 : 0;
+      const byWf = new Map();
+      poRows.forEach((r) => {
+        const k = r.workflowStatus || "__none";
+        const cur = byWf.get(k) || { count: 0, priced: 0, value: 0 };
+        cur.count += 1;
+        if (r.hasLinePrices) cur.priced += 1;
+        cur.value += Number(r.converted) || 0;
+        byWf.set(k, cur);
+      });
+      const pricedPoValues = poRows
+        .map((r) => Number(r.converted) || 0)
+        .filter((v) => v > 0)
+        .sort((a, b) => b - a);
+      const top2 = pricedPoValues.slice(0, 2).reduce((s, v) => s + v, 0);
+      const concentrationPct = pricedValue > 0 ? (top2 / pricedValue) * 100 : 0;
+      const projectArr = [...byProject.entries()].sort((a, b) => b[1] - a[1]);
+      const monthArr = [...byMonth.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+      const wfArr = [...byWf.entries()].sort((a, b) => {
+        const ia = PRICING_WF_ORDER.indexOf(a[0]);
+        const ib = PRICING_WF_ORDER.indexOf(b[0]);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+      return {
+        totalLines,
+        pricedCount,
+        unpricedCount,
+        coveragePct,
+        pricedValue,
+        uniqueItemCount: uniqueItems.size,
+        concentrationPct,
+        poCount: poRows.length,
+        projectArr,
+        monthArr,
+        wfArr,
+      };
+    }
+
+    function pricingNum(v) {
+      return (Number(v) || 0).toLocaleString(localeTag());
+    }
+
+    function renderPricingReportHtml(snap, agg) {
+      const convLabel = snap.convLabel;
+      const money = (v) => convLabel + " " + pricingNum(Math.round(v));
+      const cov = agg.coveragePct;
+      const covDisp = cov.toFixed(1) + "%";
+      const unpricedPct = (100 - cov).toFixed(1) + "%";
+      const monthLabel = (ym) => {
+        const [y, m] = ym.split("-");
+        return m + "/" + y;
+      };
+      const projMax = agg.projectArr.length ? agg.projectArr[0][1] : 0;
+      const monthMax = agg.monthArr.reduce((mx, [, v]) => (v > mx ? v : mx), 0);
+      const hbar = (label, val, max) => {
+        const pct = max > 0 ? (val / max) * 100 : 0;
+        return `<div class="pricing-hbar-row">
+          <span class="hbar-label">${escapeHtml(label)}</span>
+          <span class="hbar-track"><span class="hbar-fill" style="width:${pct.toFixed(1)}%"></span></span>
+          <span class="hbar-val">${escapeHtml(money(val))}</span>
+        </div>`;
+      };
+      const projectBars = agg.projectArr.length
+        ? agg.projectArr.slice(0, 8).map(([name, val]) => hbar(name, val, projMax)).join("")
+        : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
+      const monthBars = agg.monthArr.length
+        ? agg.monthArr.map(([ym, val]) => hbar(monthLabel(ym), val, monthMax)).join("")
+        : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
+      const wfRows = agg.wfArr
+        .map(([status, o]) => {
+          const label = status === "__none" ? t("dash") : workflowLabel(status);
+          return `<tr>
+            <td>${escapeHtml(label)}</td>
+            <td>${escapeHtml(String(o.count))}</td>
+            <td>${escapeHtml(String(o.priced))}</td>
+            <td>${escapeHtml(money(o.value))}</td>
+          </tr>`;
+        })
+        .join("");
+      const caveat = t("pricingCaveat")
+        .replace("{priced}", pricingNum(agg.pricedCount))
+        .replace("{unpriced}", pricingNum(agg.unpricedCount));
+      const coverageTitle = t("pricingCoveragePanelTitle").replace("{total}", pricingNum(agg.totalLines));
+      return `
+        <div class="pricing-headline">
+          <div class="pricing-total-card">
+            <div class="label">${escapeHtml(t("pricingTotalValueLabel"))}</div>
+            <div class="value">${escapeHtml(pricingNum(Math.round(agg.pricedValue)))} <small>${escapeHtml(convLabel)}</small></div>
+            <div class="caveat">${escapeHtml(caveat)}</div>
+          </div>
+          <div class="pricing-panel">
+            <h4>${escapeHtml(coverageTitle)}</h4>
+            <div class="pricing-split-bar">
+              <div class="priced" style="flex:0 0 ${Math.max(cov, 6).toFixed(1)}%">${escapeHtml(covDisp)}</div>
+              <div class="unpriced">${escapeHtml(unpricedPct)}</div>
+            </div>
+            <div class="pricing-legend">
+              <div class="item"><span class="dot" style="background:#B5652C"></span><span class="num">${escapeHtml(
+                pricingNum(agg.pricedCount)
+              )}</span><span class="lbl">${escapeHtml(t("pricingLegendPriced"))}</span></div>
+              <div class="item"><span class="dot" style="background:#B7C2CB"></span><span class="num">${escapeHtml(
+                pricingNum(agg.unpricedCount)
+              )}</span><span class="lbl">${escapeHtml(t("pricingLegendUnpriced"))}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="pricing-kpis">
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("pricingKpiLines"))}</div><div class="value">${escapeHtml(
+            pricingNum(agg.totalLines)
+          )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("pricingKpiItems"))}</div><div class="value">${escapeHtml(
+            pricingNum(agg.uniqueItemCount)
+          )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("pricingKpiCoverage"))}</div><div class="value">${escapeHtml(
+            covDisp
+          )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("pricingKpiConcentration"))}</div><div class="value">${escapeHtml(
+            agg.concentrationPct.toFixed(1) + "%"
+          )} <span>${escapeHtml(t("pricingConcentrationSuffix"))}</span></div></div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("pricingByProjectTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${projectBars}</div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("pricingByMonthTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${monthBars}</div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("pricingWorkflowTitle"))}</h4>
+          <div class="table-scroll"><table class="data-table"><thead><tr>
+            <th>${escapeHtml(t("colWorkflow"))}</th>
+            <th>${escapeHtml(t("pricingColPoCount"))}</th>
+            <th>${escapeHtml(t("pricingColPricedPoCount"))}</th>
+            <th>${escapeHtml(t("pricingColPricedValue"))} (${escapeHtml(convLabel)})</th>
+          </tr></thead><tbody>${wfRows}</tbody></table></div>
+        </div>`;
+    }
+
+    async function runPricingReport() {
+      const wrap = $("reports-pricing-wrap");
+      if (!wrap) return;
+      const from = ($("rep-pricing-from")?.value || "").slice(0, 10);
+      const to = ($("rep-pricing-to")?.value || "").slice(0, 10);
+      const base = ($("rep-pricing-base")?.value || "IQD").trim() || "IQD";
+      if (!from || !to) {
+        alert(t("alertMatReportNeedDates"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const snap = await buildPurchasingReportSnapshot({
+          from,
+          to,
+          base,
+          fCompany: ($("rep-pricing-company")?.value || "").trim(),
+          fProject: ($("rep-pricing-project")?.value || "").trim(),
+          fRep: ($("rep-pricing-rep")?.value || "").trim(),
+          fWf: ($("rep-pricing-workflow")?.value || "").trim(),
+          fReqType: ($("rep-pricing-request-type")?.value || "").trim(),
+          fHasPrices: "",
+          fPv: "",
+        });
+        if (snap.error === "noFx") {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoFxRates"))}</p>`;
+          return;
+        }
+        if (snap.error === "noRows" || !(snap.lineRows || []).length) {
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        const agg = buildPricingAggregates(snap);
+        lastPricingReportSnapshot = { ...snap, agg };
+        wrap.innerHTML = renderPricingReportHtml(snap, agg);
+      } catch (e) {
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    const PRICING_PRINT_CSS = `
+      @page{ size:A4; margin:0; }
+      html,body{ background:#fff; }
+      *{ box-sizing:border-box; margin:0; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      body{ font-family:"IBM Plex Sans Arabic", Tahoma, sans-serif; color:#16232E; line-height:1.6; }
+      .page{ width:210mm; min-height:297mm; background:#fff; padding:14mm 15mm 12mm; display:flex; flex-direction:column; }
+      header.rep{ border-bottom:3px solid #B5652C; padding-bottom:5mm; margin-bottom:6mm; }
+      .eyebrow{ font-size:10.5px; letter-spacing:.12em; color:#2E6E8E; font-weight:700; margin-bottom:2px; }
+      h1.rep{ font-family:"Cairo",sans-serif; font-weight:900; font-size:22px; margin-bottom:4px; }
+      .meta{ display:flex; flex-wrap:wrap; gap:3px 18px; font-size:11px; color:#66727C; }
+      .meta b{ color:#16232E; font-weight:500; }
+      .headline{ display:grid; grid-template-columns:1fr 1.35fr; gap:6mm; margin-bottom:6mm; align-items:stretch; }
+      .total-card{ background:#16232E; color:#EDF2F5; border-radius:8px; padding:16px 20px 14px; position:relative; overflow:hidden; }
+      .total-card::after{ content:""; position:absolute; inset-inline-start:0; top:0; bottom:0; width:5px; background:#B5652C; }
+      .total-card .label{ font-size:11.5px; color:#AEBCC6; margin-bottom:2px; }
+      .total-card .value{ font-family:"Cairo",sans-serif; font-weight:800; font-size:30px; color:#fff; line-height:1.25; font-variant-numeric:tabular-nums; }
+      .total-card .value small{ font-size:14px; font-weight:700; color:#F0B27E; }
+      .total-card .caveat{ margin-top:8px; font-size:11.5px; line-height:1.55; color:#D5DEE4; border-top:1px solid rgba(255,255,255,.18); padding-top:8px; }
+      .total-card .caveat b{ color:#F0B27E; }
+      .pricing-panel{ border:1px solid #DCE2E7; border-radius:8px; padding:14px 18px 12px; }
+      .pricing-panel h2{ font-family:"Cairo",sans-serif; font-size:14.5px; font-weight:800; margin-bottom:8px; }
+      .split-bar{ display:flex; height:26px; border-radius:6px; overflow:hidden; font-size:11px; font-weight:700; color:#fff; margin-bottom:8px; }
+      .split-bar .priced{ background:#B5652C; min-width:56px; display:flex; align-items:center; justify-content:center; }
+      .split-bar .unpriced{ background:#B7C2CB; color:#16232E; flex:1; display:flex; align-items:center; justify-content:center; }
+      .split-legend{ display:flex; gap:20px; font-size:11.5px; flex-wrap:wrap; }
+      .split-legend .item{ display:flex; align-items:baseline; gap:6px; }
+      .dot{ width:9px; height:9px; border-radius:2px; display:inline-block; transform:translateY(1px); }
+      .split-legend .num{ font-family:"Cairo",sans-serif; font-weight:800; font-size:17px; font-variant-numeric:tabular-nums; }
+      .split-legend .lbl{ color:#66727C; }
+      .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:4mm; margin-bottom:6mm; }
+      .kpi{ background:#F4F6F8; border-radius:7px; padding:9px 14px 8px; }
+      .kpi .label{ font-size:10.5px; color:#66727C; }
+      .kpi .value{ font-family:"Cairo",sans-serif; font-weight:800; font-size:18px; font-variant-numeric:tabular-nums; }
+      .kpi .value span{ font-size:10.5px; font-weight:500; color:#66727C; }
+      .charts{ display:grid; grid-template-columns:1fr 1.15fr; gap:6mm; margin-bottom:6mm; }
+      .panel{ border:1px solid #DCE2E7; border-radius:8px; padding:12px 16px 10px; }
+      .panel h2{ font-family:"Cairo",sans-serif; font-size:13.5px; font-weight:800; }
+      .panel .note{ font-size:10.5px; color:#66727C; margin-bottom:6px; }
+      .chart-box{ position:relative; height:58mm; }
+      .insights h2{ font-family:"Cairo",sans-serif; font-size:14.5px; font-weight:800; margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid #B5652C; display:inline-block; }
+      .insights p{ font-size:11.8px; margin-bottom:7px; color:#2B3945; }
+      .insights p:last-child{ margin-bottom:0; }
+      .insights strong{ color:#16232E; }
+      footer.rep{ margin-top:auto; padding-top:5mm; font-size:9.5px; color:#66727C; border-top:1px solid #DCE2E7; display:flex; justify-content:space-between; }
+    `;
+
+    function printPricingReport() {
+      const snap = lastPricingReportSnapshot;
+      if (!snap || !snap.agg) return;
+      const agg = snap.agg;
+      const convLabel = snap.convLabel;
+      const from = ($("rep-pricing-from")?.value || "").slice(0, 10);
+      const to = ($("rep-pricing-to")?.value || "").slice(0, 10);
+      const base = ($("rep-pricing-base")?.value || "IQD").trim() || "IQD";
+      const coText = $("rep-pricing-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const projText = $("rep-pricing-project")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const rtText = $("rep-pricing-request-type")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const genAtSrc = snap.generatedAt || new Date().toISOString();
+      const genAt = new Date(genAtSrc).toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+      const title = t("reportPricingTitle");
+      const dir = document.documentElement.getAttribute("dir") || "rtl";
+      const rtl = dir === "rtl";
+      const num = (v) => (Number(v) || 0).toLocaleString(localeTag());
+      const money = (v) => convLabel + " " + num(Math.round(v));
+      const cov = agg.coveragePct;
+      const covDisp = cov.toFixed(1) + "%";
+      const monthLabel = (ym) => {
+        const [y, m] = ym.split("-");
+        return m + "/" + y;
+      };
+      // Insights (data-driven)
+      const insights = [];
+      insights.push([
+        t("pricingInsightCoverageLead"),
+        t("pricingInsightCoverageBody")
+          .replace("{priced}", num(agg.pricedCount))
+          .replace("{total}", num(agg.totalLines))
+          .replace("{value}", money(agg.pricedValue))
+          .replace("{unpriced}", num(agg.unpricedCount)),
+      ]);
+      if (agg.projectArr.length && agg.pricedValue > 0) {
+        const topProj = agg.projectArr[0];
+        const topPct = ((topProj[1] / agg.pricedValue) * 100).toFixed(1);
+        insights.push([
+          t("pricingInsightConcentrationLead"),
+          t("pricingInsightConcentrationBody")
+            .replace("{project}", topProj[0])
+            .replace("{pct}", topPct)
+            .replace("{conc}", agg.concentrationPct.toFixed(1)),
+        ]);
+      }
+      if (agg.monthArr.length) {
+        const peak = agg.monthArr.reduce((a, b) => (b[1] > a[1] ? b : a));
+        insights.push([
+          t("pricingInsightTimelineLead"),
+          t("pricingInsightTimelineBody")
+            .replace("{month}", monthLabel(peak[0]))
+            .replace("{value}", money(peak[1]))
+            .replace("{count}", num(agg.monthArr.length)),
+        ]);
+      }
+      const wfByCount = [...agg.wfArr].sort((a, b) => b[1].count - a[1].count);
+      if (wfByCount.length) {
+        const wfName = (e) => (e[0] === "__none" ? t("dash") : workflowLabel(e[0]));
+        if (wfByCount.length >= 2) {
+          insights.push([
+            t("pricingInsightWorkflowLead"),
+            t("pricingInsightWorkflowBody")
+              .replace("{s1}", wfName(wfByCount[0]))
+              .replace("{n1}", num(wfByCount[0][1].count))
+              .replace("{s2}", wfName(wfByCount[1]))
+              .replace("{n2}", num(wfByCount[1][1].count)),
+          ]);
+        } else {
+          insights.push([
+            t("pricingInsightWorkflowLead"),
+            t("pricingInsightWorkflowBodyOne")
+              .replace("{s1}", wfName(wfByCount[0]))
+              .replace("{n1}", num(wfByCount[0][1].count)),
+          ]);
+        }
+      }
+      const insightsHtml = insights
+        .map((p) => `<p><strong>${escapeHtml(p[0])}:</strong> ${escapeHtml(p[1])}</p>`)
+        .join("");
+      const caveat = t("pricingCaveat")
+        .replace("{priced}", num(agg.pricedCount))
+        .replace("{unpriced}", num(agg.unpricedCount));
+      const coverageTitle = t("pricingCoveragePanelTitle").replace("{total}", num(agg.totalLines));
+      const metaHtml = [
+        `<span>${escapeHtml(t("reportFromDateLabel"))}: <b>${escapeHtml(from)} – ${escapeHtml(to)}</b></span>`,
+        `<span>${escapeHtml(t("reportGeneratedAtLabel"))}: <b>${escapeHtml(genAt)}</b></span>`,
+        snap.fxRateDisp != null
+          ? `<span>${escapeHtml(t("reportFxUsedLabel"))}: <b>1 USD = ${escapeHtml(num(snap.fxRateDisp))} IQD</b></span>`
+          : "",
+        `<span>${escapeHtml(t("reportBaseCurrencyLabel"))}: <b>${escapeHtml(base)}</b></span>`,
+        coText ? `<span>${escapeHtml(t("reportCompanyLabel"))}: <b>${escapeHtml(coText)}</b></span>` : "",
+        projText ? `<span>${escapeHtml(t("reportProjectLabel"))}: <b>${escapeHtml(projText)}</b></span>` : "",
+        rtText ? `<span>${escapeHtml(t("reportRequestTypeFilterLabel"))}: <b>${escapeHtml(rtText)}</b></span>` : "",
+      ]
+        .filter(Boolean)
+        .join("");
+      // Chart palette + data
+      const palette = ["#2E6E8E", "#B5652C", "#5E93AC", "#B7C2CB", "#16232E", "#8C6239"];
+      const projTop = agg.projectArr.slice(0, 6);
+      const maxProj = projTop.length ? projTop[0][1] : 0;
+      const axisDivisor = maxProj >= 1e6 ? 1e6 : maxProj >= 1e3 ? 1e3 : 1;
+      const axisSuffix = maxProj >= 1e6 ? t("pricingMillionSuffix") : maxProj >= 1e3 ? t("pricingThousandSuffix") : "";
+      const PD = {
+        rtl,
+        conv: convLabel,
+        donutLabels: [
+          `${t("pricingDonutPriced")} (${num(agg.pricedCount)})`,
+          `${t("pricingDonutUnpriced")} (${num(agg.unpricedCount)})`,
+        ],
+        donutData: [agg.pricedCount, agg.unpricedCount],
+        projLabels: projTop.map((e) => e[0]),
+        projData: projTop.map((e) => Math.round(e[1])),
+        projColors: projTop.map((_, i) => palette[i % palette.length]),
+        axisDivisor,
+        axisSuffix,
+      };
+      const pdJson = JSON.stringify(PD).replace(/</g, "\\u003c");
+      const head = `
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+        <style>${PRICING_PRINT_CSS}</style>
+      `;
+      const bodyHtml =
+        `<div class="page">` +
+        `<header class="rep">` +
+        `<div class="eyebrow">${escapeHtml(t("pricingEyebrow"))}</div>` +
+        `<h1 class="rep">${escapeHtml(title)}</h1>` +
+        `<div class="meta">${metaHtml}</div>` +
+        `</header>` +
+        `<div class="headline">` +
+        `<div class="total-card">` +
+        `<div class="label">${escapeHtml(t("pricingTotalValueLabel"))}</div>` +
+        `<div class="value">${escapeHtml(num(Math.round(agg.pricedValue)))} <small>${escapeHtml(convLabel)}</small></div>` +
+        `<div class="caveat">${escapeHtml(caveat)}</div>` +
+        `</div>` +
+        `<div class="pricing-panel">` +
+        `<h2>${escapeHtml(coverageTitle)}</h2>` +
+        `<div class="split-bar"><div class="priced" style="flex:0 0 ${Math.max(cov, 8).toFixed(1)}%">${escapeHtml(
+          covDisp
+        )}</div><div class="unpriced">${escapeHtml((100 - cov).toFixed(1) + "%")}</div></div>` +
+        `<div class="split-legend">` +
+        `<div class="item"><span class="dot" style="background:#B5652C"></span><span class="num">${escapeHtml(
+          num(agg.pricedCount)
+        )}</span><span class="lbl">${escapeHtml(t("pricingLegendPriced"))}</span></div>` +
+        `<div class="item"><span class="dot" style="background:#B7C2CB"></span><span class="num">${escapeHtml(
+          num(agg.unpricedCount)
+        )}</span><span class="lbl">${escapeHtml(t("pricingLegendUnpriced"))}</span></div>` +
+        `</div></div></div>` +
+        `<div class="kpis">` +
+        `<div class="kpi"><div class="label">${escapeHtml(t("pricingKpiLines"))}</div><div class="value">${escapeHtml(
+          num(agg.totalLines)
+        )}</div></div>` +
+        `<div class="kpi"><div class="label">${escapeHtml(t("pricingKpiItems"))}</div><div class="value">${escapeHtml(
+          num(agg.uniqueItemCount)
+        )}</div></div>` +
+        `<div class="kpi"><div class="label">${escapeHtml(t("pricingKpiCoverage"))}</div><div class="value">${escapeHtml(
+          covDisp
+        )}</div></div>` +
+        `<div class="kpi"><div class="label">${escapeHtml(t("pricingKpiConcentration"))}</div><div class="value">${escapeHtml(
+          agg.concentrationPct.toFixed(1) + "%"
+        )} <span>${escapeHtml(t("pricingConcentrationSuffix"))}</span></div></div>` +
+        `</div>` +
+        `<div class="charts">` +
+        `<div class="panel"><h2>${escapeHtml(t("pricingDonutTitle"))}</h2><div class="note">${escapeHtml(
+          t("pricingDonutNote")
+        )}</div><div class="chart-box"><canvas id="pricingDonut"></canvas></div></div>` +
+        `<div class="panel"><h2>${escapeHtml(t("pricingByProjectTitle"))}</h2><div class="note">${escapeHtml(
+          t("pricingByProjectNote")
+        )}</div><div class="chart-box"><canvas id="pricingProject"></canvas></div></div>` +
+        `</div>` +
+        `<div class="insights"><h2>${escapeHtml(t("pricingInsightsTitle"))}</h2>${insightsHtml}</div>` +
+        `<footer class="rep"><span>${escapeHtml(t("reportFxHint"))}</span><span>${escapeHtml(
+          from + " – " + to + " · " + base
+        )}</span></footer>` +
+        `</div>`;
+      const script =
+        `<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>` +
+        `<script>(function(){var PD=${pdJson};function draw(){if(typeof Chart==="undefined"){window.print();return;}` +
+        `Chart.defaults.font.family='"IBM Plex Sans Arabic", Tahoma, sans-serif';Chart.defaults.color="#66727C";Chart.defaults.animation=false;` +
+        `try{new Chart(document.getElementById("pricingDonut"),{type:"doughnut",data:{labels:PD.donutLabels,datasets:[{data:PD.donutData,backgroundColor:["#B5652C","#B7C2CB"],borderWidth:2,borderColor:"#fff"}]},options:{maintainAspectRatio:false,cutout:"60%",plugins:{legend:{position:"bottom",rtl:PD.rtl,labels:{boxWidth:12,padding:10,font:{size:11}}},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8}}}});}catch(e){}` +
+        `try{new Chart(document.getElementById("pricingProject"),{type:"bar",data:{labels:PD.projLabels,datasets:[{data:PD.projData,backgroundColor:PD.projColors,borderRadius:5,maxBarThickness:26}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8,callbacks:{label:function(c){return " "+c.parsed.x.toLocaleString()+" "+PD.conv;}}}},scales:{x:{ticks:{callback:function(v){return (v/PD.axisDivisor).toFixed(PD.axisDivisor>1?1:0)+" "+PD.axisSuffix;},font:{size:10.5}}},y:{grid:{display:false},ticks:{color:"#16232E",font:{size:11.5,weight:"500"}}}}}});}catch(e){}` +
+        `setTimeout(function(){window.focus();window.print();},400);}` +
+        `if(document.readyState==="complete")draw();else window.addEventListener("load",draw);})();<\/script>`;
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        `<!doctype html><html dir="${escapeAttr(dir)}" lang="${escapeAttr(lang === "ar" ? "ar" : "en")}"><head><meta charset="utf-8" />${head}<title>${escapeHtml(
+          title
+        )}</title></head><body>` +
+          bodyHtml +
+          script +
+          `</body></html>`
+      );
+      w.document.close();
+      w.focus();
+    }
+
+    function exportPricingReportCsv() {
+      const snap = lastPricingReportSnapshot;
+      if (!snap || !snap.agg) {
+        alert(t("reportNoRows"));
+        return;
+      }
+      const agg = snap.agg;
+      const convLabel = snap.convLabel;
+      const rows = [];
+      const esc = (v) => {
+        const s = String(v == null ? "" : v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      const line = (arr) => rows.push(arr.map(esc).join(","));
+      line([t("pricingKpiLines"), agg.totalLines]);
+      line([t("pricingLegendPriced"), agg.pricedCount]);
+      line([t("pricingLegendUnpriced"), agg.unpricedCount]);
+      line([t("pricingKpiCoverage"), agg.coveragePct.toFixed(1) + "%"]);
+      line([t("pricingKpiItems"), agg.uniqueItemCount]);
+      line([t("pricingKpiConcentration"), agg.concentrationPct.toFixed(1) + "%"]);
+      line([t("pricingTotalValueLabel") + " (" + convLabel + ")", Math.round(agg.pricedValue)]);
+      line([]);
+      line([t("pricingByProjectTitle"), t("pricingColPricedValue") + " (" + convLabel + ")"]);
+      agg.projectArr.forEach(([name, val]) => line([name, Math.round(val)]));
+      line([]);
+      line([t("pricingByMonthTitle"), t("pricingColPricedValue") + " (" + convLabel + ")"]);
+      agg.monthArr.forEach(([ym, val]) => line([ym, Math.round(val)]));
+      line([]);
+      line([t("colWorkflow"), t("pricingColPoCount"), t("pricingColPricedPoCount"), t("pricingColPricedValue") + " (" + convLabel + ")"]);
+      agg.wfArr.forEach(([status, o]) => {
+        const label = status === "__none" ? t("dash") : workflowLabel(status);
+        line([label, o.count, o.priced, Math.round(o.value)]);
+      });
+      const from = ($("rep-pricing-from")?.value || "").slice(0, 10);
+      const to = ($("rep-pricing-to")?.value || "").slice(0, 10);
+      const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pricing_report_${from}_${to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     const MATERIAL_AGENT_URL_KEY = "poMaterialAgentUrl";
@@ -23704,7 +24462,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-early-price-entry-received-qty";
+    const CURRENT_UPDATE_ID = "2026-07-pricing-report";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ملخص تقرير المواد وأسعارها — آذار إلى حزيران 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16232E; --muted:#66727C; --copper:#B5652C; --steel:#2E6E8E;
+    --gray:#B7C2CB; --line:#DCE2E7; --soft:#F4F6F8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:#E4E8EC;}
+  body{
+    font-family:"IBM Plex Sans Arabic", Tahoma, sans-serif;
+    color:var(--ink); line-height:1.65;
+    display:flex; justify-content:center; padding:24px 0;
+  }
+
+  /* ===== A4 page ===== */
+  .page{
+    width:210mm; min-height:297mm; background:#fff;
+    padding:14mm 15mm 12mm;
+    box-shadow:0 4px 24px rgba(22,35,46,.18);
+    display:flex; flex-direction:column;
+  }
+  @page{ size:A4; margin:0; }
+  @media print{
+    html,body{background:#fff; padding:0;}
+    .page{box-shadow:none; width:auto; min-height:auto;}
+    *{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  }
+
+  /* ===== Header ===== */
+  header{
+    border-bottom:3px solid var(--copper);
+    padding-bottom:5mm; margin-bottom:6mm;
+  }
+  .eyebrow{font-size:10.5px; letter-spacing:.12em; color:var(--steel); font-weight:700; margin-bottom:2px;}
+  h1{font-family:"Cairo",sans-serif; font-weight:900; font-size:22px; margin-bottom:4px;}
+  .meta{display:flex; flex-wrap:wrap; gap:3px 18px; font-size:11px; color:var(--muted);}
+  .meta b{color:var(--ink); font-weight:500;}
+
+  /* ===== The headline: total + its meaning ===== */
+  .headline{
+    display:grid; grid-template-columns:1fr 1.35fr; gap:6mm;
+    margin-bottom:6mm; align-items:stretch;
+  }
+  .total-card{
+    background:var(--ink); color:#EDF2F5; border-radius:8px;
+    padding:16px 20px 14px; position:relative; overflow:hidden;
+  }
+  .total-card::after{
+    content:""; position:absolute; inset-inline-start:0; top:0; bottom:0;
+    width:5px; background:var(--copper);
+  }
+  .total-card .label{font-size:11.5px; color:#AEBCC6; margin-bottom:2px;}
+  .total-card .value{
+    font-family:"Cairo",sans-serif; font-weight:800; font-size:32px;
+    font-variant-numeric:tabular-nums; color:#fff; line-height:1.25;
+  }
+  .total-card .value small{font-size:14px; font-weight:700; color:var(--copper);}
+  .total-card .caveat{
+    margin-top:8px; font-size:11.5px; line-height:1.55; color:#D5DEE4;
+    border-top:1px solid rgba(255,255,255,.18); padding-top:8px;
+  }
+  .total-card .caveat b{color:#F0B27E;}
+
+  .pricing-panel{
+    border:1px solid var(--line); border-radius:8px; padding:14px 18px 12px;
+  }
+  .pricing-panel h2{font-family:"Cairo",sans-serif; font-size:14.5px; font-weight:800; margin-bottom:8px;}
+  .split-bar{
+    display:flex; height:26px; border-radius:6px; overflow:hidden;
+    font-size:11px; font-weight:700; color:#fff; margin-bottom:8px;
+  }
+  .split-bar .priced{background:var(--copper); width:9.4%; min-width:56px; display:flex; align-items:center; justify-content:center;}
+  .split-bar .unpriced{background:var(--gray); color:var(--ink); flex:1; display:flex; align-items:center; justify-content:center;}
+  .split-legend{display:flex; gap:20px; font-size:11.5px;}
+  .split-legend .item{display:flex; align-items:baseline; gap:6px;}
+  .dot{width:9px; height:9px; border-radius:2px; display:inline-block; transform:translateY(1px);}
+  .split-legend .num{font-family:"Cairo",sans-serif; font-weight:800; font-size:17px; font-variant-numeric:tabular-nums;}
+  .split-legend .lbl{color:var(--muted);}
+
+  /* ===== KPI strip ===== */
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:4mm; margin-bottom:6mm;}
+  .kpi{background:var(--soft); border-radius:7px; padding:9px 14px 8px;}
+  .kpi .label{font-size:10.5px; color:var(--muted);}
+  .kpi .value{font-family:"Cairo",sans-serif; font-weight:800; font-size:18px; font-variant-numeric:tabular-nums;}
+
+  /* ===== Charts row ===== */
+  .charts{display:grid; grid-template-columns:1fr 1.15fr; gap:6mm; margin-bottom:6mm;}
+  .panel{border:1px solid var(--line); border-radius:8px; padding:12px 16px 10px;}
+  .panel h2{font-family:"Cairo",sans-serif; font-size:13.5px; font-weight:800;}
+  .panel .note{font-size:10.5px; color:var(--muted); margin-bottom:6px;}
+  .chart-box{position:relative; height:58mm;}
+
+  /* ===== Insights ===== */
+  .insights h2{
+    font-family:"Cairo",sans-serif; font-size:14.5px; font-weight:800;
+    margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid var(--copper);
+    display:inline-block;
+  }
+  .insights p{font-size:11.8px; margin-bottom:7px; color:#2B3945;}
+  .insights p:last-child{margin-bottom:0;}
+  .insights strong{color:var(--ink);}
+
+  footer{
+    margin-top:auto; padding-top:5mm; font-size:9.5px; color:var(--muted);
+    border-top:1px solid var(--line); display:flex; justify-content:space-between;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">ملخص تنفيذي · طلبات شراء المواد</div>
+    <h1>تقرير المواد وأسعارها</h1>
+    <div class="meta">
+      <span>الفترة: <b>2026/03/01 – 2026/06/30</b></span>
+      <span>تاريخ التقرير: <b>2026/07/06</b></span>
+      <span>سعر الصرف: <b>1 USD = 1,540 IQD</b></span>
+      <span>الشركات: <b>الألباب للمقاولات العامة · تقنيات العراق للمقاولات المحدودة</b></span>
+    </div>
+  </header>
+
+  <!-- Headline: total + pricing coverage -->
+  <div class="headline">
+    <div class="total-card">
+      <div class="label">إجمالي البنود المحوّل إلى الدينار</div>
+      <div class="value">29,413,475 <small>IQD</small></div>
+      <div class="caveat">
+        هذه القيمة تعبّر عن <b>البنود المسعّرة فقط (68 بنداً)</b> ولا تشمل
+        652 بنداً لم تُسجّل أسعارها بعد، وبالتالي فهي <b>حد أدنى</b>
+        للالتزامات المتوقعة وليست الكلفة الكاملة للفترة.
+      </div>
+    </div>
+    <div class="pricing-panel">
+      <h2>البنود المسعّرة مقابل غير المسعّرة (من أصل 720 بنداً)</h2>
+      <div class="split-bar">
+        <div class="priced">9.4%</div>
+        <div class="unpriced">90.6%</div>
+      </div>
+      <div class="split-legend">
+        <div class="item">
+          <span class="dot" style="background:var(--copper)"></span>
+          <span class="num">68</span>
+          <span class="lbl">بنداً مسعّراً ومعتمداً — تدخل في الإجمالي</span>
+        </div>
+        <div class="item">
+          <span class="dot" style="background:var(--gray)"></span>
+          <span class="num">652</span>
+          <span class="lbl">بنداً بلا سعر — خارج الإجمالي</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi"><div class="label">عدد البنود</div><div class="value">720</div></div>
+    <div class="kpi"><div class="label">مواد مميّزة</div><div class="value">656</div></div>
+    <div class="kpi"><div class="label">نسبة التغطية السعرية</div><div class="value">9.4%</div></div>
+    <div class="kpi"><div class="label">تركّز الإنفاق المسعّر</div><div class="value">89.6% <span style="font-size:10.5px;font-weight:500;color:var(--muted)">في طلبين</span></div></div>
+  </div>
+
+  <!-- Two charts only -->
+  <div class="charts">
+    <div class="panel">
+      <h2>حالة التسعير</h2>
+      <div class="note">توزيع البنود الـ720 حسب وجود السعر</div>
+      <div class="chart-box"><canvas id="pricing"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>القيمة المسعّرة حسب المشروع</h2>
+      <div class="note">بالدينار العراقي · مشروع 046 يستحوذ على 90.8%</div>
+      <div class="chart-box"><canvas id="project"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="insights">
+    <h2>أبرز الملاحظات</h2>
+    <p><strong>الإجمالي يعكس شريحة صغيرة من الطلبات:</strong> 68 بنداً مسعّراً فقط من أصل 720 تُكوِّن قيمة الـ29.41 مليون دينار؛ ومع تسعير واعتماد البنود المتبقية (652 بنداً) سترتفع القيمة الفعلية للفترة بشكل ملموس.</p>
+    <p><strong>تركّز شديد ضمن المسعّر:</strong> طلبان لمشروع 046 يشكلان 26.34 مليون دينار (89.6%) — طلب أعمدة وعوازل الكهرباء PO 2026-046-009 بقيمة 17.14 مليون (وما يزال غير معتمد رغم قيمته)، وطلب كابلات ABC والتأريض PO 2026-046-022 بقيمة 9.20 مليون.</p>
+    <p><strong>التوزيع الزمني للمسعّر:</strong> نيسان 18.55 مليون (63%)، أيار 10.18 مليون (34.6%)، حزيران 0.68 مليون فقط — علماً أن طلبات حزيران كثيرة عددياً لكنها بلا أسعار بعد، ولا توجد بنود مسعّرة في آذار.</p>
+    <p><strong>حالات المسار:</strong> تتركز الطلبات في «بانتظار الحسابات (إقفال/سلفة عمل)» و«بانتظار استلام المستودع»، مع نحو 8 طلبات مرفوضة أُعيد تقديم بعضها بنفس البنود (مثل 001-028/001-029).</p>
+  </div>
+
+  <footer>
+    <span>أُعدّ استناداً إلى تقرير المواد وأسعارها الصادر بتاريخ 2026/07/06</span>
+    <span>جميع القيم محوّلة إلى IQD بسعر صرف 1,540</span>
+  </footer>
+</div>
+
+<script>
+const ink="#16232E", muted="#66727C", line="#DCE2E7";
+const copper="#B5652C", steel="#2E6E8E", steel2="#5E93AC", gray="#B7C2CB";
+
+Chart.defaults.font.family='"IBM Plex Sans Arabic", Tahoma, sans-serif';
+Chart.defaults.color=muted;
+Chart.defaults.borderColor=line;
+Chart.defaults.animation=false; /* لطباعة سليمة */
+
+const fmt=v=>v.toLocaleString('en-US');
+
+/* 1) Priced vs unpriced donut */
+new Chart(document.getElementById('pricing'),{
+  type:'doughnut',
+  data:{
+    labels:['بنود مسعّرة (68)','بنود غير مسعّرة (652)'],
+    datasets:[{ data:[68,652], backgroundColor:[copper,gray], borderWidth:2, borderColor:'#fff' }]
+  },
+  options:{
+    maintainAspectRatio:false, cutout:'60%',
+    plugins:{
+      legend:{position:'bottom', rtl:true, labels:{boxWidth:12, padding:10, font:{size:11}}},
+      tooltip:{rtl:true, backgroundColor:ink, padding:8,
+        callbacks:{label:c=>" "+c.parsed+" بند ("+(c.parsed/720*100).toFixed(1)+"%)"}}
+    }
+  }
+});
+
+/* 2) Value by project */
+new Chart(document.getElementById('project'),{
+  type:'bar',
+  data:{
+    labels:['046','FSF','034','محطة الطاقة الفرعية'],
+    datasets:[{ data:[26707400,1216155,1139920,350000],
+      backgroundColor:[steel,copper,steel2,gray], borderRadius:5, maxBarThickness:26 }]
+  },
+  options:{
+    indexAxis:'y', maintainAspectRatio:false,
+    plugins:{ legend:{display:false},
+      tooltip:{rtl:true, backgroundColor:ink, padding:8,
+        callbacks:{label:c=>" "+fmt(c.parsed.x)+" IQD"}} },
+    scales:{
+      x:{ ticks:{callback:v=>(v/1e6).toFixed(0)+" م", font:{size:10.5}} },
+      y:{ grid:{display:false}, ticks:{color:ink, font:{size:11.5, weight:'500'}} }
+    }
+  }
+});
+</script>
+</body>
+</html>
