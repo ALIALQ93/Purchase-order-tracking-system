@@ -5645,7 +5645,7 @@
         <div class="card">
           <h3 data-i18n="reportGenStatusTitle">تقرير حالة الطلبات</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenStatusHint">
-            توزيع أوامر شراء الإدارة العامة حسب الحالة، إجمالي القيمة، والقيمة حسب المورد والشهر — مع طباعة احترافية ورسوم بيانية.
+            توزيع أوامر شراء الإدارة العامة حسب الحالة والمشروع، إجمالي القيمة، والقيمة حسب المشروع والمورد والشهر — مع طباعة احترافية ورسوم بيانية.
           </p>
           <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
             <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
@@ -5669,12 +5669,20 @@
                 <select id="rep-gstatus-company"></select>
               </label>
               <label class="po-filter-field">
+                <span data-i18n="reportProjectLabel">المشروع</span>
+                <select id="rep-gstatus-project"></select>
+              </label>
+              <label class="po-filter-field">
                 <span data-i18n="reportSupplierLabel">المورد</span>
                 <select id="rep-gstatus-supplier"></select>
               </label>
               <label class="po-filter-field">
                 <span data-i18n="reportStatusLabel">الحالة</span>
                 <select id="rep-gstatus-status"></select>
+              </label>
+              <label class="po-filter-field" style="display:flex;align-items:center;gap:0.4rem;padding-top:1.35rem">
+                <input type="checkbox" id="rep-gstatus-hide-values" />
+                <span data-i18n="genStatusHideValues">إخفاء قيم الطلبات</span>
               </label>
               <button type="button" class="btn btn-primary btn-sm" id="btn-run-gstatus-report" data-i18n="btnRunReport">
                 عرض التقرير
@@ -7074,7 +7082,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>بحث وفلاتر في قسم المشتريات:</strong> أُضيف شريط بحث وفلاتر في شاشة «تنفيذ المشتريات» — ابحث فوراً في مرجع الطلب والمشروع والمنطقة ومندوب المشتريات وغيرها، وفلتر حسب <strong>المشروع</strong> و<strong>مندوب المشتريات</strong> و<strong>الأولوية</strong> (عاجل/عادي)، مع زر «مسح الفلاتر». تُطبَّق الفلاتر على الأقسام الثلاثة (متابعة منذ الإرسال، يحتاج إجراء، متابعة المسار).</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>إخفاء قيم الطلبات في تقرير الحالة:</strong> أُضيف خيار «إخفاء قيم الطلبات» في تقرير حالة الطلبات (الإدارة العامة). عند التفعيل تُخفى القيم المالية من العرض والطباعة وتصدير CSV، مع الإبقاء على عدد الطلبات والحالات وملخص سجل الحالة لكل طلب. يمكن تبديل الخيار بعد عرض التقرير دون إعادة تشغيله.</li></ul>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -7230,7 +7238,7 @@
         reportsGeneralTitle: "تقارير أوامر شراء الإدارة العامة",
         reportGenStatusTitle: "تقرير حالة الطلبات",
         reportGenStatusHint:
-          "توزيع أوامر شراء الإدارة العامة حسب الحالة، إجمالي القيمة، والقيمة حسب المورد والشهر — مع طباعة احترافية ورسوم بيانية.",
+          "توزيع أوامر شراء الإدارة العامة حسب الحالة والمشروع، إجمالي القيمة، والقيمة حسب المشروع والمورد والشهر — مع طباعة احترافية ورسوم بيانية.",
         reportGenMatTitle: "تقرير مواد الإدارة العامة",
         reportGenMatHint: "بنود المواد في أوامر شراء الإدارة العامة مع الكميات والأسعار، قابلة للفلترة والتجميع والتصدير.",
         reportSupplierLabel: "المورد",
@@ -7242,12 +7250,15 @@
         genStatusTotalValueLabel: "إجمالي قيمة الطلبات",
         genStatusKpiOrders: "عدد الطلبات",
         genStatusKpiSuppliers: "عدد الموردين",
+        genStatusKpiProjects: "عدد المشاريع",
         genStatusKpiReceived: "نسبة الاستلام",
         genStatusKpiConcentration: "تركّز المورد الأول",
         genStatusConcentrationSuffix: "أعلى مورد",
         genStatusDistTitle: "توزيع الحالات",
         genStatusDonutTitle: "توزيع الطلبات حسب الحالة",
         genStatusDonutNote: "عدد الطلبات في كل حالة.",
+        genStatusByProjectTitle: "القيمة حسب المشروع",
+        genStatusByProjectNote: "أعلى المشاريع من حيث القيمة (بعملة التقرير).",
         genStatusBySupplierTitle: "القيمة حسب المورد",
         genStatusBySupplierNote: "أعلى الموردين من حيث القيمة.",
         genStatusByMonthTitle: "القيمة حسب الشهر",
@@ -7257,12 +7268,17 @@
         genStatusColValue: "القيمة",
         genStatusOrdersTableTitle: "تفصيل الطلبات",
         genStatusColRef: "مرجع الطلب",
+        genStatusColProject: "المشروع",
         genStatusColSummary: "ملخص الطلب",
+        genStatusColOrderValue: "قيمة الطلب",
         genStatusColHistory: "ملخص سجل الحالة",
+        genStatusHideValues: "إخفاء قيم الطلبات",
         genStatusSummaryItems: "بند",
         genStatusInsightsTitle: "أبرز الملاحظات",
         genStatusInsightTopLead: "أكثر الحالات",
         genStatusInsightTopBody: "الحالة الأكثر تكراراً هي «{status}» بعدد {count} طلب من أصل {total}.",
+        genStatusInsightProjectLead: "أعلى مشروع",
+        genStatusInsightProjectBody: "أعلى مشروع قيمةً هو «{project}» بقيمة {value} ({pct}% من الإجمالي بعملة التقرير).",
         genStatusInsightReceivedLead: "نسبة الاستلام",
         genStatusInsightReceivedBody: "نسبة الطلبات المستلمة {pct}% ({received} من {total}).",
         genStatusInsightSupplierLead: "تركّز الموردين",
@@ -8123,7 +8139,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Search and filters in Purchasing:</strong> a search bar and filters were added to the Purchasing screen — instant search across PO reference, project, region, purchasing rep, and more; filter by <strong>project</strong>, <strong>purchasing representative</strong>, and <strong>priority</strong> (urgent/normal), with a \"Clear filters\" button. Filters apply to all three sections (tracking from submission, action required, pipeline follow-up).</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Hide order values in status report:</strong> a \"Hide order values\" option was added to the general order status report. When enabled, monetary amounts are hidden from the on-screen view, print layout, and CSV export, while order counts, statuses, and per-order status history summaries remain visible. You can toggle the option after running the report without re-running it.</li></ul>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -8280,7 +8296,7 @@
         reportsGeneralTitle: "General admin purchase order reports",
         reportGenStatusTitle: "Order status report",
         reportGenStatusHint:
-          "General admin POs by status, total value, and value by supplier and month — with professional print and charts.",
+          "General admin POs by status and project, total value, and value by project, supplier, and month — with professional print and charts.",
         reportGenMatTitle: "General admin materials report",
         reportGenMatHint: "Material lines across general admin POs with quantities and prices; filterable, groupable and exportable.",
         reportSupplierLabel: "Supplier",
@@ -8292,12 +8308,15 @@
         genStatusTotalValueLabel: "Total orders value",
         genStatusKpiOrders: "Orders",
         genStatusKpiSuppliers: "Suppliers",
+        genStatusKpiProjects: "Projects",
         genStatusKpiReceived: "Received rate",
         genStatusKpiConcentration: "Top-supplier concentration",
         genStatusConcentrationSuffix: "top supplier",
         genStatusDistTitle: "Status distribution",
         genStatusDonutTitle: "Orders by status",
         genStatusDonutNote: "Number of orders in each status.",
+        genStatusByProjectTitle: "Value by project",
+        genStatusByProjectNote: "Top projects by value (report currency).",
         genStatusBySupplierTitle: "Value by supplier",
         genStatusBySupplierNote: "Top suppliers by value.",
         genStatusByMonthTitle: "Value by month",
@@ -8307,12 +8326,17 @@
         genStatusColValue: "Value",
         genStatusOrdersTableTitle: "Orders detail",
         genStatusColRef: "Order reference",
+        genStatusColProject: "Project",
         genStatusColSummary: "Order summary",
+        genStatusColOrderValue: "Order value",
         genStatusColHistory: "Status history summary",
+        genStatusHideValues: "Hide order values",
         genStatusSummaryItems: "items",
         genStatusInsightsTitle: "Key observations",
         genStatusInsightTopLead: "Most common status",
         genStatusInsightTopBody: "The most frequent status is \"{status}\" with {count} of {total} orders.",
+        genStatusInsightProjectLead: "Top project",
+        genStatusInsightProjectBody: "The top project by value is \"{project}\" at {value} ({pct}% of total in report currency).",
         genStatusInsightReceivedLead: "Received rate",
         genStatusInsightReceivedBody: "Received orders are {pct}% ({received} of {total}).",
         genStatusInsightSupplierLead: "Supplier concentration",
@@ -19523,14 +19547,16 @@
       const to = (filters.to || "").slice(0, 10);
       const base = (filters.base || "IQD").trim() || "IQD";
       const fCompany = (filters.fCompany || "").trim();
+      const fProject = (filters.fProject || "").trim();
       const fSupplier = (filters.fSupplier || "").trim();
       const fStatus = (filters.fStatus || "").trim();
       if (!from || !to) return { error: "dates" };
 
-      const [poSnap, fxSnap, cSnap] = await Promise.all([
+      const [poSnap, fxSnap, cSnap, pSnap] = await Promise.all([
         getDocs(query(collection(db, "purchaseOrders"), where("scope", "==", "general"))),
         getDocs(query(collection(db, "fxRates"), orderBy("dateTs", "asc"))),
         getDocs(collection(db, "companies")),
+        getDocs(collection(db, "projects")),
       ]);
       const fxRows = [];
       fxSnap.forEach((d) => {
@@ -19553,6 +19579,10 @@
       const companyNameById = {};
       cSnap.forEach((d) => {
         companyNameById[d.id] = companyDisplayName(d.data());
+      });
+      const projectNames = {};
+      pSnap.forEach((d) => {
+        projectNames[d.id] = projectDisplayName(d.data());
       });
 
       const rows = [];
@@ -19588,7 +19618,9 @@
         const ref = (g?.poNumber || po.title || "").trim() || t("dash");
         const company = (po.companyNameSnapshot || companyNameById[po.companyId] || "").trim() || t("dash");
         const supplier = (po.supplierName || g?.vendor?.name || "").trim() || t("dash");
-        const project = (po.projectNameSnapshot || "").trim() || t("dash");
+        const projectId = (po.projectId || g?.projectId || "").trim() || null;
+        const project =
+          (po.projectNameSnapshot || g?.projectName || (projectId ? projectNames[projectId] : "") || "").trim() || t("dash");
         let hasLinePrices = false;
         let lineSum = 0;
         lines.forEach((l, idx) => {
@@ -19622,7 +19654,7 @@
           id: po.id,
           companyId: (po.companyId || "").trim() || null,
           supplierId: (po.supplierId || "").trim() || null,
-          projectId: (po.projectId || "").trim() || null,
+          projectId,
           status,
           statusLabel,
           ref,
@@ -19643,6 +19675,7 @@
       });
       const reportRows = reportRowsRaw.filter((r) => {
         if (fCompany && r.companyId !== fCompany) return false;
+        if (fProject && r.projectId !== fProject) return false;
         if (fSupplier && r.supplierId !== fSupplier) return false;
         if (fStatus && r.status !== fStatus) return false;
         return true;
@@ -19681,9 +19714,10 @@
 
     async function fillGeneralReportFilters(prefix) {
       try {
-        const [cSnap, sSnap] = await Promise.all([
+        const [cSnap, sSnap, pSnap] = await Promise.all([
           getDocs(collection(db, "companies")),
           getDocs(collection(db, "suppliers")),
+          getDocs(collection(db, "projects")),
         ]);
         const loc = lang === "ar" ? "ar" : "en";
         const companies = [];
@@ -19694,6 +19728,15 @@
           coSel.innerHTML =
             `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
             companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(companyDisplayName(c))}</option>`).join("");
+        }
+        const projSel = $(prefix + "-project");
+        if (projSel) {
+          const projects = [];
+          pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
+          sortProjectsByCode(projects);
+          projSel.innerHTML =
+            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
+            projects.map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(projectOptionLabel(p))}</option>`).join("");
         }
         const suppliers = [];
         sSnap.forEach((d) => suppliers.push({ id: d.id, ...d.data() }));
@@ -19740,6 +19783,16 @@
       const toInp = $("rep-gstatus-to");
       if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
       if (toInp && !toInp.value) toInp.value = today;
+      const hideValInp = $("rep-gstatus-hide-values");
+      if (hideValInp && !hideValInp.dataset.wired) {
+        hideValInp.dataset.wired = "1";
+        hideValInp.addEventListener("change", () => {
+          if (lastGeneralStatusReportSnapshot?.agg) {
+            const w = $("reports-gstatus-wrap");
+            if (w) w.innerHTML = renderGeneralStatusReportHtml(lastGeneralStatusReportSnapshot, lastGeneralStatusReportSnapshot.agg);
+          }
+        });
+      }
       await fillGeneralReportFilters("rep-gstatus");
     }
 
@@ -19750,8 +19803,10 @@
       const byStatus = new Map();
       const byCompany = new Map();
       const bySupplier = new Map();
+      const byProject = new Map();
       const byMonth = new Map();
       const suppliers = new Set();
+      const projects = new Set();
       let receivedCount = 0;
       poRows.forEach((r) => {
         const v = Number(r.converted) || 0;
@@ -19764,6 +19819,10 @@
           suppliers.add(r.supplier);
           bySupplier.set(r.supplier, (bySupplier.get(r.supplier) || 0) + v);
         }
+        if (r.project && r.project !== t("dash")) {
+          projects.add(r.project);
+          byProject.set(r.project, (byProject.get(r.project) || 0) + v);
+        }
         if (r.company && r.company !== t("dash")) byCompany.set(r.company, (byCompany.get(r.company) || 0) + v);
         const ym = (r.poDate || "").slice(0, 7);
         if (/^\d{4}-\d{2}$/.test(ym) && v > 0) byMonth.set(ym, (byMonth.get(ym) || 0) + v);
@@ -19771,6 +19830,7 @@
       });
       const statusArr = [...byStatus.entries()].sort((a, b) => generalStatusOrderIndex(a[0]) - generalStatusOrderIndex(b[0]));
       const supplierArr = [...bySupplier.entries()].sort((a, b) => b[1] - a[1]);
+      const projectArr = [...byProject.entries()].sort((a, b) => b[1] - a[1]);
       const companyArr = [...byCompany.entries()].sort((a, b) => b[1] - a[1]);
       const monthArr = [...byMonth.entries()].sort((a, b) => a[0].localeCompare(b[0]));
       const receivedPct = totalPo ? (receivedCount / totalPo) * 100 : 0;
@@ -19781,9 +19841,11 @@
         totalValue,
         statusArr,
         supplierArr,
+        projectArr,
         companyArr,
         monthArr,
         distinctSuppliers: suppliers.size,
+        distinctProjects: projects.size,
         receivedCount,
         receivedPct,
         concentrationPct,
@@ -19792,12 +19854,16 @@
 
     const GEN_STATUS_PALETTE = ["#2E6E8E", "#B5652C", "#5E93AC", "#8C6239", "#4338ca", "#0f766e", "#b45309", "#6d28d9", "#0369a1", "#047857", "#b91c1c", "#B7C2CB"];
 
-    function generalOrderSummaryText(r, convLabel) {
+    function generalOrderSummaryText(r) {
       const parts = [];
       if (r.supplier && r.supplier !== t("dash")) parts.push(r.supplier);
-      parts.push(convLabel + " " + (Number(r.converted) || 0).toLocaleString(localeTag()));
       parts.push((r.lineCount || 0) + " " + t("genStatusSummaryItems"));
       return parts.join(" · ");
+    }
+
+    function generalOrderValueText(r) {
+      const n = Number(r.total) || 0;
+      return (r.currency || "IQD") + " " + n.toLocaleString(localeTag());
     }
 
     function generalStatusHistorySummaryText(r) {
@@ -19814,7 +19880,12 @@
       return generalPoStatusLabel(r.status, null) + (d ? " (" + d + ")" : "");
     }
 
+    function generalStatusHideValues() {
+      return !!$("rep-gstatus-hide-values")?.checked;
+    }
+
     function renderGeneralStatusReportHtml(snap, agg) {
+      const hideVal = generalStatusHideValues();
       const convLabel = snap.convLabel;
       const money = (v) => convLabel + " " + pricingNum(Math.round(v));
       const monthLabel = (ym) => {
@@ -19822,6 +19893,7 @@
         return m + "/" + y;
       };
       const supMax = agg.supplierArr.length ? agg.supplierArr[0][1] : 0;
+      const projMax = agg.projectArr.length ? agg.projectArr[0][1] : 0;
       const monthMax = agg.monthArr.reduce((mx, [, v]) => (v > mx ? v : mx), 0);
       const hbar = (label, val, max) => {
         const pct = max > 0 ? (val / max) * 100 : 0;
@@ -19834,6 +19906,9 @@
       const supBars = agg.supplierArr.length
         ? agg.supplierArr.slice(0, 8).map(([n, v]) => hbar(n, v, supMax)).join("")
         : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
+      const projBars = agg.projectArr.length
+        ? agg.projectArr.slice(0, 8).map(([n, v]) => hbar(n, v, projMax)).join("")
+        : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
       const monthBars = agg.monthArr.length
         ? agg.monthArr.map(([ym, v]) => hbar(monthLabel(ym), v, monthMax)).join("")
         : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
@@ -19842,7 +19917,7 @@
           return `<tr>
             <td>${statusBadge(st, "general", null)}</td>
             <td>${escapeHtml(String(o.count))}</td>
-            <td>${escapeHtml(money(o.value))}</td>
+            ${hideVal ? "" : `<td>${escapeHtml(money(o.value))}</td>`}
           </tr>`;
         })
         .join("");
@@ -19860,6 +19935,8 @@
         : `<p class="empty-state" style="padding:0.5rem 0">${escapeHtml(t("reportNoRows"))}</p>`;
       const loc = lang === "ar" ? "ar" : "en";
       const orderList = [...(snap.rows || [])].sort((a, b) => {
+        const pa = (a.project || "").localeCompare(b.project || "", loc);
+        if (pa !== 0) return pa;
         const d = (b.poDate || "").localeCompare(a.poDate || "", loc);
         if (d !== 0) return d;
         return (a.ref || "").localeCompare(b.ref || "", loc);
@@ -19869,21 +19946,49 @@
             .map(
               (r) => `<tr>
             <td>${escapeHtml(r.ref)}<div class="muted" style="font-size:11px">${escapeHtml(r.poDate || "")}</div></td>
-            <td>${escapeHtml(generalOrderSummaryText(r, convLabel))}</td>
+            <td>${escapeHtml(r.project || t("dash"))}</td>
+            <td>${escapeHtml(generalOrderSummaryText(r))}</td>
+            ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
             <td>${statusBadge(r.status, "general", null)}<div style="margin-top:.25rem;font-size:11.5px;color:var(--muted)">${escapeHtml(
                 generalStatusHistorySummaryText(r)
               )}</div></td>
           </tr>`
             )
             .join("")
-        : `<tr><td colspan="3">${escapeHtml(t("reportNoRows"))}</td></tr>`;
-      return `
-        <div class="pricing-headline">
-          <div class="pricing-total-card">
+        : `<tr><td colspan="${hideVal ? 4 : 5}">${escapeHtml(t("reportNoRows"))}</td></tr>`;
+      const totalCard = hideVal
+        ? `<div class="pricing-total-card">
+            <div class="label">${escapeHtml(t("genStatusKpiOrders"))}</div>
+            <div class="value">${escapeHtml(pricingNum(agg.totalPo))}</div>
+            <div class="caveat">${escapeHtml(t("genStatusKpiReceived"))}: ${escapeHtml(agg.receivedPct.toFixed(1) + "%")}</div>
+          </div>`
+        : `<div class="pricing-total-card">
             <div class="label">${escapeHtml(t("genStatusTotalValueLabel"))}</div>
             <div class="value">${escapeHtml(pricingNum(Math.round(agg.totalValue)))} <small>${escapeHtml(convLabel)}</small></div>
             <div class="caveat">${escapeHtml(t("genStatusKpiOrders"))}: ${escapeHtml(pricingNum(agg.totalPo))}</div>
-          </div>
+          </div>`;
+      const valueSections = hideVal
+        ? ""
+        : `<div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusByProjectTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${projBars}</div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusBySupplierTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${supBars}</div>
+        </div>
+        <div class="pricing-section">
+          <h4>${escapeHtml(t("genStatusByMonthTitle"))} (${escapeHtml(convLabel)})</h4>
+          <div class="pricing-hbars">${monthBars}</div>
+        </div>`;
+      const concentrationKpi = hideVal
+        ? ""
+        : `<div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiConcentration"))}</div><div class="value">${escapeHtml(
+            agg.concentrationPct.toFixed(1) + "%"
+          )} <span>${escapeHtml(t("genStatusConcentrationSuffix"))}</span></div></div>`;
+      return `
+        <div class="pricing-headline">
+          ${totalCard}
           <div class="pricing-panel">
             <h4>${escapeHtml(t("genStatusDistTitle"))}</h4>
             <div class="pricing-hbars">${distBars}</div>
@@ -19896,34 +20001,30 @@
           <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiSuppliers"))}</div><div class="value">${escapeHtml(
             pricingNum(agg.distinctSuppliers)
           )}</div></div>
+          <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiProjects"))}</div><div class="value">${escapeHtml(
+            pricingNum(agg.distinctProjects)
+          )}</div></div>
           <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiReceived"))}</div><div class="value">${escapeHtml(
             agg.receivedPct.toFixed(1) + "%"
           )}</div></div>
-          <div class="pricing-kpi"><div class="label">${escapeHtml(t("genStatusKpiConcentration"))}</div><div class="value">${escapeHtml(
-            agg.concentrationPct.toFixed(1) + "%"
-          )} <span>${escapeHtml(t("genStatusConcentrationSuffix"))}</span></div></div>
+          ${concentrationKpi}
         </div>
-        <div class="pricing-section">
-          <h4>${escapeHtml(t("genStatusBySupplierTitle"))} (${escapeHtml(convLabel)})</h4>
-          <div class="pricing-hbars">${supBars}</div>
-        </div>
-        <div class="pricing-section">
-          <h4>${escapeHtml(t("genStatusByMonthTitle"))} (${escapeHtml(convLabel)})</h4>
-          <div class="pricing-hbars">${monthBars}</div>
-        </div>
+        ${valueSections}
         <div class="pricing-section">
           <h4>${escapeHtml(t("genStatusTableTitle"))}</h4>
           <div class="table-scroll"><table class="data-table"><thead><tr>
             <th>${escapeHtml(t("genStatusColStatus"))}</th>
             <th>${escapeHtml(t("genStatusColCount"))}</th>
-            <th>${escapeHtml(t("genStatusColValue"))} (${escapeHtml(convLabel)})</th>
+            ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColValue"))} (${escapeHtml(convLabel)})</th>`}
           </tr></thead><tbody>${statusRows}</tbody></table></div>
         </div>
         <div class="pricing-section">
           <h4>${escapeHtml(t("genStatusOrdersTableTitle"))}</h4>
           <div class="table-scroll"><table class="data-table"><thead><tr>
             <th>${escapeHtml(t("genStatusColRef"))}</th>
+            <th>${escapeHtml(t("genStatusColProject"))}</th>
             <th>${escapeHtml(t("genStatusColSummary"))}</th>
+            ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
             <th>${escapeHtml(t("genStatusColHistory"))}</th>
           </tr></thead><tbody>${orderRows}</tbody></table></div>
         </div>`;
@@ -19946,6 +20047,7 @@
           to,
           base,
           fCompany: ($("rep-gstatus-company")?.value || "").trim(),
+          fProject: ($("rep-gstatus-project")?.value || "").trim(),
           fSupplier: ($("rep-gstatus-supplier")?.value || "").trim(),
           fStatus: ($("rep-gstatus-status")?.value || "").trim(),
         });
@@ -19965,11 +20067,13 @@
       const snap = lastGeneralStatusReportSnapshot;
       if (!snap || !snap.agg) return;
       const agg = snap.agg;
+      const hideVal = generalStatusHideValues();
       const convLabel = snap.convLabel;
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
       const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
       const base = ($("rep-gstatus-base")?.value || "IQD").trim() || "IQD";
       const coText = $("rep-gstatus-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const projText = $("rep-gstatus-project")?.selectedOptions?.[0]?.textContent?.trim() || "";
       const supText = $("rep-gstatus-supplier")?.selectedOptions?.[0]?.textContent?.trim() || "";
       const stText = $("rep-gstatus-status")?.selectedOptions?.[0]?.textContent?.trim() || "";
       const genAtSrc = snap.generatedAt || new Date().toISOString();
@@ -20001,7 +20105,18 @@
           .replace("{received}", num(agg.receivedCount))
           .replace("{total}", num(agg.totalPo)),
       ]);
-      if (agg.supplierArr.length && agg.totalValue > 0) {
+      if (!hideVal && agg.projectArr.length && agg.totalValue > 0) {
+        const topProj = agg.projectArr[0];
+        const topPct = ((topProj[1] / agg.totalValue) * 100).toFixed(1);
+        insights.push([
+          t("genStatusInsightProjectLead"),
+          t("genStatusInsightProjectBody")
+            .replace("{project}", topProj[0])
+            .replace("{value}", money(topProj[1]))
+            .replace("{pct}", topPct),
+        ]);
+      }
+      if (!hideVal && agg.supplierArr.length && agg.totalValue > 0) {
         const topSup = agg.supplierArr[0];
         const topPct = ((topSup[1] / agg.totalValue) * 100).toFixed(1);
         insights.push([
@@ -20012,7 +20127,7 @@
             .replace("{pct}", topPct),
         ]);
       }
-      if (agg.monthArr.length) {
+      if (!hideVal && agg.monthArr.length) {
         const peak = agg.monthArr.reduce((a, b) => (b[1] > a[1] ? b : a));
         insights.push([
           t("genStatusInsightMonthLead"),
@@ -20023,29 +20138,31 @@
       const metaHtml = [
         `<span>${escapeHtml(t("reportFromDateLabel"))}: <b>${escapeHtml(from)} – ${escapeHtml(to)}</b></span>`,
         `<span>${escapeHtml(t("reportGeneratedAtLabel"))}: <b>${escapeHtml(genAt)}</b></span>`,
-        snap.fxRateDisp != null
+        snap.fxRateDisp != null && !hideVal
           ? `<span>${escapeHtml(t("reportFxUsedLabel"))}: <b>1 USD = ${escapeHtml(num(snap.fxRateDisp))} IQD</b></span>`
           : "",
-        `<span>${escapeHtml(t("reportBaseCurrencyLabel"))}: <b>${escapeHtml(base)}</b></span>`,
+        !hideVal ? `<span>${escapeHtml(t("reportBaseCurrencyLabel"))}: <b>${escapeHtml(base)}</b></span>` : "",
         coText ? `<span>${escapeHtml(t("reportCompanyLabel"))}: <b>${escapeHtml(coText)}</b></span>` : "",
+        projText ? `<span>${escapeHtml(t("reportProjectLabel"))}: <b>${escapeHtml(projText)}</b></span>` : "",
         supText ? `<span>${escapeHtml(t("reportSupplierLabel"))}: <b>${escapeHtml(supText)}</b></span>` : "",
         stText ? `<span>${escapeHtml(t("reportStatusLabel"))}: <b>${escapeHtml(stText)}</b></span>` : "",
       ]
         .filter(Boolean)
         .join("");
-      const supTop = agg.supplierArr.slice(0, 6);
-      const maxSup = supTop.length ? supTop[0][1] : 0;
-      const axisDivisor = maxSup >= 1e6 ? 1e6 : maxSup >= 1e3 ? 1e3 : 1;
-      const axisSuffix = maxSup >= 1e6 ? t("pricingMillionSuffix") : maxSup >= 1e3 ? t("pricingThousandSuffix") : "";
+      const projTop = hideVal ? [] : agg.projectArr.slice(0, 6);
+      const maxProj = projTop.length ? projTop[0][1] : 0;
+      const axisDivisor = maxProj >= 1e6 ? 1e6 : maxProj >= 1e3 ? 1e3 : 1;
+      const axisSuffix = maxProj >= 1e6 ? t("pricingMillionSuffix") : maxProj >= 1e3 ? t("pricingThousandSuffix") : "";
       const PD = {
         rtl,
         conv: convLabel,
+        hideVal,
         donutLabels: agg.statusArr.map(([st, o]) => `${generalPoStatusLabel(st, null)} (${num(o.count)})`),
         donutData: agg.statusArr.map(([, o]) => o.count),
         donutColors: agg.statusArr.map((_, i) => GEN_STATUS_PALETTE[i % GEN_STATUS_PALETTE.length]),
-        supLabels: supTop.map((e) => e[0]),
-        supData: supTop.map((e) => Math.round(e[1])),
-        supColors: supTop.map((_, i) => GEN_STATUS_PALETTE[i % GEN_STATUS_PALETTE.length]),
+        projLabels: projTop.map((e) => e[0]),
+        projData: projTop.map((e) => Math.round(e[1])),
+        projColors: projTop.map((_, i) => GEN_STATUS_PALETTE[i % GEN_STATUS_PALETTE.length]),
         axisDivisor,
         axisSuffix,
       };
@@ -20063,34 +20180,42 @@
         `<div class="meta">${metaHtml}</div>` +
         `</header>` +
         `<div class="headline">` +
-        `<div class="total-card">` +
-        `<div class="label">${escapeHtml(t("genStatusTotalValueLabel"))}</div>` +
-        `<div class="value">${escapeHtml(num(Math.round(agg.totalValue)))} <small>${escapeHtml(convLabel)}</small></div>` +
-        `<div class="caveat">${escapeHtml(t("genStatusKpiOrders"))}: <b>${escapeHtml(num(agg.totalPo))}</b> · ${escapeHtml(
-          t("genStatusKpiReceived")
-        )}: <b>${escapeHtml(agg.receivedPct.toFixed(1) + "%")}</b></div>` +
-        `</div>` +
+        (hideVal
+          ? `<div class="total-card">` +
+            `<div class="label">${escapeHtml(t("genStatusKpiOrders"))}</div>` +
+            `<div class="value">${escapeHtml(num(agg.totalPo))}</div>` +
+            `<div class="caveat">${escapeHtml(t("genStatusKpiReceived"))}: <b>${escapeHtml(agg.receivedPct.toFixed(1) + "%")}</b></div>` +
+            `</div>`
+          : `<div class="total-card">` +
+            `<div class="label">${escapeHtml(t("genStatusTotalValueLabel"))}</div>` +
+            `<div class="value">${escapeHtml(num(Math.round(agg.totalValue)))} <small>${escapeHtml(convLabel)}</small></div>` +
+            `<div class="caveat">${escapeHtml(t("genStatusKpiOrders"))}: <b>${escapeHtml(num(agg.totalPo))}</b> · ${escapeHtml(
+              t("genStatusKpiReceived")
+            )}: <b>${escapeHtml(agg.receivedPct.toFixed(1) + "%")}</b></div>` +
+            `</div>`) +
         `<div class="pricing-panel">` +
-        `<h2>${escapeHtml(t("genStatusKpiConcentration"))}</h2>` +
+        `<h2>${escapeHtml(hideVal ? t("genStatusDistTitle") : t("genStatusKpiConcentration"))}</h2>` +
         `<div class="split-legend" style="margin-top:6px">` +
-        `<div class="item"><span class="num">${escapeHtml(num(agg.distinctSuppliers))}</span><span class="lbl">${escapeHtml(
-          t("genStatusKpiSuppliers")
+        `<div class="item"><span class="num">${escapeHtml(num(agg.distinctProjects))}</span><span class="lbl">${escapeHtml(
+          t("genStatusKpiProjects")
         )}</span></div>` +
-        `<div class="item"><span class="num">${escapeHtml(agg.concentrationPct.toFixed(1) + "%")}</span><span class="lbl">${escapeHtml(
-          t("genStatusConcentrationSuffix")
+        `<div class="item"><span class="num">${escapeHtml(agg.receivedPct.toFixed(1) + "%")}</span><span class="lbl">${escapeHtml(
+          t("genStatusKpiReceived")
         )}</span></div>` +
         `</div></div></div>` +
-        `<div class="charts">` +
+        `<div class="charts"${hideVal ? ' style="grid-template-columns:1fr"' : ""}>` +
         `<div class="panel"><h2>${escapeHtml(t("genStatusDonutTitle"))}</h2><div class="note">${escapeHtml(
           t("genStatusDonutNote")
         )}</div><div class="chart-box"><canvas id="genStatusDonut"></canvas></div></div>` +
-        `<div class="panel"><h2>${escapeHtml(t("genStatusBySupplierTitle"))}</h2><div class="note">${escapeHtml(
-          t("genStatusBySupplierNote")
-        )}</div><div class="chart-box"><canvas id="genStatusSup"></canvas></div></div>` +
+        (hideVal
+          ? ""
+          : `<div class="panel"><h2>${escapeHtml(t("genStatusByProjectTitle"))}</h2><div class="note">${escapeHtml(
+              t("genStatusByProjectNote")
+            )}</div><div class="chart-box"><canvas id="genStatusProject"></canvas></div></div>`) +
         `</div>` +
         `<div class="insights"><h2>${escapeHtml(t("genStatusInsightsTitle"))}</h2>${insightsHtml}</div>` +
-        `<footer class="rep"><span>${escapeHtml(t("reportFxHint"))}</span><span>${escapeHtml(
-          from + " – " + to + " · " + base
+        `<footer class="rep"><span>${escapeHtml(hideVal ? "" : t("reportFxHint"))}</span><span>${escapeHtml(
+          hideVal ? from + " – " + to : from + " – " + to + " · " + base
         )}</span></footer>` +
         `</div>`;
       const script =
@@ -20098,7 +20223,7 @@
         `<script>(function(){var PD=${pdJson};function draw(){if(typeof Chart==="undefined"){window.print();return;}` +
         `Chart.defaults.font.family='"IBM Plex Sans Arabic", Tahoma, sans-serif';Chart.defaults.color="#66727C";Chart.defaults.animation=false;` +
         `try{new Chart(document.getElementById("genStatusDonut"),{type:"doughnut",data:{labels:PD.donutLabels,datasets:[{data:PD.donutData,backgroundColor:PD.donutColors,borderWidth:2,borderColor:"#fff"}]},options:{maintainAspectRatio:false,cutout:"58%",plugins:{legend:{position:"bottom",rtl:PD.rtl,labels:{boxWidth:11,padding:8,font:{size:10}}},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8}}}});}catch(e){}` +
-        `try{new Chart(document.getElementById("genStatusSup"),{type:"bar",data:{labels:PD.supLabels,datasets:[{data:PD.supData,backgroundColor:PD.supColors,borderRadius:5,maxBarThickness:26}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8,callbacks:{label:function(c){return " "+c.parsed.x.toLocaleString()+" "+PD.conv;}}}},scales:{x:{ticks:{callback:function(v){return (v/PD.axisDivisor).toFixed(PD.axisDivisor>1?1:0)+" "+PD.axisSuffix;},font:{size:10.5}}},y:{grid:{display:false},ticks:{color:"#16232E",font:{size:11.5,weight:"500"}}}}}});}catch(e){}` +
+        `if(!PD.hideVal){try{new Chart(document.getElementById("genStatusProject"),{type:"bar",data:{labels:PD.projLabels,datasets:[{data:PD.projData,backgroundColor:PD.projColors,borderRadius:5,maxBarThickness:26}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{rtl:PD.rtl,backgroundColor:"#16232E",padding:8,callbacks:{label:function(c){return " "+c.parsed.x.toLocaleString()+" "+PD.conv;}}}},scales:{x:{ticks:{callback:function(v){return (v/PD.axisDivisor).toFixed(PD.axisDivisor>1?1:0)+" "+PD.axisSuffix;},font:{size:10.5}}},y:{grid:{display:false},ticks:{color:"#16232E",font:{size:11.5,weight:"500"}}}}}});}catch(e){}}` +
         `setTimeout(function(){window.focus();window.print();},400);}` +
         `if(document.readyState==="complete")draw();else window.addEventListener("load",draw);})();<\/script>`;
       const w = window.open("", "_blank");
@@ -20124,6 +20249,7 @@
       }
       const agg = snap.agg;
       const convLabel = snap.convLabel;
+      const hideVal = generalStatusHideValues();
       const rows = [];
       const esc = (v) => {
         const s = String(v == null ? "" : v);
@@ -20131,24 +20257,46 @@
       };
       const line = (arr) => rows.push(arr.map(esc).join(","));
       line([t("genStatusKpiOrders"), agg.totalPo]);
-      line([t("genStatusTotalValueLabel") + " (" + convLabel + ")", Math.round(agg.totalValue)]);
+      if (!hideVal) line([t("genStatusTotalValueLabel") + " (" + convLabel + ")", Math.round(agg.totalValue)]);
       line([t("genStatusKpiSuppliers"), agg.distinctSuppliers]);
+      line([t("genStatusKpiProjects"), agg.distinctProjects]);
       line([t("genStatusKpiReceived"), agg.receivedPct.toFixed(1) + "%"]);
-      line([t("genStatusKpiConcentration"), agg.concentrationPct.toFixed(1) + "%"]);
+      if (!hideVal) line([t("genStatusKpiConcentration"), agg.concentrationPct.toFixed(1) + "%"]);
       line([]);
-      line([t("genStatusColStatus"), t("genStatusColCount"), t("genStatusColValue") + " (" + convLabel + ")"]);
-      agg.statusArr.forEach(([st, o]) => line([generalPoStatusLabel(st, null), o.count, Math.round(o.value)]));
+      if (hideVal) {
+        line([t("genStatusColStatus"), t("genStatusColCount")]);
+        agg.statusArr.forEach(([st, o]) => line([generalPoStatusLabel(st, null), o.count]));
+      } else {
+        line([t("genStatusColStatus"), t("genStatusColCount"), t("genStatusColValue") + " (" + convLabel + ")"]);
+        agg.statusArr.forEach(([st, o]) => line([generalPoStatusLabel(st, null), o.count, Math.round(o.value)]));
+        line([]);
+        line([t("genStatusByProjectTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
+        agg.projectArr.forEach(([n, v]) => line([n, Math.round(v)]));
+        line([]);
+        line([t("genStatusBySupplierTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
+        agg.supplierArr.forEach(([n, v]) => line([n, Math.round(v)]));
+        line([]);
+        line([t("genStatusByMonthTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
+        agg.monthArr.forEach(([ym, v]) => line([ym, Math.round(v)]));
+      }
       line([]);
-      line([t("genStatusBySupplierTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
-      agg.supplierArr.forEach(([n, v]) => line([n, Math.round(v)]));
-      line([]);
-      line([t("genStatusByMonthTitle"), t("genStatusColValue") + " (" + convLabel + ")"]);
-      agg.monthArr.forEach(([ym, v]) => line([ym, Math.round(v)]));
-      line([]);
-      line([t("genStatusColRef"), t("genStatusColSummary"), t("genStatusColHistory")]);
-      (snap.rows || []).forEach((r) => {
-        line([r.ref, generalOrderSummaryText(r, convLabel), generalStatusHistorySummaryText(r)]);
-      });
+      if (hideVal) {
+        line([t("genStatusColRef"), t("genStatusColProject"), t("genStatusColSummary"), t("genStatusColHistory")]);
+        (snap.rows || []).forEach((r) => {
+          line([r.ref, r.project, generalOrderSummaryText(r), generalStatusHistorySummaryText(r)]);
+        });
+      } else {
+        line([
+          t("genStatusColRef"),
+          t("genStatusColProject"),
+          t("genStatusColSummary"),
+          t("genStatusColOrderValue"),
+          t("genStatusColHistory"),
+        ]);
+        (snap.rows || []).forEach((r) => {
+          line([r.ref, r.project, generalOrderSummaryText(r), generalOrderValueText(r), generalStatusHistorySummaryText(r)]);
+        });
+      }
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
       const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
       const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
@@ -26107,7 +26255,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-purchasing-queue-filters";
+    const CURRENT_UPDATE_ID = "2026-07-gstatus-hide-values";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
