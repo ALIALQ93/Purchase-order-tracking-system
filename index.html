@@ -5193,6 +5193,39 @@
           <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.9rem;" data-i18n="purchasingQueueHint">
             يُفضَّل متابعة الطلب منذ إدراجه: القسم الأول يعرض مراحل المستودع والموافقات قبل المشتريات. ثم «يحتاج إجراء» عند وصول الطلب إليكم، و«متابعة المسار» بعد إرسال السلفة للحسابات حتى الإقفال.
           </p>
+          <div class="po-projects-toolbar-strip" style="margin-bottom:0.65rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field po-filter-field-search">
+                <span data-i18n="warehouseReceiptSearchLabel">بحث</span>
+                <input
+                  type="search"
+                  id="pq-search"
+                  class="po-projects-filter-search"
+                  data-i18n-placeholder="warehouseReceiptSearchPlaceholder"
+                  autocomplete="off"
+                />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="warehouseReceiptFilterProjectLabel">المشروع</span>
+                <select id="pq-filter-project"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</span>
+                <select id="pq-filter-rep"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterPriorityLabel">الأولوية</span>
+                <select id="pq-filter-priority">
+                  <option value="" data-i18n="filterAll">الكل</option>
+                  <option value="urgent" data-i18n="poPriorityUrgent">عاجل</option>
+                  <option value="normal" data-i18n="poPriorityNormal">عادي</option>
+                </select>
+              </label>
+              <button type="button" class="btn btn-secondary btn-sm" id="pq-filter-reset" data-i18n="warehouseReceiptClearFilters">
+                مسح الفلاتر
+              </button>
+            </div>
+          </div>
           <div id="purchasing-queue-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
       </section>
@@ -7041,7 +7074,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات (أوامر شراء الإدارة العامة):</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>حالات جديدة للطلب:</strong> أُضيفت حالات «تحت التصنيع»، «إرسال الدفعات» (تظهر تلقائياً حسب عدد دفعات كل طلب)، «جاهز للشحن»، «قيد الشحن»، و«قيد التخليص الجمركي».</li><li><strong>سجل الحالات:</strong> زر «تحديث الحالة» في قائمة الأوامر يفتح نافذة لاختيار الحالة مع تحديد تاريخها وملاحظتها، ويُحفظ سجل متكامل لكل التغييرات.</li><li><strong>قسم تقارير الإدارة العامة:</strong> قسم جديد يضم <strong>تقرير حالة الطلبات</strong> (توزيع الحالات، القيمة حسب المورد والشهر، وجدول تفصيل الطلبات: مرجع الطلب وملخص الطلب وملخص سجل الحالة) بطباعة A4 احترافية ورسوم بيانية، و<strong>تقرير مواد الإدارة العامة</strong> — مع فلاتر وتصدير CSV.</li></ul><p style=\"margin:.5rem 0 0;color:var(--muted)\">ملاحظة: لإظهار «تقارير الإدارة العامة» فعّل القسم للمستخدم من الإدارة ← المستخدمون.</p>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>بحث وفلاتر في قسم المشتريات:</strong> أُضيف شريط بحث وفلاتر في شاشة «تنفيذ المشتريات» — ابحث فوراً في مرجع الطلب والمشروع والمنطقة ومندوب المشتريات وغيرها، وفلتر حسب <strong>المشروع</strong> و<strong>مندوب المشتريات</strong> و<strong>الأولوية</strong> (عاجل/عادي)، مع زر «مسح الفلاتر». تُطبَّق الفلاتر على الأقسام الثلاثة (متابعة منذ الإرسال، يحتاج إجراء، متابعة المسار).</li></ul>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -8090,7 +8123,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates (General admin POs):</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>New order statuses:</strong> added \"Under manufacturing\", \"Send installments\" (generated automatically per the order's number of installments), \"Ready to ship\", \"In shipping\", and \"Customs clearance\".</li><li><strong>Status history:</strong> an \"Update status\" button in the orders list opens a window to pick the status with its date and note, and keeps a full log of every change.</li><li><strong>General admin reports section:</strong> a new section with an <strong>Order status report</strong> (status distribution, value by supplier and month, and an orders-detail table: order reference, order summary, and status-history summary) with professional A4 print and charts, plus a <strong>General admin materials report</strong> — both with filters and CSV export.</li></ul><p style=\"margin:.5rem 0 0;color:var(--muted)\">Note: to show \"General admin reports\", enable the section for the user under Administration → Users.</p>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Search and filters in Purchasing:</strong> a search bar and filters were added to the Purchasing screen — instant search across PO reference, project, region, purchasing rep, and more; filter by <strong>project</strong>, <strong>purchasing representative</strong>, and <strong>priority</strong> (urgent/normal), with a \"Clear filters\" button. Filters apply to all three sections (tracking from submission, action required, pipeline follow-up).</li></ul>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -24417,6 +24450,353 @@
       return false;
     }
 
+    let pqQueueDataCache = null;
+
+    function purchasingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority) {
+      if (projectId && (po?.projectId || "") !== projectId) return false;
+      if (priority) {
+        const pr = po?.priority === "urgent" ? "urgent" : "normal";
+        if (pr !== priority) return false;
+      }
+      if (repIdOrName) {
+        const pid = (po?.purchasingRepresentativeId || "").trim();
+        const pn = (po?.purchasingRepresentativeName || "").trim();
+        if (repIdOrName !== pid && repIdOrName !== pn) return false;
+      }
+      const query = (q || "").trim().toLowerCase();
+      if (!query) return true;
+      const hay = [
+        (po?.poReference || po?.title || "").trim(),
+        (projectName || "").trim(),
+        projectPoRegionDisplayName(po),
+        (po?.purchasingRepresentativeName || "").trim(),
+        (po?.requesterName || "").trim(),
+        (po?.reasonRequest || "").trim(),
+        (po?.supplierName || "").trim(),
+        (po?.contractNumberSnapshot || "").trim(),
+        workflowLabelForDocument(po),
+        poRowDisplayDate(po),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return matchesQueryAllWords(hay, query);
+    }
+
+    function wirePurchasingFiltersOnce() {
+      const search = $("pq-search");
+      const proj = $("pq-filter-project");
+      const rep = $("pq-filter-rep");
+      const priority = $("pq-filter-priority");
+      const reset = $("pq-filter-reset");
+      if (!search || !proj || !rep || !priority || !reset) return;
+      if (reset.dataset.wired) return;
+      reset.dataset.wired = "1";
+      const rerender = () => {
+        if (pqQueueDataCache) renderPurchasingQueueTables(pqQueueDataCache);
+        else void loadPurchasingQueue();
+      };
+      search.addEventListener("input", debounceFn(rerender, 260));
+      proj.addEventListener("change", rerender);
+      rep.addEventListener("change", rerender);
+      priority.addEventListener("change", rerender);
+      reset.addEventListener("click", () => {
+        search.value = "";
+        proj.value = "";
+        rep.value = "";
+        priority.value = "";
+        rerender();
+      });
+    }
+
+    function populatePurchasingFilterSelects(cache) {
+      const { rowsUpstream, rowsAction, rowsTrack, projectNames } = cache;
+      const all = [...rowsUpstream, ...rowsAction, ...rowsTrack];
+      const projSel = $("pq-filter-project");
+      if (projSel) {
+        const ids = [...new Set(all.map((r) => r.projectId).filter(Boolean))];
+        ids.sort((a, b) =>
+          (projectNames[a] || a).localeCompare(projectNames[b] || b, lang === "ar" ? "ar" : "en")
+        );
+        const cur = projSel.value;
+        projSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          ids.map((id) => `<option value="${escapeAttr(id)}">${escapeHtml(projectNames[id] || id)}</option>`).join("");
+        projSel.value = ids.includes(cur) ? cur : "";
+      }
+      const repSel = $("pq-filter-rep");
+      if (repSel) {
+        const reps = all
+          .map((r) => ({
+            id: (r.purchasingRepresentativeId || "").trim(),
+            name: (r.purchasingRepresentativeName || "").trim(),
+          }))
+          .filter((x) => x.id || x.name);
+        const uniq = [];
+        const seen = new Set();
+        reps.forEach((x) => {
+          const key = x.id || x.name;
+          if (seen.has(key)) return;
+          seen.add(key);
+          uniq.push(x);
+        });
+        uniq.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id, lang === "ar" ? "ar" : "en"));
+        const cur = repSel.value;
+        repSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          uniq
+            .map((r) => `<option value="${escapeAttr(r.id || r.name)}">${escapeHtml(r.name || r.id)}</option>`)
+            .join("");
+        repSel.value = uniq.some((x) => (x.id || x.name) === cur) ? cur : "";
+      }
+    }
+
+    function renderPurchasingQueueTables(cache) {
+      const wrap = $("purchasing-queue-wrap");
+      if (!wrap || !cache) return;
+      const { rowsUpstream: upstreamAll, rowsAction: actionAll, rowsTrack: trackAll, projectNames, role } = cache;
+      const qText = ($("pq-search")?.value || "").trim();
+      const fProject = ($("pq-filter-project")?.value || "").trim();
+      const fRep = ($("pq-filter-rep")?.value || "").trim();
+      const fPriority = ($("pq-filter-priority")?.value || "").trim();
+      const rowOk = (r) =>
+        purchasingRowMatchesFilters(
+          r,
+          projectNames[r.projectId] || r.projectId || "",
+          qText,
+          fProject,
+          fRep,
+          fPriority
+        );
+      let rowsUpstream = upstreamAll.filter(rowOk);
+      let rowsAction = actionAll.filter(rowOk);
+      let rowsTrack = trackAll.filter(rowOk);
+      const hasFilters = !!(qText || fProject || fRep || fPriority);
+      const totalRows = upstreamAll.length + actionAll.length + trackAll.length;
+
+      const upstreamRank = (x) => {
+        const o = {
+          warehouse_review: 0,
+          pending_engineer_first: 1,
+          pending_project_manager: 2,
+          pending_group_manager: 3,
+          pending_supervisor: 4,
+        };
+        return o[x.workflowStatus] ?? 99;
+      };
+      rowsUpstream.sort((a, b) => {
+        const ud = upstreamRank(a) - upstreamRank(b);
+        if (ud !== 0) return ud;
+        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pd = pri(b) - pri(a);
+        if (pd !== 0) return pd;
+        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+      });
+      rowsAction.sort((a, b) => {
+        const stageRank = (x) => (x.workflowStatus === "pending_purchasing" ? 0 : 1);
+        const sd = stageRank(a) - stageRank(b);
+        if (sd !== 0) return sd;
+        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pd = pri(b) - pri(a);
+        if (pd !== 0) return pd;
+        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+      });
+      const trackRank = (x) => {
+        const o = {
+          pending_advance_accounting: 0,
+          pending_warehouse_receipt: 1,
+          pending_accounting: 2,
+          workflow_complete: 3,
+        };
+        return o[x.workflowStatus] ?? 99;
+      };
+      rowsTrack.sort((a, b) => {
+        const td = trackRank(a) - trackRank(b);
+        if (td !== 0) return td;
+        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pd = pri(b) - pri(a);
+        if (pd !== 0) return pd;
+        const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
+        const tb = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
+        return ta - tb;
+      });
+
+      if (!totalRows) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("emptyPurchasingQueue"))}</p>`;
+        return;
+      }
+      if (!rowsUpstream.length && !rowsAction.length && !rowsTrack.length) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(
+          t(hasFilters ? "warehouseReceiptNoFilterResults" : "emptyPurchasingQueue")
+        )}</p>`;
+        return;
+      }
+
+      const canAct = role === "purchasing_officer" || hasAdminAccess();
+      const tableHead = `<thead><tr>
+              <th>${t("colPoReference")}</th>
+              <th>${t("colRequestDate")}</th>
+              <th>${t("colProject")}</th>
+              <th>${t("colPriority")}</th>
+              <th>${t("colWorkflow")}</th>
+              <th>${t("colPurchasingRepresentative")}</th>
+              <th></th>
+            </tr></thead>`;
+      const emptySection = (sectionHasRows, emptyKey) =>
+        `<p class="empty-state" style="padding-top:0">${escapeHtml(
+          t(hasFilters && sectionHasRows ? "warehouseReceiptNoFilterResults" : emptyKey)
+        )}</p>`;
+
+      const actionBody =
+        rowsAction.length > 0
+          ? `<tbody>
+              ${rowsAction
+                .map((r) => {
+                  let act = "";
+                  if (canAct && r.workflowStatus === "pending_purchasing") {
+                    act =
+                      '<button type="button" class="btn btn-primary btn-sm btn-purchasing-advance" data-id="' +
+                      escapeHtml(r.id) +
+                      '">' +
+                      escapeHtml(t("btnConfirmPurchasingAdvance")) +
+                      "</button>";
+                  } else if (canAct && r.workflowStatus === "in_progress_purchasing") {
+                    act =
+                      '<button type="button" class="btn btn-secondary btn-sm btn-purchasing-record-prices" data-id="' +
+                      escapeHtml(r.id) +
+                      '">' +
+                      escapeHtml(t("btnPurchasingRecordPrices")) +
+                      "</button>" +
+                      '<button type="button" class="btn btn-primary btn-sm btn-purchasing-send-advance" data-id="' +
+                      escapeHtml(r.id) +
+                      '">' +
+                      escapeHtml(t("btnPurchasingSendAdvance")) +
+                      "</button>";
+                  }
+                  return `
+                <tr>
+                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                  <td>${priorityBadge(r.priority)}</td>
+                  <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
+                  <td class="td-approval-actions">
+                    <div class="approval-actions-cell">
+                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${act}
+                    </div>
+                  </td>
+                </tr>`;
+                })
+                .join("")}
+            </tbody>`
+          : "";
+      const trackBody =
+        rowsTrack.length > 0
+          ? `<tbody>
+              ${rowsTrack
+                .map((r) => {
+                  const isEarlyTrack =
+                    r.workflowStatus === "pending_advance_accounting" ||
+                    r.workflowStatus === "pending_warehouse_receipt";
+                  const canRecord = canAct && (isEarlyTrack || r.workflowStatus === "pending_accounting");
+                  const recordBtn = canRecord
+                    ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                        t(isEarlyTrack ? "btnPurchasingRecordPrices" : "btnAccountingRecordValues")
+                      )}</button>`
+                    : "";
+                  const canVerify = canAct && r.workflowStatus === "pending_accounting" && !r.pricesVerified;
+                  const verifyBtn = canVerify
+                    ? `<button type="button" class="btn btn-secondary btn-sm btn-verify-prices" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                        t("btnVerifyPrices")
+                      )}</button>`
+                    : "";
+                  return `
+                <tr>
+                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                  <td>${priorityBadge(r.priority)}</td>
+                  <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
+                  <td class="td-approval-actions">
+                    <div class="approval-actions-cell">
+                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(
+                        r.id
+                      )}">${escapeHtml(t("btnPoPrintView"))}</button>${recordBtn}${verifyBtn}
+                    </div>
+                  </td>
+                </tr>`;
+                })
+                .join("")}
+            </tbody>`
+          : "";
+      const upstreamBody =
+        rowsUpstream.length > 0
+          ? `<tbody>
+              ${rowsUpstream
+                .map(
+                  (r) => `
+                <tr>
+                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
+                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
+                  <td>${priorityBadge(r.priority)}</td>
+                  <td>${formatWorkflowTableCellForPo(r)}</td>
+                  <td>${purchasingRepresentativeCellHtml(r)}</td>
+                  <td class="td-approval-actions">
+                    <div class="approval-actions-cell">
+                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>
+                    </div>
+                  </td>
+                </tr>`
+                )
+                .join("")}
+            </tbody>`
+          : "";
+
+      let html = "";
+      html += `<h2 class="queue-section-title">${escapeHtml(t("purchasingQueueSectionUpstream"))}</h2>`;
+      if (rowsUpstream.length) {
+        html += `<div class="table-scroll"><table class="data-table">${tableHead}${upstreamBody}</table></div>`;
+      } else {
+        html += emptySection(upstreamAll.length > 0, "emptyPurchasingQueueUpstream");
+      }
+      html += `<h2 class="queue-section-title">${escapeHtml(t("purchasingQueueSectionAction"))}</h2>`;
+      if (rowsAction.length) {
+        html += `<div class="table-scroll"><table class="data-table">${tableHead}${actionBody}</table></div>`;
+      } else {
+        html += emptySection(actionAll.length > 0, "emptyPurchasingQueueAction");
+      }
+      html += `<h2 class="queue-section-title">${escapeHtml(t("purchasingQueueSectionTrack"))}</h2>`;
+      if (rowsTrack.length) {
+        html += `<div class="table-scroll"><table class="data-table">${tableHead}${trackBody}</table></div>`;
+      } else {
+        html += emptySection(trackAll.length > 0, "emptyPurchasingQueueTrack");
+      }
+      wrap.innerHTML = html;
+      wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
+        btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
+        btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-verify-prices").forEach((btn) => {
+        btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+      });
+      if (canAct) {
+        wrap.querySelectorAll(".btn-purchasing-advance").forEach((btn) => {
+          btn.addEventListener("click", () => void openPurchasingRepresentativeModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-purchasing-record-prices").forEach((btn) => {
+          btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-purchasing-send-advance").forEach((btn) => {
+          btn.addEventListener("click", () => runPurchasingSubmitToAdvanceAccounting(btn.dataset.id));
+        });
+      }
+    }
+
     async function loadPurchasingQueue() {
       const wrap = $("purchasing-queue-wrap");
       if (!wrap) return;
@@ -24472,213 +24852,10 @@
         rowsUpstream = filterPurchaseOrdersByStakeholder(rowsUpstream, projectRegion);
         rowsAction = filterPurchaseOrdersByStakeholder(rowsAction, projectRegion);
         rowsTrack = filterPurchaseOrdersByStakeholder(rowsTrack, projectRegion);
-        const upstreamRank = (x) => {
-          const o = {
-            warehouse_review: 0,
-            pending_engineer_first: 1,
-            pending_project_manager: 2,
-            pending_group_manager: 3,
-            pending_supervisor: 4,
-          };
-          return o[x.workflowStatus] ?? 99;
-        };
-        rowsUpstream.sort((a, b) => {
-          const ud = upstreamRank(a) - upstreamRank(b);
-          if (ud !== 0) return ud;
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-          const pd = pri(b) - pri(a);
-          if (pd !== 0) return pd;
-          return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
-        });
-        rowsAction.sort((a, b) => {
-          const stageRank = (x) => (x.workflowStatus === "pending_purchasing" ? 0 : 1);
-          const sd = stageRank(a) - stageRank(b);
-          if (sd !== 0) return sd;
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-          const pd = pri(b) - pri(a);
-          if (pd !== 0) return pd;
-          return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
-        });
-        const trackRank = (x) => {
-          const o = {
-            pending_advance_accounting: 0,
-            pending_warehouse_receipt: 1,
-            pending_accounting: 2,
-            workflow_complete: 3,
-          };
-          return o[x.workflowStatus] ?? 99;
-        };
-        rowsTrack.sort((a, b) => {
-          const td = trackRank(a) - trackRank(b);
-          if (td !== 0) return td;
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-          const pd = pri(b) - pri(a);
-          if (pd !== 0) return pd;
-          const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
-          const tb = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
-          return ta - tb;
-        });
-        if (!rowsUpstream.length && !rowsAction.length && !rowsTrack.length) {
-          wrap.innerHTML = `<p class="empty-state">${t("emptyPurchasingQueue")}</p>`;
-          return;
-        }
-        const canAct = role === "purchasing_officer" || hasAdminAccess();
-        const tableHead = `<thead><tr>
-              <th>${t("colPoReference")}</th>
-              <th>${t("colRequestDate")}</th>
-              <th>${t("colProject")}</th>
-              <th>${t("colPriority")}</th>
-              <th>${t("colWorkflow")}</th>
-              <th>${t("colPurchasingRepresentative")}</th>
-              <th></th>
-            </tr></thead>`;
-        const actionBody =
-          rowsAction.length > 0
-            ? `<tbody>
-              ${rowsAction
-                .map((r) => {
-                  let act = "";
-                  if (canAct && r.workflowStatus === "pending_purchasing") {
-                    act =
-                      '<button type="button" class="btn btn-primary btn-sm btn-purchasing-advance" data-id="' +
-                      escapeHtml(r.id) +
-                      '">' +
-                      escapeHtml(t("btnConfirmPurchasingAdvance")) +
-                      "</button>";
-                  } else if (canAct && r.workflowStatus === "in_progress_purchasing") {
-                    act =
-                      '<button type="button" class="btn btn-secondary btn-sm btn-purchasing-record-prices" data-id="' +
-                      escapeHtml(r.id) +
-                      '">' +
-                      escapeHtml(t("btnPurchasingRecordPrices")) +
-                      "</button>" +
-                      '<button type="button" class="btn btn-primary btn-sm btn-purchasing-send-advance" data-id="' +
-                      escapeHtml(r.id) +
-                      '">' +
-                      escapeHtml(t("btnPurchasingSendAdvance")) +
-                      "</button>";
-                  }
-                  return `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${act}
-                    </div>
-                  </td>
-                </tr>`;
-                })
-                .join("")}
-            </tbody>`
-            : "";
-        const trackBody =
-          rowsTrack.length > 0
-            ? `<tbody>
-              ${rowsTrack
-                .map((r) => {
-                  const isEarlyTrack =
-                    r.workflowStatus === "pending_advance_accounting" ||
-                    r.workflowStatus === "pending_warehouse_receipt";
-                  const canRecord = canAct && (isEarlyTrack || r.workflowStatus === "pending_accounting");
-                  const recordBtn = canRecord
-                    ? `<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t(isEarlyTrack ? "btnPurchasingRecordPrices" : "btnAccountingRecordValues")
-                      )}</button>`
-                    : "";
-                  const canVerify = canAct && r.workflowStatus === "pending_accounting" && !r.pricesVerified;
-                  const verifyBtn = canVerify
-                    ? `<button type="button" class="btn btn-secondary btn-sm btn-verify-prices" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnVerifyPrices")
-                      )}</button>`
-                    : "";
-                  return `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(
-                        t("btnPoPrintView")
-                      )}</button>${recordBtn}${verifyBtn}
-                    </div>
-                  </td>
-                </tr>`
-                })
-                .join("")}
-            </tbody>`
-            : "";
-        const upstreamBody =
-          rowsUpstream.length > 0
-            ? `<tbody>
-              ${rowsUpstream
-                .map(
-                  (r) => `
-                <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>${purchasingRepresentativeCellHtml(r)}</td>
-                  <td class="td-approval-actions">
-                    <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>
-                    </div>
-                  </td>
-                </tr>`
-                )
-                .join("")}
-            </tbody>`
-            : "";
-        let html = "";
-        html += `<h2 class="queue-section-title">${escapeHtml(t("purchasingQueueSectionUpstream"))}</h2>`;
-        if (rowsUpstream.length) {
-          html += `<div class="table-scroll"><table class="data-table">${tableHead}${upstreamBody}</table></div>`;
-        } else {
-          html += `<p class="empty-state" style="padding-top:0">${escapeHtml(t("emptyPurchasingQueueUpstream"))}</p>`;
-        }
-        html += `<h2 class="queue-section-title">${escapeHtml(t("purchasingQueueSectionAction"))}</h2>`;
-        if (rowsAction.length) {
-          html += `<div class="table-scroll"><table class="data-table">${tableHead}${actionBody}</table></div>`;
-        } else {
-          html += `<p class="empty-state" style="padding-top:0">${escapeHtml(t("emptyPurchasingQueueAction"))}</p>`;
-        }
-        html += `<h2 class="queue-section-title">${escapeHtml(t("purchasingQueueSectionTrack"))}</h2>`;
-        if (rowsTrack.length) {
-          html += `<div class="table-scroll"><table class="data-table">${tableHead}${trackBody}</table></div>`;
-        } else {
-          html += `<p class="empty-state" style="padding-top:0">${escapeHtml(t("emptyPurchasingQueueTrack"))}</p>`;
-        }
-        wrap.innerHTML = html;
-        wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
-          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
-          btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-verify-prices").forEach((btn) => {
-          btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
-        });
-        if (canAct) {
-          wrap.querySelectorAll(".btn-purchasing-advance").forEach((btn) => {
-            btn.addEventListener("click", () => void openPurchasingRepresentativeModal(btn.dataset.id));
-          });
-          wrap.querySelectorAll(".btn-purchasing-record-prices").forEach((btn) => {
-            btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
-          });
-          wrap.querySelectorAll(".btn-purchasing-send-advance").forEach((btn) => {
-            btn.addEventListener("click", () => runPurchasingSubmitToAdvanceAccounting(btn.dataset.id));
-          });
-        }
+        wirePurchasingFiltersOnce();
+        pqQueueDataCache = { rowsUpstream, rowsAction, rowsTrack, projectNames, projectRegion, role };
+        populatePurchasingFilterSelects(pqQueueDataCache);
+        renderPurchasingQueueTables(pqQueueDataCache);
       } catch (e) {
         console.error(e);
         wrap.innerHTML = `<p class="error-msg">${t("loadError")} ${escapeHtml(e.message || "")}</p>`;
@@ -25930,7 +26107,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-general-status-reports";
+    const CURRENT_UPDATE_ID = "2026-07-purchasing-queue-filters";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
