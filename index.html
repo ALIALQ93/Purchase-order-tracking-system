@@ -6857,6 +6857,9 @@
         genPoStatusHistoryTitle: "سجل الحالات",
         genPoStatusHistoryEmpty: "لا يوجد سجل حالات بعد.",
         btnUpdateStatus: "تحديث الحالة",
+        btnDuplicatePo: "تكرار الطلب",
+        confirmDuplicateGenPo:
+          "إنشاء نسخة جديدة من هذا الطلب؟ سيتم نسخ المورد والمواد وشروط الدفع، ويبدأ الطلب الجديد كمسودة بمرجع وتاريخ جديدين دون سجل الحالات.",
         btnSaveStatus: "حفظ الحالة",
         adminTitle: "الإدارة",
         tabCompanies: "الشركات",
@@ -7082,7 +7085,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>إخفاء قيم الطلبات في تقرير الحالة:</strong> أُضيف خيار «إخفاء قيم الطلبات» في تقرير حالة الطلبات (الإدارة العامة). عند التفعيل تُخفى القيم المالية من العرض والطباعة وتصدير CSV، مع الإبقاء على عدد الطلبات والحالات وملخص سجل الحالة لكل طلب. يمكن تبديل الخيار بعد عرض التقرير دون إعادة تشغيله.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تكرار أوامر شراء الإدارة العامة:</strong> يمكنك الآن إنشاء نسخة من أي طلب، مع نسخ بياناته ومواده وشروط الدفع وفتحه للتعديل كمسودة جديدة بمرجع وتاريخ جديدين، دون نسخ سجل الحالات.</li><li><strong>تقرير حالة الطلبات المحددة:</strong> أُضيف تحديد متعدد للطلبات لإنشاء تقرير خاص بالطلبات المختارة فقط، ويشمل العرض والطباعة وتصدير CSV. كما أُضيف عمود «ملخص المواد» الذي يعرض أول كلمتين من اسم المادة مع الكمية والسعر، مع استمرار توفر خيار إخفاء قيم الطلبات.</li></ul>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -7270,10 +7273,21 @@
         genStatusColRef: "مرجع الطلب",
         genStatusColProject: "المشروع",
         genStatusColSummary: "ملخص الطلب",
+        genStatusColMaterialsSummary: "ملخص المواد",
         genStatusColOrderValue: "قيمة الطلب",
         genStatusColHistory: "ملخص سجل الحالة",
         genStatusHideValues: "إخفاء قيم الطلبات",
         genStatusSummaryItems: "بند",
+        genStatusMaterialQty: "الكمية",
+        genStatusMaterialPrice: "السعر",
+        genStatusSelectCol: "تحديد",
+        genStatusSelectOrder: "تحديد الطلب",
+        genStatusSelectAll: "تحديد الكل",
+        genStatusClearSelection: "إلغاء التحديد",
+        genStatusBuildSelected: "إنشاء تقرير للمحدد",
+        genStatusShowAll: "عرض كل الطلبات",
+        genStatusSelectedCount: "المحدد: {count}",
+        genStatusSelectOrdersAlert: "حدد طلباً واحداً على الأقل لإنشاء التقرير.",
         genStatusInsightsTitle: "أبرز الملاحظات",
         genStatusInsightTopLead: "أكثر الحالات",
         genStatusInsightTopBody: "الحالة الأكثر تكراراً هي «{status}» بعدد {count} طلب من أصل {total}.",
@@ -7914,6 +7928,9 @@
         genPoStatusHistoryTitle: "Status history",
         genPoStatusHistoryEmpty: "No status history yet.",
         btnUpdateStatus: "Update status",
+        btnDuplicatePo: "Duplicate",
+        confirmDuplicateGenPo:
+          "Create a new copy of this purchase order? Supplier, items, and payment terms will be copied. The new order starts as a draft with a new reference and date, without the status history.",
         btnSaveStatus: "Save status",
         adminTitle: "Administration",
         tabCompanies: "Companies",
@@ -8139,7 +8156,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Hide order values in status report:</strong> a \"Hide order values\" option was added to the general order status report. When enabled, monetary amounts are hidden from the on-screen view, print layout, and CSV export, while order counts, statuses, and per-order status history summaries remain visible. You can toggle the option after running the report without re-running it.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Duplicate general purchase orders:</strong> you can now create a copy of any order, carrying over its details, materials, and payment terms, then edit it as a new draft with a new reference and date without copying status history.</li><li><strong>Selected-orders status report:</strong> select multiple orders and build a report using only those orders across the on-screen view, print layout, and CSV export. A new \"Materials summary\" column shows the first two words of each material with its quantity and price, while the option to hide order values remains available.</li></ul>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -8328,10 +8345,21 @@
         genStatusColRef: "Order reference",
         genStatusColProject: "Project",
         genStatusColSummary: "Order summary",
+        genStatusColMaterialsSummary: "Materials summary",
         genStatusColOrderValue: "Order value",
         genStatusColHistory: "Status history summary",
         genStatusHideValues: "Hide order values",
         genStatusSummaryItems: "items",
+        genStatusMaterialQty: "Qty",
+        genStatusMaterialPrice: "Price",
+        genStatusSelectCol: "Select",
+        genStatusSelectOrder: "Select order",
+        genStatusSelectAll: "Select all",
+        genStatusClearSelection: "Clear selection",
+        genStatusBuildSelected: "Build selected report",
+        genStatusShowAll: "Show all orders",
+        genStatusSelectedCount: "Selected: {count}",
+        genStatusSelectOrdersAlert: "Select at least one order to build the report.",
         genStatusInsightsTitle: "Key observations",
         genStatusInsightTopLead: "Most common status",
         genStatusInsightTopBody: "The most frequent status is \"{status}\" with {count} of {total} orders.",
@@ -15989,27 +16017,47 @@
       await hydratePo007ProjectToFrame();
     }
 
-    async function openGeneralPo007Modal(existingId) {
+    async function openGeneralPo007Modal(existingId, opts) {
+      const duplicate = !!opts?.duplicate;
       if (
         isPoEditorRoleBlocked() &&
-        !purchasingOfficerMayOpenNewPoModal("general", existingId)
+        !purchasingOfficerMayOpenNewPoModal("general", duplicate ? null : existingId)
       ) {
         alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
         return;
       }
       if (!generalPoTemplateCache.loaded) await loadGeneralPoTemplateCache();
       generalPo007EditorMode = "po";
-      generalPo007PendingLoad = { existingId: existingId || null, po: null, g: null };
-      $("po007-editor-id").value = existingId || "";
+      generalPo007PendingLoad = { existingId: duplicate ? null : existingId || null, po: null, g: null };
+      $("po007-editor-id").value = duplicate ? "" : existingId || "";
       if (existingId) {
         const ref = doc(db, "purchaseOrders", existingId);
         const snap = await getDoc(ref);
         if (!snap.exists()) return;
-        const po = { id: snap.id, ...snap.data() };
+        let po = { id: snap.id, ...snap.data() };
+        if (duplicate) {
+          po = {
+            ...po,
+            id: null,
+            status: "draft",
+            statusDate: null,
+            statusNote: "",
+            statusHistory: [],
+            statusUpdatedAt: null,
+            statusUpdatedBy: null,
+            createdAt: null,
+            createdBy: null,
+            updatedAt: null,
+          };
+        }
         generalPo007PendingLoad.po = po;
         generalPo007PendingLoad.g = normalizeGeneralFormFromPo(po);
-        fillPo007StatusOptions(po.status || "draft", po);
-        setPo007StatusMetaFields(po);
+        if (duplicate) {
+          generalPo007PendingLoad.g.poNumber = "";
+          generalPo007PendingLoad.g.poDate = formatTodayYmd();
+        }
+        fillPo007StatusOptions(duplicate ? "draft" : po.status || "draft", po);
+        setPo007StatusMetaFields(duplicate ? null : po);
         const langSelExisting = $("po007-meta-lang");
         if (langSelExisting) {
           langSelExisting.value =
@@ -16056,7 +16104,7 @@
       const g = generalPo007PendingLoad?.g
         ? generalFormForEditor(generalPo007PendingLoad.g, po)
         : defaultGeneralPo007EditorForm(docLang);
-      if (!existingId) {
+      if (!existingId || duplicate) {
         g.poNumber = "—";
         g.poDate = getPo007MetaPoDateIso();
       }
@@ -19525,6 +19573,8 @@
     // ===== General admin PO reports (scope=general) =====
     let lastGeneralMaterialsReportSnapshot = null;
     let lastGeneralStatusReportSnapshot = null;
+    let lastGeneralStatusReportSourceSnapshot = null;
+    let generalStatusSelectedOrderIds = new Set();
 
     function generalLinePriceNumber(l) {
       const raw = l && (l.priceText ?? l.price ?? "");
@@ -19787,10 +19837,7 @@
       if (hideValInp && !hideValInp.dataset.wired) {
         hideValInp.dataset.wired = "1";
         hideValInp.addEventListener("change", () => {
-          if (lastGeneralStatusReportSnapshot?.agg) {
-            const w = $("reports-gstatus-wrap");
-            if (w) w.innerHTML = renderGeneralStatusReportHtml(lastGeneralStatusReportSnapshot, lastGeneralStatusReportSnapshot.agg);
-          }
+          if (lastGeneralStatusReportSnapshot?.agg) renderGeneralStatusReportCurrent();
         });
       }
       await fillGeneralReportFilters("rep-gstatus");
@@ -19866,6 +19913,25 @@
       return (r.currency || "IQD") + " " + n.toLocaleString(localeTag());
     }
 
+    function generalOrderMaterialsSummaryText(r, snap) {
+      const rows = (snap?.lineRows || []).filter((line) => line.poId === r.id);
+      if (!rows.length) return t("dash");
+      return rows
+        .map((line) => {
+          const words = String(line.item || line.unit || "")
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .join(" ");
+          const item = words || t("dash");
+          const qty = (Number(line.qty) || 0).toLocaleString(localeTag());
+          const price = (Number(line.price) || 0).toLocaleString(localeTag());
+          return `${item} · ${t("genStatusMaterialQty")}: ${qty} · ${t("genStatusMaterialPrice")}: ${line.currency || "IQD"} ${price}`;
+        })
+        .join(" | ");
+    }
+
     function generalStatusHistorySummaryText(r) {
       const hist = Array.isArray(r.statusHistory) ? r.statusHistory : [];
       if (hist.length) {
@@ -19882,6 +19948,77 @@
 
     function generalStatusHideValues() {
       return !!$("rep-gstatus-hide-values")?.checked;
+    }
+
+    function renderGeneralStatusReportCurrent() {
+      const wrap = $("reports-gstatus-wrap");
+      const snap = lastGeneralStatusReportSnapshot;
+      if (!wrap || !snap?.agg) return;
+      wrap.innerHTML = renderGeneralStatusReportHtml(snap, snap.agg);
+      wireGeneralStatusOrderSelection();
+    }
+
+    function updateGeneralStatusSelectionCount() {
+      const el = $("gen-status-selected-count");
+      if (!el) return;
+      const sourceIds = new Set((lastGeneralStatusReportSourceSnapshot?.rows || []).map((r) => r.id));
+      const count = [...generalStatusSelectedOrderIds].filter((id) => sourceIds.has(id)).length;
+      el.textContent = t("genStatusSelectedCount").replace("{count}", String(count));
+    }
+
+    function applyGeneralStatusOrderSelection() {
+      const source = lastGeneralStatusReportSourceSnapshot;
+      if (!source?.rows?.length) return;
+      const rows = source.rows.filter((r) => generalStatusSelectedOrderIds.has(r.id));
+      if (!rows.length) {
+        alert(t("genStatusSelectOrdersAlert"));
+        return;
+      }
+      const ids = new Set(rows.map((r) => r.id));
+      const lineRows = (source.lineRows || []).filter((line) => ids.has(line.poId));
+      const selected = {
+        ...source,
+        rows,
+        lineRows,
+        sumConverted: rows.reduce((sum, r) => sum + (Number(r.converted) || 0), 0),
+        generatedAt: new Date().toISOString(),
+        selectionApplied: rows.length !== source.rows.length,
+      };
+      selected.agg = buildGeneralStatusAggregates(selected);
+      lastGeneralStatusReportSnapshot = selected;
+      renderGeneralStatusReportCurrent();
+    }
+
+    function restoreAllGeneralStatusOrders() {
+      const source = lastGeneralStatusReportSourceSnapshot;
+      if (!source?.rows?.length) return;
+      generalStatusSelectedOrderIds = new Set(source.rows.map((r) => r.id));
+      lastGeneralStatusReportSnapshot = { ...source, agg: buildGeneralStatusAggregates(source), selectionApplied: false };
+      renderGeneralStatusReportCurrent();
+    }
+
+    function wireGeneralStatusOrderSelection() {
+      const wrap = $("reports-gstatus-wrap");
+      if (!wrap) return;
+      wrap.querySelectorAll(".gen-status-order-select").forEach((input) => {
+        input.addEventListener("change", () => {
+          const id = input.dataset.id || "";
+          if (input.checked) generalStatusSelectedOrderIds.add(id);
+          else generalStatusSelectedOrderIds.delete(id);
+          updateGeneralStatusSelectionCount();
+        });
+      });
+      $("gen-status-select-all")?.addEventListener("click", () => {
+        (lastGeneralStatusReportSnapshot?.rows || []).forEach((r) => generalStatusSelectedOrderIds.add(r.id));
+        renderGeneralStatusReportCurrent();
+      });
+      $("gen-status-clear-selection")?.addEventListener("click", () => {
+        generalStatusSelectedOrderIds.clear();
+        renderGeneralStatusReportCurrent();
+      });
+      $("gen-status-build-selected")?.addEventListener("click", applyGeneralStatusOrderSelection);
+      $("gen-status-show-all")?.addEventListener("click", restoreAllGeneralStatusOrders);
+      updateGeneralStatusSelectionCount();
     }
 
     function renderGeneralStatusReportHtml(snap, agg) {
@@ -19945,9 +20082,13 @@
         ? orderList
             .map(
               (r) => `<tr>
+            <td style="text-align:center"><input type="checkbox" class="gen-status-order-select" data-id="${escapeAttr(r.id)}" ${
+                generalStatusSelectedOrderIds.has(r.id) ? "checked" : ""
+              } aria-label="${escapeAttr(t("genStatusSelectOrder"))}" /></td>
             <td>${escapeHtml(r.ref)}<div class="muted" style="font-size:11px">${escapeHtml(r.poDate || "")}</div></td>
             <td>${escapeHtml(r.project || t("dash"))}</td>
             <td>${escapeHtml(generalOrderSummaryText(r))}</td>
+            <td style="min-width:240px">${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>
             ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
             <td>${statusBadge(r.status, "general", null)}<div style="margin-top:.25rem;font-size:11.5px;color:var(--muted)">${escapeHtml(
                 generalStatusHistorySummaryText(r)
@@ -19955,7 +20096,7 @@
           </tr>`
             )
             .join("")
-        : `<tr><td colspan="${hideVal ? 4 : 5}">${escapeHtml(t("reportNoRows"))}</td></tr>`;
+        : `<tr><td colspan="${hideVal ? 6 : 7}">${escapeHtml(t("reportNoRows"))}</td></tr>`;
       const totalCard = hideVal
         ? `<div class="pricing-total-card">
             <div class="label">${escapeHtml(t("genStatusKpiOrders"))}</div>
@@ -20020,10 +20161,29 @@
         </div>
         <div class="pricing-section">
           <h4>${escapeHtml(t("genStatusOrdersTableTitle"))}</h4>
+          <div class="actions" style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin:.5rem 0">
+            <button type="button" class="btn btn-secondary btn-sm" id="gen-status-select-all">${escapeHtml(t("genStatusSelectAll"))}</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="gen-status-clear-selection">${escapeHtml(
+              t("genStatusClearSelection")
+            )}</button>
+            <button type="button" class="btn btn-primary btn-sm" id="gen-status-build-selected">${escapeHtml(
+              t("genStatusBuildSelected")
+            )}</button>
+            ${
+              snap.selectionApplied
+                ? `<button type="button" class="btn btn-secondary btn-sm" id="gen-status-show-all">${escapeHtml(
+                    t("genStatusShowAll")
+                  )}</button>`
+                : ""
+            }
+            <span class="muted" id="gen-status-selected-count"></span>
+          </div>
           <div class="table-scroll"><table class="data-table"><thead><tr>
+            <th style="width:44px">${escapeHtml(t("genStatusSelectCol"))}</th>
             <th>${escapeHtml(t("genStatusColRef"))}</th>
             <th>${escapeHtml(t("genStatusColProject"))}</th>
             <th>${escapeHtml(t("genStatusColSummary"))}</th>
+            <th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>
             ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
             <th>${escapeHtml(t("genStatusColHistory"))}</th>
           </tr></thead><tbody>${orderRows}</tbody></table></div>
@@ -20040,6 +20200,9 @@
         alert(t("alertMatReportNeedDates"));
         return;
       }
+      lastGeneralStatusReportSnapshot = null;
+      lastGeneralStatusReportSourceSnapshot = null;
+      generalStatusSelectedOrderIds.clear();
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
         const snap = await buildGeneralReportSnapshot({
@@ -20056,8 +20219,10 @@
           return;
         }
         const agg = buildGeneralStatusAggregates(snap);
-        lastGeneralStatusReportSnapshot = { ...snap, agg };
-        wrap.innerHTML = renderGeneralStatusReportHtml(snap, agg);
+        lastGeneralStatusReportSourceSnapshot = { ...snap };
+        generalStatusSelectedOrderIds = new Set(snap.rows.map((r) => r.id));
+        lastGeneralStatusReportSnapshot = { ...snap, agg, selectionApplied: false };
+        renderGeneralStatusReportCurrent();
       } catch (e) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
       }
@@ -20135,9 +20300,33 @@
         ]);
       }
       const insightsHtml = insights.map((p) => `<p><strong>${escapeHtml(p[0])}:</strong> ${escapeHtml(p[1])}</p>`).join("");
+      const printOrderRows = (snap.rows || [])
+        .map(
+          (r) => `<tr>
+            <td>${escapeHtml(r.ref)}</td>
+            <td>${escapeHtml(r.project || t("dash"))}</td>
+            <td>${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>
+            ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
+            <td>${escapeHtml(generalStatusHistorySummaryText(r))}</td>
+          </tr>`
+        )
+        .join("");
+      const printOrdersTable = `<section class="order-details">
+        <h2>${escapeHtml(t("genStatusOrdersTableTitle"))}</h2>
+        <table><thead><tr>
+          <th>${escapeHtml(t("genStatusColRef"))}</th>
+          <th>${escapeHtml(t("genStatusColProject"))}</th>
+          <th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>
+          ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
+          <th>${escapeHtml(t("genStatusColHistory"))}</th>
+        </tr></thead><tbody>${printOrderRows}</tbody></table>
+      </section>`;
       const metaHtml = [
         `<span>${escapeHtml(t("reportFromDateLabel"))}: <b>${escapeHtml(from)} – ${escapeHtml(to)}</b></span>`,
         `<span>${escapeHtml(t("reportGeneratedAtLabel"))}: <b>${escapeHtml(genAt)}</b></span>`,
+        snap.selectionApplied
+          ? `<span><b>${escapeHtml(t("genStatusSelectedCount").replace("{count}", String(agg.totalPo)))}</b></span>`
+          : "",
         snap.fxRateDisp != null && !hideVal
           ? `<span>${escapeHtml(t("reportFxUsedLabel"))}: <b>1 USD = ${escapeHtml(num(snap.fxRateDisp))} IQD</b></span>`
           : "",
@@ -20170,7 +20359,14 @@
       const head = `
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
-        <style>${PRICING_PRINT_CSS}</style>
+        <style>${PRICING_PRINT_CSS}
+          .order-details{margin-top:7mm;page-break-before:always}
+          .order-details h2{font-family:"Cairo",sans-serif;font-size:15px;margin-bottom:4mm;border-bottom:2px solid #B5652C;padding-bottom:2mm}
+          .order-details table{width:100%;border-collapse:collapse;font-size:9.5px;line-height:1.45}
+          .order-details th,.order-details td{border:1px solid #DCE2E7;padding:5px 6px;vertical-align:top;text-align:start}
+          .order-details th{background:#F4F6F8;font-weight:700}
+          .order-details tr{break-inside:avoid}
+        </style>
       `;
       const bodyHtml =
         `<div class="page">` +
@@ -20214,6 +20410,7 @@
             )}</div><div class="chart-box"><canvas id="genStatusProject"></canvas></div></div>`) +
         `</div>` +
         `<div class="insights"><h2>${escapeHtml(t("genStatusInsightsTitle"))}</h2>${insightsHtml}</div>` +
+        printOrdersTable +
         `<footer class="rep"><span>${escapeHtml(hideVal ? "" : t("reportFxHint"))}</span><span>${escapeHtml(
           hideVal ? from + " – " + to : from + " – " + to + " · " + base
         )}</span></footer>` +
@@ -20281,20 +20478,40 @@
       }
       line([]);
       if (hideVal) {
-        line([t("genStatusColRef"), t("genStatusColProject"), t("genStatusColSummary"), t("genStatusColHistory")]);
+        line([
+          t("genStatusColRef"),
+          t("genStatusColProject"),
+          t("genStatusColSummary"),
+          t("genStatusColMaterialsSummary"),
+          t("genStatusColHistory"),
+        ]);
         (snap.rows || []).forEach((r) => {
-          line([r.ref, r.project, generalOrderSummaryText(r), generalStatusHistorySummaryText(r)]);
+          line([
+            r.ref,
+            r.project,
+            generalOrderSummaryText(r),
+            generalOrderMaterialsSummaryText(r, snap),
+            generalStatusHistorySummaryText(r),
+          ]);
         });
       } else {
         line([
           t("genStatusColRef"),
           t("genStatusColProject"),
           t("genStatusColSummary"),
+          t("genStatusColMaterialsSummary"),
           t("genStatusColOrderValue"),
           t("genStatusColHistory"),
         ]);
         (snap.rows || []).forEach((r) => {
-          line([r.ref, r.project, generalOrderSummaryText(r), generalOrderValueText(r), generalStatusHistorySummaryText(r)]);
+          line([
+            r.ref,
+            r.project,
+            generalOrderSummaryText(r),
+            generalOrderMaterialsSummaryText(r, snap),
+            generalOrderValueText(r),
+            generalStatusHistorySummaryText(r),
+          ]);
         });
       }
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
@@ -23425,7 +23642,7 @@
                     }
                     ${
                       scope === "general" && canEdit
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-status" data-id="${r.id}">${t("btnUpdateStatus")}</button>`
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-status" data-id="${r.id}">${t("btnUpdateStatus")}</button><button type="button" class="btn btn-secondary btn-sm btn-gen-po-duplicate" data-id="${r.id}">${t("btnDuplicatePo")}</button>`
                         : ""
                     }
                     ${
@@ -23454,6 +23671,12 @@
         });
         wrap.querySelectorAll(".btn-gen-po-status").forEach((btn) => {
           btn.addEventListener("click", () => void openGeneralPoStatusModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-gen-po-duplicate").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (!confirm(t("confirmDuplicateGenPo"))) return;
+            void openGeneralPo007Modal(btn.dataset.id, { duplicate: true });
+          });
         });
         wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
           btn.addEventListener("click", () => deletePo(btn.dataset.id));
@@ -26255,7 +26478,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-gstatus-hide-values";
+    const CURRENT_UPDATE_ID = "2026-07-general-po-duplicate-selected-report";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
