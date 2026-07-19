@@ -5775,6 +5775,7 @@
             </button>
             <button type="button" data-admin-tab="fxRates" data-i18n="tabFxRates">أسعار الصرف</button>
             <button type="button" data-admin-tab="users" data-i18n="tabUsers">المستخدمون</button>
+            <button type="button" data-admin-tab="systemSettings" data-i18n="tabSystemSettings">إعدادات النظام</button>
           </div>
           <div id="admin-panel-companies" class="admin-panel"></div>
           <div id="admin-panel-suppliers" class="admin-panel hidden"></div>
@@ -5784,6 +5785,7 @@
           <div id="admin-panel-purchasingRepresentatives" class="admin-panel hidden"></div>
           <div id="admin-panel-fxRates" class="admin-panel hidden"></div>
           <div id="admin-panel-users" class="admin-panel hidden"></div>
+          <div id="admin-panel-systemSettings" class="admin-panel hidden"></div>
         </div>
       </section>
 
@@ -6868,6 +6870,16 @@
         tabWarehouses: "المستودعات",
         tabPurchasingRepresentatives: "مندوبو المشتريات",
         tabUsers: "المستخدمون",
+        tabSystemSettings: "إعدادات النظام",
+        systemSettingsWorkflowTitle: "إعدادات مسار الموافقات",
+        settingSupervisorApprovalsLabel: "تفعيل موافقات المشرف",
+        settingSupervisorApprovalsHint:
+          "عند التعطيل تنتقل الطلبات بعد موافقة مسؤول المجموعة مباشرةً إلى المشتريات. الطلبات الموجودة حالياً بانتظار المشرف ستُنقل أيضاً إلى المشتريات ويُسجّل التجاوز في مسار الطلب.",
+        saveSettings: "حفظ الإعدادات",
+        confirmDisableSupervisorApprovals:
+          "تعطيل موافقات المشرف؟ ستُنقل جميع الطلبات المنتظرة حالياً إلى المشتريات تلقائياً، ولن تتطلب الطلبات اللاحقة موافقة المشرف.",
+        systemSettingsSaved: "تم حفظ الإعدادات وتفعيل موافقات المشرف.",
+        systemSettingsDisabledSaved: "تم حفظ الإعدادات وتعطيل موافقات المشرف. نُقل {count} طلب إلى المشتريات.",
         addPurchasingRepresentative: "إضافة مندوب",
         modalNewPurchasingRepresentative: "مندوب مشتريات جديد",
         modalEditPurchasingRepresentative: "تعديل مندوب مشتريات",
@@ -7085,7 +7097,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تكرار أوامر شراء الإدارة العامة:</strong> يمكنك الآن إنشاء نسخة من أي طلب، مع نسخ بياناته ومواده وشروط الدفع وفتحه للتعديل كمسودة جديدة بمرجع وتاريخ جديدين، دون نسخ سجل الحالات.</li><li><strong>تقرير حالة الطلبات المحددة:</strong> أُضيف تحديد متعدد للطلبات لإنشاء تقرير خاص بالطلبات المختارة فقط، ويشمل العرض والطباعة وتصدير CSV. كما أُضيف عمود «ملخص المواد» الذي يعرض أول كلمتين من اسم المادة مع الكمية والسعر، مع استمرار توفر خيار إخفاء قيم الطلبات.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تفعيل/تعطيل موافقات المشرف:</strong> أُضيف تبويب «إعدادات النظام» في الإدارة يتيح تفعيل أو تعطيل مرحلة موافقات المشرف على مستوى النظام. عند التعطيل تنتقل الطلبات بعد موافقة مسؤول المجموعة مباشرةً إلى المشتريات، وتُنقل الطلبات المنتظرة حالياً عند المشرف تلقائياً، مع تسجيل التجاوز في مسار الطلب.</li></ul>",
         whatsNewGotIt: "فهمت",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
@@ -7140,6 +7152,7 @@
         poPrintStagePm: "موافقة مدير المشروع",
         poPrintStageGm: "موافقة مسؤول المجموعة",
         poPrintStageSupervisor: "موافقة المشرف",
+        poPrintStageSupervisorSkipped: "تجاوز موافقة المشرف — معطّلة بإعداد النظام",
         poPrintStagePurchasing: "قيد التنفيذ — المشتريات",
         poPrintStageAdvance: "تسليم سلفة العمل (حسابات)",
         workflowPoModalTitle: "تفاصيل طلب الشراء",
@@ -7939,6 +7952,17 @@
         tabWarehouses: "Warehouses",
         tabPurchasingRepresentatives: "Purchasing representatives",
         tabUsers: "Users",
+        tabSystemSettings: "System settings",
+        systemSettingsWorkflowTitle: "Approval workflow settings",
+        settingSupervisorApprovalsLabel: "Enable supervisor approvals",
+        settingSupervisorApprovalsHint:
+          "When disabled, orders move directly from group manager approval to Purchasing. Orders currently awaiting supervisor approval are also forwarded to Purchasing and the bypass is recorded in the order trail.",
+        saveSettings: "Save settings",
+        confirmDisableSupervisorApprovals:
+          "Disable supervisor approvals? All orders currently waiting for a supervisor will be forwarded to Purchasing, and future orders will not require supervisor approval.",
+        systemSettingsSaved: "Settings saved. Supervisor approvals are enabled.",
+        systemSettingsDisabledSaved:
+          "Settings saved. Supervisor approvals are disabled. {count} order(s) were moved to Purchasing.",
         addPurchasingRepresentative: "Add representative",
         modalNewPurchasingRepresentative: "New purchasing representative",
         modalEditPurchasingRepresentative: "Edit purchasing representative",
@@ -8156,7 +8180,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Duplicate general purchase orders:</strong> you can now create a copy of any order, carrying over its details, materials, and payment terms, then edit it as a new draft with a new reference and date without copying status history.</li><li><strong>Selected-orders status report:</strong> select multiple orders and build a report using only those orders across the on-screen view, print layout, and CSV export. A new \"Materials summary\" column shows the first two words of each material with its quantity and price, while the option to hide order values remains available.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Enable/disable supervisor approvals:</strong> a new \"System settings\" tab in Administration lets you turn the supervisor approval stage on or off system-wide. When disabled, orders move directly from group manager approval to Purchasing, orders currently awaiting the supervisor are forwarded automatically, and the bypass is recorded in the order trail.</li></ul>",
         whatsNewGotIt: "Got it",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
@@ -8211,6 +8235,7 @@
         poPrintStagePm: "Project manager approval",
         poPrintStageGm: "Group manager approval",
         poPrintStageSupervisor: "Supervisor approval",
+        poPrintStageSupervisorSkipped: "Supervisor approval skipped — disabled by system setting",
         poPrintStagePurchasing: "Purchasing — in progress",
         poPrintStageAdvance: "Work advance (accounting)",
         workflowPoModalTitle: "Purchase request details",
@@ -12302,6 +12327,29 @@
     let generalPo007EditorLogo = "";
     let generalPo007EditorMode = "po";
     const generalPoTemplateCache = { ar: null, en: null, loaded: false };
+    const appSettingsCache = { supervisorApprovalsEnabled: true, loaded: false };
+
+    function appSettingsDocRef() {
+      return doc(db, "appConfig", "generalSettings");
+    }
+
+    async function loadAppSettingsCache(force) {
+      if (appSettingsCache.loaded && !force) return appSettingsCache;
+      try {
+        const snap = await getDoc(appSettingsDocRef());
+        const data = snap.exists() ? snap.data() : {};
+        appSettingsCache.supervisorApprovalsEnabled = data.supervisorApprovalsEnabled !== false;
+      } catch (e) {
+        console.error(e);
+        appSettingsCache.supervisorApprovalsEnabled = true;
+      }
+      appSettingsCache.loaded = true;
+      return appSettingsCache;
+    }
+
+    function supervisorApprovalsAreEnabled() {
+      return appSettingsCache.supervisorApprovalsEnabled !== false;
+    }
 
     function generalPoTemplateDocRef() {
       return doc(db, "appConfig", "generalAdminPoTemplate");
@@ -17936,9 +17984,14 @@
           prev: ["groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
         },
         {
+          key: "supervisorSkippedAt",
+          labelKey: "poPrintStageSupervisorSkipped",
+          prev: ["groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+        },
+        {
           key: "purchasingInProgressAt",
           labelKey: "workflowStatus_in_progress_purchasing",
-          prev: ["supervisorApprovedAt", "groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
+          prev: ["supervisorApprovedAt", "supervisorSkippedAt", "groupManagerApprovedAt", "projectManagerApprovedAt", "engineerFirstApprovedAt", "warehouseReviewAt", "createdAt"],
         },
         {
           key: "purchasingSentToAdvanceAt",
@@ -22546,7 +22599,10 @@
       const adminAccess = hasAdminAccess();
       document.querySelectorAll("[data-nav-section]").forEach((el) => {
         const section = el.dataset.navSection;
-        const visible = list.includes(section) || (section === "supervisor-approvals" && adminAccess);
+        const visible =
+          section === "supervisor-approvals"
+            ? adminAccess && supervisorApprovalsAreEnabled()
+            : list.includes(section);
         if (visible) el.classList.remove("nav-section-hidden");
         else el.classList.add("nav-section-hidden");
       });
@@ -22767,6 +22823,8 @@
         po.engineerFirstApprovedBy,
         po.projectManagerApprovedBy,
         po.groupManagerApprovedBy,
+        po.supervisorApprovedBy,
+        po.supervisorSkippedBy,
         po.purchasingInProgressBy,
         po.purchasingSentToAdvanceBy,
         po.advanceReleasedBy,
@@ -22950,7 +23008,9 @@
         { stage: t("poPrintStageEngineerFirst"), uid: po.engineerFirstApprovedBy, at: po.engineerFirstApprovedAt },
         { stage: t("poPrintStagePm"), uid: po.projectManagerApprovedBy, at: po.projectManagerApprovedAt },
         { stage: t("poPrintStageGm"), uid: po.groupManagerApprovedBy, at: po.groupManagerApprovedAt },
-        { stage: t("poPrintStageSupervisor"), uid: po.supervisorApprovedBy, at: po.supervisorApprovedAt },
+        po.supervisorSkipped
+          ? { stage: t("poPrintStageSupervisorSkipped"), uid: po.supervisorSkippedBy, at: po.supervisorSkippedAt }
+          : { stage: t("poPrintStageSupervisor"), uid: po.supervisorApprovedBy, at: po.supervisorApprovedAt },
       ];
       if (po.purchasingInProgressBy || po.purchasingInProgressAt) {
         appr.push({
@@ -24343,6 +24403,33 @@
       await doReject();
     }
 
+    async function bypassPendingSupervisorOrders() {
+      const snap = await getDocs(
+        query(collection(db, "purchaseOrders"), where("workflowStatus", "==", "pending_supervisor"))
+      );
+      let moved = 0;
+      for (const row of snap.docs) {
+        const po = row.data();
+        await updateDoc(row.ref, {
+          workflowStatus: "pending_purchasing",
+          supervisorSkipped: true,
+          supervisorSkippedAt: serverTimestamp(),
+          supervisorSkippedBy: currentUser.uid,
+          supervisorSkipReason: "system_setting_disabled",
+          updatedAt: serverTimestamp(),
+        });
+        moved += 1;
+        void notifyAllRole(
+          row.id,
+          poNotifRefText({ ...po, id: row.id }),
+          "purchasing_officer",
+          "purchasing-queue",
+          "notif_po_purchasing"
+        );
+      }
+      return moved;
+    }
+
     async function runGmApprove(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
@@ -24371,18 +24458,37 @@
       }
       const doApprove = async () => {
         try {
-          await updateDoc(ref, {
-            workflowStatus: "pending_supervisor",
+          await loadAppSettingsCache(true);
+          const skipSupervisor = !supervisorApprovalsAreEnabled();
+          const patch = {
+            workflowStatus: skipSupervisor ? "pending_purchasing" : "pending_supervisor",
             groupManagerApprovedAt: serverTimestamp(),
             groupManagerApprovedBy: currentUser.uid,
             updatedAt: serverTimestamp(),
-          });
-          void notifyAdmins(
-            poId,
-            poNotifRefText({ ...po, id: poId }),
-            "notif_po_supervisor",
-            "supervisor-approvals"
-          );
+          };
+          if (skipSupervisor) {
+            patch.supervisorSkipped = true;
+            patch.supervisorSkippedAt = serverTimestamp();
+            patch.supervisorSkippedBy = currentUser.uid;
+            patch.supervisorSkipReason = "system_setting_disabled";
+          }
+          await updateDoc(ref, patch);
+          if (skipSupervisor) {
+            void notifyAllRole(
+              poId,
+              poNotifRefText({ ...po, id: poId }),
+              "purchasing_officer",
+              "purchasing-queue",
+              "notif_po_purchasing"
+            );
+          } else {
+            void notifyAdmins(
+              poId,
+              poNotifRefText({ ...po, id: poId }),
+              "notif_po_supervisor",
+              "supervisor-approvals"
+            );
+          }
           refreshWorkflowQueuesByActiveScreen();
           refreshActiveProjectPoListIfAny();
         } catch (err) {
@@ -26478,7 +26584,7 @@
     }
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-general-po-duplicate-selected-report";
+    const CURRENT_UPDATE_ID = "2026-07-supervisor-approvals-toggle";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
@@ -27401,6 +27507,7 @@
         else if (tab === "purchasingRepresentatives") await renderPurchasingRepresentatives(panel);
         else if (tab === "fxRates") await renderFxRates(panel);
         else if (tab === "users") await renderUsers(panel);
+        else if (tab === "systemSettings") await renderSystemSettings(panel);
       } catch (e) {
         panel.innerHTML = `<p class="error-msg">${e.message}</p>`;
       }
@@ -27591,6 +27698,69 @@
           </tbody>
         </table></div>`;
       bindEntityButtons(panel);
+    }
+
+    async function renderSystemSettings(panel) {
+      await loadAppSettingsCache(true);
+      panel.innerHTML = `
+        <div class="card" style="margin:0;max-width:760px">
+          <h3 style="margin-top:0">${escapeHtml(t("systemSettingsWorkflowTitle"))}</h3>
+          <label style="display:flex;gap:.75rem;align-items:flex-start;cursor:pointer">
+            <input type="checkbox" id="setting-supervisor-approvals" style="margin-top:.3rem" ${
+              supervisorApprovalsAreEnabled() ? "checked" : ""
+            } />
+            <span>
+              <strong>${escapeHtml(t("settingSupervisorApprovalsLabel"))}</strong>
+              <span style="display:block;color:var(--muted);font-size:.88rem;margin-top:.25rem">${escapeHtml(
+                t("settingSupervisorApprovalsHint")
+              )}</span>
+            </span>
+          </label>
+          <div class="toolbar" style="margin-top:1rem">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-save-system-settings">${escapeHtml(
+              t("saveSettings")
+            )}</button>
+            <span id="system-settings-status" class="muted" aria-live="polite"></span>
+          </div>
+        </div>`;
+      const saveBtn = panel.querySelector("#btn-save-system-settings");
+      saveBtn?.addEventListener("click", async () => {
+        const enabled = !!panel.querySelector("#setting-supervisor-approvals")?.checked;
+        if (!enabled && supervisorApprovalsAreEnabled() && !confirm(t("confirmDisableSupervisorApprovals"))) {
+          const input = panel.querySelector("#setting-supervisor-approvals");
+          if (input) input.checked = true;
+          return;
+        }
+        const status = panel.querySelector("#system-settings-status");
+        saveBtn.disabled = true;
+        if (status) status.textContent = t("loading");
+        try {
+          await setDoc(
+            appSettingsDocRef(),
+            {
+              supervisorApprovalsEnabled: enabled,
+              updatedAt: serverTimestamp(),
+              updatedBy: currentUser.uid,
+            },
+            { merge: true }
+          );
+          appSettingsCache.supervisorApprovalsEnabled = enabled;
+          appSettingsCache.loaded = true;
+          let moved = 0;
+          if (!enabled) moved = await bypassPendingSupervisorOrders();
+          if (status) {
+            status.textContent = enabled
+              ? t("systemSettingsSaved")
+              : t("systemSettingsDisabledSaved").replace("{count}", String(moved));
+          }
+          refreshWorkflowQueuesByActiveScreen();
+        } catch (e) {
+          if (status) status.textContent = t("saveFailed") + " " + (e.message || "");
+        } finally {
+          applyNavVisibility();
+          saveBtn.disabled = false;
+        }
+      });
     }
 
     async function renderFxRates(panel) {
@@ -29612,7 +29782,7 @@
         const companyIds = await syncUserCompanyIds(user.uid, profForSync);
         currentUserProfile = { ...profForSync, companyIds };
         userRole = currentUserProfile.role || "user";
-        await loadGeneralPoTemplateCache();
+        await Promise.all([loadGeneralPoTemplateCache(), loadAppSettingsCache(true)]);
         applyNavVisibility();
         $("view-login").classList.add("hidden");
         $("view-app").classList.remove("hidden");
@@ -29636,6 +29806,8 @@
         $("view-login").classList.remove("hidden");
         currentUserProfile = null;
         userRole = "user";
+        appSettingsCache.supervisorApprovalsEnabled = true;
+        appSettingsCache.loaded = false;
         userProfilesNotifyCache = { t: 0, list: null };
         applyStaticI18n();
         updateLangButtons();
