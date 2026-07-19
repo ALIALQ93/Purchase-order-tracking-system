@@ -6304,6 +6304,62 @@
     </div>
   </div>
 
+  <!-- ملاحظة موجّهة حول طلب شراء -->
+  <div id="modal-order-note-send" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal po-modal-wide" style="max-width:820px">
+      <h3 data-i18n="orderNoteSendTitle">إرسال ملاحظة حول الطلب</h3>
+      <p id="order-note-send-ref" class="sub" style="margin-top:-.35rem;color:var(--muted)"></p>
+      <input type="hidden" id="order-note-po-id" />
+      <input type="hidden" id="order-note-po-scope" />
+      <div class="field">
+        <label for="order-note-subject" data-i18n="orderNoteSubjectLabel">عنوان الملاحظة</label>
+        <input type="text" id="order-note-subject" maxlength="160" />
+      </div>
+      <div class="field">
+        <label for="order-note-body" data-i18n="orderNoteBodyLabel">نص الملاحظة</label>
+        <textarea id="order-note-body" rows="4" maxlength="4000"></textarea>
+      </div>
+      <div class="field">
+        <label data-i18n="orderNoteRecipientsLabel">المستخدمون المستلمون</label>
+        <input type="search" id="order-note-user-search" data-i18n-placeholder="orderNoteUserSearchPlaceholder" placeholder="بحث عن مستخدم…" />
+        <div class="toolbar" style="margin:.45rem 0">
+          <button type="button" class="btn btn-secondary btn-sm" id="order-note-select-all" data-i18n="genStatusSelectAll">تحديد الكل</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="order-note-clear-all" data-i18n="genStatusClearSelection">إلغاء التحديد</button>
+          <span id="order-note-selected-count" class="muted"></span>
+        </div>
+        <div id="order-note-recipients" style="max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:.5rem"></div>
+      </div>
+      <div class="field">
+        <label data-i18n="orderNoteHistoryTitle">سجل ملاحظات الطلب</label>
+        <div id="order-note-history" style="max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:.6rem">
+          <p class="loading" data-i18n="loading">جاري التحميل…</p>
+        </div>
+      </div>
+      <p id="order-note-send-status" class="muted" aria-live="polite"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="order-note-send-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="order-note-send-submit" data-i18n="orderNoteSendButton">إرسال الملاحظة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة الملاحظة للمستلم -->
+  <div id="modal-order-note-alert" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:620px">
+      <h3 data-i18n="orderNoteAlertTitle">ملاحظة جديدة حول طلب شراء</h3>
+      <p id="order-note-alert-ref" class="sub" style="margin-top:-.35rem;color:var(--muted)"></p>
+      <div class="detail-panel">
+        <strong id="order-note-alert-subject" style="display:block;margin-bottom:.5rem"></strong>
+        <p id="order-note-alert-body" style="white-space:pre-wrap;margin:0"></p>
+        <p id="order-note-alert-sender" class="muted" style="margin:.75rem 0 0"></p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="order-note-alert-close" data-i18n="whatsNewGotIt">فهمت</button>
+        <button type="button" class="btn btn-primary" id="order-note-alert-open-po" data-i18n="orderNoteOpenOrder">فتح الطلب</button>
+      </div>
+    </div>
+  </div>
+
   <!-- محرّر أمر شراء الإدارة العامة (نموذج PO007) -->
   <div id="modal-general-po007" class="modal-overlay hidden po007-editing" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide po007-editor-modal">
@@ -6859,6 +6915,26 @@
         genPoStatusHistoryTitle: "سجل الحالات",
         genPoStatusHistoryEmpty: "لا يوجد سجل حالات بعد.",
         btnUpdateStatus: "تحديث الحالة",
+        orderNoteButton: "إرسال ملاحظة",
+        orderNoteSendTitle: "إرسال ملاحظة حول الطلب",
+        orderNoteSubjectLabel: "عنوان الملاحظة",
+        orderNoteBodyLabel: "نص الملاحظة",
+        orderNoteRecipientsLabel: "المستخدمون المستلمون",
+        orderNoteUserSearchPlaceholder: "بحث عن مستخدم…",
+        orderNoteSelectedUsers: "المحدد: {count}",
+        orderNoteNoUsers: "لا يوجد مستخدمون مطابقون.",
+        orderNoteHistoryTitle: "سجل ملاحظات الطلب",
+        orderNoteHistoryEmpty: "لا توجد ملاحظات سابقة لهذا الطلب.",
+        orderNoteHistoryMeta: "من {sender} · {time} · إلى: {recipients} · قرأها {read}/{total}",
+        orderNoteNoSubject: "بدون عنوان",
+        orderNoteAboutOrder: "حول الطلب: {ref}",
+        orderNoteSendButton: "إرسال الملاحظة",
+        orderNoteRequiredAlert: "أدخل عنوان الملاحظة ونصها وحدد مستخدماً واحداً على الأقل.",
+        orderNoteTooManyRecipients: "عدد المستلمين أكبر من الحد المسموح.",
+        orderNoteSentSuccess: "تم إرسال الملاحظة وحفظها في سجل الطلب.",
+        orderNoteAlertTitle: "ملاحظة جديدة حول طلب شراء",
+        orderNoteOpenOrder: "فتح الطلب",
+        orderNoteFromSender: "من: {sender}",
         btnDuplicatePo: "تكرار الطلب",
         confirmDuplicateGenPo:
           "إنشاء نسخة جديدة من هذا الطلب؟ سيتم نسخ المورد والمواد وشروط الدفع، ويبدأ الطلب الجديد كمسودة بمرجع وتاريخ جديدين دون سجل الحالات.",
@@ -7776,6 +7852,7 @@
         notif_po_gm: "طلب {{ref}} بانتظار موافقة مسؤول المجموعة.",
         notif_po_supervisor: "طلب {{ref}} بانتظار موافقة المشرف.",
         notif_po_supervisor_returned: "طلب {{ref}} أُعيد من المشرف لإعادة مراجعة مسؤول المجموعة.",
+        notif_po_supervisor_note: "ملاحظة جديدة من المشرف حول الطلب {{ref}}.",
         notif_po_purchasing: "طلب {{ref}} في طابور المشتريات.",
         notif_po_accounting_advance: "طلب {{ref}} بانتظار الحسابات (سلفة عمل).",
         notif_po_warehouse_receipt: "طلب {{ref}} بانتظار تأكيد استلام المستودع.",
@@ -7941,6 +8018,26 @@
         genPoStatusHistoryTitle: "Status history",
         genPoStatusHistoryEmpty: "No status history yet.",
         btnUpdateStatus: "Update status",
+        orderNoteButton: "Send note",
+        orderNoteSendTitle: "Send a note about the order",
+        orderNoteSubjectLabel: "Note subject",
+        orderNoteBodyLabel: "Note text",
+        orderNoteRecipientsLabel: "Recipients",
+        orderNoteUserSearchPlaceholder: "Search users…",
+        orderNoteSelectedUsers: "Selected: {count}",
+        orderNoteNoUsers: "No matching users.",
+        orderNoteHistoryTitle: "Order notes history",
+        orderNoteHistoryEmpty: "No previous notes for this order.",
+        orderNoteHistoryMeta: "From {sender} · {time} · To: {recipients} · Read by {read}/{total}",
+        orderNoteNoSubject: "No subject",
+        orderNoteAboutOrder: "Order: {ref}",
+        orderNoteSendButton: "Send note",
+        orderNoteRequiredAlert: "Enter a subject and note text, then select at least one recipient.",
+        orderNoteTooManyRecipients: "The recipient count exceeds the allowed limit.",
+        orderNoteSentSuccess: "The note was sent and saved in the order history.",
+        orderNoteAlertTitle: "New purchase-order note",
+        orderNoteOpenOrder: "Open order",
+        orderNoteFromSender: "From: {sender}",
         btnDuplicatePo: "Duplicate",
         confirmDuplicateGenPo:
           "Create a new copy of this purchase order? Supplier, items, and payment terms will be copied. The new order starts as a draft with a new reference and date, without the status history.",
@@ -8861,6 +8958,7 @@
         notif_po_gm: "Request {{ref}} awaits group manager approval.",
         notif_po_supervisor: "Request {{ref}} awaits supervisor approval.",
         notif_po_supervisor_returned: "Request {{ref}} returned by supervisor for group manager re-review.",
+        notif_po_supervisor_note: "New supervisor note about order {{ref}}.",
         notif_po_purchasing: "Request {{ref}} is in the purchasing queue.",
         notif_po_accounting_advance: "Request {{ref}} awaits accounting (work advance).",
         notif_po_warehouse_receipt: "Request {{ref}} awaits warehouse receipt confirmation.",
@@ -9141,12 +9239,17 @@
 
     /** In-app inbox. Add Firestore rules: users read docs where userId==auth.uid; update only {read}; authenticated create allowed (merge with your project rules). */
     const NOTIF_COL = "inAppNotifications";
+    const ORDER_NOTE_COL = "purchaseOrderNotes";
     const NOTIF_BATCH = 400;
     const NOTIFY_PROFILE_CACHE_MS = 45000;
     let notificationsUnsub = null;
     let notificationsRows = [];
     let userProfilesNotifyCache = { t: 0, list: null };
     let notificationsBackdropCloseBound = false;
+    let orderNoteRecipientProfiles = [];
+    let orderNoteSelectedRecipientIds = new Set();
+    let orderNoteAlertCurrent = null;
+    let orderNoteAlertLoadingId = null;
 
     /** Internal chat — company channels (phase 1). Firestore: authenticated users; room access enforced client-side + companyIds on profile. */
     const CHAT_COL = "chatRooms";
@@ -23603,6 +23706,13 @@
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
+                      hasAdminAccess()
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
+                            "orderNoteButton"
+                          )}</button>`
+                        : ""
+                    }
+                    ${
                       canEditRow
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
                         : ""
@@ -23620,6 +23730,9 @@
       });
       wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
         btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
+        btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
       });
       wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
         btn.addEventListener("click", () => deletePo(btn.dataset.id));
@@ -23696,6 +23809,13 @@
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
+                      hasAdminAccess()
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
+                            "orderNoteButton"
+                          )}</button>`
+                        : ""
+                    }
+                    ${
                       scope === "general"
                         ? `<button type="button" class="btn btn-primary btn-sm btn-gen-po-pro-print" data-id="${r.id}">${t("btnGenPoProPrint")}</button>`
                         : ""
@@ -23725,6 +23845,9 @@
         });
         wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
           btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
+          btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-gen-po-pro-print").forEach((btn) => {
           btn.addEventListener("click", () => openGeneralPoProPrint(btn.dataset.id));
@@ -23891,6 +24014,13 @@
                   <td>${formatWorkflowTableCellForPo(r)}</td>
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
+                    ${
+                      hasAdminAccess()
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
+                            "orderNoteButton"
+                          )}</button>`
+                        : ""
+                    }
                   </td>
                 </tr>`;
         })
@@ -23901,6 +24031,9 @@
           </table></div>`;
       wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
         btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
+        btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
       });
     }
 
@@ -24853,7 +24986,7 @@
                   <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-wf-open-po" data-id="${escapeHtml(r.id)}" data-mode="supervisor">${escapeHtml(t("btnViewPoRequest"))}</button><button type="button" class="btn btn-primary btn-sm btn-supervisor-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnApprove"))}</button><button type="button" class="btn btn-danger btn-sm btn-supervisor-reject" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnToGm"))}</button>
+                      <button type="button" class="btn btn-secondary btn-sm btn-wf-open-po" data-id="${escapeHtml(r.id)}" data-mode="supervisor">${escapeHtml(t("btnViewPoRequest"))}</button><button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${escapeHtml(r.id)}">${escapeHtml(t("orderNoteButton"))}</button><button type="button" class="btn btn-primary btn-sm btn-supervisor-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnApprove"))}</button><button type="button" class="btn btn-danger btn-sm btn-supervisor-reject" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnToGm"))}</button>
                     </div>
                   </td>
                 </tr>`
@@ -24862,6 +24995,9 @@
             </tbody></table></div>`;
         wrap.querySelectorAll(".btn-wf-open-po").forEach((btn) => {
           btn.addEventListener("click", () => openWorkflowPoDetailModal(btn.dataset.id, btn.dataset.mode || "supervisor"));
+        });
+        wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
+          btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-supervisor-approve").forEach((btn) => {
           btn.addEventListener("click", () => runSupervisorApprove(btn.dataset.id));
@@ -29390,6 +29526,261 @@
       return String((po.poReference || po.title || "").trim() || po.id || "").slice(0, 200);
     }
 
+    function orderNoteProfileLabel(profile) {
+      return String(profile?.displayName || profile?.email || profile?.uid || "").trim() || t("dash");
+    }
+
+    function selectedOrderNoteRecipientIds() {
+      return [...orderNoteSelectedRecipientIds];
+    }
+
+    function updateOrderNoteRecipientCount() {
+      const el = $("order-note-selected-count");
+      if (el) {
+        el.textContent = t("orderNoteSelectedUsers").replace(
+          "{count}",
+          String(selectedOrderNoteRecipientIds().length)
+        );
+      }
+    }
+
+    function renderOrderNoteRecipients() {
+      const wrap = $("order-note-recipients");
+      if (!wrap) return;
+      const selected = orderNoteSelectedRecipientIds;
+      const search = ($("order-note-user-search")?.value || "").trim().toLowerCase();
+      const rows = orderNoteRecipientProfiles.filter((profile) => {
+        if (!search) return true;
+        return `${orderNoteProfileLabel(profile)} ${profile.email || ""} ${profile.role || ""}`
+          .toLowerCase()
+          .includes(search);
+      });
+      wrap.innerHTML = rows.length
+        ? rows
+            .map((profile) => {
+              const label = orderNoteProfileLabel(profile);
+              const email = String(profile.email || "").trim();
+              return `<label style="display:flex;gap:.55rem;align-items:flex-start;padding:.4rem;border-bottom:1px solid var(--border)">
+                <input type="checkbox" value="${escapeAttr(profile.uid)}" ${selected.has(profile.uid) ? "checked" : ""} />
+                <span><strong>${escapeHtml(label)}</strong>${
+                  email && email !== label
+                    ? `<span class="muted" style="display:block;font-size:.8rem">${escapeHtml(email)}</span>`
+                    : ""
+                }</span>
+              </label>`;
+            })
+            .join("")
+        : `<p class="empty-state" style="margin:.4rem">${escapeHtml(t("orderNoteNoUsers"))}</p>`;
+      wrap.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+        input.addEventListener("change", () => {
+          if (input.checked) orderNoteSelectedRecipientIds.add(input.value);
+          else orderNoteSelectedRecipientIds.delete(input.value);
+          updateOrderNoteRecipientCount();
+        });
+      });
+      updateOrderNoteRecipientCount();
+    }
+
+    async function loadOrderNoteHistory(poId) {
+      const wrap = $("order-note-history");
+      if (!wrap || !poId) return;
+      wrap.innerHTML = `<p class="loading">${escapeHtml(t("loading"))}</p>`;
+      try {
+        const snap = await getDocs(query(collection(db, ORDER_NOTE_COL), where("poId", "==", poId)));
+        const rows = [];
+        snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+        rows.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        wrap.innerHTML = rows.length
+          ? rows
+              .map((note) => {
+                const recipients = Array.isArray(note.recipients)
+                  ? note.recipients.map((r) => r.name || r.email || r.uid).filter(Boolean)
+                  : [];
+                const readCount = Object.keys(note.readBy || {}).length;
+                return `<article style="padding:.55rem 0;border-bottom:1px solid var(--border)">
+                  <strong>${escapeHtml(note.subject || t("orderNoteNoSubject"))}</strong>
+                  <p style="white-space:pre-wrap;margin:.3rem 0">${escapeHtml(note.body || "")}</p>
+                  <div class="muted" style="font-size:.78rem">${escapeHtml(
+                    t("orderNoteHistoryMeta")
+                      .replace("{sender}", note.senderName || note.senderId || t("dash"))
+                      .replace("{time}", formatNotifTime(note.createdAt) || t("dash"))
+                      .replace("{recipients}", recipients.join("، ") || t("dash"))
+                      .replace("{read}", String(readCount))
+                      .replace("{total}", String(recipients.length))
+                  )}</div>
+                </article>`;
+              })
+              .join("")
+          : `<p class="empty-state" style="margin:.4rem">${escapeHtml(t("orderNoteHistoryEmpty"))}</p>`;
+      } catch (e) {
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError") + " " + (e.message || ""))}</p>`;
+      }
+    }
+
+    async function openOrderNoteSendModal(poId) {
+      if (!hasAdminAccess() || !poId) return;
+      const status = $("order-note-send-status");
+      if (status) status.textContent = "";
+      $("order-note-subject").value = "";
+      $("order-note-body").value = "";
+      $("order-note-user-search").value = "";
+      const [poSnap, profiles] = await Promise.all([
+        getDoc(doc(db, "purchaseOrders", poId)),
+        getUserProfilesForNotify(),
+      ]);
+      if (!poSnap.exists()) return;
+      const po = { id: poSnap.id, ...poSnap.data() };
+      $("order-note-po-id").value = poId;
+      $("order-note-po-scope").value = po.scope === "general" ? "general" : "project";
+      $("order-note-send-ref").textContent = t("orderNoteAboutOrder").replace("{ref}", poNotifRefText(po));
+      orderNoteRecipientProfiles = profiles
+        .filter((profile) => profile.uid !== currentUser?.uid && profile.active !== false)
+        .sort((a, b) => orderNoteProfileLabel(a).localeCompare(orderNoteProfileLabel(b), localeTag()));
+      orderNoteSelectedRecipientIds = new Set();
+      renderOrderNoteRecipients();
+      $("modal-order-note-send")?.classList.remove("hidden");
+      await loadOrderNoteHistory(poId);
+    }
+
+    function closeOrderNoteSendModal() {
+      $("modal-order-note-send")?.classList.add("hidden");
+      orderNoteRecipientProfiles = [];
+      orderNoteSelectedRecipientIds.clear();
+    }
+
+    async function sendDirectedOrderNote() {
+      if (!hasAdminAccess()) return;
+      const poId = ($("order-note-po-id")?.value || "").trim();
+      const scope = ($("order-note-po-scope")?.value || "project").trim();
+      const subject = ($("order-note-subject")?.value || "").trim();
+      const body = ($("order-note-body")?.value || "").trim();
+      const recipientIds = selectedOrderNoteRecipientIds();
+      if (!poId || !subject || !body || !recipientIds.length) {
+        alert(t("orderNoteRequiredAlert"));
+        return;
+      }
+      if (recipientIds.length > 450) {
+        alert(t("orderNoteTooManyRecipients"));
+        return;
+      }
+      const btn = $("order-note-send-submit");
+      const status = $("order-note-send-status");
+      if (btn) btn.disabled = true;
+      if (status) status.textContent = t("loading");
+      try {
+        const poSnap = await getDoc(doc(db, "purchaseOrders", poId));
+        if (!poSnap.exists()) throw new Error(t("reportNoRows"));
+        const po = { id: poSnap.id, ...poSnap.data() };
+        const poReference = poNotifRefText(po);
+        const profileMap = new Map(orderNoteRecipientProfiles.map((profile) => [profile.uid, profile]));
+        const recipients = recipientIds.map((uid) => {
+          const profile = profileMap.get(uid) || {};
+          return { uid, name: orderNoteProfileLabel({ ...profile, uid }), email: String(profile.email || "").trim() };
+        });
+        const noteRef = doc(collection(db, ORDER_NOTE_COL));
+        const batch = writeBatch(db);
+        batch.set(noteRef, {
+          poId,
+          poReference,
+          scope,
+          subject,
+          body,
+          senderId: currentUser.uid,
+          senderName: String(currentUserProfile?.displayName || currentUser?.email || currentUser.uid).trim(),
+          recipientIds,
+          recipients,
+          readBy: {},
+          createdAt: serverTimestamp(),
+        });
+        recipientIds.forEach((userId) => {
+          const notifRef = doc(collection(db, NOTIF_COL));
+          batch.set(notifRef, {
+            userId,
+            poId,
+            poReference,
+            navTarget: scope === "general" ? "po-general" : "po-projects",
+            kind: "notif_po_supervisor_note",
+            noteId: noteRef.id,
+            read: false,
+            createdAt: serverTimestamp(),
+          });
+        });
+        await batch.commit();
+        if (status) status.textContent = t("orderNoteSentSuccess");
+        $("order-note-subject").value = "";
+        $("order-note-body").value = "";
+        orderNoteSelectedRecipientIds.clear();
+        renderOrderNoteRecipients();
+        await loadOrderNoteHistory(poId);
+      } catch (e) {
+        if (status) status.textContent = t("saveFailed") + " " + (e.message || "");
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function openOrderNoteAlertFromNotification(notification) {
+      if (!notification?.noteId || orderNoteAlertLoadingId === notification.noteId) return;
+      orderNoteAlertLoadingId = notification.noteId;
+      try {
+        const snap = await getDoc(doc(db, ORDER_NOTE_COL, notification.noteId));
+        if (!snap.exists()) {
+          await updateDoc(doc(db, NOTIF_COL, notification.id), { read: true });
+          return;
+        }
+        const note = { id: snap.id, ...snap.data() };
+        if (!Array.isArray(note.recipientIds) || !note.recipientIds.includes(currentUser?.uid)) return;
+        orderNoteAlertCurrent = { notification, note };
+        $("order-note-alert-ref").textContent = t("orderNoteAboutOrder").replace(
+          "{ref}",
+          note.poReference || notification.poReference || t("dash")
+        );
+        $("order-note-alert-subject").textContent = note.subject || t("orderNoteNoSubject");
+        $("order-note-alert-body").textContent = note.body || "";
+        $("order-note-alert-sender").textContent = t("orderNoteFromSender").replace(
+          "{sender}",
+          note.senderName || note.senderId || t("dash")
+        );
+        $("modal-order-note-alert")?.classList.remove("hidden");
+      } catch (e) {
+        console.error("order note alert", e);
+      } finally {
+        orderNoteAlertLoadingId = null;
+      }
+    }
+
+    async function closeOrderNoteAlert(openOrder) {
+      const current = orderNoteAlertCurrent;
+      if (!current) return;
+      orderNoteAlertCurrent = null;
+      $("modal-order-note-alert")?.classList.add("hidden");
+      try {
+        const batch = writeBatch(db);
+        batch.update(doc(db, ORDER_NOTE_COL, current.note.id), {
+          [`readBy.${currentUser.uid}`]: serverTimestamp(),
+        });
+        batch.update(doc(db, NOTIF_COL, current.notification.id), { read: true });
+        await batch.commit();
+      } catch (e) {
+        console.warn(e);
+      }
+      if (openOrder) {
+        const nav = current.notification.navTarget;
+        if (nav) showView(nav);
+        if (current.note.poId) setTimeout(() => openPoPrintViewModal(current.note.poId), 180);
+      } else {
+        setTimeout(() => void maybeShowUnreadOrderNote(), 100);
+      }
+    }
+
+    function maybeShowUnreadOrderNote() {
+      if (orderNoteAlertCurrent || orderNoteAlertLoadingId || !currentUser) return;
+      const next = notificationsRows.find(
+        (row) => !row.read && row.kind === "notif_po_supervisor_note" && row.noteId
+      );
+      if (next) void openOrderNoteAlertFromNotification(next);
+    }
+
     function formatChatNotificationLine(r) {
       const room = (r.roomTitle || "").trim() || t("chatTitle");
       const preview = (r.preview || "").trim() || t("dash");
@@ -29610,6 +30001,12 @@
       const poId = btn.dataset.poId;
       const nav = btn.dataset.nav;
       const roomId = btn.dataset.roomId;
+      const row = notificationsRows.find((item) => item.id === id);
+      if (row?.kind === "notif_po_supervisor_note" && row.noteId) {
+        closeNotificationsPanel();
+        await openOrderNoteAlertFromNotification(row);
+        return;
+      }
       if (id) {
         try {
           await updateDoc(doc(db, NOTIF_COL, id), { read: true });
@@ -29661,7 +30058,7 @@
     }
 
     async function markAllNotificationsRead() {
-      const unread = notificationsRows.filter((r) => !r.read);
+      const unread = notificationsRows.filter((r) => !r.read && r.kind !== "notif_po_supervisor_note");
       if (!unread.length) return;
       for (let i = 0; i < unread.length; i += NOTIF_BATCH) {
         const slice = unread.slice(i, i + NOTIF_BATCH);
@@ -29687,6 +30084,7 @@
           snap.forEach((d) => notificationsRows.push({ id: d.id, ...d.data() }));
           updateNotificationsBadge();
           if ($("notifications-panel") && !$("notifications-panel").classList.contains("hidden")) renderNotificationsList();
+          maybeShowUnreadOrderNote();
         },
         (err) => console.error("notifications listener", err)
       );
@@ -29700,6 +30098,23 @@
       e.stopPropagation();
       void markAllNotificationsRead();
     });
+    $("order-note-send-cancel")?.addEventListener("click", closeOrderNoteSendModal);
+    $("order-note-send-submit")?.addEventListener("click", () => void sendDirectedOrderNote());
+    $("order-note-user-search")?.addEventListener("input", renderOrderNoteRecipients);
+    $("order-note-select-all")?.addEventListener("click", () => {
+      document.querySelectorAll('#order-note-recipients input[type="checkbox"]').forEach((input) => {
+        input.checked = true;
+        orderNoteSelectedRecipientIds.add(input.value);
+      });
+      updateOrderNoteRecipientCount();
+    });
+    $("order-note-clear-all")?.addEventListener("click", () => {
+      orderNoteSelectedRecipientIds.clear();
+      renderOrderNoteRecipients();
+      updateOrderNoteRecipientCount();
+    });
+    $("order-note-alert-close")?.addEventListener("click", () => void closeOrderNoteAlert(false));
+    $("order-note-alert-open-po")?.addEventListener("click", () => void closeOrderNoteAlert(true));
 
     $("btn-chat")?.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -29795,6 +30210,10 @@
         maybeShowWhatsNewModal();
       } else {
         stopNotificationsListener();
+        orderNoteAlertCurrent = null;
+        orderNoteAlertLoadingId = null;
+        $("modal-order-note-alert")?.classList.add("hidden");
+        closeOrderNoteSendModal();
         closeNotificationsPanel();
         closeChatOverlay();
         stopChatMessagesListener();
