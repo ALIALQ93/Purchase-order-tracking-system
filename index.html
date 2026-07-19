@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.07.19.1" />
+  <meta name="app-version" content="2026.07.19.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -7188,7 +7188,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تفعيل/تعطيل موافقات المشرف:</strong> أُضيف تبويب «إعدادات النظام» في الإدارة يتيح تفعيل أو تعطيل مرحلة موافقات المشرف على مستوى النظام. عند التعطيل تنتقل الطلبات بعد موافقة مسؤول المجموعة مباشرةً إلى المشتريات، وتُنقل الطلبات المنتظرة حالياً عند المشرف تلقائياً، مع تسجيل التجاوز في مسار الطلب.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">تحديثات اليوم:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تفعيل/تعطيل موافقات المشرف:</strong> تبويب «إعدادات النظام» في الإدارة يتيح تفعيل أو تعطيل مرحلة موافقات المشرف على مستوى النظام. عند التعطيل تنتقل الطلبات بعد موافقة مسؤول المجموعة مباشرةً إلى المشتريات، وتُنقل الطلبات المنتظرة حالياً تلقائياً مع تسجيل التجاوز في مسار الطلب.</li><li><strong>ملاحظات موجّهة حول الطلب:</strong> يستطيع المشرف إرسال ملاحظة حول طلب معيّن إلى مستخدمين محددين، تظهر لهم كنافذة منبثقة مع إمكانية فتح الطلب، وتُحفظ في سجل ملاحظات الطلب مع حالة القراءة.</li><li><strong>تنبيه تحديث الصفحة:</strong> عند نشر إصدار أحدث تظهر نافذة تطلب تحديث الصفحة لضمان استخدام آخر نسخة.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -8296,7 +8296,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Enable/disable supervisor approvals:</strong> a new \"System settings\" tab in Administration lets you turn the supervisor approval stage on or off system-wide. When disabled, orders move directly from group manager approval to Purchasing, orders currently awaiting the supervisor are forwarded automatically, and the bypass is recorded in the order trail.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Today's updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Enable/disable supervisor approvals:</strong> a \"System settings\" tab in Administration turns the supervisor approval stage on or off system-wide. When disabled, orders move directly from group manager approval to Purchasing, orders currently awaiting the supervisor are forwarded automatically, and the bypass is recorded in the order trail.</li><li><strong>Directed order notes:</strong> supervisors can send a note about a specific order to selected users. Recipients see a pop-up with an option to open the order, and the note is saved in the order notes history with read status.</li><li><strong>Refresh-required alert:</strong> when a newer version is published, a dialog prompts users to refresh the page so they always run the latest version.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -26808,7 +26808,7 @@
     startAppVersionMonitor();
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-supervisor-approvals-toggle";
+    const CURRENT_UPDATE_ID = "2026-07-19-supervisor-notes-update-alert";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
