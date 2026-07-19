@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
+  <meta name="app-version" content="2026.07.19.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -6600,6 +6602,19 @@
     </div>
   </div>
 
+  <!-- تنبيه إلزامي عند نشر إصدار أحدث -->
+  <div id="modal-app-update" class="modal-overlay hidden" role="alertdialog" aria-modal="true" style="z-index:10000">
+    <div class="modal" style="max-width:520px">
+      <h3 data-i18n="appUpdateTitle">يتوفر تحديث جديد</h3>
+      <p style="margin:.75rem 0 0;line-height:1.65;color:var(--muted)" data-i18n="appUpdateBody">
+        تم نشر إصدار أحدث من النظام. يجب تحديث الصفحة قبل متابعة العمل لضمان ظهور آخر الميزات والتعديلات.
+      </p>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button type="button" class="btn btn-primary" id="btn-app-update-now" data-i18n="appUpdateNow">تحديث الآن</button>
+      </div>
+    </div>
+  </div>
+
   <!-- نافذة تحديث حالة أمر الإدارة العامة -->
   <div id="modal-gen-po-status" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal">
@@ -7175,6 +7190,10 @@
         whatsNewBody:
           "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تفعيل/تعطيل موافقات المشرف:</strong> أُضيف تبويب «إعدادات النظام» في الإدارة يتيح تفعيل أو تعطيل مرحلة موافقات المشرف على مستوى النظام. عند التعطيل تنتقل الطلبات بعد موافقة مسؤول المجموعة مباشرةً إلى المشتريات، وتُنقل الطلبات المنتظرة حالياً عند المشرف تلقائياً، مع تسجيل التجاوز في مسار الطلب.</li></ul>",
         whatsNewGotIt: "فهمت",
+        appUpdateTitle: "يتوفر تحديث جديد",
+        appUpdateBody:
+          "تم نشر إصدار أحدث من النظام. يجب تحديث الصفحة قبل متابعة العمل لضمان ظهور آخر الميزات والتعديلات.",
+        appUpdateNow: "تحديث الآن",
         alertEfProjectsRequired: "حدّد المشاريع المسندة لمهندس أول من الإدارة.",
         alertPmProjectsRequired: "حدّد المشاريع المسندة لمدير المشروع من الإدارة.",
         alertGmRegionsRequired: "حدّد المناطق المسندة لمسؤول المجموعة من الإدارة.",
@@ -8279,6 +8298,10 @@
         whatsNewBody:
           "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Enable/disable supervisor approvals:</strong> a new \"System settings\" tab in Administration lets you turn the supervisor approval stage on or off system-wide. When disabled, orders move directly from group manager approval to Purchasing, orders currently awaiting the supervisor are forwarded automatically, and the bypass is recorded in the order trail.</li></ul>",
         whatsNewGotIt: "Got it",
+        appUpdateTitle: "A new update is available",
+        appUpdateBody:
+          "A newer version of the system has been published. Refresh the page before continuing to ensure you have the latest features and fixes.",
+        appUpdateNow: "Update now",
         alertEfProjectsRequired: "Assign managed projects for this engineer first in Administration.",
         alertPmProjectsRequired: "Assign managed projects for this project manager in Administration.",
         alertGmRegionsRequired: "Assign managed regions for this group manager in Administration.",
@@ -26718,6 +26741,71 @@
       if (cBtn) cBtn.textContent = t("btnWorkflowBypassConfirm");
       m.classList.remove("hidden");
     }
+
+    const APP_VERSION =
+      document.querySelector('meta[name="app-version"]')?.getAttribute("content")?.trim() || "dev";
+    const APP_VERSION_CHECK_INTERVAL_MS = 2 * 60 * 1000;
+    let appVersionCheckInFlight = false;
+    let appVersionPromptShown = false;
+    let latestDetectedAppVersion = "";
+    let lastAppVersionCheckAt = 0;
+
+    function showAppUpdateRequired(remoteVersion) {
+      if (appVersionPromptShown) return;
+      appVersionPromptShown = true;
+      latestDetectedAppVersion = remoteVersion || "";
+      $("modal-app-update")?.classList.remove("hidden");
+      $("btn-app-update-now")?.focus();
+    }
+
+    async function checkForAppUpdate(force) {
+      if (
+        appVersionCheckInFlight ||
+        appVersionPromptShown ||
+        location.protocol === "file:" ||
+        (!force && Date.now() - lastAppVersionCheckAt < 15000)
+      ) {
+        return;
+      }
+      appVersionCheckInFlight = true;
+      lastAppVersionCheckAt = Date.now();
+      try {
+        const url = new URL("version.json", location.href);
+        url.searchParams.set("_version_check", String(Date.now()));
+        const response = await fetch(url.toString(), {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        const remoteVersion = String(payload?.version || "").trim();
+        if (remoteVersion && APP_VERSION !== "dev" && remoteVersion !== APP_VERSION) {
+          showAppUpdateRequired(remoteVersion);
+        }
+      } catch (e) {
+        console.warn("app version check", e);
+      } finally {
+        appVersionCheckInFlight = false;
+      }
+    }
+
+    function reloadLatestAppVersion() {
+      const url = new URL(location.href);
+      url.searchParams.set("_appv", latestDetectedAppVersion || String(Date.now()));
+      location.replace(url.toString());
+    }
+
+    function startAppVersionMonitor() {
+      $("btn-app-update-now")?.addEventListener("click", reloadLatestAppVersion);
+      window.setInterval(() => void checkForAppUpdate(true), APP_VERSION_CHECK_INTERVAL_MS);
+      window.addEventListener("focus", () => void checkForAppUpdate(false));
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") void checkForAppUpdate(false);
+      });
+      void checkForAppUpdate(true);
+    }
+
+    startAppVersionMonitor();
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
     const CURRENT_UPDATE_ID = "2026-07-supervisor-approvals-toggle";
