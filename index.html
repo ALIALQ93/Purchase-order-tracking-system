@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.07.19.3" />
+  <meta name="app-version" content="2026.07.20.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -6533,7 +6533,7 @@
     <div class="modal po-modal-wide">
       <h3 id="wr-modal-title" data-i18n="warehouseReceiptQtyModalTitle">استلام المستودع — الكميات الفعلية</h3>
       <p id="wr-modal-hint" class="sub" style="margin-top:-0.35rem;color:var(--muted)" data-i18n="warehouseReceiptQtyModalHint">
-        أدخل الكمية المستلمة فعلياً لكل بند. يمكن أن تكون أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.
+        أدخل الكمية المستلمة فعلياً لكل بند، ويمكن إضافة مواد إضافية غير موجودة في الطلب. يمكن أن تكون الكمية أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.
       </p>
       <input type="hidden" id="wr-po-id" />
       <div class="table-scroll po-lines-wrap" style="margin-top:0.5rem">
@@ -6541,13 +6541,18 @@
           <thead>
             <tr>
               <th data-i18n="poLineDescCol">الوصف</th>
+              <th data-i18n="poLineUnitCol">الوحدة</th>
               <th data-i18n="poLineQtyCol">الكمية</th>
               <th data-i18n="warehouseReceiptActualQtyCol">المستلم فعلياً</th>
+              <th aria-hidden="true"></th>
             </tr>
           </thead>
           <tbody id="wr-lines-tbody"></tbody>
         </table>
       </div>
+      <button type="button" class="btn btn-secondary btn-sm" id="wr-add-line" data-i18n="btnAddReceiptMaterial" style="margin-top:0.5rem">
+        إضافة مادة
+      </button>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="wr-cancel" data-i18n="cancel">إلغاء</button>
         <button type="button" class="btn btn-primary" id="wr-confirm" data-i18n="btnConfirmWarehouseReceiptQty">
@@ -7188,7 +7193,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">تحديثات اليوم:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>تفعيل/تعطيل موافقات المشرف:</strong> تبويب «إعدادات النظام» في الإدارة يتيح تفعيل أو تعطيل مرحلة موافقات المشرف على مستوى النظام. عند التعطيل تنتقل الطلبات بعد موافقة مسؤول المجموعة مباشرةً إلى المشتريات، وتُنقل الطلبات المنتظرة حالياً تلقائياً مع تسجيل التجاوز في مسار الطلب.</li><li><strong>ملاحظات موجّهة حول الطلب:</strong> يستطيع المشرف إرسال ملاحظة حول طلب معيّن إلى مستخدمين محددين، تظهر لهم كنافذة منبثقة مع إمكانية فتح الطلب، وتُحفظ في سجل ملاحظات الطلب مع حالة القراءة.</li><li><strong>تنبيه تحديث الصفحة:</strong> عند نشر إصدار أحدث تظهر نافذة تطلب تحديث الصفحة لضمان استخدام آخر نسخة.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>إضافة مادة عند الاستلام:</strong> في شاشة استلام المستودع يمكن إضافة مواد إضافية غير موجودة في الطلب الأصلي (الوصف، الوحدة، الكمية المستلمة). تُحفظ كمادة إضافية وتظهر للحسابات والطباعة، ولا تُحسب كنقص في الاستلام الجزئي.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -7577,8 +7582,14 @@
         emptyWarehouseReceiptTrack: "لا توجد طلبات في المتابعة (إقفال أو مكتمل) لمنطقتك.",
         warehouseReceiptQtyModalTitle: "استلام المستودع — الكميات الفعلية",
         warehouseReceiptQtyModalHint:
-          "أدخل الكمية المستلمة فعلياً لكل بند. يمكن أن تكون أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.",
+          "أدخل الكمية المستلمة فعلياً لكل بند، ويمكن إضافة مواد إضافية غير موجودة في الطلب. يمكن أن تكون الكمية أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.",
         warehouseReceiptActualQtyCol: "المستلم فعلياً",
+        btnAddReceiptMaterial: "إضافة مادة",
+        warehouseReceiptAddedBadge: "مادة إضافية عند الاستلام",
+        warehouseReceiptAddedItemPlaceholder: "وصف المادة الإضافية",
+        warehouseReceiptAddedQtyDash: "—",
+        alertWarehouseReceiptAddedLineInvalid:
+          "للمواد الإضافية أدخل الوصف والكمية المستلمة (أكبر من صفر).",
         btnConfirmWarehouseReceiptQty: "حفظ وإرسال للحسابات",
         btnEditWarehouseReceipt: "تعديل الاستلام",
         btnAmendWarehouseReceipt: "تصحيح الكميات المستلمة",
@@ -7586,10 +7597,10 @@
         btnSaveWarehouseReceiptAmend: "حفظ التصحيح",
         warehouseReceiptQtyUpdateTitle: "تعديل استلام المستودع",
         warehouseReceiptQtyUpdateHint:
-          "عدّل الكمية المستلمة فعلياً ثم احفظ. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق أو إبقاء الطلب مفتوحاً.",
+          "عدّل الكمية المستلمة أو أضف مواداً إضافية ثم احفظ. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق أو إبقاء الطلب مفتوحاً.",
         warehouseReceiptQtyAmendTitle: "تصحيح الكميات المستلمة",
         warehouseReceiptQtyAmendHint:
-          "صحّح الكميات المستلمة فعلياً بعد إرسال الطلب للحسابات. يُسجَّل التعديل في سجل الطلب.",
+          "صحّح الكميات المستلمة أو أضف مواداً إضافية بعد إرسال الطلب للحسابات. يُسجَّل التعديل في سجل الطلب.",
         confirmWarehouseReceiptAmend: "حفظ تصحيح الكميات المستلمة؟ سيُسجَّل من قام بالتعديل والقيم السابقة.",
         alertWarehouseReceiptUnchanged: "لم تتغير الكميات المستلمة.",
         poPrintColReceived: "المستلم فعلياً",
@@ -8296,7 +8307,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Today's updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Enable/disable supervisor approvals:</strong> a \"System settings\" tab in Administration turns the supervisor approval stage on or off system-wide. When disabled, orders move directly from group manager approval to Purchasing, orders currently awaiting the supervisor are forwarded automatically, and the bypass is recorded in the order trail.</li><li><strong>Directed order notes:</strong> supervisors can send a note about a specific order to selected users. Recipients see a pop-up with an option to open the order, and the note is saved in the order notes history with read status.</li><li><strong>Refresh-required alert:</strong> when a newer version is published, a dialog prompts users to refresh the page so they always run the latest version.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Add material at warehouse receipt:</strong> on the warehouse receipt screen you can add extra materials that were not on the original request (description, unit, received quantity). They are saved as extra receipt lines, shown in accounting and print, and do not count as a shortfall for partial receipt.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -8686,8 +8697,14 @@
         emptyWarehouseReceiptTrack: "No follow-up requests (closure or complete) for your region.",
         warehouseReceiptQtyModalTitle: "Warehouse receipt — actual quantities",
         warehouseReceiptQtyModalHint:
-          "Enter the actual received quantity per line. It may exceed the requested quantity. If receipt is partial, you'll be asked whether to close or keep it open.",
+          "Enter the actual received quantity per line, and you can add materials that were not on the original request. Received quantity may exceed the requested amount. If receipt is partial, you'll be asked whether to close or keep it open.",
         warehouseReceiptActualQtyCol: "Received (actual)",
+        btnAddReceiptMaterial: "Add material",
+        warehouseReceiptAddedBadge: "Extra material at receipt",
+        warehouseReceiptAddedItemPlaceholder: "Extra material description",
+        warehouseReceiptAddedQtyDash: "—",
+        alertWarehouseReceiptAddedLineInvalid:
+          "For extra materials, enter a description and a received quantity greater than zero.",
         btnConfirmWarehouseReceiptQty: "Save and send to accounting",
         btnEditWarehouseReceipt: "Edit receipt",
         btnAmendWarehouseReceipt: "Correct received quantities",
@@ -8695,10 +8712,10 @@
         btnSaveWarehouseReceiptAmend: "Save correction",
         warehouseReceiptQtyUpdateTitle: "Edit warehouse receipt",
         warehouseReceiptQtyUpdateHint:
-          "Update actual received quantities. If receipt is partial, you'll be asked whether to close or keep the request open.",
+          "Update received quantities or add extra materials, then save. If receipt is partial, you'll be asked whether to close or keep the request open.",
         warehouseReceiptQtyAmendTitle: "Correct received quantities",
         warehouseReceiptQtyAmendHint:
-          "Correct actual received quantities after the request was sent to accounting. The change is logged on the request.",
+          "Correct received quantities or add extra materials after the request was sent to accounting. The change is logged on the request.",
         confirmWarehouseReceiptAmend: "Save the correction to received quantities? Previous values and who changed them will be logged.",
         alertWarehouseReceiptUnchanged: "Received quantities were not changed.",
         poPrintColReceived: "Received (actual)",
@@ -17241,6 +17258,15 @@
       inpDesc.className = "acc-line-desc";
       inpDesc.readOnly = true;
       inpDesc.value = item;
+      if (line?.addedAtReceipt) {
+        inpDesc.title = t("warehouseReceiptAddedBadge");
+        const badge = document.createElement("div");
+        badge.className = "muted";
+        badge.style.fontSize = "11px";
+        badge.style.marginTop = "0.2rem";
+        badge.textContent = t("warehouseReceiptAddedBadge");
+        td1.appendChild(badge);
+      }
       td1.appendChild(inpDesc);
       const td2 = document.createElement("td");
       const inpQty = document.createElement("input");
@@ -17346,6 +17372,7 @@
             lineTotal,
           };
           if (hasReceived) line.receivedQty = receivedQty;
+          if (base.addedAtReceipt) line.addedAtReceipt = true;
           if (lineNote) line.lineNote = lineNote;
           if (base.availableQty != null && base.availableQty !== "")
             line.availableQty = Number(base.availableQty);
@@ -17357,7 +17384,11 @@
             line.warehouseAvailability = { ...base.warehouseAvailability };
           return line;
         })
-        .filter((l) => l.item && l.qty > 0);
+        .filter((l) => {
+          if (!(l.item || "").trim()) return false;
+          if (l.addedAtReceipt) return (Number(l.receivedQty) || 0) > 0 || (Number(l.qty) || 0) > 0;
+          return (Number(l.qty) || 0) > 0;
+        });
     }
 
     function closeAccountingPoModal() {
@@ -23020,24 +23051,31 @@
         lineTh += `<th class="po-print-num">${escapeHtml(t("poPrintColUnitPrice"))}</th><th class="po-print-num">${escapeHtml(t("poPrintColLineTotal"))}</th>`;
       const linesRows = lines
         .map((l) => {
-          const desc = escapeHtml(String(l.item || "").trim());
-          const qty = escapeHtml(String(Number(l.qty) || 0));
+          const added = !!l.addedAtReceipt;
+          const descBase = String(l.item || "").trim();
+          const desc = escapeHtml(descBase) + (added ? ` <span class="muted">(${escapeHtml(t("warehouseReceiptAddedBadge"))})</span>` : "");
+          const qty = escapeHtml(added ? t("warehouseReceiptAddedQtyDash") : String(Number(l.qty) || 0));
           const unit = escapeHtml(String((l.unit || "").trim() || t("dash")));
           let cells = `<td>${desc}</td>${isProject ? `<td>${unit}</td>` : ""}<td class="po-print-num">${qty}</td>`;
           if (isProject)
-            cells += `<td>${escapeHtml(poPrintLineAvailableText(l))}</td><td class="po-print-num">${escapeHtml(
-              poPrintLineToBuyQty(l)
+            cells += `<td>${escapeHtml(added ? t("dash") : poPrintLineAvailableText(l))}</td><td class="po-print-num">${escapeHtml(
+              added ? t("dash") : poPrintLineToBuyQty(l)
             )}</td>`;
           if (showReceived) {
             const recv =
               l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
                 ? Number(l.receivedQty)
-                : Number(l.qty) || 0;
+                : added
+                  ? 0
+                  : Number(l.qty) || 0;
             cells += `<td class="po-print-num">${escapeHtml(String(recv))}</td>`;
           }
           if (showPrices) {
             const p = Number(l.price) || 0;
-            const qn = Number(l.qty) || 0;
+            const qn =
+              l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
+                ? Number(l.receivedQty)
+                : Number(l.qty) || 0;
             const lt = l.lineTotal != null && l.lineTotal !== "" ? Number(l.lineTotal) : p * qn;
             cells += `<td class="po-print-num">${escapeHtml(String(p))}</td><td class="po-print-num">${escapeHtml(String(lt))}</td>`;
           }
@@ -26321,8 +26359,10 @@
     function warehouseReceiptQtySnapshot(lines) {
       return (lines || []).map((l) => ({
         item: (l.item || "").trim(),
+        unit: (l.unit || "").trim(),
         qty: Number(l.qty) || 0,
         receivedQty: Number(l.receivedQty) || 0,
+        addedAtReceipt: !!l.addedAtReceipt,
       }));
     }
 
@@ -26330,7 +26370,21 @@
       const a = warehouseReceiptQtySnapshot(oldLines);
       const b = warehouseReceiptQtySnapshot(newLines);
       if (a.length !== b.length) return true;
-      return a.some((x, i) => x.receivedQty !== b[i].receivedQty);
+      return a.some(
+        (x, i) =>
+          x.receivedQty !== b[i].receivedQty ||
+          x.item !== b[i].item ||
+          x.unit !== b[i].unit ||
+          x.qty !== b[i].qty ||
+          x.addedAtReceipt !== b[i].addedAtReceipt
+      );
+    }
+
+    function warehouseReceiptIsPartial(lines) {
+      return (lines || []).some((l) => {
+        if (l.addedAtReceipt) return false;
+        return (Number(l.receivedQty) || 0) < (Number(l.qty) || 0);
+      });
     }
 
     function warehouseReceiptEditableStatus(ws) {
@@ -26382,24 +26436,109 @@
       if (tb) tb.innerHTML = "";
     }
 
+    function syncWarehouseReceiptLinesFromDom() {
+      const tb = $("wr-lines-tbody");
+      if (!tb || !wrEditBaseLines) return;
+      tb.querySelectorAll("tr").forEach((tr) => {
+        const idx = parseInt(tr.dataset.idx || "", 10);
+        if (!Number.isFinite(idx) || idx < 0 || idx >= wrEditBaseLines.length) return;
+        const line = wrEditBaseLines[idx];
+        if (line.addedAtReceipt) {
+          const itemInp = tr.querySelector(".wr-line-item");
+          const unitInp = tr.querySelector(".wr-line-unit");
+          if (itemInp) line.item = String(itemInp.value || "").trim();
+          if (unitInp) line.unit = String(unitInp.value || "").trim();
+        }
+        const recvInp = tr.querySelector(".wr-line-received");
+        if (recvInp) {
+          const v = parseFloat(String(recvInp.value));
+          line.receivedQty = Number.isFinite(v) && v >= 0 ? v : 0;
+        }
+      });
+    }
+
     function renderWarehouseReceiptQtyLines(lines) {
       const tb = $("wr-lines-tbody");
       if (!tb) return;
       tb.innerHTML = "";
       (lines || []).forEach((l, idx) => {
+        const added = !!l.addedAtReceipt;
         const item = (l.item || "").trim();
+        const unit = (l.unit || "").trim();
         const qty = Number(l.qty) || 0;
         const recv0 =
           l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
             ? Number(l.receivedQty)
-            : qty;
+            : added
+              ? 0
+              : qty;
         const tr = document.createElement("tr");
+        tr.dataset.idx = String(idx);
+        if (added) tr.classList.add("wr-line-added");
+        const itemCell = added
+          ? `<input type="text" class="wr-line-item" value="${escapeAttr(item)}" placeholder="${escapeAttr(
+              t("warehouseReceiptAddedItemPlaceholder")
+            )}" />`
+          : escapeHtml(item || t("dash"));
+        const unitCell = added
+          ? `<input type="text" class="wr-line-unit" value="${escapeAttr(unit)}" placeholder="${escapeAttr(
+              t("poLineUnitCol")
+            )}" />`
+          : escapeHtml(unit || t("dash"));
+        const qtyCell = added
+          ? `<span class="muted">${escapeHtml(t("warehouseReceiptAddedQtyDash"))}</span>`
+          : escapeHtml(String(qty));
+        const badge = added
+          ? `<div class="muted" style="font-size:11px;margin-top:.2rem">${escapeHtml(
+              t("warehouseReceiptAddedBadge")
+            )}</div>`
+          : "";
+        const removeBtn = added
+          ? `<button type="button" class="btn btn-danger btn-sm wr-line-remove" data-idx="${idx}">${escapeHtml(
+              t("delete")
+            )}</button>`
+          : "";
         tr.innerHTML = `
-          <td>${escapeHtml(item || t("dash"))}</td>
-          <td class="po-print-num">${escapeHtml(String(qty))}</td>
-          <td><input type="number" class="wr-line-received" min="0" step="any" value="${escapeAttr(String(recv0))}" data-idx="${idx}" /></td>`;
+          <td>${itemCell}${badge}</td>
+          <td>${unitCell}</td>
+          <td class="po-print-num">${qtyCell}</td>
+          <td><input type="number" class="wr-line-received" min="0" step="any" value="${escapeAttr(
+            String(recv0)
+          )}" /></td>
+          <td>${removeBtn}</td>`;
         tb.appendChild(tr);
       });
+      tb.querySelectorAll(".wr-line-remove").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const idx = parseInt(btn.dataset.idx || "", 10);
+          removeWarehouseReceiptAddedLine(idx);
+        });
+      });
+    }
+
+    function addWarehouseReceiptMaterialLine() {
+      if (!wrEditBaseLines) return;
+      syncWarehouseReceiptLinesFromDom();
+      wrEditBaseLines.push({
+        item: "",
+        unit: "",
+        qty: 0,
+        receivedQty: 0,
+        price: 0,
+        lineTotal: 0,
+        addedAtReceipt: true,
+      });
+      renderWarehouseReceiptQtyLines(wrEditBaseLines);
+      const lastItem = $("wr-lines-tbody")?.querySelector("tr:last-child .wr-line-item");
+      lastItem?.focus();
+    }
+
+    function removeWarehouseReceiptAddedLine(idx) {
+      if (!wrEditBaseLines || !Number.isFinite(idx) || idx < 0 || idx >= wrEditBaseLines.length) return;
+      if (!wrEditBaseLines[idx]?.addedAtReceipt) return;
+      syncWarehouseReceiptLinesFromDom();
+      wrEditBaseLines.splice(idx, 1);
+      renderWarehouseReceiptQtyLines(wrEditBaseLines);
     }
 
     async function openWarehouseReceiptQtyModal(poId) {
@@ -26429,22 +26568,32 @@
       wrEditBaseLines = lines.map((l) => ({ ...l }));
       $("wr-po-id").value = poId;
       syncWarehouseReceiptQtyModalUi(wrModalMode);
-      renderWarehouseReceiptQtyLines(lines);
+      renderWarehouseReceiptQtyLines(wrEditBaseLines);
       $("modal-warehouse-receipt-qty")?.classList.remove("hidden");
       $("wr-lines-tbody")?.querySelector("input.wr-line-received")?.focus();
     }
 
     function collectWarehouseReceiptQtyLines() {
-      const tb = $("wr-lines-tbody");
-      if (!tb || !wrEditBaseLines) return null;
-      const next = wrEditBaseLines.map((l) => ({ ...l }));
-      tb.querySelectorAll("input.wr-line-received").forEach((inp) => {
-        const idx = parseInt(inp.dataset.idx || "", 10);
-        if (!Number.isFinite(idx) || idx < 0 || idx >= next.length) return;
-        const v = parseFloat(String(inp.value));
-        next[idx].receivedQty = Number.isFinite(v) && v >= 0 ? v : 0;
+      if (!wrEditBaseLines) return null;
+      syncWarehouseReceiptLinesFromDom();
+      return wrEditBaseLines.map((l) => {
+        const line = { ...l };
+        line.item = (line.item || "").trim();
+        line.unit = (line.unit || "").trim();
+        line.qty = Number(line.qty) || 0;
+        line.receivedQty = Number(line.receivedQty) || 0;
+        if (line.addedAtReceipt) {
+          line.qty = 0;
+          line.addedAtReceipt = true;
+          if (!(Number(line.price) > 0)) {
+            line.price = 0;
+            line.lineTotal = 0;
+          } else {
+            line.lineTotal = line.receivedQty * (Number(line.price) || 0);
+          }
+        }
+        return line;
       });
-      return next;
     }
 
     async function submitWarehouseReceiptQtyModal() {
@@ -26467,12 +26616,19 @@
         alert(t("alertWarehouseReceiptNoLines"));
         return;
       }
+      const badAdded = newLines.find(
+        (l) => l.addedAtReceipt && (!(l.item || "").trim() || !(Number(l.receivedQty) > 0))
+      );
+      if (badAdded) {
+        alert(t("alertWarehouseReceiptAddedLineInvalid"));
+        return;
+      }
       const oldLines = Array.isArray(po.lines) ? po.lines : [];
       if (!warehouseReceiptQtyChanged(oldLines, newLines)) {
         alert(t("alertWarehouseReceiptUnchanged"));
         return;
       }
-      const isPartial = newLines.some((l) => (Number(l.receivedQty) || 0) < (Number(l.qty) || 0));
+      const isPartial = warehouseReceiptIsPartial(newLines);
 
       if (wrModalMode === "amend") {
         if (po.workflowStatus !== "pending_accounting") {
@@ -26808,7 +26964,7 @@
     startAppVersionMonitor();
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-19-supervisor-notes-update-alert";
+    const CURRENT_UPDATE_ID = "2026-07-20-warehouse-receipt-add-material";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
@@ -27536,6 +27692,7 @@
 
     $("wr-cancel")?.addEventListener("click", closeWarehouseReceiptQtyModal);
     $("wr-confirm")?.addEventListener("click", () => void submitWarehouseReceiptQtyModal());
+    $("wr-add-line")?.addEventListener("click", () => addWarehouseReceiptMaterialLine());
 
     $("modal-wh-cancel")?.addEventListener("click", closeWarehouseReviewModal);
     $("modal-wh-submit")?.addEventListener("click", async () => {
