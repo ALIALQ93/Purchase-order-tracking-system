@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.07.20.1" />
+  <meta name="app-version" content="2026.07.21.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -5686,6 +5686,14 @@
                 <input type="checkbox" id="rep-gstatus-hide-values" />
                 <span data-i18n="genStatusHideValues">إخفاء قيم الطلبات</span>
               </label>
+              <label class="po-filter-field" style="display:flex;align-items:center;gap:0.4rem;padding-top:1.35rem">
+                <input type="checkbox" id="rep-gstatus-hide-summary" />
+                <span data-i18n="genStatusHideSummary">إخفاء ملخص الطلب</span>
+              </label>
+              <label class="po-filter-field" style="display:flex;align-items:center;gap:0.4rem;padding-top:1.35rem">
+                <input type="checkbox" id="rep-gstatus-hide-materials" />
+                <span data-i18n="genStatusHideMaterials">إخفاء ملخص المواد</span>
+              </label>
               <button type="button" class="btn btn-primary btn-sm" id="btn-run-gstatus-report" data-i18n="btnRunReport">
                 عرض التقرير
               </button>
@@ -7193,7 +7201,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>إضافة مادة عند الاستلام:</strong> في شاشة استلام المستودع يمكن إضافة مواد إضافية غير موجودة في الطلب الأصلي (الوصف، الوحدة، الكمية المستلمة). تُحفظ كمادة إضافية وتظهر للحسابات والطباعة، ولا تُحسب كنقص في الاستلام الجزئي.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>خيارات إخفاء في تقرير حالة الطلبات:</strong> أُضيف خيارا «إخفاء ملخص الطلب» و«إخفاء ملخص المواد» بجانب إخفاء قيم الطلبات. تُطبَّق فوراً على العرض والطباعة وتصدير CSV دون إعادة تشغيل التقرير.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -7390,6 +7398,8 @@
         genStatusColOrderValue: "قيمة الطلب",
         genStatusColHistory: "ملخص سجل الحالة",
         genStatusHideValues: "إخفاء قيم الطلبات",
+        genStatusHideSummary: "إخفاء ملخص الطلب",
+        genStatusHideMaterials: "إخفاء ملخص المواد",
         genStatusSummaryItems: "بند",
         genStatusMaterialQty: "الكمية",
         genStatusMaterialPrice: "السعر",
@@ -8307,7 +8317,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Add material at warehouse receipt:</strong> on the warehouse receipt screen you can add extra materials that were not on the original request (description, unit, received quantity). They are saved as extra receipt lines, shown in accounting and print, and do not count as a shortfall for partial receipt.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Hide options in the order status report:</strong> \"Hide order summary\" and \"Hide materials summary\" were added alongside hiding order values. They apply immediately to the on-screen view, print layout, and CSV export without re-running the report.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -8505,6 +8515,8 @@
         genStatusColOrderValue: "Order value",
         genStatusColHistory: "Status history summary",
         genStatusHideValues: "Hide order values",
+        genStatusHideSummary: "Hide order summary",
+        genStatusHideMaterials: "Hide materials summary",
         genStatusSummaryItems: "items",
         genStatusMaterialQty: "Qty",
         genStatusMaterialPrice: "Price",
@@ -20044,12 +20056,15 @@
       if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
       if (toInp && !toInp.value) toInp.value = today;
       const hideValInp = $("rep-gstatus-hide-values");
-      if (hideValInp && !hideValInp.dataset.wired) {
-        hideValInp.dataset.wired = "1";
-        hideValInp.addEventListener("change", () => {
+      const hideSummaryInp = $("rep-gstatus-hide-summary");
+      const hideMaterialsInp = $("rep-gstatus-hide-materials");
+      [hideValInp, hideSummaryInp, hideMaterialsInp].forEach((inp) => {
+        if (!inp || inp.dataset.wired) return;
+        inp.dataset.wired = "1";
+        inp.addEventListener("change", () => {
           if (lastGeneralStatusReportSnapshot?.agg) renderGeneralStatusReportCurrent();
         });
-      }
+      });
       await fillGeneralReportFilters("rep-gstatus");
     }
 
@@ -20160,6 +20175,18 @@
       return !!$("rep-gstatus-hide-values")?.checked;
     }
 
+    function generalStatusHideSummary() {
+      return !!$("rep-gstatus-hide-summary")?.checked;
+    }
+
+    function generalStatusHideMaterials() {
+      return !!$("rep-gstatus-hide-materials")?.checked;
+    }
+
+    function generalStatusOrdersColspan(hideVal, hideSummary, hideMaterials) {
+      return 4 + (hideVal ? 0 : 1) + (hideSummary ? 0 : 1) + (hideMaterials ? 0 : 1);
+    }
+
     function renderGeneralStatusReportCurrent() {
       const wrap = $("reports-gstatus-wrap");
       const snap = lastGeneralStatusReportSnapshot;
@@ -20233,6 +20260,8 @@
 
     function renderGeneralStatusReportHtml(snap, agg) {
       const hideVal = generalStatusHideValues();
+      const hideSummary = generalStatusHideSummary();
+      const hideMaterials = generalStatusHideMaterials();
       const convLabel = snap.convLabel;
       const money = (v) => convLabel + " " + pricingNum(Math.round(v));
       const monthLabel = (ym) => {
@@ -20297,8 +20326,12 @@
               } aria-label="${escapeAttr(t("genStatusSelectOrder"))}" /></td>
             <td>${escapeHtml(r.ref)}<div class="muted" style="font-size:11px">${escapeHtml(r.poDate || "")}</div></td>
             <td>${escapeHtml(r.project || t("dash"))}</td>
-            <td>${escapeHtml(generalOrderSummaryText(r))}</td>
-            <td style="min-width:240px">${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>
+            ${hideSummary ? "" : `<td>${escapeHtml(generalOrderSummaryText(r))}</td>`}
+            ${
+              hideMaterials
+                ? ""
+                : `<td style="min-width:240px">${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>`
+            }
             ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
             <td>${statusBadge(r.status, "general", null)}<div style="margin-top:.25rem;font-size:11.5px;color:var(--muted)">${escapeHtml(
                 generalStatusHistorySummaryText(r)
@@ -20306,7 +20339,9 @@
           </tr>`
             )
             .join("")
-        : `<tr><td colspan="${hideVal ? 6 : 7}">${escapeHtml(t("reportNoRows"))}</td></tr>`;
+        : `<tr><td colspan="${generalStatusOrdersColspan(hideVal, hideSummary, hideMaterials)}">${escapeHtml(
+            t("reportNoRows")
+          )}</td></tr>`;
       const totalCard = hideVal
         ? `<div class="pricing-total-card">
             <div class="label">${escapeHtml(t("genStatusKpiOrders"))}</div>
@@ -20392,8 +20427,8 @@
             <th style="width:44px">${escapeHtml(t("genStatusSelectCol"))}</th>
             <th>${escapeHtml(t("genStatusColRef"))}</th>
             <th>${escapeHtml(t("genStatusColProject"))}</th>
-            <th>${escapeHtml(t("genStatusColSummary"))}</th>
-            <th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>
+            ${hideSummary ? "" : `<th>${escapeHtml(t("genStatusColSummary"))}</th>`}
+            ${hideMaterials ? "" : `<th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>`}
             ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
             <th>${escapeHtml(t("genStatusColHistory"))}</th>
           </tr></thead><tbody>${orderRows}</tbody></table></div>
@@ -20443,6 +20478,8 @@
       if (!snap || !snap.agg) return;
       const agg = snap.agg;
       const hideVal = generalStatusHideValues();
+      const hideSummary = generalStatusHideSummary();
+      const hideMaterials = generalStatusHideMaterials();
       const convLabel = snap.convLabel;
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
       const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
@@ -20515,7 +20552,8 @@
           (r) => `<tr>
             <td>${escapeHtml(r.ref)}</td>
             <td>${escapeHtml(r.project || t("dash"))}</td>
-            <td>${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>
+            ${hideSummary ? "" : `<td>${escapeHtml(generalOrderSummaryText(r))}</td>`}
+            ${hideMaterials ? "" : `<td>${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>`}
             ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
             <td>${escapeHtml(generalStatusHistorySummaryText(r))}</td>
           </tr>`
@@ -20526,7 +20564,8 @@
         <table><thead><tr>
           <th>${escapeHtml(t("genStatusColRef"))}</th>
           <th>${escapeHtml(t("genStatusColProject"))}</th>
-          <th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>
+          ${hideSummary ? "" : `<th>${escapeHtml(t("genStatusColSummary"))}</th>`}
+          ${hideMaterials ? "" : `<th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>`}
           ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
           <th>${escapeHtml(t("genStatusColHistory"))}</th>
         </tr></thead><tbody>${printOrderRows}</tbody></table>
@@ -20657,6 +20696,8 @@
       const agg = snap.agg;
       const convLabel = snap.convLabel;
       const hideVal = generalStatusHideValues();
+      const hideSummary = generalStatusHideSummary();
+      const hideMaterials = generalStatusHideMaterials();
       const rows = [];
       const esc = (v) => {
         const s = String(v == null ? "" : v);
@@ -20687,43 +20728,20 @@
         agg.monthArr.forEach(([ym, v]) => line([ym, Math.round(v)]));
       }
       line([]);
-      if (hideVal) {
-        line([
-          t("genStatusColRef"),
-          t("genStatusColProject"),
-          t("genStatusColSummary"),
-          t("genStatusColMaterialsSummary"),
-          t("genStatusColHistory"),
-        ]);
-        (snap.rows || []).forEach((r) => {
-          line([
-            r.ref,
-            r.project,
-            generalOrderSummaryText(r),
-            generalOrderMaterialsSummaryText(r, snap),
-            generalStatusHistorySummaryText(r),
-          ]);
-        });
-      } else {
-        line([
-          t("genStatusColRef"),
-          t("genStatusColProject"),
-          t("genStatusColSummary"),
-          t("genStatusColMaterialsSummary"),
-          t("genStatusColOrderValue"),
-          t("genStatusColHistory"),
-        ]);
-        (snap.rows || []).forEach((r) => {
-          line([
-            r.ref,
-            r.project,
-            generalOrderSummaryText(r),
-            generalOrderMaterialsSummaryText(r, snap),
-            generalOrderValueText(r),
-            generalStatusHistorySummaryText(r),
-          ]);
-        });
-      }
+      const orderHeader = [t("genStatusColRef"), t("genStatusColProject")];
+      if (!hideSummary) orderHeader.push(t("genStatusColSummary"));
+      if (!hideMaterials) orderHeader.push(t("genStatusColMaterialsSummary"));
+      if (!hideVal) orderHeader.push(t("genStatusColOrderValue"));
+      orderHeader.push(t("genStatusColHistory"));
+      line(orderHeader);
+      (snap.rows || []).forEach((r) => {
+        const orderRow = [r.ref, r.project];
+        if (!hideSummary) orderRow.push(generalOrderSummaryText(r));
+        if (!hideMaterials) orderRow.push(generalOrderMaterialsSummaryText(r, snap));
+        if (!hideVal) orderRow.push(generalOrderValueText(r));
+        orderRow.push(generalStatusHistorySummaryText(r));
+        line(orderRow);
+      });
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
       const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
       const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
@@ -26964,7 +26982,7 @@
     startAppVersionMonitor();
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-20-warehouse-receipt-add-material";
+    const CURRENT_UPDATE_ID = "2026-07-21-gstatus-hide-summary-materials";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
