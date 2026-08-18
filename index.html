@@ -2463,6 +2463,18 @@
       font-size: 11px;
     }
     .po007-surface .po007-party-value { color: #444; }
+    .po007-surface .po007-party-ltr,
+    .po007-surface [data-po007="vendor-phone"],
+    .po007-surface [data-po007="buyer-phone"],
+    .po007-surface [data-po007="vendor-email"],
+    .po007-surface [data-po007="buyer-email-primary"],
+    .po007-surface [data-po007="buyer-email-secondary"] {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+      min-width: 4em;
+      text-align: left;
+    }
     .po007-surface .po007-party-extra {
       margin-top: 8px;
       padding-top: 6px;
@@ -2934,6 +2946,8 @@
       font-weight: 700;
       color: #1a1a1a;
       font-size: 11px;
+      direction: ltr;
+      unicode-bidi: isolate;
     }
     .po007-surface .po007-payment-list .po007-pay-amount-words {
       font-style: italic;
@@ -3869,6 +3883,8 @@
       min-width: 3.5em;
       font-weight: 700;
       margin-inline-end: 0.5em;
+      direction: ltr;
+      unicode-bidi: isolate;
     }
     .po007-surface.po007-edit-mode .po007-sec-field--block {
       padding: 8px 10px;
@@ -5900,7 +5916,7 @@
               </div>
               <div class="field" style="margin:0">
                 <label for="po-gen-v-phone" data-i18n="labelPhone">الهاتف</label>
-                <input type="text" id="po-gen-v-phone" class="po-gen-v-master" readonly />
+                <input type="text" id="po-gen-v-phone" class="po-gen-v-master" dir="ltr" inputmode="tel" readonly />
               </div>
               <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
                 <label for="po-gen-v-email" data-i18n="labelEmailPrimary">البريد</label>
@@ -5917,7 +5933,7 @@
               </div>
               <div class="field" style="margin:0">
                 <label for="po-gen-b-phone" data-i18n="genPoLabelBuyerPhone">هاتف المشتري</label>
-                <input type="text" id="po-gen-b-phone" />
+                <input type="text" id="po-gen-b-phone" dir="ltr" inputmode="tel" />
               </div>
               <div class="field po-field-span-2" style="margin:0;grid-column:1/-1">
                 <label for="po-gen-b-emails" data-i18n="genPoLabelBuyerEmails">بريد المشتري (سطر لكل بريد)</label>
@@ -9040,7 +9056,45 @@
     }
 
     function po007LocaleTag(docLang) {
-      return docLang === "ar" ? "ar-SA-u-nu-latn" : "en-US";
+      return "en-US";
+    }
+
+    /** Eastern Arabic / Persian digits → 0-9. Used in Arabic PO007 so numbers stay Latin. */
+    function toWesternDigits(value) {
+      return String(value ?? "").replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (ch) => {
+        const code = ch.charCodeAt(0);
+        return String(code >= 0x06f0 ? code - 0x06f0 : code - 0x0660);
+      });
+    }
+
+    function applyWesternDigitsInPlace(el) {
+      if (!el) return false;
+      const raw = el.textContent || "";
+      const next = toWesternDigits(raw);
+      if (next === raw) return false;
+      const sel = window.getSelection();
+      let offset = next.length;
+      if (sel && sel.rangeCount && el.contains(sel.anchorNode)) {
+        const range = sel.getRangeAt(0);
+        const pre = range.cloneRange();
+        pre.selectNodeContents(el);
+        pre.setEnd(range.endContainer, range.endOffset);
+        offset = Math.min(toWesternDigits(pre.toString()).length, next.length);
+      }
+      el.textContent = next;
+      if (!sel) return true;
+      const textNode = el.firstChild;
+      const r = document.createRange();
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        r.setStart(textNode, Math.min(offset, textNode.length));
+        r.collapse(true);
+      } else {
+        r.selectNodeContents(el);
+        r.collapse(false);
+      }
+      sel.removeAllRanges();
+      sel.addRange(r);
+      return true;
     }
 
     function applyDocumentLang() {
@@ -10379,7 +10433,7 @@
     }
 
     function parsePaymentPctValue(pctStr) {
-      const m = String(pctStr || "").match(/(\d+(?:\.\d+)?)/);
+      const m = toWesternDigits(pctStr || "").match(/(\d+(?:\.\d+)?)/);
       return m ? parseFloat(m[1]) : 0;
     }
 
@@ -10508,7 +10562,7 @@
       const norm = normalizePaymentTerm(p);
       return `<li data-po007-pay-item data-po007-pay-mode="${escapeHtml(norm.mode)}">
         <button type="button" class="del-btn po007-del-pay-item">✕</button>
-        <span class="pct po007-sec-field po007-sec-field--pct" contenteditable="true" spellcheck="false" data-po007-pay-pct>${escapeHtml(norm.pct || "")}</span>
+        <span class="pct po007-sec-field po007-sec-field--pct" contenteditable="true" spellcheck="false" data-po007-pay-pct dir="ltr">${escapeHtml(toWesternDigits(norm.pct || ""))}</span>
         ${po007PaymentModeSelectHtml(docLang, norm.mode)}
         <div class="po007-pay-fields">
           <span class="po007-pay-amount-num po007-sec-field po007-pay-manual-field" contenteditable="true" spellcheck="false" data-po007-pay-amount-num>${escapeHtml(norm.amountNum || "")}</span>
@@ -10768,7 +10822,7 @@
       if ($("po-gen-v-name")) $("po-gen-v-name").value = (x.name || "").trim();
       if ($("po-gen-v-address")) $("po-gen-v-address").value = (x.address || "").trim();
       if ($("po-gen-v-attn")) $("po-gen-v-attn").value = (x.attn || "").trim();
-      if ($("po-gen-v-phone")) $("po-gen-v-phone").value = (x.phone || "").trim();
+      if ($("po-gen-v-phone")) $("po-gen-v-phone").value = toWesternDigits((x.phone || "").trim());
       if ($("po-gen-v-email")) $("po-gen-v-email").value = (x.email || "").trim();
     }
 
@@ -10900,13 +10954,13 @@
           name: ($("po-gen-v-name")?.value || "").trim(),
           address: ($("po-gen-v-address")?.value || "").trim(),
           attn: ($("po-gen-v-attn")?.value || "").trim(),
-          phone: ($("po-gen-v-phone")?.value || "").trim(),
+          phone: toWesternDigits(($("po-gen-v-phone")?.value || "").trim()),
           email: ($("po-gen-v-email")?.value || "").trim(),
         },
         offerType: ($("po-gen-offer-type")?.value || "").trim(),
         buyerExtra: {
           contact: ($("po-gen-b-contact")?.value || "").trim(),
-          phone: ($("po-gen-b-phone")?.value || "").trim(),
+          phone: toWesternDigits(($("po-gen-b-phone")?.value || "").trim()),
           emails: ($("po-gen-b-emails")?.value || "").trim(),
         },
         lines: collectGeneralLinesFromTable(),
@@ -10981,7 +11035,7 @@
       const v = g.vendor || {};
       const b = g.buyerExtra || {};
       if ($("po-gen-b-contact")) $("po-gen-b-contact").value = b.contact || "";
-      if ($("po-gen-b-phone")) $("po-gen-b-phone").value = b.phone || "";
+      if ($("po-gen-b-phone")) $("po-gen-b-phone").value = toWesternDigits(b.phone || "");
       if ($("po-gen-b-emails")) $("po-gen-b-emails").value = b.emails || "";
       if ($("po-gen-total-words")) $("po-gen-total-words").value = g.totalWords || "";
       if ($("po-gen-term-pack")) $("po-gen-term-pack").value = g.termsPacking || "";
@@ -12340,17 +12394,17 @@
             <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007SupplierCompanyName"))}</div>
             <p><strong><span class="po007-party-value" data-po007="seller">${escapeHtml(v.name || dash)}</span></strong></p>
             <p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> <span class="po007-party-value" data-po007="vendor-attn">${escapeHtml(v.attn || "")}</span></p>
-            <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: <span class="po007-party-value" data-po007="vendor-phone">${escapeHtml(v.phone || "")}</span></p>
-            <p>${escapeHtml(tPo007(docLang, "genPo007Email"))} <span class="po007-party-value" data-po007="vendor-email">${escapeHtml(v.email || "")}</span></p>
+            <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${po007PartyLtrFieldHtml("vendor-phone", v.phone, true)}</p>
+            <p>${escapeHtml(tPo007(docLang, "genPo007Email"))} ${po007PartyLtrFieldHtml("vendor-email", v.email, true)}</p>
             ${renderPo007PartyExtraBlock(docLang, "vendor-extra", vendorExtra, true)}
           </div>
           <div class="po007-party-cell">
             <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007InvoiceShipTo"))}</div>
             <p><strong><span class="po007-party-value" data-po007="buyer-name-party">${escapeHtml(buyerName || dash)}</span></strong></p>
             <p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> <span class="po007-party-extra-field po007-party-extra-field--inline" data-po007="buyer-attn" contenteditable="true" spellcheck="false">${escapeHtml(be.attn || "")}</span></p>
-            <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: <span class="po007-party-value" data-po007="buyer-phone">${escapeHtml(be.phone || "")}</span></p>
-            <p>${escapeHtml(tPo007(docLang, "genPo007EmailLine"))} <span class="po007-party-value" data-po007="buyer-email-primary">${escapeHtml(buyerEmails[0] || "")}</span></p>
-            <p><span class="po007-party-value" data-po007="buyer-email-secondary">${escapeHtml(buyerEmails[1] || "")}</span></p>
+            <p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${po007PartyLtrFieldHtml("buyer-phone", be.phone, true)}</p>
+            <p>${escapeHtml(tPo007(docLang, "genPo007EmailLine"))} ${po007PartyLtrFieldHtml("buyer-email-primary", buyerEmails[0] || "", true)}</p>
+            <p>${po007PartyLtrFieldHtml("buyer-email-secondary", buyerEmails[1] || "", true)}</p>
             ${renderPo007PartyExtraBlock(docLang, "buyer-extra", buyerExtra, true)}
           </div>
         </div>`;
@@ -12360,16 +12414,16 @@
           <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007SupplierCompanyName"))}</div>
           <p><strong>${escapeHtml(v.name || dash)}</strong></p>
           ${v.attn ? `<p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> ${escapeHtml(v.attn)}</p>` : ""}
-          ${v.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${escapeHtml(v.phone)}</p>` : ""}
-          ${v.email ? `<p>${escapeHtml(tPo007(docLang, "genPo007Email"))} ${escapeHtml(v.email)}</p>` : ""}
+          ${v.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${po007LtrHtml(v.phone)}</p>` : ""}
+          ${v.email ? `<p>${escapeHtml(tPo007(docLang, "genPo007Email"))} ${po007LtrHtml(v.email)}</p>` : ""}
           ${renderPo007PartyExtraBlock(docLang, "vendor-extra", vendorExtra, false)}
         </div>
         <div class="po007-party-cell">
           <div class="po007-party-lbl">${escapeHtml(tPo007(docLang, "genPo007InvoiceShipTo"))}</div>
           <p><strong>${escapeHtml(buyerName || dash)}</strong></p>
           ${(be.attn || "").trim() ? `<p><strong>${escapeHtml(tPo007(docLang, "genPo007Attn"))}</strong> ${escapeHtml(be.attn)}</p>` : ""}
-          ${be.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${escapeHtml(be.phone)}</p>` : ""}
-          ${buyerEmails.map((em, i) => `<p>${i === 0 ? escapeHtml(tPo007(docLang, "genPo007EmailLine")) + " " : ""}${escapeHtml(em)}</p>`).join("")}
+          ${be.phone ? `<p>${escapeHtml(tPo007(docLang, "labelPhone"))}: ${po007LtrHtml(be.phone)}</p>` : ""}
+          ${buyerEmails.map((em, i) => `<p>${i === 0 ? escapeHtml(tPo007(docLang, "genPo007EmailLine")) + " " : ""}${po007LtrHtml(em)}</p>`).join("")}
           ${renderPo007PartyExtraBlock(docLang, "buyer-extra", buyerExtra, false)}
         </div>
       </div>`;
@@ -12698,7 +12752,7 @@
     }
 
     function parsePo007EditorNum(text) {
-      const s = String(text || "").replace(/[^\d.,-]/g, "").replace(/,/g, "");
+      const s = toWesternDigits(text || "").replace(/[^\d.,-]/g, "").replace(/,/g, "");
       const n = parseFloat(s);
       return Number.isFinite(n) ? n : 0;
     }
@@ -12706,8 +12760,24 @@
     function formatPo007EditorAmount(n, docLang) {
       const x = Number(n) || 0;
       const loc = docLang ? po007LocaleTag(docLang) : "en-US";
-      if (Math.abs(x - Math.round(x)) < 1e-9) return Math.round(x).toLocaleString(loc);
-      return x.toLocaleString(loc, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      const formatted =
+        Math.abs(x - Math.round(x)) < 1e-9
+          ? Math.round(x).toLocaleString(loc)
+          : x.toLocaleString(loc, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      return toWesternDigits(formatted);
+    }
+
+    function po007LtrHtml(text) {
+      const s = toWesternDigits(text || "").trim();
+      return s ? `<bdi class="po007-party-ltr" dir="ltr">${escapeHtml(s)}</bdi>` : "";
+    }
+
+    function po007PartyLtrFieldHtml(fieldKey, value, editorMode) {
+      const text = toWesternDigits(value || "");
+      if (editorMode) {
+        return `<span class="po007-party-value po007-party-ltr" data-po007="${fieldKey}" dir="ltr" contenteditable="true" spellcheck="false">${escapeHtml(text)}</span>`;
+      }
+      return po007LtrHtml(text);
     }
 
     function formatPo007AmountText(textOrNum, docLang) {
@@ -14133,7 +14203,7 @@
       const desc = (l.description || l.remark || "").trim();
       const measureUnit = (l.unit || "").trim();
       const remarks = (l.remarks || "").trim();
-      const qty = l.qty != null ? String(l.qty) : "1";
+      const qty = toWesternDigits(l.qty != null ? String(l.qty) : "1");
       const included = generalLineIsIncluded(l);
       const priceRaw = included
         ? ""
@@ -14267,7 +14337,7 @@
         )}</td>`;
       }
       if (colId === "qty") {
-        return `<td class="${css}">${escapeHtml(String(l.qty ?? ""))}</td>`;
+        return `<td class="${css}">${escapeHtml(toWesternDigits(String(l.qty ?? "")))}</td>`;
       }
       if (colId === "unitPrice") {
         return `<td class="${css}">${escapeHtml(priceDisp)}</td>`;
@@ -15361,6 +15431,10 @@
         if (e.target.matches('[data-po007="discount-amount"]')) recalcGeneralPo007ItemsTable();
       };
       mount.oninput = (e) => {
+        const digitField = e.target.closest(
+          '[data-po007="vendor-phone"], [data-po007="buyer-phone"], .po007-cell-field--num, [data-po007-pay-pct], [data-po007="discount-amount"], [data-po007-pay-amount-num], .po007-line-no'
+        );
+        if (digitField && digitField.isContentEditable) applyWesternDigitsInPlace(digitField);
         if (
           e.target.matches('[data-po007="po-number"], [data-po007="po-date"], [data-po007="po-rev"], [data-po007="buyer-name"], [data-po007="buyer-name-party"], [data-po007="seller"]')
         ) {
@@ -15490,13 +15564,13 @@
       set("project", partial.project);
       set("seller", partial.seller);
       set("vendor-attn", partial.vendorAttn);
-      set("vendor-phone", partial.vendorPhone);
+      set("vendor-phone", partial.vendorPhone != null ? toWesternDigits(partial.vendorPhone) : partial.vendorPhone);
       set("vendor-email", partial.vendorEmail);
       set("buyer-name", partial.buyer);
       set("buyer-name-party", partial.buyer);
       set("sig-buyer-name", partial.buyer);
       set("sig-vendor-name", partial.seller);
-      set("buyer-phone", partial.buyerPhone);
+      set("buyer-phone", partial.buyerPhone != null ? toWesternDigits(partial.buyerPhone) : partial.buyerPhone);
       if (partial.buyerEmailPrimary != null) {
         const el = mount.querySelector('[data-po007="buyer-email-primary"]');
         if (el) el.textContent = partial.buyerEmailPrimary;
@@ -15631,13 +15705,13 @@
         vendor: {
           name: read("seller"),
           attn: read("vendor-attn"),
-          phone: read("vendor-phone"),
+          phone: toWesternDigits(read("vendor-phone")),
           email: read("vendor-email"),
           extraNotes: read("vendor-extra"),
         },
         buyerExtra: {
           attn: read("buyer-attn"),
-          phone: read("buyer-phone"),
+          phone: toWesternDigits(read("buyer-phone")),
           emails: [read("buyer-email-primary"), read("buyer-email-secondary")].filter(Boolean).join("\n"),
           extraNotes: read("buyer-extra"),
         },
@@ -15665,14 +15739,14 @@
           name: read("seller"),
           address: "",
           attn: read("vendor-attn"),
-          phone: read("vendor-phone"),
+          phone: toWesternDigits(read("vendor-phone")),
           email: read("vendor-email"),
           extraNotes: read("vendor-extra"),
         },
         buyerExtra: {
           contact: "",
           attn: read("buyer-attn"),
-          phone: read("buyer-phone"),
+          phone: toWesternDigits(read("buyer-phone")),
           emails: [read("buyer-email-primary"), read("buyer-email-secondary")].filter(Boolean).join("\n"),
           extraNotes: read("buyer-extra"),
         },
@@ -16186,7 +16260,7 @@
       patchGeneralPo007EditorMeta({
         logo: logo.startsWith("data:") || logo.startsWith("http") ? logo : "",
         buyer: name,
-        buyerPhone: (comp.phone || "").trim(),
+        buyerPhone: toWesternDigits((comp.phone || "").trim()),
         buyerEmailPrimary: (comp.emailPrimary || comp.email || "").trim(),
         buyerEmailSecondary: (comp.emailSecondary || "").trim(),
       });
@@ -16206,7 +16280,7 @@
       patchGeneralPo007EditorMeta({
         seller: supplierDisplayName(row),
         vendorAttn: (d.attn || "").trim(),
-        vendorPhone: (d.phone || "").trim(),
+        vendorPhone: toWesternDigits((d.phone || "").trim()),
         vendorEmail: (d.email || "").trim(),
       });
     }

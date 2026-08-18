@@ -157,6 +157,12 @@
     .party-body { padding: 8px 10px; font-size: 11.5px; color: var(--muted); }
     .party-body strong { color: var(--ink); }
     .party-body p { margin-bottom: 3px; }
+    .ltr-iso {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+      text-align: left;
+    }
     .offer-badge {
       display: inline-block; margin-top: 5px;
       background: var(--navy-light); color: var(--navy-mid);
@@ -175,8 +181,8 @@
       text-align: start;
       word-break: break-word;
     }
-    table.data thead th.num, table.data tbody td.num { text-align: center; }
-    table.data thead th.r, table.data tbody td.r { text-align: end; white-space: nowrap; }
+    table.data thead th.num, table.data tbody td.num { text-align: center; direction: ltr; unicode-bidi: isolate; }
+    table.data thead th.r, table.data tbody td.r { text-align: end; white-space: nowrap; direction: ltr; unicode-bidi: isolate; }
     table.data tbody td {
       border: 1px solid var(--border);
       padding: 5px 8px; vertical-align: top;
@@ -192,7 +198,7 @@
       border: 1px solid #152a47; padding: 7px 10px;
     }
     table.data tfoot td.lbl { text-align: end; }
-    table.data tfoot td.r { text-align: end; font-size: 13px; }
+    table.data tfoot td.r { text-align: end; font-size: 13px; direction: ltr; unicode-bidi: isolate; }
     table.data tfoot tr.sub td { background: #254a70; font-size: 11.5px; }
     table.data tfoot tr.say td {
       background: #1a2d4a; font-size: 11px; font-weight: 600;
@@ -255,9 +261,10 @@
     .payment-list .pct {
       font-weight: 700; color: var(--navy-mid);
       white-space: nowrap; font-size: 13px; min-width: 34px; flex-shrink: 0;
+      direction: ltr; unicode-bidi: isolate;
     }
     .payment-list .pay-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-    .payment-list .pay-amount-num { font-weight: 700; color: var(--ink); }
+    .payment-list .pay-amount-num { font-weight: 700; color: var(--ink); direction: ltr; unicode-bidi: isolate; }
     .payment-list .pay-amount-words { font-style: italic; color: #444; font-size: 11px; }
     .section-body table.sec { width: 100%; border-collapse: collapse; font-size: 11px; }
     .section-body table.sec th, .section-body table.sec td {
@@ -505,9 +512,23 @@
       return s;
     }
 
+    function toWesternDigits(value) {
+      return String(value ?? "").replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (ch) => {
+        const code = ch.charCodeAt(0);
+        return String(code >= 0x06f0 ? code - 0x06f0 : code - 0x0660);
+      });
+    }
+
+    function ltrTextHtml(s) {
+      const v = toWesternDigits(s || "").trim();
+      return v ? `<bdi class="ltr-iso" dir="ltr">${esc(v)}</bdi>` : "";
+    }
+
     function fmtNum(n, lang) {
       const v = Number(n) || 0;
-      return v.toLocaleString(lang === "ar" ? "ar-IQ" : "en-US", { maximumFractionDigits: 2 });
+      return toWesternDigits(
+        v.toLocaleString("en-US", { maximumFractionDigits: 2 })
+      );
     }
 
     function curSuffix(code, lang) {
@@ -523,7 +544,7 @@
     }
 
     function discountAmt(raw) {
-      const n = parseFloat(String(raw ?? "").replace(/,/g, "")) || 0;
+      const n = parseFloat(toWesternDigits(String(raw ?? "")).replace(/,/g, "")) || 0;
       return n > 0 ? n : 0;
     }
 
@@ -635,7 +656,7 @@
 
     function itemsDisplayLineNo(line, index, cfg) {
       if (cfg.lineNumberMode === "manual") {
-        const manual = (line?.lineNo || "").trim();
+        const manual = toWesternDigits((line?.lineNo || "").trim());
         return manual || String(index + 1);
       }
       return String(index + 1);
@@ -680,9 +701,9 @@
       if (colId === "item") return `<td>${esc((l.itemTag || "").trim())}</td>`;
       if (colId === "desc") return `<td><div class="multiline">${multilineHtml(l.description)}</div></td>`;
       if (colId === "unit") return `<td>${esc(measureUnitLabel(l.unit, lang))}</td>`;
-      if (colId === "qty") return `<td class="num">${l.qty || ""}</td>`;
+      if (colId === "qty") return `<td class="num">${esc(toWesternDigits(l.qty || ""))}</td>`;
       if (colId === "unitPrice")
-        return `<td class="r">${incl ? t(lang, "included") : esc(String(l.priceText || ""))}</td>`;
+        return `<td class="r">${incl ? t(lang, "included") : esc(toWesternDigits(String(l.priceText || "")))}</td>`;
       if (colId === "total")
         return `<td class="r">${incl ? t(lang, "dash") : fmtNum(l.lineTotal, lang)}</td>`;
       if (colId === "remarks") return `<td>${esc((l.remarks || "").trim())}</td>`;
@@ -712,7 +733,7 @@
     }
 
     function parsePaymentPct(pctStr) {
-      const m = String(pctStr || "").match(/(\d+(?:\.\d+)?)/);
+      const m = toWesternDigits(pctStr || "").match(/(\d+(?:\.\d+)?)/);
       return m ? parseFloat(m[1]) : 0;
     }
 
@@ -816,7 +837,7 @@
     function paymentPrintBody(term, g, lang) {
       const norm = normalizePaymentTerm(term);
       const amounts = resolvePaymentAmounts(norm, g, lang);
-      const numHtml = amounts.amountNum ? `<span class="pay-amount-num">${esc(amounts.amountNum)}</span>` : "";
+      const numHtml = amounts.amountNum ? `<span class="pay-amount-num">${esc(toWesternDigits(amounts.amountNum))}</span>` : "";
       const wordsHtml = amounts.amountWords ? `<span class="pay-amount-words">${esc(amounts.amountWords)}</span>` : "";
       const descHtml = norm.text ? `<span class="pay-desc">${esc(norm.text)}</span>` : "";
       return `<span class="pay-body">${numHtml}${wordsHtml}${descHtml}</span>`;
@@ -915,8 +936,8 @@
       g.lines = (g.lines || []).map((l) => ({
         itemTag: (l.itemTag || l.item || "").trim(),
         description: (l.description || l.remark || "").trim(),
-        qty: Number(l.qty) || 0,
-        priceText: l.priceText ?? l.price ?? "",
+        qty: Number(toWesternDigits(l.qty)) || 0,
+        priceText: toWesternDigits(l.priceText ?? l.price ?? ""),
         lineTotal: Number(l.lineTotal) || 0,
         includedInBasePrice: lineIncluded(l),
         unit: (l.unit || "").trim(),
@@ -976,7 +997,7 @@
         }
         return `<ul class="payment-list">${terms.map((p) => {
           const norm = normalizePaymentTerm(p);
-          return `<li><span class="pct">${esc(norm.pct || "")}</span>${paymentPrintBody(norm, g, lang)}</li>`;
+          return `<li><span class="pct">${esc(toWesternDigits(norm.pct || ""))}</span>${paymentPrintBody(norm, g, lang)}</li>`;
         }).join("")}</ul>`;
       }
       if (id === "delivery") {
@@ -1458,8 +1479,8 @@
               <p><strong>${esc(vendor.name || t(lang, "dash"))}</strong></p>
               ${vendor.address ? `<p>${esc(vendor.address)}</p>` : ""}
               ${vendor.attn ? `<p>${esc(t(lang, "attn"))}: ${esc(vendor.attn)}</p>` : ""}
-              ${vendor.phone ? `<p>${esc(t(lang, "phone"))}: ${esc(vendor.phone)}</p>` : ""}
-              ${vendor.email ? `<p>${esc(t(lang, "email"))}: ${esc(vendor.email)}</p>` : ""}
+              ${vendor.phone ? `<p>${esc(t(lang, "phone"))}: ${ltrTextHtml(vendor.phone)}</p>` : ""}
+              ${vendor.email ? `<p>${esc(t(lang, "email"))}: ${ltrTextHtml(vendor.email)}</p>` : ""}
               ${vendor.extraNotes ? `<p class="multiline">${multilineHtml(vendor.extraNotes)}</p>` : ""}
               ${g.offerType ? `<span class="offer-badge">${esc(t(lang, "offer"))}: ${esc(g.offerType)}</span>` : ""}
             </div>
@@ -1469,8 +1490,8 @@
             <div class="party-body">
               <p><strong>${esc(buyer)}</strong></p>
               ${be.attn || be.contact ? `<p>${esc(t(lang, "attn"))}: ${esc(be.attn || be.contact)}</p>` : ""}
-              ${be.phone ? `<p>${esc(t(lang, "phone"))}: ${esc(be.phone)}</p>` : ""}
-              ${emails.map((em, i) => `<p>${i === 0 ? esc(t(lang, "email")) + ": " : ""}${esc(em)}</p>`).join("")}
+              ${be.phone ? `<p>${esc(t(lang, "phone"))}: ${ltrTextHtml(be.phone)}</p>` : ""}
+              ${emails.map((em, i) => `<p>${i === 0 ? esc(t(lang, "email")) + ": " : ""}${ltrTextHtml(em)}</p>`).join("")}
               ${be.extraNotes ? `<p class="multiline">${multilineHtml(be.extraNotes)}</p>` : ""}
             </div>
           </div>
