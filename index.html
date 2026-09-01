@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.07.21.1" />
+  <meta name="app-version" content="2026.09.01.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -7217,7 +7217,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>خيارات إخفاء في تقرير حالة الطلبات:</strong> أُضيف خيارا «إخفاء ملخص الطلب» و«إخفاء ملخص المواد» بجانب إخفاء قيم الطلبات. تُطبَّق فوراً على العرض والطباعة وتصدير CSV دون إعادة تشغيل التقرير.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>طلبات المشاريع الاعتيادية:</strong> إصلاح عدم ظهور الطلب في الجدول عندما يكون «اعتيادي» (كان فلتر الأولوية يبقى على «مستعجل»). تُمسح الفلاتر تلقائياً بعد الحفظ ويظهر الطلب الجديد مباشرة.</li><li><strong>ترتيب قائمة أوامر المشاريع:</strong> الأحدث أولاً حسب تاريخ ووقت الإرسال، بدلاً من إبراز المستعجل في الأعلى.</li><li><strong>من أنشأ الطلب يراه:</strong> يظهر طلبك في القائمة حتى لو كانت صلاحيات المشروع غير محدّثة بعد.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -8333,7 +8333,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Hide options in the order status report:</strong> \"Hide order summary\" and \"Hide materials summary\" were added alongside hiding order values. They apply immediately to the on-screen view, print layout, and CSV export without re-running the report.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Normal-priority project requests:</strong> Fixed orders not appearing in the list when priority is Normal (the priority filter could stay on Urgent). Filters reset automatically after save and the new request shows immediately.</li><li><strong>Project PO list sort:</strong> Newest first by submission date and time, instead of urgent rows always on top.</li><li><strong>Creator visibility:</strong> Your request stays visible in the list even if project permissions are not yet updated.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -9490,6 +9490,68 @@
       return PROJECT_PO_REJECTED_WORKFLOW_STATUSES.includes(String(ws || ""));
     }
 
+    /** أولوية طلب المشروع — أي قيمة غير «مستعجل» تُعامل كاعتيادي (للعرض والفلترة والحفظ). */
+    function normalizePoPriority(raw) {
+      const s = String(raw ?? "").trim().toLowerCase();
+      if (s === "urgent" || s === "مستعجل") return "urgent";
+      return "normal";
+    }
+
+    function poPrioritySortWeight(priority) {
+      return normalizePoPriority(priority) === "urgent" ? 1 : 0;
+    }
+
+    /** مفتاح ترتيب زمني لطلب مشروع — الأحدث أولاً (ثوانٍ + نانoseconds من createdAt). */
+    function poRowCreatedAtSortKey(r) {
+      const ts = r?.createdAt;
+      if (!ts) return 0;
+      const sec = Number(ts.seconds) || 0;
+      const ns = Number(ts.nanoseconds) || 0;
+      return sec * 1e9 + ns;
+    }
+
+    function compareProjectPoRowsNewestFirst(a, b) {
+      return poRowCreatedAtSortKey(b) - poRowCreatedAtSortKey(a);
+    }
+
+    function resetProjectPoTableFilters() {
+      const s = $("po-projects-search");
+      if (s) s.value = "";
+      const wf = $("po-projects-filter-workflow");
+      if (wf) {
+        wf.value = "";
+        wf.selectedIndex = 0;
+      }
+      const pr = $("po-projects-filter-priority");
+      if (pr) {
+        pr.value = "";
+        pr.selectedIndex = 0;
+      }
+      const co = $("po-projects-filter-company");
+      if (co) {
+        co.value = "";
+        co.selectedIndex = 0;
+      }
+      const rg = $("po-projects-filter-region");
+      if (rg) {
+        rg.value = "";
+        rg.selectedIndex = 0;
+      }
+    }
+
+    function resetRejectedProjectPoTableFilters() {
+      const s = $("po-projects-rejected-search");
+      if (s) s.value = "";
+      const wf = $("po-projects-rejected-filter-workflow");
+      if (wf) wf.value = "";
+      const pr = $("po-projects-rejected-filter-priority");
+      if (pr) pr.value = "";
+      const co = $("po-projects-rejected-filter-company");
+      if (co) co.value = "";
+      const rg = $("po-projects-rejected-filter-region");
+      if (rg) rg.value = "";
+    }
+
     /** طلبات مشاريع بعد تقييد الدور؛ قبل فصل المرفوض/غير المرفوض. */
     async function fetchProjectPurchaseOrdersTableContext() {
       const q = query(collection(db, "purchaseOrders"), where("scope", "==", "project"));
@@ -9518,32 +9580,10 @@
           if (cs.exists()) companyNameById[cid] = companyDisplayName(cs.data());
         })
       );
-      const r = currentUserProfile?.role || userRole;
       if (!hasAdminAccess()) {
-        if (r === "engineer" || r === "engineer_first") {
-          const allowed = currentUserProfile?.assignedProjectIds || [];
-          rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
-        } else if (r === "viewer") {
-          const allowed = currentUserProfile?.assignedProjectIds || [];
-          rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
-        } else if (r === "project_manager") {
-          const allowed = currentUserProfile?.managedProjectIds || [];
-          rows = rows.filter((row) => row.projectId && allowed.includes(row.projectId));
-        } else if (r === "group_manager") {
-          const regions = currentUserProfile?.managedRegionIds || [];
-          if (!regions.length) rows = [];
-          else
-            rows = rows.filter((row) =>
-              row.projectId && poMatchesAnyManagedRegion(row, projectRegion[row.projectId], regions)
-            );
-        }
+        rows = rows.filter((row) => projectPoVisibleToCurrentUser(row, projectRegion));
       }
-      rows.sort((a, b) => {
-        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
-        const pd = pri(b) - pri(a);
-        if (pd !== 0) return pd;
-        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
-      });
+      rows.sort(compareProjectPoRowsNewestFirst);
       return { rows, projectNames, projectRegion, projectContractNumber, projectCompanyId, companyNameById };
     }
 
@@ -16927,6 +16967,33 @@
       return !!(reg && Array.isArray(managedRegionIds) && managedRegionIds.includes(reg));
     }
 
+    function userOwnsProjectPoRow(row) {
+      const uid = currentUser?.uid;
+      return !!(uid && row?.createdBy === uid);
+    }
+
+    /** هل يرى المستخدم الحالي طلب مشروع في القائمة؟ (يشمل من أنشأ الطلب دائماً) */
+    function projectPoVisibleToCurrentUser(row, projectRegion) {
+      if (!row) return false;
+      if (userOwnsProjectPoRow(row)) return true;
+      if (hasAdminAccess()) return true;
+      const r = currentUserProfile?.role || userRole;
+      if (r === "engineer" || r === "engineer_first" || r === "viewer") {
+        const allowed = currentUserProfile?.assignedProjectIds || [];
+        return !!(row.projectId && allowed.includes(row.projectId));
+      }
+      if (r === "project_manager") {
+        const allowed = currentUserProfile?.managedProjectIds || [];
+        return !!(row.projectId && allowed.includes(row.projectId));
+      }
+      if (r === "group_manager") {
+        const regions = currentUserProfile?.managedRegionIds || [];
+        if (!regions.length) return false;
+        return !!(row.projectId && poMatchesAnyManagedRegion(row, projectRegion[row.projectId], regions));
+      }
+      return true;
+    }
+
     function projectRegionsDisplayLabels(project, regionsMap) {
       const ids = projectRegionIdsFromDoc(project);
       if (!ids.length) return t("dash");
@@ -21615,7 +21682,7 @@
     }
 
     function priorityBadge(priority) {
-      if (priority === "urgent")
+      if (normalizePoPriority(priority) === "urgent")
         return `<span class="badge badge-priority-urgent">${escapeHtml(t("poPriorityUrgent"))}</span>`;
       return `<span class="badge badge-priority-normal">${escapeHtml(t("poPriorityNormal"))}</span>`;
     }
@@ -23186,7 +23253,7 @@
       const refText = (po.poReference || po.title || "").trim() || t("dash");
       const logoHtml = logoUrl ? `<img class="po-print-logo" src="${escapeAttr(logoUrl)}" alt="" />` : "";
       const companyHtml = companyName ? `<p class="po-print-company">${escapeHtml(companyName)}</p>` : "";
-      const urgent = po.priority === "urgent";
+      const urgent = normalizePoPriority(po.priority) === "urgent";
       const priorityHtml = isProject
         ? `<span class="po-print-priority ${urgent ? "po-print-priority-urgent" : "po-print-priority-normal"}">${escapeHtml(urgent ? t("poPriorityUrgent") : t("poPriorityNormal"))}</span>`
         : "";
@@ -23720,7 +23787,7 @@
 
     function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg) {
       if (wf && (r.workflowStatus || "") !== wf) return false;
-      if (pri && (r.priority || "normal") !== pri) return false;
+      if (pri && normalizePoPriority(r.priority) !== pri) return false;
       const cDisp = projectPoCompanyDisplay(r, ctx);
       if (co && cDisp !== co) return false;
       const rName = projectPoRegionDisplayName(r);
@@ -23739,6 +23806,7 @@
         projectPoRequestTypeLabel(r.requestType),
         (r.vehicleType || "").trim(),
         (r.vehicleNumber || "").trim(),
+        normalizePoPriority(r.priority) === "urgent" ? t("poPriorityUrgent") : t("poPriorityNormal"),
         workflowLabelForDocument(r),
         poRowDisplayDate(r),
         projectPoLinesSearchText(r),
@@ -23787,31 +23855,29 @@
         $(fid)?.addEventListener("change", () => renderProjectPurchaseOrdersTable());
       });
       $("po-projects-filter-reset")?.addEventListener("click", () => {
-        const s = $("po-projects-search");
-        if (s) s.value = "";
-        const wf = $("po-projects-filter-workflow");
-        if (wf) wf.value = "";
-        const pr = $("po-projects-filter-priority");
-        if (pr) pr.value = "";
-        const co = $("po-projects-filter-company");
-        if (co) co.value = "";
-        const rg = $("po-projects-filter-region");
-        if (rg) rg.value = "";
+        resetProjectPoTableFilters();
         renderProjectPurchaseOrdersTable();
       });
     }
 
-    function renderProjectPurchaseOrdersTable() {
+    function renderProjectPurchaseOrdersTable(renderOpts) {
       const wrap = $("po-projects-table-wrap");
       const ctx = projectPurchaseOrdersContext;
       if (!wrap || !ctx) return;
       const canEdit = !isPoEditorRoleBlocked();
-      const q = ($("po-projects-search")?.value || "").trim().toLowerCase();
-      const wf = $("po-projects-filter-workflow")?.value || "";
-      const pri = $("po-projects-filter-priority")?.value || "";
-      const co = $("po-projects-filter-company")?.value || "";
-      const reg = $("po-projects-filter-region")?.value || "";
-      const filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg));
+      const afterSave = !!(renderOpts && renderOpts.afterSave);
+      const ensurePoId = (renderOpts && renderOpts.ensurePoId) || "";
+      const q = afterSave ? "" : ($("po-projects-search")?.value || "").trim().toLowerCase();
+      const wf = afterSave ? "" : ($("po-projects-filter-workflow")?.value || "");
+      const pri = afterSave ? "" : ($("po-projects-filter-priority")?.value || "");
+      const co = afterSave ? "" : ($("po-projects-filter-company")?.value || "");
+      const reg = afterSave ? "" : ($("po-projects-filter-region")?.value || "");
+      let filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg));
+      if (ensurePoId && !filtered.some((r) => r.id === ensurePoId)) {
+        const forced = ctx.rows.find((r) => r.id === ensurePoId);
+        if (forced) filtered = [forced, ...filtered];
+      }
+      filtered.sort(compareProjectPoRowsNewestFirst);
       const thead = `<tr>
               <th>${t("colPoReference")}</th>
               <th>${t("colRequestDate")}</th>
@@ -23904,6 +23970,7 @@
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
         if (scope === "project") {
+          resetProjectPoTableFilters();
           const ctx = await fetchProjectPurchaseOrdersTableContext();
           const rows = ctx.rows.filter((row) => !isProjectPoRejectedWorkflowStatus(row.workflowStatus));
           if (!rows.length) {
@@ -23927,7 +23994,7 @@
         const r = currentUserProfile?.role || userRole;
         if (!hasAdminAccess() && r === "viewer") rows = [];
         rows.sort((a, b) => {
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+          const pri = (x) => poPrioritySortWeight(x.priority);
           const pd = pri(b) - pri(a);
           if (pd !== 0) return pd;
           return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
@@ -24029,8 +24096,43 @@
 
     function refreshActiveProjectPoListIfAny() {
       const act = document.querySelector(".app-screen:not(.hidden)");
-      if (act?.id === "screen-po-projects") loadPurchaseOrders("project");
-      else if (act?.id === "screen-po-projects-rejected") loadRejectedProjectPurchaseOrders();
+      if (act?.id === "screen-po-projects") return loadPurchaseOrders("project");
+      if (act?.id === "screen-po-projects-rejected") return loadRejectedProjectPurchaseOrders();
+      return Promise.resolve();
+    }
+
+    /** إعادة تحميل قائمة المشاريع بعد الحفظ وضمان ظهور الطلب المحفوظ (حتى مع تأخير الاستعلام). */
+    async function reloadProjectPurchaseOrdersAfterSave(savedPoId) {
+      const poId = (savedPoId || "").trim();
+      resetProjectPoTableFilters();
+      await loadPurchaseOrders("project");
+      if (poId && !projectPurchaseOrdersContext?.rows?.some((r) => r.id === poId)) {
+        try {
+          const snap = await getDoc(doc(db, "purchaseOrders", poId));
+          if (snap.exists()) {
+            const row = { id: snap.id, ...snap.data() };
+            if (
+              row.scope === "project" &&
+              !isProjectPoRejectedWorkflowStatus(row.workflowStatus) &&
+              projectPoVisibleToCurrentUser(row, projectPurchaseOrdersContext?.projectRegion || {})
+            ) {
+              const baseCtx = projectPurchaseOrdersContext || (await fetchProjectPurchaseOrdersTableContext());
+              projectPurchaseOrdersContext = {
+                ...baseCtx,
+                rows: [row, ...(baseCtx.rows || []).filter((r) => r.id !== row.id)].sort(
+                  compareProjectPoRowsNewestFirst
+                ),
+              };
+              $("po-projects-filter-bar")?.classList.remove("hidden");
+              populateProjectPoFilterOptions();
+            }
+          }
+        } catch (e) {
+          console.warn("reloadProjectPurchaseOrdersAfterSave", e);
+        }
+      }
+      resetProjectPoTableFilters();
+      renderProjectPurchaseOrdersTable({ afterSave: true, ensurePoId: poId });
     }
 
     async function loadRejectedProjectPurchaseOrders() {
@@ -24039,6 +24141,7 @@
       if (!wrap) return;
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
+        resetRejectedProjectPoTableFilters();
         const ctx = await fetchProjectPurchaseOrdersTableContext();
         const rows = ctx.rows.filter((row) => isProjectPoRejectedWorkflowStatus(row.workflowStatus));
         if (!rows.length) {
@@ -24101,16 +24204,7 @@
         $(fid)?.addEventListener("change", () => renderRejectedProjectPurchaseOrdersTable());
       });
       $("po-projects-rejected-filter-reset")?.addEventListener("click", () => {
-        const s = $("po-projects-rejected-search");
-        if (s) s.value = "";
-        const wf = $("po-projects-rejected-filter-workflow");
-        if (wf) wf.value = "";
-        const pr = $("po-projects-rejected-filter-priority");
-        if (pr) pr.value = "";
-        const co = $("po-projects-rejected-filter-company");
-        if (co) co.value = "";
-        const rg = $("po-projects-rejected-filter-region");
-        if (rg) rg.value = "";
+        resetRejectedProjectPoTableFilters();
         renderRejectedProjectPurchaseOrdersTable();
       });
     }
@@ -24125,6 +24219,7 @@
       const co = $("po-projects-rejected-filter-company")?.value || "";
       const reg = $("po-projects-rejected-filter-region")?.value || "";
       const filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg));
+      filtered.sort(compareProjectPoRowsNewestFirst);
       const thead = `<tr>
               <th>${t("colPoReference")}</th>
               <th>${t("colRequestDate")}</th>
@@ -25221,7 +25316,7 @@
     function purchasingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority) {
       if (projectId && (po?.projectId || "") !== projectId) return false;
       if (priority) {
-        const pr = po?.priority === "urgent" ? "urgent" : "normal";
+        const pr = normalizePoPriority(po?.priority);
         if (pr !== priority) return false;
       }
       if (repIdOrName) {
@@ -25353,7 +25448,7 @@
       rowsUpstream.sort((a, b) => {
         const ud = upstreamRank(a) - upstreamRank(b);
         if (ud !== 0) return ud;
-        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pri = (x) => poPrioritySortWeight(x.priority);
         const pd = pri(b) - pri(a);
         if (pd !== 0) return pd;
         return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
@@ -25362,7 +25457,7 @@
         const stageRank = (x) => (x.workflowStatus === "pending_purchasing" ? 0 : 1);
         const sd = stageRank(a) - stageRank(b);
         if (sd !== 0) return sd;
-        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pri = (x) => poPrioritySortWeight(x.priority);
         const pd = pri(b) - pri(a);
         if (pd !== 0) return pd;
         return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
@@ -25379,7 +25474,7 @@
       rowsTrack.sort((a, b) => {
         const td = trackRank(a) - trackRank(b);
         if (td !== 0) return td;
-        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pri = (x) => poPrioritySortWeight(x.priority);
         const pd = pri(b) - pri(a);
         if (pd !== 0) return pd;
         const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
@@ -25712,7 +25807,7 @@
       let rowsTrack = trackAll.filter(rowOk);
       const sortReceipt = (rows) =>
         rows.sort((a, b) => {
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+          const pri = (x) => poPrioritySortWeight(x.priority);
           const pd = pri(b) - pri(a);
           if (pd !== 0) return pd;
           return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
@@ -25722,7 +25817,7 @@
         const ra = a.workflowStatus === "pending_accounting" ? 0 : 1;
         const rb = b.workflowStatus === "pending_accounting" ? 0 : 1;
         if (ra !== rb) return ra - rb;
-        const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+        const pri = (x) => poPrioritySortWeight(x.priority);
         const pd = pri(b) - pri(a);
         if (pd !== 0) return pd;
         const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
@@ -25941,7 +26036,7 @@
     function accountingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority) {
       if (projectId && (po?.projectId || "") !== projectId) return false;
       if (priority) {
-        const pr = po?.priority === "urgent" ? "urgent" : "normal";
+        const pr = normalizePoPriority(po?.priority);
         if (pr !== priority) return false;
       }
       if (repIdOrName) {
@@ -26231,7 +26326,7 @@
         pSnap.forEach((d) => (projectNames[d.id] = projectDisplayName(d.data())));
         const sortPoRows = (rows) =>
           rows.sort((a, b) => {
-            const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+            const pri = (x) => poPrioritySortWeight(x.priority);
             const pd = pri(b) - pri(a);
             if (pd !== 0) return pd;
             return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
@@ -26265,7 +26360,7 @@
           const ra = a.workflowStatus === "pending_warehouse_receipt" ? 0 : 1;
           const rb = b.workflowStatus === "pending_warehouse_receipt" ? 0 : 1;
           if (ra !== rb) return ra - rb;
-          const pri = (x) => (x.priority === "urgent" ? 1 : 0);
+          const pri = (x) => poPrioritySortWeight(x.priority);
           const pd = pri(b) - pri(a);
           if (pd !== 0) return pd;
           const ta = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
@@ -27056,7 +27151,7 @@
     startAppVersionMonitor();
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-07-21-gstatus-hide-summary-materials";
+    const CURRENT_UPDATE_ID = "2026-09-01-po-normal-filter-newest-sort";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
@@ -27445,7 +27540,8 @@
       fillPoStatusOptions();
       const want = existingId && poData ? poData.status || "draft" : "draft";
       if (scope === "project") {
-        const pri = existingId && poData && poData.priority === "urgent" ? "urgent" : "normal";
+        const pri =
+          existingId && poData ? normalizePoPriority(poData.priority) : "normal";
         const prNorm = $("po-priority-normal");
         const prUrg = $("po-priority-urgent");
         if (prNorm && prUrg) {
@@ -27487,15 +27583,27 @@
       }
     }
 
+    function resetPoModalProjectFormState() {
+      $("po-id").value = "";
+      const prNorm = $("po-priority-normal");
+      const prUrg = $("po-priority-urgent");
+      if (prNorm && prUrg) {
+        prNorm.checked = true;
+        prUrg.checked = false;
+      }
+    }
+
     function closePoModal() {
+      resetPoModalProjectFormState();
       $("modal-po").classList.add("hidden");
     }
 
     $("form-po").addEventListener("submit", async (e) => {
       e.preventDefault();
       const scope = $("po-scope").value;
-      const id = $("po-id").value;
+      let id = ($("po-id").value || "").trim();
       let payload;
+      let savedProjectPoId = null;
 
       if (scope === "project") {
         const pid = $("po-project").value;
@@ -27600,7 +27708,7 @@
           vehicleType: isMaint ? vehicleType : "",
           vehicleNumber: isMaint ? vehicleNumber : "",
           supplierName: "",
-          priority: document.querySelector('input[name="po-priority"]:checked')?.value === "urgent" ? "urgent" : "normal",
+          priority: normalizePoPriority(document.querySelector('input[name="po-priority"]:checked')?.value),
           status: ($("po-status-project-snapshot")?.value || "draft").trim() || "draft",
           scope,
           projectId: pid,
@@ -27662,19 +27770,32 @@
 
       try {
         if (id) {
+          const existingSnap = await getDoc(doc(db, "purchaseOrders", id));
+          if (!existingSnap.exists()) {
+            id = "";
+          } else if (scope === "project") {
+            const prev = existingSnap.data() || {};
+            if (!prev.workflowStatus && !payload.workflowStatus) payload.workflowStatus = "warehouse_review";
+          }
+        }
+        if (id) {
           await updateDoc(doc(db, "purchaseOrders", id), payload);
+          if (scope === "project") savedProjectPoId = id;
         } else {
           payload.createdAt = serverTimestamp();
           payload.createdBy = currentUser.uid;
           if (scope === "project") payload.workflowStatus = "warehouse_review";
           const newRef = await addDoc(collection(db, "purchaseOrders"), payload);
-          if (scope === "project" && payload.regionId) {
-            void notifyWarehouseClerksNewProjectPo(newRef.id, payload.regionId, poNotifRefText(payload));
+          if (scope === "project") {
+            savedProjectPoId = newRef.id;
+            if (payload.regionId) {
+              void notifyWarehouseClerksNewProjectPo(newRef.id, payload.regionId, poNotifRefText(payload));
+            }
           }
         }
         closePoModal();
-        if (scope === "project") refreshActiveProjectPoListIfAny();
-        else loadPurchaseOrders("general");
+        if (scope === "project") await reloadProjectPurchaseOrdersAfterSave(savedProjectPoId);
+        else await loadPurchaseOrders("general");
         refreshWorkflowQueuesByActiveScreen();
       } catch (err) {
         alert(t("saveFailed") + " " + err.message);
