@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.03.3" />
+  <meta name="app-version" content="2026.10.03.4" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -3165,8 +3165,42 @@
       flex-shrink: 0;
     }
     .po007-editor-toolbar-title { font-weight: 700; font-size: 0.95rem; }
-    .po007-editor-toolbar-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .po007-editor-toolbar-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
     #modal-general-po007.template-mode .po007-meta-po-only { display: none !important; }
+    .badge-invoice-none { background: rgba(100, 116, 139, 0.12); color: #475569; }
+    .badge-invoice-partial { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+    .badge-invoice-complete { background: rgba(16, 185, 129, 0.14); color: #047857; }
+    #modal-invoice-checklist .inv-check-list { display: grid; gap: 0.35rem; margin: 0.75rem 0; max-height: min(52vh, 420px); overflow: auto; }
+    #modal-invoice-checklist .inv-check-row {
+      display: grid; grid-template-columns: auto 1fr; gap: 0.65rem; align-items: start;
+      padding: 0.55rem 0.65rem; border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface, #fff); cursor: pointer; user-select: none;
+    }
+    #modal-invoice-checklist .inv-check-row:hover { background: var(--surface2, #f8fafc); }
+    #modal-invoice-checklist .inv-check-row.done { opacity: 0.78; border-color: #a7f3d0; background: #ecfdf5; }
+    #modal-invoice-checklist .inv-check-row.extra { border-color: #f1dca0; background: #fffbeb; }
+    #modal-invoice-checklist .inv-check-row.extra.done { background: #ecfdf5; border-color: #a7f3d0; }
+    #modal-invoice-checklist .inv-check-box {
+      width: 1.45rem; height: 1.45rem; border-radius: 7px; border: 2px solid #94a3b8;
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; color: #64748b; flex: none;
+    }
+    #modal-invoice-checklist .inv-check-row.done .inv-check-box {
+      background: #059669; border-color: #059669; color: #fff;
+    }
+    #modal-invoice-checklist .inv-check-title { font-weight: 700; font-size: 0.92rem; }
+    #modal-invoice-checklist .inv-check-hint { margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+    #modal-invoice-checklist .inv-check-progress {
+      display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; justify-content: space-between;
+      margin: 0.5rem 0 0; padding: 0.55rem 0.7rem; border-radius: 10px; background: var(--surface2); font-size: 0.85rem; font-weight: 700;
+    }
+    #modal-invoice-checklist .inv-check-bar { flex: 1; min-width: 120px; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+    #modal-invoice-checklist .inv-check-bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #38bdf8, #059669); transition: width .25s; }
+    #modal-invoice-checklist .inv-type-opts { display: grid; gap: 0.45rem; margin: 0.5rem 0 0.75rem; }
+    #modal-invoice-checklist .inv-type-opt {
+      display: flex; gap: 0.55rem; align-items: flex-start; padding: 0.55rem 0.7rem;
+      border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+    }
+    #modal-invoice-checklist .inv-type-opt:has(input:checked) { border-color: #0b5cad; background: #eaf3fc; }
     .po007-meta-bar {
       display: flex;
       flex-wrap: wrap;
@@ -6472,6 +6506,8 @@
       <div class="po007-editor-toolbar">
         <div class="po007-editor-toolbar-title" data-i18n="genPo007EditorTitle">أمر شراء ادارة عامة</div>
         <div class="po007-editor-toolbar-actions">
+          <span id="po007-invoice-check-badge" class="badge badge-invoice-none po007-meta-po-only" hidden></span>
+          <button type="button" class="btn btn-secondary btn-sm po007-meta-po-only" id="po007-editor-invoice-check" data-i18n="btnInvoiceChecklist">تدقيق الفاتورة</button>
           <button type="button" class="btn btn-secondary btn-sm" id="po007-editor-preview" data-i18n="view">معاينة</button>
           <button type="button" class="btn btn-secondary btn-sm" id="po007-editor-cancel" data-i18n="cancel">إلغاء</button>
           <button type="button" class="btn btn-primary btn-sm" id="po007-editor-save" data-i18n="save">حفظ</button>
@@ -6529,6 +6565,46 @@
       <input type="hidden" id="po007-editor-id" />
       <div class="po007-editor-scroll">
         <div id="general-po007-mount" class="po007-editor-mount" aria-label="PO007 editor"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-invoice-checklist" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="invoice-checklist-title">
+    <div class="modal" style="max-width: 720px">
+      <h3 id="invoice-checklist-title" data-i18n="invoiceChecklistTitle">تدقيق متطلبات الفاتورة التجارية</h3>
+      <p class="sub" style="margin-top:-0.25rem;color:var(--muted);font-size:0.88rem" data-i18n="invoiceChecklistHint">
+        راجع الفاتورة وأشّر البنود المستوفاة وفق تعميم البنك المركزي 9/4/267. يُحفظ التدقيق مع أمر الشراء.
+      </p>
+      <p id="invoice-checklist-po-ref" class="sub" style="margin:0.35rem 0 0;font-weight:700;color:var(--navy,#0b2a5b)"></p>
+      <div class="inv-check-progress">
+        <span id="invoice-checklist-count">0 / 12</span>
+        <div class="inv-check-bar"><i id="invoice-checklist-bar"></i></div>
+        <span id="invoice-checklist-status-label" class="badge badge-invoice-none"></span>
+      </div>
+      <div id="invoice-checklist-items" class="inv-check-list"></div>
+      <h4 style="margin:0.85rem 0 0;font-size:0.95rem" data-i18n="invoiceChecklistTypeTitle">نوع الفاتورة المعتمدة</h4>
+      <div class="inv-type-opts" id="invoice-checklist-type-opts">
+        <label class="inv-type-opt">
+          <input type="radio" name="invoice-check-type" value="final" />
+          <span>
+            <strong data-i18n="invoiceChecklistTypeFinal">الفاتورة التجارية النهائية</strong>
+          </span>
+        </label>
+        <label class="inv-type-opt">
+          <input type="radio" name="invoice-check-type" value="proforma" />
+          <span>
+            <strong data-i18n="invoiceChecklistTypeProforma">الفاتورة الأولية + عقد البيع</strong>
+            <span class="inv-check-hint" data-i18n="invoiceChecklistTypeProformaHint">بشرط أن تحتوي الفاتورة النهائية كافة بيانات الفاتورة الأولية.</span>
+          </span>
+        </label>
+      </div>
+      <p style="margin:0;font-size:0.8rem;color:var(--muted)">
+        <a href="Support%20files/Commercial%20invoice%20requirements.html" target="_blank" rel="noopener" data-i18n="invoiceChecklistOpenGuide">فتح الدليل الكامل</a>
+      </p>
+      <div class="modal-actions" style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:flex-end;margin-top:1rem">
+        <button type="button" class="btn btn-secondary" id="invoice-checklist-reset" data-i18n="invoiceChecklistReset">مسح التأشير</button>
+        <button type="button" class="btn btn-secondary" id="invoice-checklist-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="invoice-checklist-save" data-i18n="invoiceChecklistSave">حفظ التدقيق</button>
       </div>
     </div>
   </div>
@@ -7581,6 +7657,36 @@
         supportFile_commercialInvoice_desc:
           "دليل مرجعي لتعميم البنك المركزي 9/4/267: بيانات الفاتورة الإلزامية، الفواتير المعتمدة، والنفاذ من 2025/11/01.",
         supportFile_commercialInvoice_type: "دليل مرجعي",
+        btnInvoiceChecklist: "تدقيق الفاتورة",
+        invoiceChecklistTitle: "تدقيق متطلبات الفاتورة التجارية",
+        invoiceChecklistHint:
+          "راجع الفاتورة وأشّر البنود المستوفاة وفق تعميم البنك المركزي 9/4/267. يُحفظ التدقيق مع أمر الشراء.",
+        invoiceChecklistTypeTitle: "نوع الفاتورة المعتمدة",
+        invoiceChecklistTypeFinal: "الفاتورة التجارية النهائية",
+        invoiceChecklistTypeProforma: "الفاتورة الأولية + عقد البيع",
+        invoiceChecklistTypeProformaHint: "بشرط أن تحتوي الفاتورة النهائية كافة بيانات الفاتورة الأولية.",
+        invoiceChecklistOpenGuide: "فتح الدليل الكامل",
+        invoiceChecklistReset: "مسح التأشير",
+        invoiceChecklistSave: "حفظ التدقيق",
+        invoiceChecklistStatusNone: "لم يُدقَّق",
+        invoiceChecklistStatusPartial: "تدقيق ناقص",
+        invoiceChecklistStatusComplete: "مستوفية المتطلبات",
+        colInvoiceCheck: "تدقيق الفاتورة",
+        invoiceCheckItem_invoiceDateNo: "تاريخ ورقم الفاتورة",
+        invoiceCheckItem_paymentTerms: "شروط الدفع",
+        invoiceCheckItem_shippingTerms: "شروط الشحن",
+        invoiceCheckItem_valueCurrency: "القيمة وعملة الفاتورة",
+        invoiceCheckItem_hsCode: "الرمز المنسق الكمركي (HS Code) — لا يقل عن 6 أرقام",
+        invoiceCheckItem_addresses: "عناوين المستورد والمُصدِّر",
+        invoiceCheckItem_goodsDesc: "وصف البضاعة بشكل دقيق",
+        invoiceCheckItem_origin: "منشأ البضاعة",
+        invoiceCheckItem_brand: "العلامة التجارية",
+        invoiceCheckItem_qtyUnit: "الكمية ووحدة القياس",
+        invoiceCheckItem_unitTotalPrice: "سعر الوحدة والسعر الإجمالي",
+        invoiceCheckItem_baiduLocation: "موقع المستفيد على خرائط Baidu Maps",
+        invoiceCheckItem_baiduLocationHint:
+          "رابط أو إحداثيات موقع المستفيد (المُصدِّر) مطابق للعنوان في الفاتورة. إضافة تنظيمية داخلية.",
+        invoiceChecklistSaved: "تم حفظ تدقيق الفاتورة.",
         repDeskTitle: "مكتب المندوب",
         repDeskHint: "سجّل السلفة النقدية التي استلمتها، تابع رصيدك، وأدخل مصروفاتك مع ربطها بطلبات الشراء.",
         repDeskExpensesTitle: "مصروفاتي",
@@ -8771,6 +8877,36 @@
         supportFile_commercialInvoice_desc:
           "Reference guide to CBI circular 9/4/267: mandatory invoice fields, accepted invoice types, effective from 2025/11/01.",
         supportFile_commercialInvoice_type: "Reference guide",
+        btnInvoiceChecklist: "Invoice check",
+        invoiceChecklistTitle: "Commercial invoice requirements check",
+        invoiceChecklistHint:
+          "Review the invoice and tick fulfilled items per CBI circular 9/4/267. The audit is saved with the purchase order.",
+        invoiceChecklistTypeTitle: "Accepted invoice type",
+        invoiceChecklistTypeFinal: "Final commercial invoice",
+        invoiceChecklistTypeProforma: "Proforma invoice + sales contract",
+        invoiceChecklistTypeProformaHint: "Provided the final invoice contains all proforma details.",
+        invoiceChecklistOpenGuide: "Open full guide",
+        invoiceChecklistReset: "Clear ticks",
+        invoiceChecklistSave: "Save check",
+        invoiceChecklistStatusNone: "Not checked",
+        invoiceChecklistStatusPartial: "Incomplete",
+        invoiceChecklistStatusComplete: "Requirements met",
+        colInvoiceCheck: "Invoice check",
+        invoiceCheckItem_invoiceDateNo: "Invoice date and number",
+        invoiceCheckItem_paymentTerms: "Payment terms",
+        invoiceCheckItem_shippingTerms: "Shipping terms",
+        invoiceCheckItem_valueCurrency: "Invoice value and currency",
+        invoiceCheckItem_hsCode: "HS customs code — at least 6 digits",
+        invoiceCheckItem_addresses: "Importer and exporter addresses",
+        invoiceCheckItem_goodsDesc: "Precise description of the goods",
+        invoiceCheckItem_origin: "Country of origin",
+        invoiceCheckItem_brand: "Trademark / brand",
+        invoiceCheckItem_qtyUnit: "Quantity and unit of measure",
+        invoiceCheckItem_unitTotalPrice: "Unit price and total price",
+        invoiceCheckItem_baiduLocation: "Beneficiary location on Baidu Maps",
+        invoiceCheckItem_baiduLocationHint:
+          "Baidu Maps link or coordinates matching the invoice address. Internal added requirement.",
+        invoiceChecklistSaved: "Invoice check saved.",
         roleOptPurchasingRepresentative: "Purchasing representative",
         repDeskTitle: "Representative desk",
         repDeskHint: "Record cash advances you received, track your balance, and enter expenses linked to purchase orders.",
@@ -10565,6 +10701,7 @@
       } else if (scNum) {
         x.salesContractNumber = scNum;
       }
+      x.invoiceChecklist = normalizeInvoiceChecklist(x.invoiceChecklist);
       return normalizePo007SectionMeta(x);
     }
 
@@ -16015,8 +16152,10 @@
       model.poDate = getPo007MetaPoDateIso();
       generalPo007EditorLogo =
         (po?.companyLogoDataUrlSnapshot || po?.companyLogoUrlSnapshot || "").trim() || generalPo007EditorLogo;
+      generalPoInvoiceChecklistDraft = normalizeInvoiceChecklist(model.invoiceChecklist);
       mount.innerHTML = renderGeneralPo007Html(po || {}, model, { editor: true });
       bindGeneralPo007EditorEvents();
+      syncPo007InvoiceCheckBadge(generalPoInvoiceChecklistDraft);
       renumberPo007NoteItems();
       updateGeneralPo007ItemHeaders();
       recalcGeneralPo007ItemsTable();
@@ -16100,12 +16239,14 @@
       const poNumberVal = read("po-number");
       const salesContractVal =
         read("sales-contract-number") || salesContractNumberFromPo(poNumberVal);
+      const invoiceChecklistVal = normalizeInvoiceChecklist(generalPoInvoiceChecklistDraft);
       const printForm = enrichGeneralFormPo007({
         lines,
         documentLang: getPo007DocumentLang(),
         currency: getPo007MetaCurrency(),
         poNumber: poNumberVal,
         salesContractNumber: salesContractVal,
+        invoiceChecklist: invoiceChecklistVal,
         poRev: read("po-rev"),
         projectName: read("project"),
         poDate: getPo007MetaPoDateIso(),
@@ -16135,6 +16276,7 @@
       const saved = enrichGeneralFormPo007({
         poNumber: poNumberVal,
         salesContractNumber: salesContractVal,
+        invoiceChecklist: invoiceChecklistVal,
         poDate: getPo007MetaPoDateIso(),
         poRev: read("po-rev"),
         projectId,
@@ -16800,6 +16942,7 @@
       if (!existingId || duplicate) {
         g.poNumber = "—";
         g.salesContractNumber = "—";
+        g.invoiceChecklist = emptyInvoiceChecklist();
         g.poDate = getPo007MetaPoDateIso();
       }
       mountGeneralPo007Editor(g, po);
@@ -16813,6 +16956,7 @@
       if (mount) mount.innerHTML = "";
       generalPo007EditorLogo = "";
       generalPo007PendingLoad = null;
+      generalPoInvoiceChecklistDraft = null;
       generalPo007EditorMode = "po";
       syncGeneralPo007EditorModeUi();
     }
@@ -24445,6 +24589,7 @@
               <th>${t("colGenPoCompany")}</th>
               <th>${t("colSupplier")}</th>
               <th>${t("colStatus")}</th>
+              <th>${t("colInvoiceCheck")}</th>
               <th>${t("colTotal")}</th>
               <th></th>
             </tr>`;
@@ -24454,12 +24599,14 @@
             const poNo = (g?.poNumber || r.title || "").trim() || t("dash");
             const comp = (r.companyNameSnapshot || "").trim() || t("dash");
             const sup = (r.supplierName || g?.vendor?.name || "").trim() || t("dash");
+            const invCl = normalizeInvoiceChecklist(g?.invoiceChecklist);
             return `
                 <tr>
                   <td>${escapeHtml(poNo)}</td>
                   <td>${escapeHtml(comp)}</td>
                   <td>${escapeHtml(sup)}</td>
                   <td>${statusBadge(r.status || "draft", scope, r)}</td>
+                  <td>${invoiceChecklistBadgeHtml(invCl)}</td>
                   <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
@@ -24473,6 +24620,11 @@
                     ${
                       scope === "general"
                         ? `<button type="button" class="btn btn-primary btn-sm btn-gen-po-pro-print" data-id="${r.id}">${t("btnGenPoProPrint")}</button>`
+                        : ""
+                    }
+                    ${
+                      scope === "general"
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-invoice-check" data-id="${r.id}">${t("btnInvoiceChecklist")}</button>`
                         : ""
                     }
                     ${
@@ -24506,6 +24658,18 @@
         });
         wrap.querySelectorAll(".btn-gen-po-pro-print").forEach((btn) => {
           btn.addEventListener("click", () => openGeneralPoProPrint(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-gen-po-invoice-check").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const row = rows.find((x) => x.id === btn.dataset.id);
+            const g = row?.generalForm && typeof row.generalForm === "object" ? row.generalForm : null;
+            openInvoiceChecklistModal({
+              mode: "po",
+              poId: btn.dataset.id,
+              checklist: g?.invoiceChecklist,
+              poRef: (g?.poNumber || row?.title || "").trim(),
+            });
+          });
         });
         wrap.querySelectorAll(".btn-gen-po-status").forEach((btn) => {
           btn.addEventListener("click", () => void openGeneralPoStatusModal(btn.dataset.id));
@@ -26811,6 +26975,274 @@
         advWrap.innerHTML = msg;
         finWrap.innerHTML = msg;
         trackWrap.innerHTML = msg;
+      }
+    }
+
+    /** تدقيق متطلبات الفاتورة التجارية (تعميم البنك المركزي 9/4/267) لطلبات الإدارة العامة. */
+    const INVOICE_CHECKLIST_ITEM_IDS = [
+      "invoiceDateNo",
+      "paymentTerms",
+      "shippingTerms",
+      "valueCurrency",
+      "hsCode",
+      "addresses",
+      "goodsDesc",
+      "origin",
+      "brand",
+      "qtyUnit",
+      "unitTotalPrice",
+      "baiduLocation",
+    ];
+
+    let generalPoInvoiceChecklistDraft = null;
+    let invoiceChecklistModalCtx = null;
+
+    function emptyInvoiceChecklist() {
+      return {
+        checked: {},
+        invoiceType: "",
+        updatedAt: null,
+        updatedBy: "",
+        started: false,
+      };
+    }
+
+    function normalizeInvoiceChecklist(raw) {
+      const base = emptyInvoiceChecklist();
+      if (!raw || typeof raw !== "object") return base;
+      const checked = {};
+      INVOICE_CHECKLIST_ITEM_IDS.forEach((id) => {
+        checked[id] = !!(raw.checked && raw.checked[id]);
+      });
+      const invoiceType = raw.invoiceType === "final" || raw.invoiceType === "proforma" ? raw.invoiceType : "";
+      const started =
+        !!raw.started ||
+        !!invoiceType ||
+        INVOICE_CHECKLIST_ITEM_IDS.some((id) => checked[id]) ||
+        !!raw.updatedAt;
+      return {
+        checked,
+        invoiceType,
+        updatedAt: raw.updatedAt || null,
+        updatedBy: (raw.updatedBy || "").trim(),
+        started,
+      };
+    }
+
+    function invoiceChecklistCheckedCount(cl) {
+      const c = normalizeInvoiceChecklist(cl);
+      return INVOICE_CHECKLIST_ITEM_IDS.filter((id) => c.checked[id]).length;
+    }
+
+    function invoiceChecklistIsComplete(cl) {
+      const c = normalizeInvoiceChecklist(cl);
+      return (
+        !!c.invoiceType &&
+        INVOICE_CHECKLIST_ITEM_IDS.every((id) => c.checked[id])
+      );
+    }
+
+    function invoiceChecklistStatusKey(cl) {
+      const c = normalizeInvoiceChecklist(cl);
+      if (invoiceChecklistIsComplete(c)) return "complete";
+      if (c.started) return "partial";
+      return "none";
+    }
+
+    function invoiceChecklistStatusLabel(cl) {
+      const key = invoiceChecklistStatusKey(cl);
+      if (key === "complete") return t("invoiceChecklistStatusComplete");
+      if (key === "partial") {
+        const n = invoiceChecklistCheckedCount(cl);
+        return `${t("invoiceChecklistStatusPartial")} (${n}/${INVOICE_CHECKLIST_ITEM_IDS.length})`;
+      }
+      return t("invoiceChecklistStatusNone");
+    }
+
+    function invoiceChecklistBadgeHtml(cl) {
+      const key = invoiceChecklistStatusKey(cl);
+      const cls =
+        key === "complete"
+          ? "badge-invoice-complete"
+          : key === "partial"
+            ? "badge-invoice-partial"
+            : "badge-invoice-none";
+      return `<span class="badge ${cls}">${escapeHtml(invoiceChecklistStatusLabel(cl))}</span>`;
+    }
+
+    function syncPo007InvoiceCheckBadge(cl) {
+      const el = $("po007-invoice-check-badge");
+      if (!el) return;
+      if (generalPo007EditorMode === "template") {
+        el.hidden = true;
+        return;
+      }
+      el.hidden = false;
+      el.className =
+        "badge po007-meta-po-only " +
+        (invoiceChecklistStatusKey(cl) === "complete"
+          ? "badge-invoice-complete"
+          : invoiceChecklistStatusKey(cl) === "partial"
+            ? "badge-invoice-partial"
+            : "badge-invoice-none");
+      el.textContent = invoiceChecklistStatusLabel(cl);
+    }
+
+    function readInvoiceChecklistFromModal() {
+      const checked = {};
+      INVOICE_CHECKLIST_ITEM_IDS.forEach((id) => {
+        checked[id] = !!$(`invoice-check-item-${id}`)?.checked;
+      });
+      const typeEl = document.querySelector('#modal-invoice-checklist input[name="invoice-check-type"]:checked');
+      const invoiceType = typeEl?.value === "final" || typeEl?.value === "proforma" ? typeEl.value : "";
+      const started =
+        !!invoiceType || INVOICE_CHECKLIST_ITEM_IDS.some((id) => checked[id]);
+      return normalizeInvoiceChecklist({
+        checked,
+        invoiceType,
+        started,
+        updatedAt: new Date().toISOString(),
+        updatedBy: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+      });
+    }
+
+    function renderInvoiceChecklistModalBody(cl) {
+      const c = normalizeInvoiceChecklist(cl);
+      const wrap = $("invoice-checklist-items");
+      if (!wrap) return;
+      wrap.innerHTML = INVOICE_CHECKLIST_ITEM_IDS.map((id, idx) => {
+        const on = !!c.checked[id];
+        const extra = id === "baiduLocation";
+        const hintKey = `invoiceCheckItem_${id}Hint`;
+        const hintTry = t(hintKey);
+        const hint = hintTry && hintTry !== hintKey ? hintTry : "";
+        return `<label class="inv-check-row${on ? " done" : ""}${extra ? " extra" : ""}" for="invoice-check-item-${id}">
+          <span class="inv-check-box">${on ? "✓" : idx + 1}</span>
+          <span>
+            <span class="inv-check-title">${escapeHtml(t(`invoiceCheckItem_${id}`))}</span>
+            ${hint ? `<p class="inv-check-hint">${escapeHtml(hint)}</p>` : ""}
+            <input type="checkbox" id="invoice-check-item-${id}" ${on ? "checked" : ""} style="position:absolute;opacity:0;pointer-events:none" />
+          </span>
+        </label>`;
+      }).join("");
+      document.querySelectorAll('#modal-invoice-checklist input[name="invoice-check-type"]').forEach((r) => {
+        r.checked = r.value === c.invoiceType;
+      });
+      wrap.querySelectorAll('input[type="checkbox"]').forEach((inp) => {
+        inp.addEventListener("change", () => {
+          const row = inp.closest(".inv-check-row");
+          if (row) {
+            row.classList.toggle("done", inp.checked);
+            const box = row.querySelector(".inv-check-box");
+            const idx = INVOICE_CHECKLIST_ITEM_IDS.indexOf(inp.id.replace("invoice-check-item-", ""));
+            if (box) box.textContent = inp.checked ? "✓" : String(idx + 1);
+          }
+          refreshInvoiceChecklistProgressUi();
+        });
+      });
+      document.querySelectorAll('#modal-invoice-checklist input[name="invoice-check-type"]').forEach((r) => {
+        r.onchange = () => refreshInvoiceChecklistProgressUi();
+      });
+      refreshInvoiceChecklistProgressUi();
+    }
+
+    function refreshInvoiceChecklistProgressUi() {
+      const live = readInvoiceChecklistFromModal();
+      const n = invoiceChecklistCheckedCount(live);
+      const total = INVOICE_CHECKLIST_ITEM_IDS.length;
+      const countEl = $("invoice-checklist-count");
+      const bar = $("invoice-checklist-bar");
+      const statusEl = $("invoice-checklist-status-label");
+      if (countEl) countEl.textContent = `${n} / ${total}`;
+      if (bar) bar.style.width = `${Math.round((n / total) * 100)}%`;
+      if (statusEl) {
+        statusEl.className =
+          "badge " +
+          (invoiceChecklistStatusKey(live) === "complete"
+            ? "badge-invoice-complete"
+            : invoiceChecklistStatusKey(live) === "partial"
+              ? "badge-invoice-partial"
+              : "badge-invoice-none");
+        statusEl.textContent = invoiceChecklistStatusLabel(live);
+      }
+    }
+
+    function openInvoiceChecklistModal(opts) {
+      const mode = opts?.mode === "po" ? "po" : "editor";
+      const poId = (opts?.poId || "").trim();
+      let cl = emptyInvoiceChecklist();
+      let refText = "";
+      if (mode === "editor") {
+        if (generalPo007EditorMode === "template") return;
+        cl = normalizeInvoiceChecklist(generalPoInvoiceChecklistDraft);
+        refText =
+          (getGeneralPo007Mount()?.querySelector('[data-po007="po-number"]')?.textContent || "").trim() ||
+          t("dash");
+      } else {
+        cl = normalizeInvoiceChecklist(opts?.checklist);
+        refText = (opts?.poRef || "").trim() || t("dash");
+      }
+      invoiceChecklistModalCtx = { mode, poId, poRef: refText };
+      const refEl = $("invoice-checklist-po-ref");
+      if (refEl) refEl.textContent = refText;
+      renderInvoiceChecklistModalBody(cl);
+      $("modal-invoice-checklist")?.classList.remove("hidden");
+    }
+
+    function closeInvoiceChecklistModal() {
+      $("modal-invoice-checklist")?.classList.add("hidden");
+      invoiceChecklistModalCtx = null;
+    }
+
+    async function persistInvoiceChecklistToPo(poId, cl) {
+      const ref = doc(db, "purchaseOrders", poId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) throw new Error(t("loadError"));
+      const data = snap.data();
+      const g = serializeGeneralFormForFirestore(
+        enrichGeneralFormPo007({
+          ...(data.generalForm && typeof data.generalForm === "object" ? data.generalForm : {}),
+          invoiceChecklist: cl,
+        })
+      );
+      await updateDoc(ref, { generalForm: g, updatedAt: serverTimestamp() });
+    }
+
+    async function saveInvoiceChecklistModal() {
+      const cl = readInvoiceChecklistFromModal();
+      const ctx = invoiceChecklistModalCtx;
+      if (!ctx) return;
+      if (ctx.mode === "editor") {
+        generalPoInvoiceChecklistDraft = cl;
+        syncPo007InvoiceCheckBadge(cl);
+        const editorId = ($("po007-editor-id")?.value || "").trim();
+        if (editorId) {
+          try {
+            await persistInvoiceChecklistToPo(editorId, cl);
+            closeInvoiceChecklistModal();
+            alert(t("invoiceChecklistSaved"));
+          } catch (err) {
+            alert(t("saveFailed") + " " + (err.message || ""));
+          }
+          return;
+        }
+        closeInvoiceChecklistModal();
+        return;
+      }
+      const poId = (ctx.poId || "").trim();
+      if (!poId) {
+        alert(t("saveFailed"));
+        return;
+      }
+      try {
+        await persistInvoiceChecklistToPo(poId, cl);
+        closeInvoiceChecklistModal();
+        alert(t("invoiceChecklistSaved"));
+        if (document.querySelector("#screen-po-general:not(.hidden)")) {
+          void loadPurchaseOrders("general");
+        }
+      } catch (err) {
+        alert(t("saveFailed") + " " + (err.message || ""));
       }
     }
 
@@ -29136,6 +29568,12 @@
     $("btn-edit-general-po-template")?.addEventListener("click", () => void openGeneralPoTemplateEditor());
     $("po007-editor-save")?.addEventListener("click", () => void saveGeneralPo007Modal());
     $("po007-editor-cancel")?.addEventListener("click", closeGeneralPo007Modal);
+    $("po007-editor-invoice-check")?.addEventListener("click", () => openInvoiceChecklistModal({ mode: "editor" }));
+    $("invoice-checklist-cancel")?.addEventListener("click", closeInvoiceChecklistModal);
+    $("invoice-checklist-save")?.addEventListener("click", () => void saveInvoiceChecklistModal());
+    $("invoice-checklist-reset")?.addEventListener("click", () => {
+      renderInvoiceChecklistModalBody(emptyInvoiceChecklist());
+    });
     $("po007-items-bulk-cancel")?.addEventListener("click", closePo007ItemsBulkInsertModal);
     $("po007-items-bulk-apply")?.addEventListener("click", applyPo007ItemsBulkInsert);
     $("po007-editor-preview")?.addEventListener("click", () => {
