@@ -8103,6 +8103,7 @@
         genPo007AddDiscount: "إضافة خصم",
         genPo007TotalPriceSay: "المبلغ الإجمالي كتابةً:",
         genPo007PurchaseOrder: "أمر شراء رقم ",
+        genPo007SalesContract: "عقد بيع رقم ",
         genPo007PoDate: "تاريخ أمر الشراء",
         genPo007PoRef: "المرجع:",
         genPo007Page: "صفحة",
@@ -9294,6 +9295,7 @@
         genPo007AddDiscount: "Add discount",
         genPo007TotalPriceSay: "Total Price Say:",
         genPo007PurchaseOrder: "Purchase Order (PO) No.",
+        genPo007SalesContract: "Sales Contract (SC) No.",
         genPo007PoDate: "PO Date",
         genPo007PoRef: "Ref:",
         genPo007Page: "Page",
@@ -10555,6 +10557,13 @@
           x.sectionCustomDefaults,
           x.documentLang
         );
+      }
+      const poNum = String(x.poNumber || "").trim();
+      const scNum = String(x.salesContractNumber || "").trim();
+      if ((!scNum || scNum === "—") && poNum) {
+        x.salesContractNumber = salesContractNumberFromPo(poNum);
+      } else if (scNum) {
+        x.salesContractNumber = scNum;
       }
       return normalizePo007SectionMeta(x);
     }
@@ -12714,18 +12723,23 @@
         buyerName,
         projectName,
         refText,
+        salesContractText,
         poDateDisp,
         poRev,
         revLbl,
         editorMode,
       } = opts;
       const dash = tPo007(docLang, "dash");
+      const scText = (salesContractText || salesContractNumberFromPo(refText) || dash).trim() || dash;
       const projectLine = editorMode
         ? `${tPo007(docLang, "genPo007PoProject")} <span data-po007="project">${escapeHtml(projectName)}</span>`
         : `${tPo007(docLang, "genPo007PoProject")} ${escapeHtml(projectName)}`;
       const poLine = editorMode
         ? `<strong>${tPo007(docLang, "genPo007PurchaseOrder")}<span data-po007="po-number">${escapeHtml(refText)}</span></strong>`
         : `<strong>${tPo007(docLang, "genPo007PurchaseOrder")}${escapeHtml(refText)}</strong>`;
+      const scLine = editorMode
+        ? `<strong>${tPo007(docLang, "genPo007SalesContract")}<span data-po007="sales-contract-number">${escapeHtml(scText)}</span></strong>`
+        : `<strong>${tPo007(docLang, "genPo007SalesContract")}${escapeHtml(scText)}</strong>`;
       const dateLine = editorMode
         ? `${tPo007(docLang, "genPo007PoDate")} <span data-po007="po-date">${escapeHtml(poDateDisp)}</span>`
         : `${tPo007(docLang, "genPo007PoDate")} ${escapeHtml(poDateDisp)}`;
@@ -12742,6 +12756,7 @@
           <div class="po007-dh-po">
             <div>${projectLine}</div>
             <div>${poLine}</div>
+            <div>${scLine}</div>
             <div>${dateLine}</div>
             <div>${revLine}</div>
           </div>
@@ -13210,6 +13225,7 @@
         currency: saved?.currency === "USD" ? "USD" : saved?.currency === "IQD" ? "IQD" : "USD",
         poRev: saved?.poRev ?? "",
         poNumber: "—",
+        salesContractNumber: "—",
         lines: saved?.lines?.length
           ? saved.lines.map(normalizeGeneralLineRow)
           : [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }],
@@ -15936,7 +15952,16 @@
         const el = mount.querySelector(`[data-po007="${key}"]`);
         if (el) el.textContent = String(val);
       };
-      set("po-number", partial.poNumber);
+      if (partial.poNumber != null) {
+        set("po-number", partial.poNumber);
+        const sc =
+          partial.salesContractNumber != null
+            ? partial.salesContractNumber
+            : salesContractNumberFromPo(partial.poNumber);
+        set("sales-contract-number", sc);
+      } else if (partial.salesContractNumber != null) {
+        set("sales-contract-number", partial.salesContractNumber);
+      }
       set("po-date", partial.poDate);
       set("po-rev", partial.poRev);
       set("project", partial.project);
@@ -16072,11 +16097,15 @@
             getPo007MetaCurrency(),
             getPo007DocumentLang()
           );
+      const poNumberVal = read("po-number");
+      const salesContractVal =
+        read("sales-contract-number") || salesContractNumberFromPo(poNumberVal);
       const printForm = enrichGeneralFormPo007({
         lines,
         documentLang: getPo007DocumentLang(),
         currency: getPo007MetaCurrency(),
-        poNumber: read("po-number"),
+        poNumber: poNumberVal,
+        salesContractNumber: salesContractVal,
         poRev: read("po-rev"),
         projectName: read("project"),
         poDate: getPo007MetaPoDateIso(),
@@ -16104,7 +16133,8 @@
         itemsTableConfig,
       });
       const saved = enrichGeneralFormPo007({
-        poNumber: read("po-number"),
+        poNumber: poNumberVal,
+        salesContractNumber: salesContractVal,
         poDate: getPo007MetaPoDateIso(),
         poRev: read("po-rev"),
         projectId,
@@ -16169,6 +16199,8 @@
       const docLang = g.documentLang === "en" ? "en" : "ar";
       const buyerName = ((g.buyerName || "").trim() || (po.companyNameSnapshot || "").trim());
       const refText = (g.poNumber || po.title || "").trim() || tPo007(docLang, "dash");
+      const salesContractText =
+        (g.salesContractNumber || "").trim() || salesContractNumberFromPo(refText) || tPo007(docLang, "dash");
       const poDateDisp = formatPo007DisplayDate(g.poDate) || poRowDisplayDate(po);
       const poRev = (g.poRev ?? "").trim();
       const projectName = (g.projectName || po.projectNameSnapshot || "").trim() || tPo007(docLang, "dash");
@@ -16294,6 +16326,7 @@
         buyerName,
         projectName,
         refText,
+        salesContractText,
         poDateDisp,
         poRev,
         revLbl,
@@ -16596,7 +16629,12 @@
       if (!pid || !isNew || !getGeneralPo007Mount()) return;
       const poDateIso = getPo007MetaPoDateIso();
       const ref = await previewGeneralPoReference(pid, poDateIso);
-      if (ref) patchGeneralPo007EditorMeta({ poNumber: ref });
+      if (ref) {
+        patchGeneralPo007EditorMeta({
+          poNumber: ref,
+          salesContractNumber: salesContractNumberFromPo(ref),
+        });
+      }
     }
 
     async function hydratePo007ProjectToFrame() {
@@ -16761,6 +16799,7 @@
         : defaultGeneralPo007EditorForm(docLang);
       if (!existingId || duplicate) {
         g.poNumber = "—";
+        g.salesContractNumber = "—";
         g.poDate = getPo007MetaPoDateIso();
       }
       mountGeneralPo007Editor(g, po);
@@ -16800,12 +16839,18 @@
           alert(t("saveFailed"));
           return;
         }
-        patchGeneralPo007EditorMeta({ poNumber: allocated });
+        patchGeneralPo007EditorMeta({
+          poNumber: allocated,
+          salesContractNumber: salesContractNumberFromPo(allocated),
+        });
         g = buildGeneralFormFromEditor();
       }
       if (!(g.poNumber || "").trim() || g.poNumber === "—") {
         alert(t("alertPoTitleRequired"));
         return;
+      }
+      if (!(g.salesContractNumber || "").trim() || g.salesContractNumber === "—") {
+        g.salesContractNumber = salesContractNumberFromPo(g.poNumber);
       }
       if (!(g.vendor?.name || "").trim()) {
         alert(t("alertSelectSupplier"));
@@ -17015,6 +17060,32 @@
       const yy = ymdYearShort(ymd);
       const n = String(seq).padStart(3, "0");
       return `PO-${seg}-${mm}-${yy}-${n}`;
+    }
+
+    function formatSalesContractReference(contractSeg, ymd, seq) {
+      const seg = String(contractSeg).padStart(3, "0");
+      const mm = ymdMonth(ymd);
+      const yy = ymdYearShort(ymd);
+      const n = String(seq).padStart(3, "0");
+      return `SC-${seg}-${mm}-${yy}-${n}`;
+    }
+
+    /** رقم عقد البيع يطابق تسلسل أمر الشراء مع بادئة SC. */
+    function salesContractNumberFromPo(poNumber) {
+      const s = String(poNumber || "").trim();
+      if (!s) return "";
+      if (s === "—") return "—";
+      if (/^SC-/i.test(s)) return `SC-${s.slice(3)}`;
+      if (/^PO-/i.test(s)) return `SC-${s.slice(3)}`;
+      const m = s.match(/^PO\s+(\d{4})\s*-\s*(\d+)\s*-\s*(\d+)$/i);
+      if (m) {
+        const yy = String(m[1]).slice(-2);
+        const seg = String(m[2]).padStart(3, "0");
+        const n = String(m[3]).padStart(3, "0");
+        const mm = ymdMonth(formatTodayYmd());
+        return `SC-${seg}-${mm}-${yy}-${n}`;
+      }
+      return `SC-${s.replace(/^SC-/i, "")}`;
     }
 
     function generalPoRefRegexes(contractSeg, ymd) {

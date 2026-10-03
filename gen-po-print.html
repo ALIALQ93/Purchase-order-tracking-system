@@ -394,6 +394,7 @@
         notGeneral: "هذا النموذج مخصّص لأوامر شراء الإدارة العامة فقط.",
         loadError: "تعذّر تحميل البيانات.",
         purchaseOrder: "أمر شراء",
+        salesContract: "عقد بيع",
         project: "المشروع",
         poDate: "تاريخ أمر الشراء",
         rev: "المراجعة",
@@ -441,6 +442,7 @@
         notGeneral: "This template is for general administration POs only.",
         loadError: "Failed to load data.",
         purchaseOrder: "Purchase Order",
+        salesContract: "Sales Contract",
         project: "Project",
         poDate: "PO Date",
         rev: "Rev.",
@@ -883,6 +885,16 @@
       const g = po.generalForm && typeof po.generalForm === "object" ? { ...po.generalForm } : {};
       if (!g.lines?.length && Array.isArray(po.lines)) g.lines = po.lines;
       if (!g.poNumber) g.poNumber = (po.title || "").trim();
+      if (!g.salesContractNumber && g.poNumber) {
+        const pn = String(g.poNumber).trim();
+        g.salesContractNumber = /^PO-/i.test(pn)
+          ? `SC-${pn.slice(3)}`
+          : /^SC-/i.test(pn)
+            ? pn
+            : pn === "—"
+              ? "—"
+              : `SC-${pn}`;
+      }
       if (!g.vendor) g.vendor = {};
       if (!g.vendor.name) g.vendor.name = (po.supplierName || "").trim();
       if (!g.buyerExtra) g.buyerExtra = {};
@@ -1470,6 +1482,9 @@
       const logo = companyLogo(po, company);
       const cur = g.currency;
       const ref = (g.poNumber || po.title || "").trim() || t(lang, "dash");
+      const scRef =
+        (g.salesContractNumber || "").trim() ||
+        (/^PO-/i.test(ref) ? `SC-${ref.slice(3)}` : /^SC-/i.test(ref) ? ref : ref === t(lang, "dash") ? ref : `SC-${ref}`);
       const meta = buildPrintMeta(po, g, company, lang);
 
       const partiesHtml = `<div class="parties">
@@ -1510,6 +1525,7 @@
               <div class="buyer">${esc(buyer)}</div>
               <div>${esc(t(lang, "project"))}: ${esc(g.projectName || po.projectNameSnapshot || t(lang, "dash"))}</div>
               <div class="po-line">${esc(t(lang, "purchaseOrder"))} ${esc(ref)}</div>
+              <div class="po-line">${esc(t(lang, "salesContract"))} ${esc(scRef)}</div>
               <div>${esc(t(lang, "poDate"))}: ${esc(fmtDate(g.poDate || po.generalPoDate, lang))} &nbsp;|&nbsp; ${esc(t(lang, "rev"))}: ${esc(g.poRev || "A")}</div>
             </div>
           </header>
