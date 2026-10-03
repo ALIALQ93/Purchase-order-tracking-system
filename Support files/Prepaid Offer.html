@@ -99,10 +99,92 @@ tr:nth-child(even) td{background:#f7fafd}
   font-weight:700;border-radius:10px;padding:.45rem .9rem;cursor:pointer;
 }
 .btn:hover{background:var(--ice)}
+
+/* ===== رسم توضيحي ملخص ===== */
+.diagram{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:1.2rem 1.1rem 1.35rem;margin-bottom:1.25rem;
+  box-shadow:0 10px 28px rgba(11,42,91,.06);
+}
+.diagram > h2{
+  margin:0 0 .35rem;font-size:1.2rem;color:var(--navy);font-weight:900;
+}
+.diagram > .muted{margin:0 0 1rem;font-size:.92rem}
+.diag-start{
+  display:flex;justify-content:center;margin-bottom:.7rem;
+}
+.diag-start .node{
+  background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;
+  border-radius:12px;padding:.65rem 1.15rem;text-align:center;min-width:min(100%,320px);
+  box-shadow:0 8px 20px rgba(11,42,91,.18);
+}
+.diag-start .node b{display:block;font-size:1.05rem}
+.diag-start .node small{display:block;opacity:.9;font-size:.85rem;margin-top:.15rem}
+.diag-split{
+  display:flex;justify-content:center;align-items:center;gap:.5rem;margin:.55rem 0 .85rem;
+  color:var(--muted);font-size:.85rem;font-weight:700;
+}
+.diag-split::before,.diag-split::after{
+  content:"";flex:1;max-width:140px;height:2px;background:linear-gradient(90deg,transparent,var(--line),transparent);
+}
+.diag-branches{
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+}
+@media (max-width:720px){.diag-branches{grid-template-columns:1fr}}
+.branch{
+  border:1px solid var(--line);border-radius:14px;padding:.9rem .85rem 1rem;
+  background:#f8fbfe;position:relative;
+}
+.branch.awt{border-color:#b7d4f3;background:linear-gradient(180deg,#eaf3fc 0%,#fff 42%)}
+.branch.wt{border-color:#d8e0ea;background:linear-gradient(180deg,#f4f7fb 0%,#fff 42%)}
+.branch-head{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.4rem;
+  margin-bottom:.75rem;padding-bottom:.55rem;border-bottom:1px dashed var(--line);
+}
+.branch-head h3{margin:0;font-size:1rem;color:var(--navy);font-weight:900}
+.branch-head .tag{font-size:.82rem}
+.branch-flow{display:flex;flex-direction:column;gap:0;margin:0;padding:0;list-style:none}
+.branch-flow li{
+  position:relative;display:grid;grid-template-columns:1.7rem 1fr;gap:.55rem;
+  padding:.35rem 0 .35rem;
+}
+.branch-flow li:not(:last-child)::after{
+  content:"";position:absolute;right:.78rem;top:1.85rem;bottom:-.1rem;width:2px;background:#c5d8ef;
+}
+.branch.wt .branch-flow li:not(:last-child)::after{background:#d0d8e4}
+.branch-flow .dot{
+  width:1.7rem;height:1.7rem;border-radius:50%;background:var(--blue);color:#fff;
+  font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;box-shadow:0 0 0 3px #fff;
+}
+.branch.wt .branch-flow .dot{background:#5d6b80}
+.branch-flow .txt{font-size:.9rem;line-height:1.45;padding-top:.15rem}
+.branch-flow .txt b{display:block;color:var(--navy);font-size:.95rem}
+.branch-flow .txt span{color:var(--muted);font-size:.82rem}
+.branch-note{
+  margin:.75rem 0 0;padding:.55rem .7rem;border-radius:10px;font-size:.82rem;font-weight:700;
+  background:var(--ice);color:var(--blue);border:1px solid #cfe2f6;
+}
+.branch.wt .branch-note{background:#eef1f5;color:#3d4a5c;border-color:#d5dde8}
+.diag-legend{
+  display:flex;flex-wrap:wrap;gap:.55rem .9rem;margin-top:1rem;padding-top:.85rem;
+  border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);
+}
+.diag-legend i{
+  display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-left:.35rem;vertical-align:-1px;
+}
+.diag-legend .awt-dot{background:var(--blue)}
+.diag-legend .wt-dot{background:#5d6b80}
+.diag-eff{
+  margin-top:.85rem;text-align:center;font-size:.9rem;font-weight:700;color:var(--navy);
+  background:var(--amber-bg);border:1px solid #f1dca0;border-radius:10px;padding:.55rem .8rem;
+}
+
 @media print{
   body{background:#fff}
   .print-bar,.toc{display:none}
-  .hero,section.doc{box-shadow:none;break-inside:avoid}
+  .hero,section.doc,.diagram{box-shadow:none;break-inside:avoid}
+  .diagram{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -126,9 +208,88 @@ tr:nth-child(even) td{background:#f7fafd}
       </div>
     </header>
 
+    <section class="diagram" id="overview" aria-label="رسم توضيحي لملخص المسارات">
+      <h2>رسم توضيحي — ملخص المسارات</h2>
+      <p class="muted">نظرة سريعة على القرار 413/2026: اختر المسار حسب طريقة الدفع في الفاتورة، ثم اتبع المراحل حتى البيان النهائي.</p>
+
+      <div class="diag-start">
+        <div class="node">
+          <b>طريقة الدفع في الفاتورة التجارية</b>
+          <small>نقطة البداية لتحديد المسار في أسيكودا</small>
+        </div>
+      </div>
+      <div class="diag-split">يتفرع إلى مسارين رئيسيين</div>
+
+      <div class="diag-branches">
+        <article class="branch awt">
+          <div class="branch-head">
+            <h3>مسار الدفع المسبق</h3>
+            <span class="tag">AWT / IPB</span>
+          </div>
+          <ol class="branch-flow">
+            <li>
+              <span class="dot">1</span>
+              <div class="txt"><b>بيان مسبق 07</b><span>إيداع ورفع · Registered → Submit</span></div>
+            </li>
+            <li>
+              <span class="dot">2</span>
+              <div class="txt"><b>مصادقة المصرف الأولية</b><span>PreApprove بعد مطابقة الوثائق</span></div>
+            </li>
+            <li>
+              <span class="dot">3</span>
+              <div class="txt"><b>بيان أولي DP9 + دفع الرسوم</b><span>استيفاء مسبق للرسوم والأمانات · Settle</span></div>
+            </li>
+            <li>
+              <span class="dot">4</span>
+              <div class="txt"><b>التحويل المصرفي</b><span>Validate — لا تحويل قبل الدفع المسبق</span></div>
+            </li>
+            <li>
+              <span class="dot">5</span>
+              <div class="txt"><b>بيان نهائي IM4 / 4096</b><span>الوصول · التخليص · التسوية والترصيد</span></div>
+            </li>
+          </ol>
+          <p class="branch-note">شرط أساسي: لا تحويل مالي قبل الاستيراد دون بيان 07 ودفع مسبق.</p>
+        </article>
+
+        <article class="branch wt">
+          <div class="branch-head">
+            <h3>مسار بدون تحويل خارجي</h3>
+            <span class="tag">WT / WP</span>
+          </div>
+          <ol class="branch-flow">
+            <li>
+              <span class="dot">1</span>
+              <div class="txt"><b>بيان مسبق 06</b><span>تصريح مسبق عن مصدر التمويل</span></div>
+            </li>
+            <li>
+              <span class="dot">2</span>
+              <div class="txt"><b>مصادقة Validate</b><span>اعتماد المصرف / الجهة المختصة</span></div>
+            </li>
+            <li>
+              <span class="dot">3</span>
+              <div class="txt"><b>بيان نهائي IM4 / 4xxx</b><span>عند وصول البضاعة</span></div>
+            </li>
+            <li>
+              <span class="dot">4</span>
+              <div class="txt"><b>التخليص والدفع والإفراج</b><span>الرسوم تُستوفى عند الوصول وليس مسبقاً</span></div>
+            </li>
+          </ol>
+          <p class="branch-note">التركيز هنا على الرقابة على مصدر التمويل، لا على الدفع المسبق للرسوم.</p>
+        </article>
+      </div>
+
+      <div class="diag-legend">
+        <span><i class="awt-dot"></i>AWT / IPB — تحويل أو تقسيط قبل الاستيراد</span>
+        <span><i class="wt-dot"></i>WT / WP — بدون تحويل خارجي / بدون دفع</span>
+        <span>مسارات أخرى (بعد الاستيراد / TK) بلا تغيير جوهري</span>
+      </div>
+      <div class="diag-eff">تاريخ النفاذ: 2026/10/01 · قرار مجلس الوزراء 413 لسنة 2026</div>
+    </section>
+
     <nav class="toc" aria-label="فهرس المحتويات">
       <h2>المحتويات</h2>
       <ol>
+        <li><a href="#overview">رسم توضيحي — ملخص المسارات</a></li>
         <li><a href="#s1">الإطار العام وسبب التغيير</a></li>
         <li><a href="#s2">مسارات البيان المسبق حسب طريقة الدفع</a></li>
         <li><a href="#s3">المعاملات الخاضعة للتحويل قبل الاستيراد (AWT / IPB)</a></li>
