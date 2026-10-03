@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b2a5b" />
+<title>ملخص تفصيلي — تفعيل الدفع المسبق للرسوم والضرائب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#0b2a5b; --blue:#0b5cad; --sky:#2a86d6; --ice:#eaf3fc; --gold:#c9a227;
+  --ink:#1b2433; --muted:#5d6b80; --line:#d9e3ef; --bg:#f4f7fb;
+  --red:#c0392b; --red-bg:#fdecea; --green:#1f7a4d; --green-bg:#e7f5ee;
+  --amber:#a86a00; --amber-bg:#fff5e1; --surface:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Cairo',sans-serif;line-height:1.75}
+a{color:var(--blue)}
+.wrap{max-width:980px;margin:0 auto;padding:1.25rem 1.1rem 3rem}
+.hero{
+  background:linear-gradient(135deg,#0b2a5b 0%,#0b5cad 100%);
+  color:#fff;border-radius:16px;padding:1.75rem 1.5rem 1.5rem;margin-bottom:1.25rem;
+  box-shadow:0 16px 40px rgba(11,42,91,.18);
+}
+.hero .badge{
+  display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+  border-radius:999px;padding:.25rem .8rem;font-size:.85rem;font-weight:600;margin-bottom:.85rem;
+}
+.hero h1{margin:0 0 .55rem;font-size:clamp(1.45rem,3.5vw,2rem);font-weight:900;line-height:1.35}
+.hero .sub{margin:0;opacity:.95;font-size:1.02rem;max-width:46rem}
+.meta{display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;margin-top:1.15rem}
+.meta div{font-size:.9rem;opacity:.9}
+.meta b{display:block;color:var(--gold);font-size:1.05rem}
+.toc{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem 1.15rem;margin-bottom:1.25rem;
+}
+.toc h2{margin:0 0 .55rem;font-size:1.05rem;color:var(--navy)}
+.toc ol{margin:0;padding-inline-start:1.3rem}
+.toc li{margin:.25rem 0}
+.toc a{text-decoration:none;font-weight:600}
+.toc a:hover{text-decoration:underline}
+section.doc{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:1.25rem 1.2rem 1.35rem;margin-bottom:1rem;
+}
+section.doc > h2{
+  margin:0 0 .85rem;font-size:1.28rem;color:var(--navy);font-weight:900;
+  padding-bottom:.55rem;border-bottom:3px solid var(--gold);
+}
+h3{margin:1.1rem 0 .45rem;font-size:1.05rem;color:var(--navy);font-weight:800}
+p,li{font-size:.98rem}
+.muted{color:var(--muted)}
+.tag{
+  display:inline-block;direction:ltr;unicode-bidi:isolate;background:var(--ice);color:var(--blue);
+  font-weight:800;border-radius:6px;padding:0 .45rem;font-size:.9em;
+}
+.grid{display:grid;gap:.85rem}
+.g2{grid-template-columns:1fr 1fr}
+@media (max-width:720px){.g2{grid-template-columns:1fr}}
+.card{background:#f7fafd;border:1px solid var(--line);border-radius:12px;padding:1rem 1.05rem}
+.card.blue{background:var(--ice);border-color:#cfe2f6}
+.card.warn{background:var(--amber-bg);border-color:#f1dca0}
+.card.danger{background:var(--red-bg);border-color:#f0c2bc}
+.card.ok{background:var(--green-bg);border-color:#c5e6d4}
+.callout{
+  background:linear-gradient(90deg,#fff8e6,#fff);border-right:5px solid var(--gold);
+  border-radius:10px;padding:.85rem 1rem;margin:.85rem 0 0;font-size:.95rem;
+}
+.callout.blue{background:linear-gradient(90deg,var(--ice),#fff);border-right-color:var(--blue)}
+ul.clean{list-style:none;padding:0;margin:.4rem 0 0}
+ul.clean li{position:relative;padding-right:1.2rem;margin-bottom:.45rem}
+ul.clean li::before{
+  content:"";position:absolute;right:0;top:.7rem;width:.5rem;height:.5rem;border-radius:2px;background:var(--sky);
+}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:.92rem;margin-top:.5rem}
+th{background:var(--navy);color:#fff;padding:.65rem .8rem;text-align:right;font-weight:800}
+th:first-child{border-radius:0 10px 0 0}th:last-child{border-radius:10px 0 0 0}
+td{padding:.7rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#f7fafd}
+.steps{counter-reset:step;list-style:none;padding:0;margin:.5rem 0 0}
+.steps li{
+  counter-increment:step;display:grid;grid-template-columns:2.2rem 1fr;gap:.75rem;
+  margin-bottom:.85rem;align-items:start;
+}
+.steps li::before{
+  content:counter(step);width:2.2rem;height:2.2rem;border-radius:50%;background:var(--blue);color:#fff;
+  font-weight:900;display:flex;align-items:center;justify-content:center;
+}
+.flow{display:flex;flex-wrap:wrap;gap:.45rem;margin:.6rem 0 1rem}
+.flow span{
+  background:var(--ice);border:1px solid #cfe2f6;border-radius:999px;padding:.3rem .7rem;
+  font-size:.85rem;font-weight:700;direction:ltr;unicode-bidi:isolate;
+}
+.flow span.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.foot-note{margin-top:1.5rem;color:var(--muted);font-size:.88rem;text-align:center}
+.print-bar{display:flex;justify-content:flex-end;gap:.5rem;margin-bottom:.85rem}
+.btn{
+  appearance:none;border:1px solid var(--line);background:#fff;color:var(--navy);font:inherit;
+  font-weight:700;border-radius:10px;padding:.45rem .9rem;cursor:pointer;
+}
+.btn:hover{background:var(--ice)}
+@media print{
+  body{background:#fff}
+  .print-bar,.toc{display:none}
+  .hero,section.doc{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="print-bar">
+      <button type="button" class="btn" onclick="window.print()">طباعة / PDF</button>
+    </div>
+
+    <header class="hero">
+      <span class="badge">مشروع أسيكودا العراق · أتمتة وتحديث الكمارك</span>
+      <h1>ملخص تفصيلي: تفعيل الدفع المسبق للرسوم والضرائب</h1>
+      <p class="sub">
+        دليل موجز ومنظّم للمعاملات التجارية الخاضعة للدفع المسبق للرسوم والضرائب،
+        والمعاملات الخاضعة للتصريح المسبق عن مصدر التمويل — وفق قرار مجلس الوزراء (413) لسنة 2026.
+      </p>
+      <div class="meta">
+        <div><b>413 / 2026</b>قرار مجلس الوزراء</div>
+        <div><b>2026/10/01</b>تاريخ النفاذ</div>
+        <div><b>أيلول 2026</b>مرجع دليل المستخدم</div>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="فهرس المحتويات">
+      <h2>المحتويات</h2>
+      <ol>
+        <li><a href="#s1">الإطار العام وسبب التغيير</a></li>
+        <li><a href="#s2">مسارات البيان المسبق حسب طريقة الدفع</a></li>
+        <li><a href="#s3">المعاملات الخاضعة للتحويل قبل الاستيراد (AWT / IPB)</a></li>
+        <li><a href="#s4">خارطة المراحل السبع</a></li>
+        <li><a href="#s5">دورة حالات البيان المسبق 07</a></li>
+        <li><a href="#s6">تفاصيل المراحل (من الإيداع إلى التسوية)</a></li>
+        <li><a href="#s7">القواعد الانتقالية في 2026/10/01</a></li>
+        <li><a href="#s8">المعاملات بدون تحويل خارجي (WT / WP)</a></li>
+        <li><a href="#s9">توزيع المسؤوليات</a></li>
+        <li><a href="#s10">الخلاصة والرسائل الرئيسية</a></li>
+      </ol>
+    </nav>
+
+    <section class="doc" id="s1">
+      <h2>1) الإطار العام وسبب التغيير</h2>
+      <div class="grid g2">
+        <div class="card blue">
+          <h3>الدفع المسبق للرسوم</h3>
+          <p>
+            المعاملات التي يدفع فيها المستورد ثمن البضاعة للمصدر <b>قبل شحنها أو إرسالها</b>
+            (الدفع قبل الاستيراد) تخضع لنظام الدفع المسبق للرسوم الكمركية والأمانات الضريبية.
+          </p>
+        </div>
+        <div class="card">
+          <h3>الرقابة على مصدر التمويل</h3>
+          <p>
+            المعاملات التي تُنجز <b>«بدون تحويل خارجي»</b> أو <b>«بدون دفع»</b>
+            تخضع لضوابط إجرائية تشمل التصريح المسبق عن مصدر التمويل الخارجي.
+          </p>
+        </div>
+      </div>
+      <div class="callout">
+        تطبيقاً لقرار مجلس الوزراء رقم <b>(413) لسنة 2026</b>، ويسري العمل بالإجراءين اعتباراً من
+        <b>2026/10/01</b>.
+      </div>
+    </section>
+
+    <section class="doc" id="s2">
+      <h2>2) مسارات البيان المسبق حسب طريقة الدفع</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>طريقة الدفع</th>
+            <th>المسار المختصر</th>
+            <th>ملاحظة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag">AWT / IPB</span><br /><span class="muted">تحويل قبل الاستيراد</span></td>
+            <td>بيان مسبق 07 ← بيان أولي DP9 + دفع مسبق للرسوم ← تحويل المصرف ← بيان نهائي IM4/4096</td>
+            <td>مسار الدفع المسبق الكامل</td>
+          </tr>
+          <tr>
+            <td><span class="tag">WT / WP</span><br /><span class="muted">بدون تحويل خارجي</span></td>
+            <td>بيان مسبق 06 ← Validate ← بيان نهائي IM4/4xxx ← التخليص والدفع والإفراج</td>
+            <td>الرسوم عند الوصول + تصريح مصدر التمويل</td>
+          </tr>
+          <tr>
+            <td>تحويل بعد الاستيراد</td>
+            <td>بيان مسبق 01 أو 02 ← بيان نهائي IM4/4xxx</td>
+            <td>بدون تغيير جوهري</td>
+          </tr>
+          <tr>
+            <td><span class="tag">TK</span></td>
+            <td>بيان مسبق 05 ← بيان TK</td>
+            <td>بدون تغيير جوهري</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="doc" id="s3">
+      <h2>3) المعاملات الخاضعة للتحويل قبل الاستيراد (AWT / IPB)</h2>
+      <p>
+        ينطبق على طريقتي الدفع <span class="tag">AWT</span> (تحويل بنكي قبل الاستيراد)
+        و<span class="tag">IPB</span> (دفع بالتقسيط قبل الاستيراد).
+      </p>
+      <h3>القاعدة الأساسية</h3>
+      <p>لا تحويل مالي قبل الاستيراد إلا بشرطين:</p>
+      <div class="grid g2">
+        <div class="card blue">
+          <h3>1 — إيداع بيان مسبق 07</h3>
+          <p>
+            «بيان مسبق لبضاعة خاضعة للدفع المسبق للرسوم والضرائب» يودعه المستورد أو من يمثله،
+            متضمناً <b>القيمة الإجمالية</b> للبضاعة الواردة في الفاتورة.
+          </p>
+        </div>
+        <div class="card blue">
+          <h3>2 — الاستيفاء المسبق للرسوم</h3>
+          <p>
+            دفع الرسوم الكمركية والأمانات الضريبية مسبقاً عبر الدفع الإلكتروني المعتمد في نظام أسيكودا.
+          </p>
+        </div>
+      </div>
+      <div class="callout blue">
+        ينطبق ذلك على كل معاملة تعتمد على تحويل <b>كامل</b> ثمن البضاعة أو <b>جزء منه</b> قبل الاستيراد
+        عن طريق المصارف المجازة، متى كانت طريقة الدفع في الفاتورة التجارية
+        <span class="tag">AWT</span> أو <span class="tag">IPB</span>.
+      </div>
+    </section>
+
+    <section class="doc" id="s4">
+      <h2>4) خارطة المراحل السبع</h2>
+      <ol class="steps">
+        <li>
+          <div>
+            <h3 style="margin-top:0">رفع البيان المسبق 07</h3>
+            <p class="muted" style="margin:0">Registered → Submit · المخلص / صاحب العلاقة</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3 style="margin-top:0">المصادقة الأولية من المصرف</h3>
+            <p class="muted" style="margin:0">PreApprove · المصرف</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3 style="margin-top:0">طلب الإعفاء (عند وجوده)</h3>
+            <p class="muted" style="margin:0">اختياري · المخلص / صاحب العلاقة + قسم الإعفاءات</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3 style="margin-top:0">تنظيم وتسجيل DP9</h3>
+            <p class="muted" style="margin:0">تصفية آلية · المخلص / صاحب العلاقة + النظام</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3 style="margin-top:0">دفع الرسوم المسبقة</h3>
+            <p class="muted" style="margin:0">Settle · المخلص / صاحب العلاقة + النظام</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3 style="margin-top:0">التحويل المصرفي</h3>
+            <p class="muted" style="margin:0">Validate · المصرف</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3 style="margin-top:0">البيان النهائي والتسوية</h3>
+            <p class="muted" style="margin:0">ترصيد كلي / جزئي · المخلص / صاحب العلاقة + النظام</p>
+          </div>
+        </li>
+      </ol>
+      <div class="callout blue">
+        سلسلة مختصرة:
+        طريقة الدفع <span class="tag">AWT, IPB</span> ← بيان مسبق <span class="tag">07</span>
+        ← بيان أولي <span class="tag">DP9</span> ← بيان نهائي <span class="tag">IM4/4096</span>
+      </div>
+    </section>
+
+    <section class="doc" id="s5">
+      <h2>5) دورة حالات البيان المسبق 07</h2>
+      <div class="flow" aria-label="دورة الحالات">
+        <span>Registered · مسجّل</span>
+        <span>Submitted · مُرسل للمصرف</span>
+        <span>Preapproved · مصادق مبدئياً</span>
+        <span class="on">Settled · مدفوع</span>
+        <span class="on">Validated · مصادق نهائياً</span>
+      </div>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Preapprove</h3>
+          <p>بعد دراسة المصرف للبيان ومطابقته مع الوثائق والحصول على موافقة شركات التدقيق أو البنوك المراسلة.</p>
+        </div>
+        <div class="card">
+          <h3>Settled</h3>
+          <p>يُسنده النظام <b>آلياً</b> للبيان 07 بمجرد دفع رسوم البيان الأولي DP9 أو إسناد حالة «مدفوع» Payed له.</p>
+        </div>
+        <div class="card">
+          <h3>Validate</h3>
+          <p>لا تتم المصادقة النهائية وتنفيذ التحويل إلا بعد الحالة Settled، أي بعد الدفع المسبق للرسوم.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc" id="s6">
+      <h2>6) تفاصيل المراحل (من الإيداع إلى التسوية)</h2>
+
+      <h3>المرحلتان 1–2: إيداع البيان المسبق ودور المصرف</h3>
+      <div class="grid g2">
+        <div class="card">
+          <h3>المستورد أو من يمثله</h3>
+          <ul class="clean">
+            <li>إيداع بيان مسبق رمز <span class="tag">07</span> عند الدفع بطريقة <span class="tag">AWT</span> أو <span class="tag">IPB</span>.</li>
+            <li>إدخال كل المعلومات المستوجبة والتصريح بالقيمة الإجمالية للبضاعة في الفاتورة.</li>
+            <li>إرسال البيان إلى أحد المصارف المجازة عبر نظام أسيكودا.</li>
+          </ul>
+          <h3>المصرف المجاز</h3>
+          <ul class="clean">
+            <li>دراسة البيان والتأكد من مطابقة المعلومات للوثائق المرفقة.</li>
+            <li>الحصول على موافقة شركات التدقيق أو البنوك المراسلة.</li>
+            <li>المصادقة المبدئية <span class="tag">Preapprove</span> بعد الموافقة.</li>
+          </ul>
+        </div>
+        <div class="card warn">
+          <h3>حالة خاصة: الدفع بالتقسيط IPB</h3>
+          <p>
+            يتأكد المصرف أن الفاتورة تتضمن نسبة الدفع المقدم، ثم يُدخل النسبة المئوية للقسط المحوَّل قبل الاستيراد
+            — <b>قبل</b> المصادقة المبدئية.
+          </p>
+          <p><b>مثال:</b> 30٪ مقدماً قبل الاستيراد، و70٪ عند الشحن أو الاستلام.</p>
+          <p class="muted">تُحتسب الرسوم في DP9 على القسط المحوَّل فقط.</p>
+        </div>
+      </div>
+
+      <h3>المرحلتان 3–4: البيان الكمركي الأولي DP9</h3>
+      <p>عنوان البيان: «دفع مسبق قصد الوضع للاستهلاك» — الوضع الكمركي <span class="tag">9600</span>.</p>
+      <div class="grid g2">
+        <div class="card">
+          <h3>محتوى البيان</h3>
+          <ul class="clean">
+            <li>رمز المكتب الكمركي المزمع الاستيراد من خلاله.</li>
+            <li>القيمة الإجمالية للبضائع موضوع المعاملة.</li>
+            <li>كامل الكميات والأوزان التي سيتم استيرادها.</li>
+            <li>رقم البيان المسبق 07 المصادق عليه مبدئياً من المصرف.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card blue">
+            <h3>التصفية الآلية</h3>
+            <p>
+              يحتسب النظام فور التسجيل: الرسم الكمركي، رسم حماية المنتج، والأمانات الضريبية —
+              وفق <b>التعريفة النافذة في تاريخ تسجيل البيان</b>.
+            </p>
+          </div>
+          <div class="card" style="margin-top:.85rem">
+            <h3>المعاملات المعفاة</h3>
+            <p>
+              تخضع لنفس الإجراءات؛ يحصل المستورد على وثيقة الإعفاء قبل إيداع DP9 ويُدخل مرجعها في الخانة المخصصة.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <h3>المرحلتان 5–6: الدفع المسبق ثم التحويل الخارجي</h3>
+      <div class="grid g2">
+        <div class="card blue">
+          <h3>دفع الرسوم</h3>
+          <p>
+            بعد التصفية يدفع المستورد الرسوم والأمانات إلكترونياً عبر أسيكودا.
+            البيانات المعفاة كلياً تأخذ حالة <span class="tag">Payed</span> آلياً عند التسجيل.
+          </p>
+        </div>
+        <div class="card blue">
+          <h3>المصادقة النهائية وحوالة Swift</h3>
+          <p>
+            يُسند النظام للبيان 07 حالة <span class="tag">Settled</span>، فيصادق المصرف عليه وينفذ التحويل.
+            يُدخل المصرف <b>رقم البيان المسبق</b> ضمن بيانات الحوالة، و<b>رمز الحوالة</b> للتمييز بين حوالات السلع والخدمات.
+          </p>
+        </div>
+      </div>
+      <div class="callout">
+        لا يمكن للمصرف تنفيذ أي تحويل قبل الاستيراد إلا بعد أن يصبح البيان المسبق 07 في حالة <b>Settled</b>.
+      </div>
+
+      <h3>المرحلة 7: الإجراءات عند وصول البضاعة</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>الحالة</th>
+            <th>البيان النهائي</th>
+            <th>ما يجب إدخاله بدقة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>بيان مسبق 07</b> + بيان أولي DP9 + دفع مسبق للرسوم</td>
+            <td><span class="tag">IM4</span> الوضع <span class="tag">4096</span></td>
+            <td>
+              رقم البيان المسبق ← ترصيد كلي أو جزئي للبيان المسبق<br />
+              رقم البيان الأولي ← ترصيد الكميات والأوزان والرسوم المدفوعة مسبقاً<br />
+              <b>إذا زادت الرسوم النهائية عن المدفوعة يُدفع الفارق.</b>
+            </td>
+          </tr>
+          <tr>
+            <td><b>بيان مسبق 01 أو 02</b> مصادق عليه وتم التحويل قبل 2026/10/01</td>
+            <td><span class="tag">IM4</span> الوضع <span class="tag">4000</span></td>
+            <td>رقم البيان المسبق موضوع المعاملة ← ترصيد كلي أو جزئي للبيان المسبق</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted">في الحالتين يُودَع البيان النهائي لكامل البضاعة أو لجزء منها بحسب الكميات الفعلية المستوردة.</p>
+    </section>
+
+    <section class="doc" id="s7">
+      <h2>7) القواعد الانتقالية في 2026/10/01</h2>
+      <div class="grid g2">
+        <div class="card ok">
+          <h3>مسجّلة ومصادق عليها قبل 1/10 وتم التحويل (كلي أو جزئي)</h3>
+          <p>يُنظَّم بيان نهائي <span class="tag">IM4/4xxx</span> بنفس الإجراء المعمول به سابقاً.</p>
+        </div>
+        <div class="card danger">
+          <h3>مسجّلة قبل 1/10 ولم يتم التحويل</h3>
+          <p>
+            البيانات بحالة Registered أو Submitted أو Preapproved — وكذلك Validated التي لم يُنجز تحويلها —
+            <b>تلغيها المصارف</b>، ويودع صاحب العلاقة بياناً مسبقاً جديداً 07.
+          </p>
+        </div>
+        <div class="card">
+          <h3>البيان المسبق 01 و02</h3>
+          <p>
+            لم يعد يُسمح بطريقة الدفع AWT/IPB ضمن هذين البيانين،
+            ولا يُستعمل البيان المسبق 07 إلا لطريقتي الدفع AWT/IPB.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc" id="s8">
+      <h2>8) المعاملات بدون تحويل خارجي (WT / WP)</h2>
+      <p>
+        التصريح المسبق عن مصدر التمويل للمعاملات التي لا تمر بالمصارف المجازة —
+        طريقتا الدفع <span class="tag">WT / WP</span>.
+      </p>
+      <div class="grid g2">
+        <div class="card warn">
+          <h3>قبل استيراد البضاعة</h3>
+          <ol>
+            <li>إيداع بيان مسبق رمز <span class="tag">06</span> «بيان مسبق لبضاعة بدون تحويل خارجي» مع القيمة الإجمالية.</li>
+            <li>التصريح بدقة عن <b>مصدر التمويل الخارجي</b>؛ ويرفض النظام البيان بدونها.</li>
+            <li>إرفاق الفاتورة (إلزامي) والوثائق المثبتة لمصدر التمويل (اختياري)، ثم الإرسال إلى الجهة الرقابية المختصة.</li>
+          </ol>
+        </div>
+        <div class="card ok">
+          <h3>عند وصول البضاعة</h3>
+          <ol>
+            <li>
+              إيداع بيان كمركي <span class="tag">IM4</span> الوضع <span class="tag">4000</span>
+              يتضمن القيمة الإجمالية وكامل الكميات المصرح بها، مع إدخال رقم البيان المسبق.
+            </li>
+            <li>بعد التصفية، دفع الرسوم الكمركية والأمانات الضريبية إلكترونياً عبر أسيكودا.</li>
+          </ol>
+          <div class="callout" style="margin-top:.75rem">
+            في هذا المسار تُدفع الرسوم <b>عند الوصول</b> وليس مسبقاً — الضابط هنا هو الإفصاح عن مصدر التمويل.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc" id="s9">
+      <h2>9) توزيع المسؤوليات</h2>
+      <div class="grid g2">
+        <div class="card">
+          <h3>المستورد / المخلص</h3>
+          <p>إيداع البيانات المسبقة (07 أو 06) والبيان الأولي DP9 والبيان النهائي IM4، ودفع الرسوم إلكترونياً، والتصريح بمصدر التمويل.</p>
+        </div>
+        <div class="card warn">
+          <h3>المصرف المجاز</h3>
+          <p>دراسة البيان، وموافقة شركات التدقيق أو البنوك المراسلة، والمصادقة المبدئية والنهائية، وإلغاء البيانات غير المستوفية، وإدراج رقم البيان في حوالة Swift.</p>
+        </div>
+        <div class="card blue">
+          <h3>نظام أسيكودا</h3>
+          <p>التصفية الآلية للرسوم، وإسناد حالتي Payed وSettled، وترصيد المبالغ والكميات والرسوم بين البيانات المسبقة والأولية والنهائية.</p>
+        </div>
+        <div class="card ok">
+          <h3>قسم الإعفاءات والجهة الرقابية</h3>
+          <p>إصدار وثائق الإعفاء قبل إيداع DP9، ومراجعة البيانات المسبقة 06 المتعلقة بمصدر التمويل الخارجي.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc" id="s10">
+      <h2>10) الخلاصة والرسائل الرئيسية</h2>
+      <ul class="clean">
+        <li>التحويل قبل الاستيراد (AWT/IPB) يمر حصراً عبر <b>بيان مسبق 07 ← DP9 ← دفع الرسوم ← تحويل ← IM4/4096</b>.</li>
+        <li>المصرف لا يصادق نهائياً ولا يحوّل قبل أن يصبح البيان في حالة <b>Settled</b>.</li>
+        <li>البيانات القديمة غير المحوَّلة تُلغى ويُعاد إيداعها كبيان 07.</li>
+        <li>المعاملات بدون تحويل خارجي تتطلب بياناً مسبقاً 06 مع <b>تصريح دقيق بمصدر التمويل</b>.</li>
+      </ul>
+      <div class="callout" style="margin-top:1rem">
+        <b>بدء التطبيق:</b> 2026/10/01 — مرجع هذا الملخص: دليل المستخدم (أيلول 2026) وقرار مجلس الوزراء 413 / 2026.
+      </div>
+    </section>
+
+    <p class="foot-note">ملف دعم داخلي · قسم Support files · نظام تتبع أوامر الشراء</p>
+  </div>
+</body>
+</html>

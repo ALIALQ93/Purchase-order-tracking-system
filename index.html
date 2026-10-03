@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.03.1" />
+  <meta name="app-version" content="2026.10.03.3" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -4962,6 +4962,7 @@
         <button type="button" data-view="accounting-queue" data-nav-section="accounting-queue" data-i18n="navAccountingQueue">الحسابات</button>
         <button type="button" data-view="rep-desk" data-nav-section="rep-desk" data-i18n="navRepDesk">مكتب المندوب</button>
         <button type="button" data-view="rep-advances" data-nav-section="rep-advances" data-i18n="navRepAdvances">سلف المندوبين</button>
+        <button type="button" data-view="support-files" data-nav-section="support-files" data-i18n="navSupportFiles">ملفات الدعم</button>
         <button type="button" data-view="reports" data-nav-section="reports" data-i18n="navReports">التقارير</button>
         <button type="button" data-view="reports-general" data-nav-section="reports-general" data-i18n="navReportsGeneral">تقارير الإدارة العامة</button>
         <button type="button" class="nav-admin-only" data-view="admin" data-nav-section="admin" data-i18n="navAdmin">الإدارة</button>
@@ -5053,6 +5054,7 @@
             <button type="button" class="btn btn-secondary" data-jump="accounting-queue" data-nav-section="accounting-queue" data-i18n="shortcutAccounting">الحسابات</button>
             <button type="button" class="btn btn-secondary" data-jump="rep-desk" data-nav-section="rep-desk" data-i18n="shortcutRepDesk">مكتب المندوب</button>
             <button type="button" class="btn btn-secondary" data-jump="rep-advances" data-nav-section="rep-advances" data-i18n="shortcutRepAdvances">سلف المندوبين</button>
+            <button type="button" class="btn btn-secondary" data-jump="support-files" data-nav-section="support-files" data-i18n="shortcutSupportFiles">ملفات الدعم</button>
             <button type="button" class="btn btn-secondary" data-jump="reports" data-nav-section="reports" data-i18n="shortcutReports">التقارير</button>
             <button type="button" class="btn btn-secondary nav-admin-only" data-jump="admin" data-nav-section="admin" data-i18n="shortcutAdmin">الإدارة</button>
           </div>
@@ -5408,6 +5410,17 @@
         <div class="card">
           <h2 style="margin:0 0 0.75rem;font-size:1.05rem" data-i18n="repAdvancesExpensesTitle">مصروفات المندوبين</h2>
           <div id="rep-advances-expenses-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
+        </div>
+      </section>
+
+      <!-- ملفات الدعم -->
+      <section id="screen-support-files" class="app-screen hidden">
+        <h1 class="page-title" data-i18n="supportFilesTitle">ملفات الدعم</h1>
+        <p style="margin:0 0 1rem;color:var(--muted);font-size:0.9rem;" data-i18n="supportFilesHint">
+          أدلة وملخصات مرجعية للاطلاع. يظهر هذا القسم فقط للمستخدمين المصرّح لهم من الإدارة.
+        </p>
+        <div class="card">
+          <div id="support-files-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
       </section>
 
@@ -7393,7 +7406,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>مكتب المندوب:</strong> شاشة جديدة للمندوب لمتابعة رصيد السلف وتسجيل المصروفات وربطها بطلبات الشراء.</li><li><strong>سلف المندوبين:</strong> الحسابات تصدر سلفة نقدية عامة تغطي أكثر من طلب، ثم تقوم بتصفية السلفة مع تسجيل المرتجع.</li><li><strong>ربط المندوب بالحساب:</strong> من الإدارة اربط ملف المندوب بحساب المستخدم، وفعّل قسمَي «مكتب المندوب» و«سلف المندوبين» في الصلاحيات.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>ملفات الدعم:</strong> قسم جديد مقيد بالصلاحيات للاطلاع على الأدلة والملخصات المرجعية.</li><li><strong>الدفع المسبق للرسوم:</strong> تحويل ملف العرض إلى ملخص تفصيلي قابل للقراءة والطباعة (قرار 413/2026).</li><li><strong>مكتب المندوب وسلف المندوبين:</strong> تسجيل السلف والمصروفات مع البحث عن طلب الشراء.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -7551,8 +7564,23 @@
         navAccountingQueue: "الحسابات",
         navRepDesk: "مكتب المندوب",
         navRepAdvances: "سلف المندوبين",
+        navSupportFiles: "ملفات الدعم",
         shortcutRepDesk: "مكتب المندوب",
         shortcutRepAdvances: "سلف المندوبين",
+        shortcutSupportFiles: "ملفات الدعم",
+        supportFilesTitle: "ملفات الدعم",
+        supportFilesHint:
+          "أدلة وملخصات مرجعية للاطلاع. يظهر هذا القسم فقط للمستخدمين المصرّح لهم من الإدارة.",
+        supportFilesOpen: "عرض الملف",
+        supportFilesEmpty: "لا توجد ملفات دعم متاحة حالياً.",
+        supportFile_prepaidOffer_title: "تفعيل الدفع المسبق للرسوم والضرائب",
+        supportFile_prepaidOffer_desc:
+          "ملخص تفصيلي لقرار مجلس الوزراء 413/2026: مسارات AWT/IPB وWT/WP، البيان المسبق 07 وDP9، والقواعد الانتقالية من 2026/10/01.",
+        supportFile_prepaidOffer_type: "ملخص تفصيلي",
+        supportFile_commercialInvoice_title: "متطلبات الفاتورة التجارية للتحويل الخارجي",
+        supportFile_commercialInvoice_desc:
+          "دليل مرجعي لتعميم البنك المركزي 9/4/267: بيانات الفاتورة الإلزامية، الفواتير المعتمدة، والنفاذ من 2025/11/01.",
+        supportFile_commercialInvoice_type: "دليل مرجعي",
         repDeskTitle: "مكتب المندوب",
         repDeskHint: "سجّل السلفة النقدية التي استلمتها، تابع رصيدك، وأدخل مصروفاتك مع ربطها بطلبات الشراء.",
         repDeskExpensesTitle: "مصروفاتي",
@@ -8567,7 +8595,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Representative desk:</strong> New screen for reps to track cash-advance balances and record expenses linked to purchase orders.</li><li><strong>Rep advances:</strong> Accounting issues a general cash advance covering multiple POs, then settles it with an optional cash return.</li><li><strong>Link rep to login:</strong> In Administration, link the representative profile to a user account and enable the \"Representative desk\" and \"Rep advances\" sections.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Support files:</strong> New permission-gated section for reference guides and summaries.</li><li><strong>Prepaid duties guide:</strong> Converted the slide deck into a readable, printable detailed summary (Cabinet Decision 413/2026).</li><li><strong>Representative desk & advances:</strong> Record advances/expenses with purchase-order search.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -8726,8 +8754,22 @@
         navAccountingQueue: "Accounting",
         navRepDesk: "Representative desk",
         navRepAdvances: "Rep advances",
+        navSupportFiles: "Support files",
         shortcutRepDesk: "Representative desk",
         shortcutRepAdvances: "Rep advances",
+        shortcutSupportFiles: "Support files",
+        supportFilesTitle: "Support files",
+        supportFilesHint: "Reference guides and summaries for viewing. This section appears only for users granted access in Administration.",
+        supportFilesOpen: "Open file",
+        supportFilesEmpty: "No support files available yet.",
+        supportFile_prepaidOffer_title: "Prepaid customs duties activation",
+        supportFile_prepaidOffer_desc:
+          "Detailed summary of Cabinet Decision 413/2026: AWT/IPB and WT/WP routes, advance declaration 07 and DP9, and transitional rules from 2026/10/01.",
+        supportFile_prepaidOffer_type: "Detailed summary",
+        supportFile_commercialInvoice_title: "Commercial invoice requirements for foreign transfers",
+        supportFile_commercialInvoice_desc:
+          "Reference guide to CBI circular 9/4/267: mandatory invoice fields, accepted invoice types, effective from 2025/11/01.",
+        supportFile_commercialInvoice_type: "Reference guide",
         roleOptPurchasingRepresentative: "Purchasing representative",
         repDeskTitle: "Representative desk",
         repDeskHint: "Record cash advances you received, track your balance, and enter expenses linked to purchase orders.",
@@ -9517,6 +9559,7 @@
       if (id === "screen-accounting-queue") loadAccountingQueue();
       if (id === "screen-rep-desk") loadRepDesk();
       if (id === "screen-rep-advances") loadRepAdvancesScreen();
+      if (id === "screen-support-files") loadSupportFilesScreen();
       if (id === "screen-admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
       const poModal = $("modal-po");
       if (poModal && !poModal.classList.contains("hidden")) {
@@ -23198,6 +23241,7 @@
       if (list.includes("accounting-queue")) return "accounting-queue";
       if (list.includes("rep-desk")) return "rep-desk";
       if (list.includes("rep-advances")) return "rep-advances";
+      if (list.includes("support-files")) return "support-files";
       if (list.includes("reports")) return "reports";
       if (list.includes("admin")) return "admin";
       return "help";
@@ -23798,6 +23842,8 @@
                               ? "rep-desk"
                               : name === "rep-advances"
                                 ? "rep-advances"
+                              : name === "support-files"
+                                ? "support-files"
                               : name === "reports"
                                 ? "reports"
                             : name === "admin"
@@ -23832,6 +23878,7 @@
         "accounting-queue": "screen-accounting-queue",
         "rep-desk": "screen-rep-desk",
         "rep-advances": "screen-rep-advances",
+        "support-files": "screen-support-files",
         reports: "screen-reports",
         "reports-general": "screen-reports-general",
         admin: "screen-admin",
@@ -23856,6 +23903,7 @@
         if (name === "accounting-queue") loadAccountingQueue();
         if (name === "rep-desk") loadRepDesk();
         if (name === "rep-advances") loadRepAdvancesScreen();
+        if (name === "support-files") loadSupportFilesScreen();
         if (name === "reports") loadReportsScreen();
         if (name === "reports-general") loadGeneralReportsScreen();
         if (name === "admin" && hasAdminAccess()) loadAdminTab(activeAdminTab);
@@ -26695,6 +26743,51 @@
       }
     }
 
+    /** كتالوج ملفات الدعم — أضف ملفاً جديداً هنا ليظهر في القسم (مع صلاحية support-files). */
+    const SUPPORT_FILES_CATALOG = [
+      {
+        id: "prepaid-offer",
+        path: "Support files/Prepaid Offer.html",
+        titleKey: "supportFile_prepaidOffer_title",
+        descKey: "supportFile_prepaidOffer_desc",
+        typeKey: "supportFile_prepaidOffer_type",
+      },
+      {
+        id: "commercial-invoice-requirements",
+        path: "Support files/Commercial invoice requirements.html",
+        titleKey: "supportFile_commercialInvoice_title",
+        descKey: "supportFile_commercialInvoice_desc",
+        typeKey: "supportFile_commercialInvoice_type",
+      },
+    ];
+
+    function loadSupportFilesScreen() {
+      const wrap = $("support-files-wrap");
+      if (!wrap) return;
+      const files = SUPPORT_FILES_CATALOG;
+      if (!files.length) {
+        wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("supportFilesEmpty"))}</p>`;
+        return;
+      }
+      wrap.innerHTML = `<div style="display:grid;gap:.85rem">
+        ${files
+          .map((f) => {
+            const href = encodeURI(f.path);
+            return `<article style="border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;background:var(--surface,#fff)">
+              <div style="display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:flex-start">
+                <div style="min-width:min(100%,280px);flex:1">
+                  <div style="font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:.25rem">${escapeHtml(t(f.typeKey))}</div>
+                  <h3 style="margin:0 0 .4rem;font-size:1.05rem">${escapeHtml(t(f.titleKey))}</h3>
+                  <p style="margin:0;color:var(--muted);font-size:.9rem;line-height:1.55">${escapeHtml(t(f.descKey))}</p>
+                </div>
+                <a class="btn btn-primary btn-sm" href="${escapeAttr(href)}" target="_blank" rel="noopener">${escapeHtml(t("supportFilesOpen"))}</a>
+              </div>
+            </article>`;
+          })
+          .join("")}
+      </div>`;
+    }
+
     // ===== مكتب المندوب / سلف نقدية =====
     const REP_ADVANCES_COL = "repCashAdvances";
     const REP_EXPENSES_COL = "repExpenses";
@@ -28136,7 +28229,7 @@
     startAppVersionMonitor();
 
     /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-10-03-rep-cash-advances";
+    const CURRENT_UPDATE_ID = "2026-10-03-support-files-prepaid-summary";
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
@@ -30105,6 +30198,7 @@
             <label><input type="checkbox" data-section-check="accounting-queue" /> ${escapeHtml(t("navAccountingQueue"))}</label>
             <label><input type="checkbox" data-section-check="rep-desk" /> ${escapeHtml(t("navRepDesk"))}</label>
             <label><input type="checkbox" data-section-check="rep-advances" /> ${escapeHtml(t("navRepAdvances"))}</label>
+            <label><input type="checkbox" data-section-check="support-files" /> ${escapeHtml(t("navSupportFiles"))}</label>
             <label><input type="checkbox" data-section-check="reports" /> ${escapeHtml(t("navReports"))}</label>
             <label><input type="checkbox" data-section-check="reports-general" /> ${escapeHtml(t("navReportsGeneral"))}</label>
             <label><input type="checkbox" data-section-check="admin" /> ${escapeHtml(t("navAdmin"))}</label>
