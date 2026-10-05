@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.05.2" />
+  <meta name="app-version" content="2026.10.05.8" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -5428,19 +5428,31 @@
         <p style="margin:0 0 1rem;color:var(--muted);font-size:0.9rem;" data-i18n="repDeskHint">
           تابع رصيدك من السلف النقدية، وسجّل مصروفاتك مع ربطها بطلبات الشراء.
         </p>
+        <div id="rep-desk-manager-bar" class="po-projects-toolbar-strip hidden" style="margin-bottom:1rem">
+          <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+            <label class="po-filter-field">
+              <span data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</span>
+              <select id="rep-desk-filter-rep"></select>
+            </label>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-rep-desk-refresh" data-i18n="btnRefresh">تحديث</button>
+          </div>
+          <p class="user-form-hint" style="margin:.45rem 0 0" data-i18n="repDeskManagerHint">
+            كمدير ترى سجلات كل المندوبين. اختر مندوباً أو «الكل».
+          </p>
+        </div>
         <div id="rep-desk-balance-cards" class="card" style="margin-bottom:1rem">
           <p class="loading" data-i18n="loading">جاري التحميل…</p>
         </div>
         <div class="card" style="margin-bottom:1rem">
           <div class="toolbar" style="justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap">
-            <h2 style="margin:0;font-size:1.05rem" data-i18n="repDeskExpensesTitle">مصروفاتي</h2>
+            <h2 style="margin:0;font-size:1.05rem" id="rep-desk-expenses-heading" data-i18n="repDeskExpensesTitle">مصروفاتي</h2>
             <button type="button" class="btn btn-primary btn-sm" id="btn-rep-expense-new" data-i18n="btnRepExpenseNew">تسجيل مصروف</button>
           </div>
           <div id="rep-desk-expenses-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
         <div class="card">
           <div class="toolbar" style="justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.75rem">
-            <h2 style="margin:0;font-size:1.05rem" data-i18n="repDeskAdvancesTitle">سلفي</h2>
+            <h2 style="margin:0;font-size:1.05rem" id="rep-desk-advances-heading" data-i18n="repDeskAdvancesTitle">سلفي</h2>
             <button type="button" class="btn btn-primary btn-sm" id="btn-rep-desk-advance-issue" data-i18n="btnRepAdvanceIssue">إصدار سلفة</button>
           </div>
           <div id="rep-desk-advances-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
@@ -5935,6 +5947,47 @@
             </div>
           </div>
           <div id="reports-gmat-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات</p></div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="reportGenRepAdvTitle">تقرير سلف المندوبين</h3>
+          <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenRepAdvHint">
+            لكل سلفة: مبلغها، إجمالي المصروف منها، الباقي، والمصروفات المرتبطة (المجهز وإيصال الشراء والطلبات) — مع طباعة وتصدير.
+          </p>
+          <div class="po-projects-toolbar-strip" style="margin-top:0.5rem">
+            <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="rep-gadv-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="rep-gadv-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</span>
+                <select id="rep-gadv-rep"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="repAdvanceStatusLabel">الحالة</span>
+                <select id="rep-gadv-status">
+                  <option value="" data-i18n="filterAll">الكل</option>
+                  <option value="open" data-i18n="repAdvanceStatusOpen">مفتوحة</option>
+                  <option value="settled" data-i18n="repAdvanceStatusSettled">مصفّاة</option>
+                </select>
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-run-gadv-report" data-i18n="btnRunReport">
+                عرض التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-print-gadv-report" data-i18n="btnPrintReport">
+                طباعة التقرير
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-export-gadv-report" data-i18n="btnExportCsv">
+                تصدير CSV
+              </button>
+            </div>
+          </div>
+          <div id="reports-gadv-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات</p></div>
         </div>
       </section>
 
@@ -6815,12 +6868,17 @@
 
   <!-- تسجيل مصروف مندوب -->
   <div id="modal-rep-expense" class="modal-overlay hidden" role="dialog" aria-modal="true">
-    <div class="modal" style="max-width:640px">
+    <div class="modal" style="max-width:720px">
       <h3 data-i18n="modalRepExpenseTitle">تسجيل مصروف</h3>
-      <p class="user-form-hint" style="margin-top:0.35rem" data-i18n="modalRepExpenseHint">أدخل مبلغ الصرف واربطه بطلب شراء واحد أو أكثر.</p>
+      <p class="user-form-hint" style="margin-top:0.35rem" data-i18n="modalRepExpenseHint">أدخل مبلغ الصرف، ويمكن توزيعه على سلفة واحدة أو أكثر مع إظهار الباقي لكل سلفة.</p>
+      <div class="field hidden" id="rep-expense-rep-field">
+        <label for="rep-expense-rep" data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</label>
+        <select id="rep-expense-rep"></select>
+      </div>
       <div class="field">
         <label for="rep-expense-amount" data-i18n="repAmountLabel">المبلغ</label>
         <input type="number" id="rep-expense-amount" min="0" step="any" />
+        <p class="user-form-hint" style="margin:.35rem 0 0" data-i18n="repExpenseAmountFromAdvancesHint">يُحدَّث تلقائياً من مجموع المبالغ على السلف المختارة.</p>
       </div>
       <div class="field">
         <label for="rep-expense-currency" data-i18n="reportBaseCurrencyLabel">العملة</label>
@@ -6846,8 +6904,13 @@
         <input type="date" id="rep-expense-receipt-date" />
       </div>
       <div class="field">
-        <label for="rep-expense-advance" data-i18n="repExpenseAdvanceLabel">السلفة (اختياري)</label>
-        <select id="rep-expense-advance"></select>
+        <label data-i18n="repExpenseAdvancesLabel">السلف (يمكن اختيار أكثر من سلفة)</label>
+        <p class="user-form-hint" style="margin:0 0 .45rem" data-i18n="repExpenseAdvancesHint">أشّر السلفة وأدخل المبلغ المصروف منها. يظهر الباقي المتاح لكل سلفة.</p>
+        <div
+          id="rep-expense-advances-wrap"
+          style="display:grid;gap:.5rem;max-height:260px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:.55rem;background:var(--surface2,#f8fafc)"
+        ></div>
+        <p id="rep-expense-advances-total" class="user-form-hint" style="margin:.45rem 0 0;font-weight:700"></p>
       </div>
       <div class="field">
         <label for="rep-expense-po-search" data-i18n="repExpensePosLabel">طلبات الشراء المرتبطة</label>
@@ -7770,8 +7833,11 @@
         invoiceChecklistEmailMissingHeader: "النواقص:",
         repDeskTitle: "مكتب المندوب",
         repDeskHint: "سجّل السلفة النقدية التي استلمتها، تابع رصيدك، وأدخل مصروفاتك مع ربطها بطلبات الشراء.",
+        repDeskManagerHint: "كمدير ترى سجلات كل المندوبين. اختر مندوباً أو «الكل».",
         repDeskExpensesTitle: "مصروفاتي",
+        repDeskExpensesTitleAll: "مصروفات المندوبين",
         repDeskAdvancesTitle: "سلفي",
+        repDeskAdvancesTitleAll: "سلف المندوبين",
         btnRepExpenseNew: "تسجيل مصروف",
         repAdvancesTitle: "سلف المندوبين",
         repAdvancesHint: "أصدر السلف النقدية للمندوبين وتابع التصفية. السلفة الواحدة تغطي أكثر من طلب شراء.",
@@ -7794,13 +7860,31 @@
         repColAdvanceSpent: "المصروف من السلفة",
         repColAdvanceRemaining: "الباقي من السلفة",
         repExpenseAdvanceLabel: "السلفة (اختياري)",
+        repExpenseAdvancesLabel: "السلف (يمكن اختيار أكثر من سلفة)",
+        repExpenseAdvancesHint: "أشّر السلفة وأدخل المبلغ المصروف منها. يظهر الباقي المتاح لكل سلفة.",
+        repExpenseAdvanceRemaining: "الباقي",
+        repExpenseAdvanceIssued: "السلفة",
+        repExpenseAdvanceAmountLabel: "المبلغ من هذه السلفة",
+        repExpenseAdvancesEmpty: "لا توجد سلف مفتوحة لهذا المندوب.",
+        repExpenseAdvancesAllocTotal: "مجموع التوزيع على السلف: {amount}",
+        repExpenseAmountFromAdvancesHint: "يُحدَّث تلقائياً من مجموع المبالغ على السلف المختارة.",
+        repExpenseAdvanceAmountRequired: "أدخل مبلغاً أكبر من صفر لكل سلفة مختارة.",
+        repExpenseAdvanceExceedsRemaining: "المبلغ على السلفة يتجاوز الباقي المتاح ({remaining}).",
+        repExpenseAdvanceCurrencyMix: "اختر سلفاً بنفس العملة، أو سجّل مصروفاً منفصلاً لكل عملة.",
+        repColAdvances: "السلف",
         repExpensePosLabel: "طلبات الشراء المرتبطة (اختياري)",
         repExpensePoSearchPlaceholder: "ابحث برقم الطلب أو المرجع…",
         repExpensePoSearchHint: "اختياري: ابحث ثم اختر طلباً للربط. يمكن الحفظ بدون طلب شراء، أو ربط أكثر من طلب.",
         repExpensePoNoResults: "لا توجد نتائج مطابقة.",
         repSettleReturnLabel: "مبلغ المرتجع النقدي",
         modalRepExpenseTitle: "تسجيل مصروف",
-        modalRepExpenseHint: "أدخل مبلغ الصرف وابحث عن طلب الشراء لربطه (يمكن أكثر من طلب).",
+        modalRepExpenseHint: "أدخل مبلغ الصرف، ويمكن توزيعه على سلفة واحدة أو أكثر مع إظهار الباقي لكل سلفة.",
+        modalRepExpenseEditTitle: "تعديل مصروف",
+        modalRepExpenseEditHint: "يمكن للمندوب تعديل المصروف خلال 24 ساعة من تسجيله. المدير يعدّل بلا مهلة.",
+        repExpenseUpdated: "تم تحديث المصروف.",
+        repExpenseEditWindowExpired: "انتهت مهلة التعديل (24 ساعة). لا يمكن تعديل هذا المصروف.",
+        confirmRepExpenseDelete: "حذف هذا المصروف؟ سيُعاد احتساب أرصدة السلف المرتبطة.",
+        repExpenseDeleted: "تم حذف المصروف.",
         modalRepAdvanceIssueTitle: "إصدار سلفة نقدية",
         modalRepAdvanceIssueHint: "تسجّل سلفة عامة للمندوب يمكن صرفها على أكثر من طلب.",
         modalRepAdvanceSettleTitle: "تصفية سلفة",
@@ -7835,6 +7919,15 @@
           "توزيع أوامر شراء الإدارة العامة حسب الحالة والمشروع، إجمالي القيمة، والقيمة حسب المشروع والمورد والشهر — مع طباعة احترافية ورسوم بيانية.",
         reportGenMatTitle: "تقرير مواد الإدارة العامة",
         reportGenMatHint: "بنود المواد في أوامر شراء الإدارة العامة مع الكميات والأسعار، قابلة للفلترة والتجميع والتصدير.",
+        reportGenRepAdvTitle: "تقرير سلف المندوبين",
+        reportGenRepAdvHint:
+          "لكل سلفة: مبلغها، إجمالي المصروف منها، الباقي، والمصروفات المرتبطة (المجهز وإيصال الشراء والطلبات) — مع طباعة وتصدير.",
+        reportGenRepAdvSummaryAdvances: "عدد السلف",
+        reportGenRepAdvSummaryIssued: "إجمالي المُصدَر",
+        reportGenRepAdvSummarySpent: "إجمالي المصروف",
+        reportGenRepAdvSummaryRemaining: "إجمالي الباقي",
+        reportGenRepAdvExpensesFor: "مصروفات السلفة",
+        reportGenRepAdvNoExpenses: "لا مصروفات مرتبطة بهذه السلفة.",
         reportSupplierLabel: "المورد",
         reportStatusLabel: "الحالة",
         reportGroupItem: "المادة",
@@ -9013,8 +9106,11 @@
         roleOptPurchasingRepresentative: "Purchasing representative",
         repDeskTitle: "Representative desk",
         repDeskHint: "Record cash advances you received, track your balance, and enter expenses linked to purchase orders.",
+        repDeskManagerHint: "As a manager you see all representatives. Pick one or «All».",
         repDeskExpensesTitle: "My expenses",
+        repDeskExpensesTitleAll: "Representatives' expenses",
         repDeskAdvancesTitle: "My advances",
+        repDeskAdvancesTitleAll: "Representatives' advances",
         btnRepExpenseNew: "Record expense",
         repAdvancesTitle: "Representative advances",
         repAdvancesHint: "Issue cash advances to representatives and settle them. One advance can cover multiple purchase orders.",
@@ -9037,13 +9133,31 @@
         repColAdvanceSpent: "Spent from advance",
         repColAdvanceRemaining: "Remaining on advance",
         repExpenseAdvanceLabel: "Advance (optional)",
+        repExpenseAdvancesLabel: "Advances (select one or more)",
+        repExpenseAdvancesHint: "Tick an advance and enter the amount taken from it. Remaining balance is shown for each.",
+        repExpenseAdvanceRemaining: "Remaining",
+        repExpenseAdvanceIssued: "Advance",
+        repExpenseAdvanceAmountLabel: "Amount from this advance",
+        repExpenseAdvancesEmpty: "No open advances for this representative.",
+        repExpenseAdvancesAllocTotal: "Total allocated across advances: {amount}",
+        repExpenseAmountFromAdvancesHint: "Updated automatically from the sum of selected advance amounts.",
+        repExpenseAdvanceAmountRequired: "Enter an amount greater than zero for each selected advance.",
+        repExpenseAdvanceExceedsRemaining: "Amount on this advance exceeds the remaining balance ({remaining}).",
+        repExpenseAdvanceCurrencyMix: "Select advances in the same currency, or record a separate expense per currency.",
+        repColAdvances: "Advances",
         repExpensePosLabel: "Linked purchase orders (optional)",
         repExpensePoSearchPlaceholder: "Search by PO number or reference…",
         repExpensePoSearchHint: "Optional: search and select a request to link. You can save without a purchase order, or link more than one.",
         repExpensePoNoResults: "No matching results.",
         repSettleReturnLabel: "Cash returned",
         modalRepExpenseTitle: "Record expense",
-        modalRepExpenseHint: "Enter the spent amount and search for purchase orders to link (multiple allowed).",
+        modalRepExpenseHint: "Enter the spent amount; you can split it across one or more advances with remaining balance shown.",
+        modalRepExpenseEditTitle: "Edit expense",
+        modalRepExpenseEditHint: "The representative can edit within 24 hours of recording. Managers can edit without a time limit.",
+        repExpenseUpdated: "Expense updated.",
+        repExpenseEditWindowExpired: "The 24-hour edit window has ended. This expense can no longer be edited.",
+        confirmRepExpenseDelete: "Delete this expense? Linked advance balances will be recalculated.",
+        repExpenseDeleted: "Expense deleted.",
         modalRepAdvanceIssueTitle: "Issue cash advance",
         modalRepAdvanceIssueHint: "Creates a general advance the representative can spend across multiple requests.",
         modalRepAdvanceSettleTitle: "Settle advance",
@@ -9078,6 +9192,15 @@
           "General admin POs by status and project, total value, and value by project, supplier, and month — with professional print and charts.",
         reportGenMatTitle: "General admin materials report",
         reportGenMatHint: "Material lines across general admin POs with quantities and prices; filterable, groupable and exportable.",
+        reportGenRepAdvTitle: "Representative cash advances report",
+        reportGenRepAdvHint:
+          "Per advance: amount issued, total spent, remaining, and linked expenses (supplier, receipt, POs) — printable and exportable.",
+        reportGenRepAdvSummaryAdvances: "Advances count",
+        reportGenRepAdvSummaryIssued: "Total issued",
+        reportGenRepAdvSummarySpent: "Total spent",
+        reportGenRepAdvSummaryRemaining: "Total remaining",
+        reportGenRepAdvExpensesFor: "Expenses for advance",
+        reportGenRepAdvNoExpenses: "No expenses linked to this advance.",
         reportSupplierLabel: "Supplier",
         reportStatusLabel: "Status",
         reportGroupItem: "Item",
@@ -20596,6 +20719,7 @@
 
     // ===== General admin PO reports (scope=general) =====
     let lastGeneralMaterialsReportSnapshot = null;
+    let lastGeneralRepAdvancesReportSnapshot = null;
     let lastGeneralStatusReportSnapshot = null;
     let lastGeneralStatusReportSourceSnapshot = null;
     let generalStatusSelectedOrderIds = new Set();
@@ -20830,6 +20954,7 @@
     async function loadGeneralReportsScreen() {
       await loadGeneralStatusReportScreen();
       await loadGeneralMaterialsReportScreen();
+      await loadGeneralRepAdvancesReportScreen();
     }
 
     // ---- General order-status report ----
@@ -21860,6 +21985,370 @@
       const a = document.createElement("a");
       a.href = url;
       a.download = `general_materials_report_${from}_${to}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- General admin: rep cash advances report ----
+    async function fillGeneralRepAdvancesReportFilters() {
+      const sel = $("rep-gadv-rep");
+      if (!sel) return;
+      const cur = sel.value;
+      try {
+        const repsSnap = await getDocs(collection(db, "purchasingRepresentatives"));
+        const reps = [];
+        repsSnap.forEach((d) => reps.push({ id: d.id, ...d.data() }));
+        reps.sort((a, b) =>
+          (a.name || "").trim().localeCompare((b.name || "").trim(), lang === "ar" ? "ar" : "en")
+        );
+        sel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          reps
+            .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`)
+            .join("");
+        if (reps.some((r) => r.id === cur)) sel.value = cur;
+      } catch (_) {
+        sel.innerHTML = `<option value="">${escapeHtml(t("filterAll"))}</option>`;
+      }
+    }
+
+    async function loadGeneralRepAdvancesReportScreen() {
+      const wrap = $("reports-gadv-wrap");
+      if (!wrap) return;
+      wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+      const runBtn = $("btn-run-gadv-report");
+      const printBtn = $("btn-print-gadv-report");
+      const exportBtn = $("btn-export-gadv-report");
+      if (runBtn && !runBtn.dataset.wired) {
+        runBtn.dataset.wired = "1";
+        runBtn.addEventListener("click", () => void runGeneralRepAdvancesReport());
+      }
+      if (printBtn && !printBtn.dataset.wired) {
+        printBtn.dataset.wired = "1";
+        printBtn.addEventListener("click", () => printGeneralRepAdvancesReport());
+      }
+      if (exportBtn && !exportBtn.dataset.wired) {
+        exportBtn.dataset.wired = "1";
+        exportBtn.addEventListener("click", () => exportGeneralRepAdvancesReportCsv());
+      }
+      const today = formatTodayYmd();
+      const fromInp = $("rep-gadv-from");
+      const toInp = $("rep-gadv-to");
+      if (fromInp && !fromInp.value) fromInp.value = today.slice(0, 8) + "01";
+      if (toInp && !toInp.value) toInp.value = today;
+      await fillGeneralRepAdvancesReportFilters();
+    }
+
+    function renderGeneralRepAdvancesReportHtml(snap) {
+      const advances = snap.advances || [];
+      const expensesByAdvance = snap.expensesByAdvance || {};
+      const spentMap = snap.spentMap || {};
+      const summary = snap.summary || {};
+      const summaryHtml = `<div class="detail-panel" style="margin-bottom:0.75rem">
+        <div class="wf-po-meta-grid">
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportGenRepAdvSummaryAdvances"))}</span><span>${escapeHtml(String(summary.count || 0))}</span></div>
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportGenRepAdvSummaryIssued"))}</span><span>${escapeHtml(summary.issuedDisp || t("dash"))}</span></div>
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportGenRepAdvSummarySpent"))}</span><span>${escapeHtml(summary.spentDisp || t("dash"))}</span></div>
+          <div class="wf-po-meta-block"><span class="wf-po-meta-label">${escapeHtml(t("reportGenRepAdvSummaryRemaining"))}</span><span>${escapeHtml(summary.remainingDisp || t("dash"))}</span></div>
+        </div>
+      </div>`;
+      const blocks = advances.map((a) => {
+        const amt = Number(a.amount) || 0;
+        const spent = Number(spentMap[a.id]) || 0;
+        const returned = (a.status || "") === "settled" ? Number(a.returnAmount) || 0 : 0;
+        const remaining = amt - spent - returned;
+        const st = (a.status || "open") === "settled" ? t("repAdvanceStatusSettled") : t("repAdvanceStatusOpen");
+        const exps = expensesByAdvance[a.id] || [];
+        const head = `<div style="border:1px solid var(--border);border-radius:12px;padding:0.85rem 1rem;margin-bottom:0.85rem;background:var(--surface,#fff)">
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem 1.25rem;justify-content:space-between;align-items:flex-start;margin-bottom:0.55rem">
+            <div>
+              <div style="font-weight:800;font-size:1.02rem">${escapeHtml((a.representativeName || "").trim() || t("dash"))}</div>
+              <div style="font-size:0.85rem;color:var(--muted)">${escapeHtml(t("repColIssuedAt"))}: ${escapeHtml((a.issuedDate || "").trim() || t("dash"))} · ${escapeHtml(st)}</div>
+              ${(a.note || "").trim() ? `<div style="font-size:0.85rem;margin-top:0.2rem">${escapeHtml(t("repNoteLabel"))}: ${escapeHtml(a.note)}</div>` : ""}
+            </div>
+            <div style="text-align:end;font-size:0.9rem">
+              <div>${escapeHtml(t("repAmountLabel"))}: <strong>${escapeHtml(formatRepMoney(amt, a.currency))}</strong></div>
+              <div>${escapeHtml(t("repColAdvanceSpent"))}: <strong>${escapeHtml(formatRepMoney(spent, a.currency))}</strong></div>
+              <div>${escapeHtml(t("repColAdvanceRemaining"))}: <strong>${escapeHtml(formatRepMoney(remaining, a.currency))}</strong></div>
+              ${(a.status || "") === "settled" ? `<div>${escapeHtml(t("repColReturn"))}: ${escapeHtml(formatRepMoney(returned, a.currency))}</div>` : ""}
+            </div>
+          </div>
+          <div style="font-weight:700;margin:0.35rem 0 0.45rem;font-size:0.92rem">${escapeHtml(t("reportGenRepAdvExpensesFor"))}</div>`;
+        if (!exps.length) {
+          return head + `<p class="empty-state" style="margin:0">${escapeHtml(t("reportGenRepAdvNoExpenses"))}</p></div>`;
+        }
+        const rows = exps
+          .map((e) => {
+            const refs = Array.isArray(e.purchaseOrderRefs) ? e.purchaseOrderRefs.filter(Boolean) : [];
+            return `<tr>
+              <td>${escapeHtml(formatRepMoney(e._allocAmount != null ? e._allocAmount : e.amount, e._allocCurrency || e.currency))}</td>
+              <td>${escapeHtml((e.vendorName || "").trim() || t("dash"))}</td>
+              <td>${escapeHtml((e.receiptNumber || "").trim() || t("dash"))}</td>
+              <td>${escapeHtml((e.receiptDate || "").trim() || t("dash"))}</td>
+              <td>${escapeHtml((e.spentAt || "").trim() || t("dash"))}</td>
+              <td>${escapeHtml(refs.length ? refs.join(" · ") : t("dash"))}</td>
+              <td>${escapeHtml((e.note || "").trim() || t("dash"))}</td>
+            </tr>`;
+          })
+          .join("");
+        return (
+          head +
+          `<div class="table-scroll"><table class="data-table">
+            <thead><tr>
+              <th>${escapeHtml(t("repAmountLabel"))}</th>
+              <th>${escapeHtml(t("repExpenseVendorLabel"))}</th>
+              <th>${escapeHtml(t("repExpenseReceiptNoLabel"))}</th>
+              <th>${escapeHtml(t("repExpenseReceiptDateLabel"))}</th>
+              <th>${escapeHtml(t("repColSpentAt"))}</th>
+              <th>${escapeHtml(t("repColLinkedPos"))}</th>
+              <th>${escapeHtml(t("repNoteLabel"))}</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table></div></div>`
+        );
+      });
+      return summaryHtml + blocks.join("");
+    }
+
+    async function runGeneralRepAdvancesReport() {
+      const wrap = $("reports-gadv-wrap");
+      if (!wrap) return;
+      const from = ($("rep-gadv-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gadv-to")?.value || "").slice(0, 10);
+      const repId = ($("rep-gadv-rep")?.value || "").trim();
+      const status = ($("rep-gadv-status")?.value || "").trim();
+      if (!from || !to) {
+        alert(t("alertMatReportNeedDates"));
+        return;
+      }
+      wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
+      try {
+        const [advancesAll, expensesAll] = await Promise.all([
+          fetchRepAdvances(repId || null),
+          fetchRepExpenses(repId || null),
+        ]);
+        let advances = advancesAll.filter((a) => {
+          const d = (a.issuedDate || "").slice(0, 10);
+          if (d && (d < from || d > to)) return false;
+          if (!d && from && to) return false;
+          if (status && (a.status || "open") !== status) return false;
+          return true;
+        });
+        const advanceIds = new Set(advances.map((a) => a.id));
+        const spentMap = computeRepAdvanceSpentMap(expensesAll);
+        const expensesByAdvance = {};
+        expensesAll.forEach((e) => {
+          if ((e.status || "posted") !== "posted") return;
+          expenseAdvanceAllocations(e).forEach((a) => {
+            if (!advanceIds.has(a.advanceId)) return;
+            if (!expensesByAdvance[a.advanceId]) expensesByAdvance[a.advanceId] = [];
+            expensesByAdvance[a.advanceId].push({
+              ...e,
+              _allocAmount: a.amount,
+              _allocCurrency: a.currency,
+            });
+          });
+        });
+        Object.keys(expensesByAdvance).forEach((aid) => {
+          expensesByAdvance[aid].sort((a, b) => String(b.spentAt || "").localeCompare(String(a.spentAt || "")));
+        });
+        if (!advances.length) {
+          lastGeneralRepAdvancesReportSnapshot = null;
+          wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
+          return;
+        }
+        const byCur = {};
+        advances.forEach((a) => {
+          const cur = (a.currency || "IQD").trim() || "IQD";
+          if (!byCur[cur]) byCur[cur] = { issued: 0, spent: 0, remaining: 0 };
+          const amt = Number(a.amount) || 0;
+          const spent = Number(spentMap[a.id]) || 0;
+          const returned = (a.status || "") === "settled" ? Number(a.returnAmount) || 0 : 0;
+          byCur[cur].issued += amt;
+          byCur[cur].spent += spent;
+          byCur[cur].remaining += amt - spent - returned;
+        });
+        const curs = Object.keys(byCur);
+        const fmtMulti = (key) =>
+          curs.map((c) => formatRepMoney(byCur[c][key], c)).join(" · ") || t("dash");
+        const snap = {
+          from,
+          to,
+          repId,
+          status,
+          advances,
+          expensesByAdvance,
+          spentMap,
+          generatedAt: new Date().toISOString(),
+          summary: {
+            count: advances.length,
+            issuedDisp: fmtMulti("issued"),
+            spentDisp: fmtMulti("spent"),
+            remainingDisp: fmtMulti("remaining"),
+          },
+        };
+        lastGeneralRepAdvancesReportSnapshot = snap;
+        wrap.innerHTML = renderGeneralRepAdvancesReportHtml(snap);
+      } catch (e) {
+        console.error(e);
+        wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("loadError"))} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
+    function printGeneralRepAdvancesReport() {
+      const wrap = $("reports-gadv-wrap");
+      if (!wrap) return;
+      const html = wrap.innerHTML || "";
+      if (!html.trim() || !lastGeneralRepAdvancesReportSnapshot) return;
+      const from = ($("rep-gadv-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gadv-to")?.value || "").slice(0, 10);
+      const repText = $("rep-gadv-rep")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const stText = $("rep-gadv-status")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const genAtSrc = lastGeneralRepAdvancesReportSnapshot?.generatedAt || new Date().toISOString();
+      const genAt = new Date(genAtSrc).toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
+      const title = t("reportGenRepAdvTitle");
+      const dir = document.documentElement.getAttribute("dir") || "rtl";
+      const head = `
+        <style>
+          :root { --border:#e5e7eb; --muted:#6b7280; --bg:#f3f4f6; --ink:#111827; }
+          * { box-sizing: border-box; }
+          html, body { margin:0; padding:0; color:var(--ink); }
+          body { font-family:"Tajawal", Tahoma, Arial, sans-serif; padding:14mm 10mm; line-height:1.35; }
+          @page { size: A4 landscape; margin: 10mm; }
+          .report-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:2px solid #111827; margin-bottom:10px; }
+          .report-title { margin:0; font-size:18px; font-weight:800; }
+          .report-sub { margin:4px 0 0; color:var(--muted); font-size:12px; }
+          .report-meta { text-align:end; font-size:12px; color:var(--muted); white-space:pre-line; }
+          .detail-panel { border:1px solid var(--border); border-radius:10px; background:#fff; padding:10px 12px; margin-bottom:10px; }
+          .wf-po-meta-grid { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:8px; }
+          .wf-po-meta-block { border:1px solid var(--border); border-radius:10px; padding:8px 10px; background:#fff; }
+          .wf-po-meta-label { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+          table { width:100%; border-collapse: collapse; table-layout: fixed; font-size:10px; }
+          thead { display: table-header-group; }
+          th, td { border:1px solid var(--border); padding:5px 6px; vertical-align:top; word-break:break-word; }
+          th { background: var(--bg); font-weight:800; text-align:start; }
+          tr { break-inside: avoid; }
+          button, .btn { display:none !important; }
+          .table-scroll { overflow: visible !important; }
+          html[dir="rtl"] body { direction: rtl; }
+          html[dir="rtl"] .report-meta { text-align:start; }
+        </style>
+      `;
+      const metaLines = [
+        `${from} → ${to}`,
+        `${t("reportGeneratedAtLabel")}: ${genAt}`,
+        currentUser?.email ? `${t("reportGeneratedByLabel")}: ${currentUser.email}` : "",
+        repText ? `${t("warehouseReceiptFilterRepLabel")}: ${repText}` : "",
+        stText ? `${t("repAdvanceStatusLabel")}: ${stText}` : "",
+      ].filter(Boolean);
+      const w = window.open("", "_blank");
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        `<!doctype html><html dir="${escapeAttr(dir)}"><head><meta charset="utf-8" />${head}<title>${escapeHtml(title)}</title></head><body>` +
+          `<header class="report-head">` +
+          `<div><h1 class="report-title">${escapeHtml(title)}</h1><p class="report-sub">${escapeHtml(t("reportGenRepAdvHint"))}</p></div>` +
+          `<div class="report-meta">${escapeHtml(metaLines.join("\n"))}</div>` +
+          `</header>` +
+          html +
+          `</body></html>`
+      );
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    function exportGeneralRepAdvancesReportCsv() {
+      const snap = lastGeneralRepAdvancesReportSnapshot;
+      if (!snap || !(snap.advances || []).length) {
+        alert(t("reportNoRows"));
+        return;
+      }
+      const rows = [];
+      const esc = (v) => {
+        const s = String(v == null ? "" : v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      const line = (arr) => rows.push(arr.map(esc).join(","));
+      line([
+        t("colPurchasingRepresentative"),
+        t("repColIssuedAt"),
+        t("repAdvanceStatusLabel"),
+        t("repAmountLabel"),
+        t("reportBaseCurrencyLabel"),
+        t("repColAdvanceSpent"),
+        t("repColAdvanceRemaining"),
+        t("repColReturn"),
+        t("repNoteLabel"),
+        t("repAmountLabel") + " (" + t("repDeskExpensesTitle") + ")",
+        t("repExpenseVendorLabel"),
+        t("repExpenseReceiptNoLabel"),
+        t("repExpenseReceiptDateLabel"),
+        t("repColSpentAt"),
+        t("repColLinkedPos"),
+        t("repNoteLabel") + " (" + t("repDeskExpensesTitle") + ")",
+      ]);
+      const spentMap = snap.spentMap || {};
+      const expensesByAdvance = snap.expensesByAdvance || {};
+      snap.advances.forEach((a) => {
+        const amt = Number(a.amount) || 0;
+        const spent = Number(spentMap[a.id]) || 0;
+        const returned = (a.status || "") === "settled" ? Number(a.returnAmount) || 0 : 0;
+        const remaining = amt - spent - returned;
+        const st = (a.status || "open") === "settled" ? t("repAdvanceStatusSettled") : t("repAdvanceStatusOpen");
+        const exps = expensesByAdvance[a.id] || [];
+        if (!exps.length) {
+          line([
+            a.representativeName || "",
+            a.issuedDate || "",
+            st,
+            amt,
+            a.currency || "IQD",
+            spent,
+            remaining,
+            returned || "",
+            a.note || "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+          ]);
+          return;
+        }
+        exps.forEach((e, idx) => {
+          const refs = Array.isArray(e.purchaseOrderRefs) ? e.purchaseOrderRefs.filter(Boolean).join(" | ") : "";
+          line([
+            idx === 0 ? a.representativeName || "" : "",
+            idx === 0 ? a.issuedDate || "" : "",
+            idx === 0 ? st : "",
+            idx === 0 ? amt : "",
+            idx === 0 ? a.currency || "IQD" : "",
+            idx === 0 ? spent : "",
+            idx === 0 ? remaining : "",
+            idx === 0 ? returned || "" : "",
+            idx === 0 ? a.note || "" : "",
+            e._allocAmount != null ? e._allocAmount : e.amount,
+            e.vendorName || "",
+            e.receiptNumber || "",
+            e.receiptDate || "",
+            e.spentAt || "",
+            refs,
+            e.note || "",
+          ]);
+        });
+      });
+      const from = ($("rep-gadv-from")?.value || "").slice(0, 10);
+      const to = ($("rep-gadv-to")?.value || "").slice(0, 10);
+      const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rep_cash_advances_report_${from}_${to}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -27538,17 +28027,153 @@
     let repExpensePoSearchCache = [];
     let repExpenseSelectedPos = [];
     let repExpensePoSearchTimer = null;
+    let repExpenseOpenAdvancesCache = [];
+    let repExpenseEditingId = null;
+    const REP_EXPENSE_EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+    function getRepExpenseCreatedAtMs(expense) {
+      const c = expense?.createdAt;
+      if (c) {
+        if (typeof c.toMillis === "function") {
+          const ms = c.toMillis();
+          if (Number.isFinite(ms)) return ms;
+        }
+        const sec =
+          typeof c.seconds === "number"
+            ? c.seconds
+            : typeof c._seconds === "number"
+              ? c._seconds
+              : null;
+        if (sec != null) return sec * 1000;
+        const d = new Date(c);
+        if (Number.isFinite(d.getTime())) return d.getTime();
+      }
+      // احتياطي إن لم يُحفظ createdAt: استخدم تاريخ الصرف
+      const spent = String(expense?.spentAt || "").trim().slice(0, 10);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(spent)) {
+        const d = new Date(`${spent}T12:00:00`);
+        if (Number.isFinite(d.getTime())) return d.getTime();
+      }
+      return null;
+    }
+
+    function isRepExpenseWithinEditWindow(expense) {
+      const ms = getRepExpenseCreatedAtMs(expense);
+      if (ms == null) return true; // بدون تاريخ: اسمح بالتعديل للمندوب
+      return Date.now() - ms <= REP_EXPENSE_EDIT_WINDOW_MS;
+    }
+
+    /**
+     * المدير يعدّل بلا مهلة.
+     * المندوب يعدّل مصروفه فقط خلال 24 ساعة.
+     */
+    function canEditRepExpense(expense, linkedRep) {
+      if (!expense?.id) return false;
+      if ((expense.status || "posted") !== "posted") return false;
+      if (canViewAllRepDesks()) return true;
+      if (!linkedRep?.id) return false;
+      if (String(expense.representativeId || "").trim() !== String(linkedRep.id).trim()) return false;
+      return isRepExpenseWithinEditWindow(expense);
+    }
+
+    function setRepExpenseModalMode(isEdit) {
+      const titleEl = document.querySelector("#modal-rep-expense h3");
+      const hintEl = document.querySelector("#modal-rep-expense .user-form-hint");
+      if (titleEl) titleEl.textContent = t(isEdit ? "modalRepExpenseEditTitle" : "modalRepExpenseTitle");
+      if (hintEl) hintEl.textContent = t(isEdit ? "modalRepExpenseEditHint" : "modalRepExpenseHint");
+    }
+
+    function wireRepExpenseEditButtons(root) {
+      if (!root) return;
+      root.querySelectorAll(".btn-rep-expense-edit").forEach((btn) => {
+        btn.addEventListener("click", () => void openRepExpenseModal(btn.dataset.id));
+      });
+      root.querySelectorAll(".btn-rep-expense-delete").forEach((btn) => {
+        btn.addEventListener("click", () => void deleteRepExpense(btn.dataset.id));
+      });
+    }
+
+    async function deleteRepExpense(expenseId) {
+      const id = (expenseId || "").trim();
+      if (!id) return;
+      if (!canDeleteRepExpense()) {
+        alert(t("alertWorkflowRoleNoPoEdit"));
+        return;
+      }
+      if (!confirm(t("confirmRepExpenseDelete"))) return;
+      try {
+        await deleteDoc(doc(db, REP_EXPENSES_COL, id));
+        alert(t("repExpenseDeleted"));
+        await loadRepDesk();
+        const act = document.querySelector(".app-screen:not(.hidden)");
+        if (act?.id === "screen-rep-advances") await loadRepAdvancesScreen();
+      } catch (e) {
+        alert(t("saveFailed") + " " + (e.message || ""));
+      }
+    }
 
     function canIssueRepCashAdvance() {
       if (hasAdminAccess()) return true;
       const r = currentUserProfile?.role || userRole;
-      return r === "accountant" || r === "purchasing_officer" || r === "purchasing_representative";
+      return (
+        r === "accountant" ||
+        r === "purchasing_officer" ||
+        r === "purchasing_representative" ||
+        r === "project_manager" ||
+        r === "group_manager"
+      );
     }
 
     function canSettleRepCashAdvance() {
       if (hasAdminAccess()) return true;
       const r = currentUserProfile?.role || userRole;
       return r === "accountant" || r === "purchasing_officer";
+    }
+
+    /** المدير / الحسابات / المشتريات يرون مكتب كل المندوبين كأنهم مرتبطون بالكل. */
+    function canViewAllRepDesks() {
+      if (hasAdminAccess()) return true;
+      const r = currentUserProfile?.role || userRole;
+      return (
+        r === "accountant" ||
+        r === "purchasing_officer" ||
+        r === "project_manager" ||
+        r === "group_manager"
+      );
+    }
+
+    /** حذف المصروف للمدير (ومن يرى مكتب كل المندوبين). */
+    function canDeleteRepExpense() {
+      return canViewAllRepDesks();
+    }
+
+    async function listActivePurchasingRepresentatives() {
+      const snap = await getDocs(collection(db, "purchasingRepresentatives"));
+      const reps = [];
+      snap.forEach((d) => {
+        const row = { id: d.id, ...d.data() };
+        if (row.active !== false) reps.push(row);
+      });
+      reps.sort((a, b) =>
+        (a.name || "").trim().localeCompare((b.name || "").trim(), lang === "ar" ? "ar" : "en")
+      );
+      return reps;
+    }
+
+    async function resolveRepForExpenseEntry() {
+      if (canViewAllRepDesks()) {
+        const selectedId = ($("rep-expense-rep")?.value || "").trim();
+        if (selectedId) {
+          const rs = await getDoc(doc(db, "purchasingRepresentatives", selectedId));
+          if (rs.exists()) return { id: rs.id, ...rs.data() };
+        }
+        const filtered = ($("rep-desk-filter-rep")?.value || "").trim();
+        if (filtered) {
+          const rs = await getDoc(doc(db, "purchasingRepresentatives", filtered));
+          if (rs.exists()) return { id: rs.id, ...rs.data() };
+        }
+      }
+      return resolvePurchasingRepForCurrentUser();
     }
 
     function formatRepMoney(amount, currency) {
@@ -27617,8 +28242,16 @@
       });
       (expenses || []).forEach((e) => {
         if ((e.status || "posted") !== "posted") return;
-        const aid = (e.advanceId || "").trim();
-        if (aid && !openIds.has(aid)) return;
+        const allocs = expenseAdvanceAllocations(e);
+        if (allocs.length) {
+          allocs.forEach((a) => {
+            if (!openIds.has(a.advanceId)) return;
+            const cur = (a.currency || e.currency || "IQD").trim() || "IQD";
+            if (!map[cur]) map[cur] = { open: 0, expenses: 0, remaining: 0 };
+            map[cur].expenses += Number(a.amount) || 0;
+          });
+          return;
+        }
         const cur = (e.currency || "IQD").trim() || "IQD";
         if (!map[cur]) map[cur] = { open: 0, expenses: 0, remaining: 0 };
         map[cur].expenses += Number(e.amount) || 0;
@@ -27627,6 +28260,47 @@
         map[cur].remaining = map[cur].open - map[cur].expenses;
       });
       return map;
+    }
+
+    function expenseAdvanceAllocations(e) {
+      if (!e || typeof e !== "object") return [];
+      if (Array.isArray(e.advanceAllocations) && e.advanceAllocations.length) {
+        return e.advanceAllocations
+          .map((a) => ({
+            advanceId: String(a?.advanceId || "").trim(),
+            amount: Number(a?.amount) || 0,
+            currency: (a?.currency || e.currency || "IQD").trim() || "IQD",
+          }))
+          .filter((a) => a.advanceId && a.amount > 0);
+      }
+      const aid = String(e.advanceId || "").trim();
+      if (!aid) return [];
+      return [
+        {
+          advanceId: aid,
+          amount: Number(e.amount) || 0,
+          currency: (e.currency || "IQD").trim() || "IQD",
+        },
+      ];
+    }
+
+    function expenseTouchesAdvance(e, advanceId) {
+      const id = String(advanceId || "").trim();
+      if (!id) return false;
+      return expenseAdvanceAllocations(e).some((a) => a.advanceId === id);
+    }
+
+    function expenseAmountOnAdvance(e, advanceId) {
+      const id = String(advanceId || "").trim();
+      return expenseAdvanceAllocations(e)
+        .filter((a) => a.advanceId === id)
+        .reduce((s, a) => s + (Number(a.amount) || 0), 0);
+    }
+
+    function formatExpenseAdvancesCell(e) {
+      const allocs = expenseAdvanceAllocations(e);
+      if (!allocs.length) return t("dash");
+      return allocs.map((a) => formatRepMoney(a.amount, a.currency)).join(" · ");
     }
 
     function renderRepBalanceCardsHtml(balanceMap) {
@@ -27653,9 +28327,9 @@
       const map = {};
       (expenses || []).forEach((e) => {
         if ((e.status || "posted") !== "posted") return;
-        const aid = (e.advanceId || "").trim();
-        if (!aid) return;
-        map[aid] = (map[aid] || 0) + (Number(e.amount) || 0);
+        expenseAdvanceAllocations(e).forEach((a) => {
+          map[a.advanceId] = (map[a.advanceId] || 0) + (Number(a.amount) || 0);
+        });
       });
       return map;
     }
@@ -27704,32 +28378,46 @@
       </table></div>`;
     }
 
-    function renderRepExpensesTableHtml(rows) {
+    function renderRepExpensesTableHtml(rows, { linkedRep } = {}) {
       if (!rows.length) return `<p class="empty-state">${escapeHtml(t("emptyRepExpenses"))}</p>`;
       return `<div class="table-scroll"><table class="data-table">
         <thead><tr>
           <th>${escapeHtml(t("colPurchasingRepresentative"))}</th>
           <th>${escapeHtml(t("repAmountLabel"))}</th>
+          <th>${escapeHtml(t("repColAdvances"))}</th>
           <th>${escapeHtml(t("repExpenseVendorLabel"))}</th>
           <th>${escapeHtml(t("repExpenseReceiptNoLabel"))}</th>
           <th>${escapeHtml(t("repExpenseReceiptDateLabel"))}</th>
           <th>${escapeHtml(t("repColSpentAt"))}</th>
           <th>${escapeHtml(t("repColLinkedPos"))}</th>
           <th>${escapeHtml(t("repNoteLabel"))}</th>
+          <th></th>
         </tr></thead>
         <tbody>
           ${rows
             .map((r) => {
               const refs = Array.isArray(r.purchaseOrderRefs) ? r.purchaseOrderRefs.filter(Boolean) : [];
+              const editBtn = canEditRepExpense(r, linkedRep)
+                ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-expense-edit" data-id="${escapeAttr(r.id)}">${escapeHtml(t("edit"))}</button>`
+                : "";
+              const deleteBtn = canDeleteRepExpense()
+                ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-expense-delete" data-id="${escapeAttr(r.id)}">${escapeHtml(t("delete"))}</button>`
+                : "";
+              const actions =
+                editBtn || deleteBtn
+                  ? `<span style="display:inline-flex;flex-wrap:wrap;gap:.35rem">${editBtn}${deleteBtn}</span>`
+                  : "";
               return `<tr>
                 <td>${escapeHtml((r.representativeName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(formatRepMoney(r.amount, r.currency))}</td>
+                <td>${escapeHtml(formatExpenseAdvancesCell(r))}</td>
                 <td>${escapeHtml((r.vendorName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.receiptNumber || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.receiptDate || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.spentAt || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(refs.length ? refs.join(" · ") : t("dash"))}</td>
                 <td>${escapeHtml((r.note || "").trim() || t("dash"))}</td>
+                <td>${actions}</td>
               </tr>`;
             })
             .join("")}
@@ -27737,35 +28425,69 @@
       </table></div>`;
     }
 
+    async function fillRepDeskFilterRepSelect() {
+      const sel = $("rep-desk-filter-rep");
+      if (!sel) return;
+      const cur = sel.value;
+      const reps = await listActivePurchasingRepresentatives();
+      sel.innerHTML =
+        `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+        reps
+          .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`)
+          .join("");
+      if (reps.some((r) => r.id === cur)) sel.value = cur;
+    }
+
     async function loadRepDesk() {
       wireRepAdvancesScreenOnce();
       const bal = $("rep-desk-balance-cards");
       const expWrap = $("rep-desk-expenses-wrap");
       const advWrap = $("rep-desk-advances-wrap");
+      const managerBar = $("rep-desk-manager-bar");
       if (!bal || !expWrap || !advWrap) return;
       bal.innerHTML = `<p class="loading">${t("loading")}</p>`;
       expWrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       advWrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
-        const rep = await resolvePurchasingRepForCurrentUser();
-        if (!rep && !hasAdminAccess()) {
-          const msg = `<p class="error-msg">${escapeHtml(t("repNoLinkedProfile"))}</p>`;
-          bal.innerHTML = msg;
-          expWrap.innerHTML = "";
-          advWrap.innerHTML = "";
-          return;
+        const viewAll = canViewAllRepDesks();
+        const linkedRep = await resolvePurchasingRepForCurrentUser();
+        if (managerBar) managerBar.classList.toggle("hidden", !viewAll);
+        const expHead = $("rep-desk-expenses-heading");
+        const advHead = $("rep-desk-advances-heading");
+        if (expHead) expHead.textContent = t(viewAll ? "repDeskExpensesTitleAll" : "repDeskExpensesTitle");
+        if (advHead) advHead.textContent = t(viewAll ? "repDeskAdvancesTitleAll" : "repDeskAdvancesTitle");
+
+        let repId = null;
+        if (viewAll) {
+          await fillRepDeskFilterRepSelect();
+          repId = ($("rep-desk-filter-rep")?.value || "").trim() || null;
+        } else {
+          if (!linkedRep) {
+            const msg = `<p class="error-msg">${escapeHtml(t("repNoLinkedProfile"))}</p>`;
+            bal.innerHTML = msg;
+            expWrap.innerHTML = "";
+            advWrap.innerHTML = "";
+            return;
+          }
+          repId = linkedRep.id;
         }
-        const repId = rep?.id || null;
-        if (!repId) {
-          bal.innerHTML = `<p class="error-msg">${escapeHtml(t("repNoLinkedProfile"))}</p>`;
-          expWrap.innerHTML = "";
-          advWrap.innerHTML = "";
-          return;
-        }
-        const [advances, expenses] = await Promise.all([fetchRepAdvances(repId), fetchRepExpenses(repId)]);
+
+        const [advances, expenses] = await Promise.all([
+          fetchRepAdvances(repId),
+          fetchRepExpenses(repId),
+        ]);
         bal.innerHTML = renderRepBalanceCardsHtml(computeRepBalancesByCurrency(advances, expenses));
-        expWrap.innerHTML = renderRepExpensesTableHtml(expenses);
-        advWrap.innerHTML = renderRepAdvancesTableHtml(advances, { canSettle: false, expenses });
+        expWrap.innerHTML = renderRepExpensesTableHtml(expenses, { linkedRep });
+        wireRepExpenseEditButtons(expWrap);
+        advWrap.innerHTML = renderRepAdvancesTableHtml(advances, {
+          canSettle: viewAll && canSettleRepCashAdvance(),
+          expenses,
+        });
+        if (viewAll && canSettleRepCashAdvance()) {
+          advWrap.querySelectorAll(".btn-rep-settle").forEach((btn) => {
+            btn.addEventListener("click", () => void openRepAdvanceSettleModal(btn.dataset.id));
+          });
+        }
         const issueBtn = $("btn-rep-desk-advance-issue");
         if (issueBtn) issueBtn.classList.toggle("hidden", !canIssueRepCashAdvance());
       } catch (e) {
@@ -27782,11 +28504,18 @@
       repAdvancesScreenWired = true;
       $("btn-rep-advance-issue")?.addEventListener("click", () => void openRepAdvanceIssueModal());
       $("btn-rep-desk-advance-issue")?.addEventListener("click", () => void openRepAdvanceIssueModal());
+      $("btn-rep-desk-refresh")?.addEventListener("click", () => void loadRepDesk());
+      $("rep-desk-filter-rep")?.addEventListener("change", () => void loadRepDesk());
       $("btn-rep-adv-refresh")?.addEventListener("click", () => void loadRepAdvancesScreen());
       $("rep-adv-filter-rep")?.addEventListener("change", () => void loadRepAdvancesScreen());
       $("rep-adv-filter-status")?.addEventListener("change", () => void loadRepAdvancesScreen());
       $("btn-rep-expense-new")?.addEventListener("click", () => void openRepExpenseModal());
+      $("rep-expense-rep")?.addEventListener("change", () => void onRepExpenseRepChanged());
       $("modal-rep-expense-cancel")?.addEventListener("click", () => {
+        repExpenseEditingId = null;
+        const repSel = $("rep-expense-rep");
+        if (repSel) repSel.disabled = false;
+        setRepExpenseModalMode(false);
         $("rep-expense-po-results")?.classList.add("hidden");
         $("modal-rep-expense")?.classList.add("hidden");
       });
@@ -27856,9 +28585,11 @@
         ]);
         let advFiltered = advances;
         if (filterStatus) advFiltered = advances.filter((a) => (a.status || "open") === filterStatus);
+        const linkedRep = await resolvePurchasingRepForCurrentUser();
         balWrap.innerHTML = renderRepBalanceCardsHtml(computeRepBalancesByCurrency(advances, expenses));
         listWrap.innerHTML = renderRepAdvancesTableHtml(advFiltered, { canSettle, expenses });
-        expWrap.innerHTML = renderRepExpensesTableHtml(expenses);
+        expWrap.innerHTML = renderRepExpensesTableHtml(expenses, { linkedRep });
+        wireRepExpenseEditButtons(expWrap);
         listWrap.querySelectorAll(".btn-rep-settle").forEach((btn) => {
           btn.addEventListener("click", () => void openRepAdvanceSettleModal(btn.dataset.id));
         });
@@ -27976,12 +28707,220 @@
       }));
     }
 
-    async function openRepExpenseModal() {
-      wireRepAdvancesScreenOnce();
-      const rep = await resolvePurchasingRepForCurrentUser();
+    function readRepExpenseAdvanceAllocationsFromUi() {
+      const wrap = $("rep-expense-advances-wrap");
+      if (!wrap) return [];
+      const out = [];
+      wrap.querySelectorAll("[data-rep-adv-row]").forEach((row) => {
+        const id = (row.getAttribute("data-rep-adv-row") || "").trim();
+        const chk = row.querySelector('input[type="checkbox"][data-rep-adv-check]');
+        const amtInp = row.querySelector('input[data-rep-adv-amount]');
+        if (!id || !chk?.checked) return;
+        const amount = parseFloat(String(amtInp?.value || "").replace(/,/g, ""));
+        const meta = repExpenseOpenAdvancesCache.find((a) => a.id === id);
+        out.push({
+          advanceId: id,
+          amount: Number.isFinite(amount) ? amount : NaN,
+          currency: meta?.currency || "IQD",
+          remaining: Number(meta?.remaining) || 0,
+          issuedDate: meta?.issuedDate || "",
+        });
+      });
+      return out;
+    }
+
+    function syncRepExpenseAmountFromAllocations() {
+      const allocs = readRepExpenseAdvanceAllocationsFromUi().filter((a) => Number.isFinite(a.amount) && a.amount > 0);
+      const totalEl = $("rep-expense-advances-total");
+      const amountInp = $("rep-expense-amount");
+      if (!allocs.length) {
+        if (totalEl) totalEl.textContent = "";
+        return;
+      }
+      const sum = allocs.reduce((s, a) => s + a.amount, 0);
+      const cur = allocs[0].currency || "IQD";
+      if (amountInp) amountInp.value = String(sum);
+      if (totalEl) {
+        totalEl.textContent = t("repExpenseAdvancesAllocTotal").replace(
+          "{amount}",
+          formatRepMoney(sum, cur)
+        );
+      }
+      if ($("rep-expense-currency") && allocs[0].currency) {
+        $("rep-expense-currency").value = allocs[0].currency;
+      }
+    }
+
+    function renderRepExpenseAdvancesPicker(prefillAllocs = []) {
+      const wrap = $("rep-expense-advances-wrap");
+      const totalEl = $("rep-expense-advances-total");
+      if (!wrap) return;
+      const rows = repExpenseOpenAdvancesCache || [];
+      const prefillMap = {};
+      (prefillAllocs || []).forEach((a) => {
+        if (a?.advanceId) prefillMap[a.advanceId] = Number(a.amount) || 0;
+      });
+      if (!rows.length) {
+        wrap.innerHTML = `<p class="empty-state" style="margin:0">${escapeHtml(t("repExpenseAdvancesEmpty"))}</p>`;
+        if (totalEl) totalEl.textContent = "";
+        return;
+      }
+      wrap.innerHTML = rows
+        .map((a) => {
+          const rem = Number(a.remaining) || 0;
+          const preAmt = prefillMap[a.id];
+          const checked = Number.isFinite(preAmt) && preAmt > 0;
+          return `<div data-rep-adv-row="${escapeAttr(a.id)}" style="display:grid;grid-template-columns:auto 1fr auto;gap:.55rem .75rem;align-items:center;padding:.55rem .65rem;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer">
+            <input type="checkbox" data-rep-adv-check${checked ? " checked" : ""} />
+            <span style="min-width:0">
+              <span style="display:block;font-weight:700">${escapeHtml(t("repExpenseAdvanceIssued"))}: ${escapeHtml(formatRepMoney(a.amount, a.currency))}</span>
+              <span style="display:block;font-size:.82rem;color:var(--muted)">${escapeHtml((a.issuedDate || "").trim() || t("dash"))}</span>
+              <span style="display:block;font-size:.88rem;font-weight:700;color:#047857;margin-top:.15rem">${escapeHtml(t("repExpenseAdvanceRemaining"))}: ${escapeHtml(formatRepMoney(rem, a.currency))}</span>
+            </span>
+            <span style="display:flex;flex-direction:column;gap:.2rem;min-width:7.5rem">
+              <span style="font-size:.72rem;color:var(--muted);font-weight:700">${escapeHtml(t("repExpenseAdvanceAmountLabel"))}</span>
+              <input type="number" min="0" step="any" data-rep-adv-amount ${checked ? "" : "disabled "}placeholder="0" value="${checked ? escapeAttr(String(preAmt)) : ""}" style="width:100%;font:inherit;padding:.35rem .45rem" />
+            </span>
+          </div>`;
+        })
+        .join("");
+      wrap.querySelectorAll("[data-rep-adv-row]").forEach((row) => {
+        const chk = row.querySelector("[data-rep-adv-check]");
+        const amt = row.querySelector("[data-rep-adv-amount]");
+        const toggle = () => {
+          if (amt) {
+            amt.disabled = !chk?.checked;
+            if (!chk?.checked) amt.value = "";
+          }
+          syncRepExpenseAmountFromAllocations();
+        };
+        chk?.addEventListener("change", toggle);
+        amt?.addEventListener("input", () => syncRepExpenseAmountFromAllocations());
+        row.addEventListener("click", (ev) => {
+          if (ev.target === chk || ev.target === amt || ev.target.closest("input")) return;
+          if (chk) {
+            chk.checked = !chk.checked;
+            toggle();
+          }
+        });
+      });
+      syncRepExpenseAmountFromAllocations();
+    }
+
+    async function fillRepExpenseAdvancesForRep(rep, { excludeExpenseId = null, prefillAllocs = [] } = {}) {
+      const wrap = $("rep-expense-advances-wrap");
+      if (!rep?.id) {
+        repExpenseOpenAdvancesCache = [];
+        if (wrap) wrap.innerHTML = `<p class="empty-state" style="margin:0">${escapeHtml(t("repExpenseAdvancesEmpty"))}</p>`;
+        const totalEl = $("rep-expense-advances-total");
+        if (totalEl) totalEl.textContent = "";
+        return;
+      }
+      const [advancesAll, expensesAll] = await Promise.all([
+        fetchRepAdvances(rep.id),
+        fetchRepExpenses(rep.id),
+      ]);
+      const excludeId = (excludeExpenseId || "").trim();
+      const expensesForSpent = excludeId
+        ? expensesAll.filter((e) => e.id !== excludeId)
+        : expensesAll;
+      const spentMap = computeRepAdvanceSpentMap(expensesForSpent);
+      const prefillIds = new Set(
+        (prefillAllocs || []).map((a) => String(a?.advanceId || "").trim()).filter(Boolean)
+      );
+      repExpenseOpenAdvancesCache = advancesAll
+        .filter((a) => (a.status || "open") === "open" || prefillIds.has(a.id))
+        .map((a) => {
+          const amt = Number(a.amount) || 0;
+          const spent = Number(spentMap[a.id]) || 0;
+          return {
+            id: a.id,
+            amount: amt,
+            currency: (a.currency || "IQD").trim() || "IQD",
+            issuedDate: (a.issuedDate || "").trim(),
+            remaining: amt - spent,
+          };
+        });
+      renderRepExpenseAdvancesPicker(prefillAllocs);
+      try {
+        await loadRepExpensePoSearchCache(rep);
+      } catch (e) {
+        console.error(e);
+        repExpensePoSearchCache = [];
+      }
+    }
+
+    async function onRepExpenseRepChanged() {
+      const rep = await resolveRepForExpenseEntry();
       if (!rep) {
+        await fillRepExpenseAdvancesForRep(null);
+        return;
+      }
+      await fillRepExpenseAdvancesForRep(rep);
+    }
+
+    async function openRepExpenseModal(expenseId = null) {
+      wireRepAdvancesScreenOnce();
+      const viewAll = canViewAllRepDesks();
+      const linkedRep = await resolvePurchasingRepForCurrentUser();
+      if (!viewAll && !linkedRep) {
         alert(t("repNoLinkedProfile"));
         return;
+      }
+
+      repExpenseEditingId = null;
+      let existing = null;
+      const editId = (expenseId || "").trim();
+      if (editId) {
+        const snap = await getDoc(doc(db, REP_EXPENSES_COL, editId));
+        if (!snap.exists()) {
+          alert(t("loadError"));
+          return;
+        }
+        existing = { id: snap.id, ...snap.data() };
+        if (!canEditRepExpense(existing, linkedRep)) {
+          alert(t("repExpenseEditWindowExpired"));
+          return;
+        }
+        repExpenseEditingId = existing.id;
+      }
+
+      const repField = $("rep-expense-rep-field");
+      const repSel = $("rep-expense-rep");
+      if (existing) {
+        repField?.classList.add("hidden");
+        if (repSel) {
+          const rid = existing.representativeId;
+          const rname = (existing.representativeName || "").trim() || rid;
+          repSel.innerHTML = `<option value="${escapeAttr(rid)}">${escapeHtml(rname)}</option>`;
+          repSel.value = rid;
+          repSel.disabled = true;
+        }
+      } else if (viewAll) {
+        if (repSel) repSel.disabled = false;
+        repField?.classList.remove("hidden");
+        const reps = await listActivePurchasingRepresentatives();
+        if (!reps.length) {
+          alert(t("repSelectRepRequired"));
+          return;
+        }
+        const prefer =
+          ($("rep-desk-filter-rep")?.value || "").trim() || linkedRep?.id || reps[0].id;
+        if (repSel) {
+          repSel.innerHTML = reps
+            .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`)
+            .join("");
+          repSel.value = reps.some((r) => r.id === prefer) ? prefer : reps[0].id;
+        }
+      } else {
+        if (repSel) repSel.disabled = false;
+        repField?.classList.add("hidden");
+        if (repSel) {
+          repSel.innerHTML = `<option value="${escapeAttr(linkedRep.id)}">${escapeHtml(
+            (linkedRep.name || "").trim() || linkedRep.id
+          )}</option>`;
+          repSel.value = linkedRep.id;
+        }
       }
       const amount = $("rep-expense-amount");
       const currency = $("rep-expense-currency");
@@ -27990,45 +28929,45 @@
       const receiptNo = $("rep-expense-receipt-no");
       const receiptDate = $("rep-expense-receipt-date");
       const note = $("rep-expense-note");
-      const advSel = $("rep-expense-advance");
       const search = $("rep-expense-po-search");
-      if (amount) amount.value = "";
-      if (currency) currency.value = "IQD";
-      if (dateInp) dateInp.value = formatTodayYmd();
-      if (vendor) vendor.value = "";
-      if (receiptNo) receiptNo.value = "";
-      if (receiptDate) receiptDate.value = "";
-      if (note) note.value = "";
+      if (existing) {
+        if (amount) amount.value = String(Number(existing.amount) || "");
+        if (currency) currency.value = (existing.currency || "IQD").trim() || "IQD";
+        if (dateInp) dateInp.value = (existing.spentAt || formatTodayYmd()).slice(0, 10);
+        if (vendor) vendor.value = (existing.vendorName || "").trim();
+        if (receiptNo) receiptNo.value = (existing.receiptNumber || "").trim();
+        if (receiptDate) receiptDate.value = (existing.receiptDate || "").trim().slice(0, 10);
+        if (note) note.value = (existing.note || "").trim();
+        const ids = Array.isArray(existing.purchaseOrderIds) ? existing.purchaseOrderIds : [];
+        const refs = Array.isArray(existing.purchaseOrderRefs) ? existing.purchaseOrderRefs : [];
+        repExpenseSelectedPos = ids
+          .map((id, i) => ({ id, ref: (refs[i] || id || "").trim() || id }))
+          .filter((p) => p.id);
+      } else {
+        if (amount) amount.value = "";
+        if (currency) currency.value = "IQD";
+        if (dateInp) dateInp.value = formatTodayYmd();
+        if (vendor) vendor.value = "";
+        if (receiptNo) receiptNo.value = "";
+        if (receiptDate) receiptDate.value = "";
+        if (note) note.value = "";
+        repExpenseSelectedPos = [];
+      }
       if (search) search.value = "";
-      repExpenseSelectedPos = [];
       renderRepExpenseSelectedPos();
       $("rep-expense-po-results")?.classList.add("hidden");
-      const [advancesAll, expensesAll] = await Promise.all([
-        fetchRepAdvances(rep.id),
-        fetchRepExpenses(rep.id),
-      ]);
-      const spentMap = computeRepAdvanceSpentMap(expensesAll);
-      const advances = advancesAll.filter((a) => (a.status || "open") === "open");
-      if (advSel) {
-        advSel.innerHTML =
-          `<option value="">${escapeHtml(t("repSelectAdvanceNone"))}</option>` +
-          advances
-            .map((a) => {
-              const amt = Number(a.amount) || 0;
-              const spent = Number(spentMap[a.id]) || 0;
-              const rem = amt - spent;
-              return `<option value="${escapeAttr(a.id)}">${escapeHtml(
-                `${formatRepMoney(amt, a.currency)} — ${t("repColAdvanceRemaining")}: ${formatRepMoney(rem, a.currency)} — ${(a.issuedDate || "").trim() || a.id}`
-              )}</option>`;
-            })
-            .join("");
+      const rep = await resolveRepForExpenseEntry();
+      if (!rep) {
+        alert(t("repSelectRepRequired"));
+        repExpenseEditingId = null;
+        return;
       }
-      try {
-        await loadRepExpensePoSearchCache(rep);
-      } catch (e) {
-        console.error(e);
-        repExpensePoSearchCache = [];
-      }
+      const prefillAllocs = existing ? expenseAdvanceAllocations(existing) : [];
+      await fillRepExpenseAdvancesForRep(rep, {
+        excludeExpenseId: existing?.id || null,
+        prefillAllocs,
+      });
+      setRepExpenseModalMode(!!existing);
       const saveBtn = $("modal-rep-expense-save");
       if (saveBtn) {
         saveBtn.disabled = false;
@@ -28039,47 +28978,114 @@
     }
 
     async function saveRepExpenseModal() {
-      const rep = await resolvePurchasingRepForCurrentUser();
+      const rep = await resolveRepForExpenseEntry();
       if (!rep) {
-        alert(t("repNoLinkedProfile"));
+        alert(canViewAllRepDesks() ? t("repSelectRepRequired") : t("repNoLinkedProfile"));
         return;
+      }
+      const rawAllocs = readRepExpenseAdvanceAllocationsFromUi();
+      if (rawAllocs.length) {
+        const currencies = [...new Set(rawAllocs.map((a) => a.currency))];
+        if (currencies.length > 1) {
+          alert(t("repExpenseAdvanceCurrencyMix"));
+          return;
+        }
+        for (const a of rawAllocs) {
+          if (!Number.isFinite(a.amount) || a.amount <= 0) {
+            alert(t("repExpenseAdvanceAmountRequired"));
+            return;
+          }
+          if (a.amount > a.remaining + 1e-9) {
+            alert(
+              t("repExpenseAdvanceExceedsRemaining").replace(
+                "{remaining}",
+                formatRepMoney(a.remaining, a.currency)
+              )
+            );
+            return;
+          }
+        }
+        syncRepExpenseAmountFromAllocations();
       }
       const amount = parseFloat(String($("rep-expense-amount")?.value || "").replace(/,/g, ""));
       if (!Number.isFinite(amount) || amount <= 0) {
         alert(t("repAmountRequired"));
         return;
       }
-      const currency = ($("rep-expense-currency")?.value || "IQD").trim() || "IQD";
+      const currency =
+        (rawAllocs[0]?.currency || $("rep-expense-currency")?.value || "IQD").trim() || "IQD";
+      if (rawAllocs.length) {
+        const sum = rawAllocs.reduce((s, a) => s + a.amount, 0);
+        if (Math.abs(sum - amount) > 0.0001) {
+          // keep amount as sum of allocations
+        }
+      }
+      const finalAmount = rawAllocs.length
+        ? rawAllocs.reduce((s, a) => s + a.amount, 0)
+        : amount;
       const spentAt = ($("rep-expense-date")?.value || formatTodayYmd()).slice(0, 10);
       const vendorName = ($("rep-expense-vendor")?.value || "").trim();
       const receiptNumber = ($("rep-expense-receipt-no")?.value || "").trim();
       const receiptDate = ($("rep-expense-receipt-date")?.value || "").trim().slice(0, 10) || null;
       const note = ($("rep-expense-note")?.value || "").trim();
-      const advanceId = ($("rep-expense-advance")?.value || "").trim() || null;
+      const advanceAllocations = rawAllocs.map((a) => ({
+        advanceId: a.advanceId,
+        amount: a.amount,
+        currency: a.currency,
+      }));
+      const advanceId = advanceAllocations[0]?.advanceId || null;
       const poIds = repExpenseSelectedPos.map((p) => p.id).filter(Boolean);
       const poRefs = repExpenseSelectedPos.map((p) => p.ref).filter(Boolean);
+      const payload = {
+        amount: finalAmount,
+        currency,
+        spentAt,
+        vendorName: vendorName || null,
+        receiptNumber: receiptNumber || null,
+        receiptDate,
+        note: note || null,
+        advanceId,
+        advanceAllocations,
+        purchaseOrderIds: poIds,
+        purchaseOrderRefs: poRefs,
+        updatedAt: serverTimestamp(),
+      };
       try {
-        await addDoc(collection(db, REP_EXPENSES_COL), {
-          representativeId: rep.id,
-          representativeName: (rep.name || "").trim() || null,
-          amount,
-          currency,
-          spentAt,
-          vendorName: vendorName || null,
-          receiptNumber: receiptNumber || null,
-          receiptDate,
-          note: note || null,
-          advanceId,
-          purchaseOrderIds: poIds,
-          purchaseOrderRefs: poRefs,
-          status: "posted",
-          createdBy: currentUser.uid,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
+        if (repExpenseEditingId) {
+          const editRef = doc(db, REP_EXPENSES_COL, repExpenseEditingId);
+          const snap = await getDoc(editRef);
+          if (!snap.exists()) {
+            alert(t("loadError"));
+            return;
+          }
+          const existing = { id: snap.id, ...snap.data() };
+          const linkedRep = await resolvePurchasingRepForCurrentUser();
+          if (!canEditRepExpense(existing, linkedRep)) {
+            alert(t("repExpenseEditWindowExpired"));
+            return;
+          }
+          await updateDoc(editRef, {
+            ...payload,
+            updatedBy: currentUser.uid,
+          });
+        } else {
+          await addDoc(collection(db, REP_EXPENSES_COL), {
+            representativeId: rep.id,
+            representativeName: (rep.name || "").trim() || null,
+            ...payload,
+            status: "posted",
+            createdBy: currentUser.uid,
+            createdAt: serverTimestamp(),
+          });
+        }
+        const wasEdit = !!repExpenseEditingId;
+        repExpenseEditingId = null;
+        const repSel = $("rep-expense-rep");
+        if (repSel) repSel.disabled = false;
+        setRepExpenseModalMode(false);
         $("modal-rep-expense")?.classList.add("hidden");
         $("rep-expense-po-results")?.classList.add("hidden");
-        alert(t("repExpenseSaved"));
+        alert(t(wasEdit ? "repExpenseUpdated" : "repExpenseSaved"));
         await loadRepDesk();
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-rep-advances") await loadRepAdvancesScreen();
@@ -28104,48 +29110,46 @@
       if (currency) currency.value = "IQD";
       if (dateInp) dateInp.value = formatTodayYmd();
       if (note) note.value = "";
-      const myRep = role === "purchasing_representative" ? await resolvePurchasingRepForCurrentUser() : null;
-      if (role === "purchasing_representative" && !myRep) {
+      const viewAll = canViewAllRepDesks();
+      const myRep = !viewAll && role === "purchasing_representative"
+        ? await resolvePurchasingRepForCurrentUser()
+        : null;
+      if (!viewAll && role === "purchasing_representative" && !myRep) {
         alert(t("repNoLinkedProfile"));
         return;
       }
       let reps = [];
-      if (myRep) {
+      if (myRep && !viewAll) {
         reps = [myRep];
       } else {
-        const snap = await getDocs(collection(db, "purchasingRepresentatives"));
-        snap.forEach((d) => {
-          const row = { id: d.id, ...d.data() };
-          if (row.active !== false) reps.push(row);
-        });
-        reps.sort((a, b) =>
-          (a.name || "").trim().localeCompare((b.name || "").trim(), lang === "ar" ? "ar" : "en")
-        );
+        reps = await listActivePurchasingRepresentatives();
       }
       if (sel) {
         sel.innerHTML =
-          (myRep ? "" : `<option value="">${escapeHtml(t("selectPurchasingRepresentative"))}</option>`) +
+          (myRep && !viewAll ? "" : `<option value="">${escapeHtml(t("selectPurchasingRepresentative"))}</option>`) +
           reps
             .map((r) => `<option value="${escapeAttr(r.id)}">${escapeHtml((r.name || "").trim() || r.id)}</option>`)
             .join("");
-        if (myRep) {
+        if (myRep && !viewAll) {
           sel.value = myRep.id;
           sel.disabled = true;
         } else {
           sel.disabled = false;
-          const filtered = ($("rep-adv-filter-rep")?.value || "").trim();
+          const filtered =
+            ($("rep-desk-filter-rep")?.value || "").trim() ||
+            ($("rep-adv-filter-rep")?.value || "").trim();
           if (filtered) sel.value = filtered;
         }
       }
       $("modal-rep-advance-issue")?.classList.remove("hidden");
-      (myRep ? amount : sel)?.focus();
+      (myRep && !viewAll ? amount : sel)?.focus();
     }
 
     async function saveRepAdvanceIssueModal() {
       if (!canIssueRepCashAdvance()) return;
       const role = currentUserProfile?.role || userRole;
       let repId = ($("rep-advance-rep")?.value || "").trim();
-      if (role === "purchasing_representative") {
+      if (!canViewAllRepDesks() && role === "purchasing_representative") {
         const myRep = await resolvePurchasingRepForCurrentUser();
         if (!myRep) {
           alert(t("repNoLinkedProfile"));
@@ -28203,9 +29207,9 @@
       const adv = { id: snap.id, ...snap.data() };
       if ((adv.status || "open") !== "open") return;
       const expenses = (await fetchRepExpenses(adv.representativeId)).filter(
-        (e) => (e.advanceId || "") === id && (e.status || "posted") === "posted"
+        (e) => (e.status || "posted") === "posted" && expenseTouchesAdvance(e, id)
       );
-      const expSum = expenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+      const expSum = expenses.reduce((s, e) => s + expenseAmountOnAdvance(e, id), 0);
       const remaining = (Number(adv.amount) || 0) - expSum;
       const summary = t("repAdvanceSettleSummary")
         .replace("{amount}", String(Number(adv.amount) || 0))
