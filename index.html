@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.04.1" />
+  <meta name="app-version" content="2026.10.05.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -449,6 +449,7 @@
       text-transform: uppercase;
       color: var(--ds-on-surface-variant);
     }
+    .field label .req { color: #b91c1c; text-transform: none; letter-spacing: 0; }
 
     .field input {
       width: 100%;
@@ -6638,6 +6639,20 @@
       <p style="margin:0;font-size:0.8rem;color:var(--muted)">
         <a href="Support%20files/Commercial%20invoice%20requirements.html" target="_blank" rel="noopener" data-i18n="invoiceChecklistOpenGuide">فتح الدليل الكامل</a>
       </p>
+      <div id="invoice-checklist-email-box" style="margin-top:1rem;padding-top:0.85rem;border-top:1px solid var(--border)">
+        <div style="display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center;justify-content:space-between;margin-bottom:0.45rem">
+          <h4 style="margin:0;font-size:0.95rem" data-i18n="invoiceChecklistEmailTitle">إيميل النواقص</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+            <button type="button" class="btn btn-secondary btn-sm" id="invoice-checklist-email-gen" data-i18n="invoiceChecklistEmailGen">توليد الإيميل</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="invoice-checklist-email-copy" data-i18n="invoiceChecklistEmailCopy">نسخ</button>
+          </div>
+        </div>
+        <p class="sub" style="margin:0 0 0.4rem;color:var(--muted);font-size:0.8rem" data-i18n="invoiceChecklistEmailHint">
+          يُنشأ نص جاهز للنسخ حسب البنود غير المؤشّرة. يمكنك تعديله قبل النسخ.
+        </p>
+        <textarea id="invoice-checklist-email-text" rows="8" style="width:100%;font:inherit;line-height:1.55;padding:0.65rem 0.75rem;border:1px solid var(--border);border-radius:10px;resize:vertical;box-sizing:border-box" dir="auto"></textarea>
+        <p id="invoice-checklist-email-msg" class="sub" style="margin:0.35rem 0 0;font-size:0.8rem;color:var(--muted);min-height:1.2em"></p>
+      </div>
       <div class="modal-actions" style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:flex-end;margin-top:1rem">
         <button type="button" class="btn btn-secondary" id="invoice-checklist-reset" data-i18n="invoiceChecklistReset">مسح التأشير</button>
         <button type="button" class="btn btn-secondary" id="invoice-checklist-cancel" data-i18n="cancel">إلغاء</button>
@@ -6819,6 +6834,18 @@
         <input type="date" id="rep-expense-date" />
       </div>
       <div class="field">
+        <label for="rep-expense-vendor" data-i18n="repExpenseVendorLabel">المجهز</label>
+        <input type="text" id="rep-expense-vendor" autocomplete="organization" />
+      </div>
+      <div class="field">
+        <label for="rep-expense-receipt-no" data-i18n="repExpenseReceiptNoLabel">رقم إيصال الشراء</label>
+        <input type="text" id="rep-expense-receipt-no" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="rep-expense-receipt-date" data-i18n="repExpenseReceiptDateLabel">تاريخ إيصال الشراء</label>
+        <input type="date" id="rep-expense-receipt-date" />
+      </div>
+      <div class="field">
         <label for="rep-expense-advance" data-i18n="repExpenseAdvanceLabel">السلفة (اختياري)</label>
         <select id="rep-expense-advance"></select>
       </div>
@@ -6837,7 +6864,7 @@
           style="margin-top:.35rem;max-height:200px;overflow:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface, #fff)"
         ></div>
         <div id="rep-expense-po-selected" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem"></div>
-        <p class="user-form-hint" style="margin:.35rem 0 0" data-i18n="repExpensePoSearchHint">اكتب للبحث ثم اختر الطلب لإضافته. يمكن ربط أكثر من طلب.</p>
+        <p class="user-form-hint" style="margin:.35rem 0 0" data-i18n="repExpensePoSearchHint">اختياري: ابحث ثم اختر طلباً للربط. يمكن الحفظ بدون طلب شراء، أو ربط أكثر من طلب.</p>
       </div>
       <div class="field">
         <label for="rep-expense-note" data-i18n="repNoteLabel">ملاحظة</label>
@@ -7724,6 +7751,23 @@
         invoiceCheckItem_baiduLocationHint:
           "رابط أو إحداثيات موقع المستفيد (المُصدِّر) مطابق للعنوان في الفاتورة. إضافة تنظيمية داخلية.",
         invoiceChecklistSaved: "تم حفظ تدقيق الفاتورة.",
+        invoiceChecklistEmailTitle: "إيميل النواقص",
+        invoiceChecklistEmailHint: "يُنشأ نص جاهز للنسخ حسب البنود غير المؤشّرة. يمكنك تعديله قبل النسخ.",
+        invoiceChecklistEmailGen: "توليد الإيميل",
+        invoiceChecklistEmailCopy: "نسخ",
+        invoiceChecklistEmailCopied: "تم نسخ الإيميل.",
+        invoiceChecklistEmailCopyFail: "تعذّر النسخ. حدّد النص وانسخه يدوياً.",
+        invoiceChecklistEmailNoGaps: "لا توجد نواقص — الفاتورة مستوفية للمتطلبات حسب التدقيق الحالي.",
+        invoiceChecklistEmailSubject: "الموضوع: نواقص في الفاتورة التجارية — {po}",
+        invoiceChecklistEmailGreeting: "السادة / {supplier}",
+        invoiceChecklistEmailHello: "تحية طيبة،",
+        invoiceChecklistEmailIntro:
+          "بالإشارة إلى أمر الشراء رقم {po} وعقد البيع رقم {sc}، نرجو استكمال النواقص التالية في الفاتورة التجارية وفق متطلبات البنك المركزي العراقي (تعميم دائرة الرقابة على المصارف رقم 9/4/267 في 2025/10/15):",
+        invoiceChecklistEmailTypeMissing:
+          "كما نرجو اعتماد أحد نوعي الفاتورة المقبولين: (أ) الفاتورة التجارية النهائية، أو (ب) الفاتورة الأولية مع عقد البيع — على أن تتضمن الفاتورة النهائية كافة بيانات الفاتورة الأولية.",
+        invoiceChecklistEmailClosing: "شاكرين تعاونكم، وتفضلوا بقبول فائق الاحترام.",
+        invoiceChecklistEmailSupplierFallback: "المورد المحترم",
+        invoiceChecklistEmailMissingHeader: "النواقص:",
         repDeskTitle: "مكتب المندوب",
         repDeskHint: "سجّل السلفة النقدية التي استلمتها، تابع رصيدك، وأدخل مصروفاتك مع ربطها بطلبات الشراء.",
         repDeskExpensesTitle: "مصروفاتي",
@@ -7744,10 +7788,15 @@
         repNoteLabel: "ملاحظة",
         repExpenseDateLabel: "تاريخ الصرف",
         repAdvanceDateLabel: "تاريخ الاستلام",
+        repExpenseVendorLabel: "المجهز",
+        repExpenseReceiptNoLabel: "رقم إيصال الشراء",
+        repExpenseReceiptDateLabel: "تاريخ إيصال الشراء",
+        repColAdvanceSpent: "المصروف من السلفة",
+        repColAdvanceRemaining: "الباقي من السلفة",
         repExpenseAdvanceLabel: "السلفة (اختياري)",
-        repExpensePosLabel: "طلبات الشراء المرتبطة",
+        repExpensePosLabel: "طلبات الشراء المرتبطة (اختياري)",
         repExpensePoSearchPlaceholder: "ابحث برقم الطلب أو المرجع…",
-        repExpensePoSearchHint: "اكتب للبحث ثم اختر الطلب لإضافته. يمكن ربط أكثر من طلب.",
+        repExpensePoSearchHint: "اختياري: ابحث ثم اختر طلباً للربط. يمكن الحفظ بدون طلب شراء، أو ربط أكثر من طلب.",
         repExpensePoNoResults: "لا توجد نتائج مطابقة.",
         repSettleReturnLabel: "مبلغ المرتجع النقدي",
         modalRepExpenseTitle: "تسجيل مصروف",
@@ -8944,6 +8993,23 @@
         invoiceCheckItem_baiduLocationHint:
           "Baidu Maps link or coordinates matching the invoice address. Internal added requirement.",
         invoiceChecklistSaved: "Invoice check saved.",
+        invoiceChecklistEmailTitle: "Deficiency email",
+        invoiceChecklistEmailHint: "Builds a copy-ready email from unticked items. You can edit it before copying.",
+        invoiceChecklistEmailGen: "Generate email",
+        invoiceChecklistEmailCopy: "Copy",
+        invoiceChecklistEmailCopied: "Email copied.",
+        invoiceChecklistEmailCopyFail: "Could not copy. Select the text and copy manually.",
+        invoiceChecklistEmailNoGaps: "No deficiencies — the invoice meets the requirements based on the current check.",
+        invoiceChecklistEmailSubject: "Subject: Commercial invoice deficiencies — {po}",
+        invoiceChecklistEmailGreeting: "Dear {supplier},",
+        invoiceChecklistEmailHello: "",
+        invoiceChecklistEmailIntro:
+          "With reference to Purchase Order No. {po} and Sales Contract No. {sc}, please complete the following missing items on the commercial invoice in line with the Central Bank of Iraq requirements (Banking Supervision Dept. Circular No. 9/4/267 dated 15 Oct 2025):",
+        invoiceChecklistEmailTypeMissing:
+          "Please also adopt one of the accepted invoice types: (A) Final commercial invoice, or (B) Proforma invoice + sales contract — provided the final invoice contains all proforma details.",
+        invoiceChecklistEmailClosing: "Thank you for your cooperation.",
+        invoiceChecklistEmailSupplierFallback: "Supplier",
+        invoiceChecklistEmailMissingHeader: "Missing items:",
         roleOptPurchasingRepresentative: "Purchasing representative",
         repDeskTitle: "Representative desk",
         repDeskHint: "Record cash advances you received, track your balance, and enter expenses linked to purchase orders.",
@@ -8965,10 +9031,15 @@
         repNoteLabel: "Note",
         repExpenseDateLabel: "Expense date",
         repAdvanceDateLabel: "Received date",
+        repExpenseVendorLabel: "Supplier",
+        repExpenseReceiptNoLabel: "Purchase receipt No.",
+        repExpenseReceiptDateLabel: "Purchase receipt date",
+        repColAdvanceSpent: "Spent from advance",
+        repColAdvanceRemaining: "Remaining on advance",
         repExpenseAdvanceLabel: "Advance (optional)",
-        repExpensePosLabel: "Linked purchase orders",
+        repExpensePosLabel: "Linked purchase orders (optional)",
         repExpensePoSearchPlaceholder: "Search by PO number or reference…",
-        repExpensePoSearchHint: "Type to search, then select a request to add. Multiple requests are allowed.",
+        repExpensePoSearchHint: "Optional: search and select a request to link. You can save without a purchase order, or link more than one.",
         repExpensePoNoResults: "No matching results.",
         repSettleReturnLabel: "Cash returned",
         modalRepExpenseTitle: "Record expense",
@@ -24700,11 +24771,14 @@
           btn.addEventListener("click", () => {
             const row = rows.find((x) => x.id === btn.dataset.id);
             const g = row?.generalForm && typeof row.generalForm === "object" ? row.generalForm : null;
+            const poRef = (g?.poNumber || row?.title || "").trim();
             openInvoiceChecklistModal({
               mode: "po",
               poId: btn.dataset.id,
               checklist: g?.invoiceChecklist,
-              poRef: (g?.poNumber || row?.title || "").trim(),
+              poRef,
+              scRef: (g?.salesContractNumber || "").trim() || salesContractNumberFromPo(poRef),
+              supplier: (row?.supplierName || g?.vendor?.name || "").trim(),
             });
           });
         });
@@ -27204,24 +27278,148 @@
       }
     }
 
+    function fillInvoiceEmailTemplate(key, vars) {
+      let s = t(key);
+      Object.entries(vars || {}).forEach(([k, v]) => {
+        s = s.split(`{${k}}`).join(v == null || v === "" ? t("dash") : String(v));
+      });
+      return s;
+    }
+
+    function collectInvoiceChecklistEmailMeta() {
+      const ctx = invoiceChecklistModalCtx || {};
+      let poRef = (ctx.poRef || "").trim();
+      let scRef = (ctx.scRef || "").trim();
+      let supplier = (ctx.supplier || "").trim();
+      if (ctx.mode === "editor") {
+        const mount = getGeneralPo007Mount();
+        poRef =
+          (mount?.querySelector('[data-po007="po-number"]')?.textContent || "").trim() || poRef || t("dash");
+        scRef =
+          (mount?.querySelector('[data-po007="sales-contract-number"]')?.textContent || "").trim() ||
+          salesContractNumberFromPo(poRef) ||
+          scRef ||
+          t("dash");
+        supplier =
+          (mount?.querySelector('[data-po007="seller"]')?.textContent || "").trim() ||
+          supplier ||
+          t("invoiceChecklistEmailSupplierFallback");
+      } else {
+        if (!scRef && poRef) scRef = salesContractNumberFromPo(poRef);
+        if (!supplier) supplier = t("invoiceChecklistEmailSupplierFallback");
+      }
+      return {
+        po: poRef || t("dash"),
+        sc: scRef || t("dash"),
+        supplier: supplier || t("invoiceChecklistEmailSupplierFallback"),
+      };
+    }
+
+    function buildInvoiceDeficiencyEmail(cl, meta) {
+      const c = normalizeInvoiceChecklist(cl);
+      const missingIds = INVOICE_CHECKLIST_ITEM_IDS.filter((id) => !c.checked[id]);
+      const typeMissing = !c.invoiceType;
+      if (!missingIds.length && !typeMissing) {
+        return { text: "", complete: true };
+      }
+      const m = meta || collectInvoiceChecklistEmailMeta();
+      const lines = [];
+      lines.push(fillInvoiceEmailTemplate("invoiceChecklistEmailSubject", m));
+      lines.push("");
+      lines.push(fillInvoiceEmailTemplate("invoiceChecklistEmailGreeting", m));
+      const hello = (t("invoiceChecklistEmailHello") || "").trim();
+      if (hello) lines.push(hello);
+      lines.push("");
+      lines.push(fillInvoiceEmailTemplate("invoiceChecklistEmailIntro", m));
+      lines.push("");
+      if (missingIds.length) {
+        lines.push(t("invoiceChecklistEmailMissingHeader"));
+        missingIds.forEach((id, i) => {
+          lines.push(`${i + 1}. ${t(`invoiceCheckItem_${id}`)}`);
+        });
+        lines.push("");
+      }
+      if (typeMissing) {
+        lines.push(t("invoiceChecklistEmailTypeMissing"));
+        lines.push("");
+      }
+      lines.push(t("invoiceChecklistEmailClosing"));
+      return { text: lines.join("\n").trim() + "\n", complete: false };
+    }
+
+    function generateInvoiceChecklistEmail() {
+      const cl = readInvoiceChecklistFromModal();
+      const built = buildInvoiceDeficiencyEmail(cl);
+      const ta = $("invoice-checklist-email-text");
+      const msg = $("invoice-checklist-email-msg");
+      if (built.complete) {
+        if (ta) ta.value = "";
+        if (msg) msg.textContent = t("invoiceChecklistEmailNoGaps");
+        return;
+      }
+      if (ta) ta.value = built.text;
+      if (msg) msg.textContent = "";
+      ta?.focus();
+      ta?.select();
+    }
+
+    async function copyInvoiceChecklistEmail() {
+      const ta = $("invoice-checklist-email-text");
+      const msg = $("invoice-checklist-email-msg");
+      let text = (ta?.value || "").trim();
+      if (!text) {
+        generateInvoiceChecklistEmail();
+        text = (ta?.value || "").trim();
+      }
+      if (!text) {
+        if (msg) msg.textContent = t("invoiceChecklistEmailNoGaps");
+        return;
+      }
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          ta.focus();
+          ta.select();
+          document.execCommand("copy");
+        }
+        if (msg) msg.textContent = t("invoiceChecklistEmailCopied");
+      } catch (_) {
+        ta?.focus();
+        ta?.select();
+        if (msg) msg.textContent = t("invoiceChecklistEmailCopyFail");
+      }
+    }
+
     function openInvoiceChecklistModal(opts) {
       const mode = opts?.mode === "po" ? "po" : "editor";
       const poId = (opts?.poId || "").trim();
       let cl = emptyInvoiceChecklist();
       let refText = "";
+      let scRef = (opts?.scRef || "").trim();
+      let supplier = (opts?.supplier || "").trim();
       if (mode === "editor") {
         if (generalPo007EditorMode === "template") return;
         cl = normalizeInvoiceChecklist(generalPoInvoiceChecklistDraft);
+        const mount = getGeneralPo007Mount();
         refText =
-          (getGeneralPo007Mount()?.querySelector('[data-po007="po-number"]')?.textContent || "").trim() ||
-          t("dash");
+          (mount?.querySelector('[data-po007="po-number"]')?.textContent || "").trim() || t("dash");
+        scRef =
+          (mount?.querySelector('[data-po007="sales-contract-number"]')?.textContent || "").trim() ||
+          salesContractNumberFromPo(refText);
+        supplier = (mount?.querySelector('[data-po007="seller"]')?.textContent || "").trim();
       } else {
         cl = normalizeInvoiceChecklist(opts?.checklist);
         refText = (opts?.poRef || "").trim() || t("dash");
+        if (!scRef) scRef = salesContractNumberFromPo(refText);
       }
-      invoiceChecklistModalCtx = { mode, poId, poRef: refText };
+      invoiceChecklistModalCtx = { mode, poId, poRef: refText, scRef, supplier };
       const refEl = $("invoice-checklist-po-ref");
       if (refEl) refEl.textContent = refText;
+      const ta = $("invoice-checklist-email-text");
+      const msg = $("invoice-checklist-email-msg");
+      if (ta) ta.value = "";
+      if (msg) msg.textContent = "";
       renderInvoiceChecklistModalBody(cl);
       $("modal-invoice-checklist")?.classList.remove("hidden");
     }
@@ -27229,6 +27427,10 @@
     function closeInvoiceChecklistModal() {
       $("modal-invoice-checklist")?.classList.add("hidden");
       invoiceChecklistModalCtx = null;
+      const ta = $("invoice-checklist-email-text");
+      const msg = $("invoice-checklist-email-msg");
+      if (ta) ta.value = "";
+      if (msg) msg.textContent = "";
     }
 
     async function persistInvoiceChecklistToPo(poId, cl) {
@@ -27447,12 +27649,26 @@
       </div>`;
     }
 
-    function renderRepAdvancesTableHtml(rows, { canSettle } = {}) {
+    function computeRepAdvanceSpentMap(expenses) {
+      const map = {};
+      (expenses || []).forEach((e) => {
+        if ((e.status || "posted") !== "posted") return;
+        const aid = (e.advanceId || "").trim();
+        if (!aid) return;
+        map[aid] = (map[aid] || 0) + (Number(e.amount) || 0);
+      });
+      return map;
+    }
+
+    function renderRepAdvancesTableHtml(rows, { canSettle, expenses } = {}) {
       if (!rows.length) return `<p class="empty-state">${escapeHtml(t("emptyRepAdvances"))}</p>`;
+      const spentMap = computeRepAdvanceSpentMap(expenses);
       return `<div class="table-scroll"><table class="data-table">
         <thead><tr>
           <th>${escapeHtml(t("colPurchasingRepresentative"))}</th>
           <th>${escapeHtml(t("repAmountLabel"))}</th>
+          <th>${escapeHtml(t("repColAdvanceSpent"))}</th>
+          <th>${escapeHtml(t("repColAdvanceRemaining"))}</th>
           <th>${escapeHtml(t("repColIssuedAt"))}</th>
           <th>${escapeHtml(t("repAdvanceStatusLabel"))}</th>
           <th>${escapeHtml(t("repNoteLabel"))}</th>
@@ -27467,13 +27683,19 @@
                 canSettle && (r.status || "open") === "open"
                   ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-settle" data-id="${escapeAttr(r.id)}">${escapeHtml(t("btnRepAdvanceSettle"))}</button>`
                   : "";
+              const amt = Number(r.amount) || 0;
+              const spent = Number(spentMap[r.id]) || 0;
+              const returned = (r.status || "") === "settled" ? Number(r.returnAmount) || 0 : 0;
+              const remaining = amt - spent - returned;
               return `<tr>
                 <td>${escapeHtml((r.representativeName || "").trim() || t("dash"))}</td>
-                <td>${escapeHtml(formatRepMoney(r.amount, r.currency))}</td>
+                <td>${escapeHtml(formatRepMoney(amt, r.currency))}</td>
+                <td>${escapeHtml(formatRepMoney(spent, r.currency))}</td>
+                <td><strong>${escapeHtml(formatRepMoney(remaining, r.currency))}</strong></td>
                 <td>${escapeHtml((r.issuedDate || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(st)}</td>
                 <td>${escapeHtml((r.note || "").trim() || t("dash"))}</td>
-                <td>${(r.status || "") === "settled" ? escapeHtml(formatRepMoney(r.returnAmount || 0, r.currency)) : escapeHtml(t("dash"))}</td>
+                <td>${(r.status || "") === "settled" ? escapeHtml(formatRepMoney(returned, r.currency)) : escapeHtml(t("dash"))}</td>
                 <td>${settleBtn}</td>
               </tr>`;
             })
@@ -27488,6 +27710,9 @@
         <thead><tr>
           <th>${escapeHtml(t("colPurchasingRepresentative"))}</th>
           <th>${escapeHtml(t("repAmountLabel"))}</th>
+          <th>${escapeHtml(t("repExpenseVendorLabel"))}</th>
+          <th>${escapeHtml(t("repExpenseReceiptNoLabel"))}</th>
+          <th>${escapeHtml(t("repExpenseReceiptDateLabel"))}</th>
           <th>${escapeHtml(t("repColSpentAt"))}</th>
           <th>${escapeHtml(t("repColLinkedPos"))}</th>
           <th>${escapeHtml(t("repNoteLabel"))}</th>
@@ -27499,6 +27724,9 @@
               return `<tr>
                 <td>${escapeHtml((r.representativeName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(formatRepMoney(r.amount, r.currency))}</td>
+                <td>${escapeHtml((r.vendorName || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.receiptNumber || "").trim() || t("dash"))}</td>
+                <td>${escapeHtml((r.receiptDate || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.spentAt || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(refs.length ? refs.join(" · ") : t("dash"))}</td>
                 <td>${escapeHtml((r.note || "").trim() || t("dash"))}</td>
@@ -27537,7 +27765,7 @@
         const [advances, expenses] = await Promise.all([fetchRepAdvances(repId), fetchRepExpenses(repId)]);
         bal.innerHTML = renderRepBalanceCardsHtml(computeRepBalancesByCurrency(advances, expenses));
         expWrap.innerHTML = renderRepExpensesTableHtml(expenses);
-        advWrap.innerHTML = renderRepAdvancesTableHtml(advances, { canSettle: false });
+        advWrap.innerHTML = renderRepAdvancesTableHtml(advances, { canSettle: false, expenses });
         const issueBtn = $("btn-rep-desk-advance-issue");
         if (issueBtn) issueBtn.classList.toggle("hidden", !canIssueRepCashAdvance());
       } catch (e) {
@@ -27629,7 +27857,7 @@
         let advFiltered = advances;
         if (filterStatus) advFiltered = advances.filter((a) => (a.status || "open") === filterStatus);
         balWrap.innerHTML = renderRepBalanceCardsHtml(computeRepBalancesByCurrency(advances, expenses));
-        listWrap.innerHTML = renderRepAdvancesTableHtml(advFiltered, { canSettle });
+        listWrap.innerHTML = renderRepAdvancesTableHtml(advFiltered, { canSettle, expenses });
         expWrap.innerHTML = renderRepExpensesTableHtml(expenses);
         listWrap.querySelectorAll(".btn-rep-settle").forEach((btn) => {
           btn.addEventListener("click", () => void openRepAdvanceSettleModal(btn.dataset.id));
@@ -27758,28 +27986,41 @@
       const amount = $("rep-expense-amount");
       const currency = $("rep-expense-currency");
       const dateInp = $("rep-expense-date");
+      const vendor = $("rep-expense-vendor");
+      const receiptNo = $("rep-expense-receipt-no");
+      const receiptDate = $("rep-expense-receipt-date");
       const note = $("rep-expense-note");
       const advSel = $("rep-expense-advance");
       const search = $("rep-expense-po-search");
       if (amount) amount.value = "";
       if (currency) currency.value = "IQD";
       if (dateInp) dateInp.value = formatTodayYmd();
+      if (vendor) vendor.value = "";
+      if (receiptNo) receiptNo.value = "";
+      if (receiptDate) receiptDate.value = "";
       if (note) note.value = "";
       if (search) search.value = "";
       repExpenseSelectedPos = [];
       renderRepExpenseSelectedPos();
       $("rep-expense-po-results")?.classList.add("hidden");
-      const advances = (await fetchRepAdvances(rep.id)).filter((a) => (a.status || "open") === "open");
+      const [advancesAll, expensesAll] = await Promise.all([
+        fetchRepAdvances(rep.id),
+        fetchRepExpenses(rep.id),
+      ]);
+      const spentMap = computeRepAdvanceSpentMap(expensesAll);
+      const advances = advancesAll.filter((a) => (a.status || "open") === "open");
       if (advSel) {
         advSel.innerHTML =
           `<option value="">${escapeHtml(t("repSelectAdvanceNone"))}</option>` +
           advances
-            .map(
-              (a) =>
-                `<option value="${escapeAttr(a.id)}">${escapeHtml(
-                  `${formatRepMoney(a.amount, a.currency)} — ${(a.issuedDate || "").trim() || a.id}`
-                )}</option>`
-            )
+            .map((a) => {
+              const amt = Number(a.amount) || 0;
+              const spent = Number(spentMap[a.id]) || 0;
+              const rem = amt - spent;
+              return `<option value="${escapeAttr(a.id)}">${escapeHtml(
+                `${formatRepMoney(amt, a.currency)} — ${t("repColAdvanceRemaining")}: ${formatRepMoney(rem, a.currency)} — ${(a.issuedDate || "").trim() || a.id}`
+              )}</option>`;
+            })
             .join("");
       }
       try {
@@ -27787,6 +28028,11 @@
       } catch (e) {
         console.error(e);
         repExpensePoSearchCache = [];
+      }
+      const saveBtn = $("modal-rep-expense-save");
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.removeAttribute("title");
       }
       $("modal-rep-expense")?.classList.remove("hidden");
       amount?.focus();
@@ -27805,14 +28051,13 @@
       }
       const currency = ($("rep-expense-currency")?.value || "IQD").trim() || "IQD";
       const spentAt = ($("rep-expense-date")?.value || formatTodayYmd()).slice(0, 10);
+      const vendorName = ($("rep-expense-vendor")?.value || "").trim();
+      const receiptNumber = ($("rep-expense-receipt-no")?.value || "").trim();
+      const receiptDate = ($("rep-expense-receipt-date")?.value || "").trim().slice(0, 10) || null;
       const note = ($("rep-expense-note")?.value || "").trim();
       const advanceId = ($("rep-expense-advance")?.value || "").trim() || null;
-      const poIds = repExpenseSelectedPos.map((p) => p.id);
-      const poRefs = repExpenseSelectedPos.map((p) => p.ref);
-      if (!poIds.length) {
-        alert(t("repSelectPoRequired"));
-        return;
-      }
+      const poIds = repExpenseSelectedPos.map((p) => p.id).filter(Boolean);
+      const poRefs = repExpenseSelectedPos.map((p) => p.ref).filter(Boolean);
       try {
         await addDoc(collection(db, REP_EXPENSES_COL), {
           representativeId: rep.id,
@@ -27820,6 +28065,9 @@
           amount,
           currency,
           spentAt,
+          vendorName: vendorName || null,
+          receiptNumber: receiptNumber || null,
+          receiptDate,
           note: note || null,
           advanceId,
           purchaseOrderIds: poIds,
@@ -29610,7 +29858,13 @@
     $("invoice-checklist-save")?.addEventListener("click", () => void saveInvoiceChecklistModal());
     $("invoice-checklist-reset")?.addEventListener("click", () => {
       renderInvoiceChecklistModalBody(emptyInvoiceChecklist());
+      const ta = $("invoice-checklist-email-text");
+      const msg = $("invoice-checklist-email-msg");
+      if (ta) ta.value = "";
+      if (msg) msg.textContent = "";
     });
+    $("invoice-checklist-email-gen")?.addEventListener("click", () => generateInvoiceChecklistEmail());
+    $("invoice-checklist-email-copy")?.addEventListener("click", () => void copyInvoiceChecklistEmail());
     $("po007-items-bulk-cancel")?.addEventListener("click", closePo007ItemsBulkInsertModal);
     $("po007-items-bulk-apply")?.addEventListener("click", applyPo007ItemsBulkInsert);
     $("po007-editor-preview")?.addEventListener("click", () => {
