@@ -621,6 +621,41 @@
       return merged;
     }
 
+    function defaultItemsColumnWidths() {
+      return {
+        no: 4,
+        item: 12,
+        desc: 28,
+        unit: 7,
+        qty: 6,
+        included: 8,
+        unitPrice: 12,
+        total: 12,
+        remarks: 11,
+      };
+    }
+
+    function defaultItemsColumnWidth(colId) {
+      const d = defaultItemsColumnWidths();
+      return d[colId] != null ? d[colId] : 10;
+    }
+
+    function mergeItemsColumnWidths(widths, columnOrder, extraColumns) {
+      const merged = { ...defaultItemsColumnWidths() };
+      const src = widths && typeof widths === "object" ? widths : {};
+      Object.keys(src).forEach((id) => {
+        const n = Number(src[id]);
+        if (Number.isFinite(n) && n > 0) merged[id] = Math.min(60, Math.max(3, n));
+      });
+      (columnOrder || []).forEach((id) => {
+        if (merged[id] == null) merged[id] = defaultItemsColumnWidth(id);
+      });
+      (extraColumns || []).forEach((c) => {
+        if (c?.id && merged[c.id] == null) merged[c.id] = defaultItemsColumnWidth(c.id);
+      });
+      return merged;
+    }
+
     function normalizeItemsTableConfig(cfg, lang) {
       const ar = lang === "ar";
       const defaultOrder = defaultItemsColumnOrder();
@@ -643,7 +678,32 @@
       });
       const columnVisibility = mergeItemsColumnVisibility(base.columnVisibility, columnOrder, extraColumns);
       const lineNumberMode = base.lineNumberMode === "manual" ? "manual" : "auto";
-      return { columnOrder, extraColumns, columnVisibility, lineNumberMode };
+      const columnWidths = mergeItemsColumnWidths(base.columnWidths, columnOrder, extraColumns);
+      return { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths };
+    }
+
+    /** نسب الأعمدة الظاهرة في الطباعة مطبّعة إلى 100%. */
+    function itemsNormalizedPrintWidths(cfg) {
+      const ids = ["no", ...itemsPrintColumnOrder(cfg)];
+      const raw = ids.map((id) => {
+        let w = Number(cfg.columnWidths?.[id]);
+        if (!Number.isFinite(w) || w <= 0) w = defaultItemsColumnWidth(id);
+        w = Math.min(60, Math.max(3, w));
+        return { id, w };
+      });
+      const sum = raw.reduce((s, x) => s + x.w, 0) || 1;
+      const out = {};
+      raw.forEach((x) => {
+        out[x.id] = Math.round((x.w / sum) * 1000) / 10;
+      });
+      const keys = Object.keys(out);
+      if (keys.length) {
+        const s2 = keys.reduce((s, k) => s + out[k], 0);
+        const last = keys[keys.length - 1];
+        out[last] = Math.round((out[last] + (100 - s2)) * 10) / 10;
+        if (out[last] < 3) out[last] = 3;
+      }
+      return out;
     }
 
     function itemsColIsVisiblePrint(cfg, colId) {
@@ -685,8 +745,12 @@
       return "";
     }
 
-    function itemsColWidth(colId) {
+    function itemsColWidth(colId, widthMap) {
+      if (widthMap && Number.isFinite(Number(widthMap[colId]))) {
+        return `${widthMap[colId]}%`;
+      }
       const map = {
+        no: "5%",
         item: "16%",
         desc: "32%",
         unit: "8%",
@@ -1116,9 +1180,10 @@
       const afterTotalCols = totalIdx >= 0 ? Math.max(0, order.length - totalIdx - 2) : 0;
       const afterTotalCell = afterTotalCols > 0 ? `<td colspan="${afterTotalCols}"></td>` : "";
 
+      const widthMap = itemsNormalizedPrintWidths(cfg);
       const colgroup =
-        `<col style="width:5%" />` +
-        order.map((colId) => `<col style="width:${itemsColWidth(colId)}" />`).join("");
+        `<col style="width:${itemsColWidth("no", widthMap)}" />` +
+        order.map((colId) => `<col style="width:${itemsColWidth(colId, widthMap)}" />`).join("");
 
       const headCells = order
         .map((colId) => {

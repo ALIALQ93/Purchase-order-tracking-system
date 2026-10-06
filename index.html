@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.05.8" />
+  <meta name="app-version" content="2026.10.06.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -3550,6 +3550,16 @@
       opacity: 0.55;
       cursor: default;
     }
+    .po007-surface.po007-edit-mode .po007-items-col-vis-actions {
+      flex: 1 1 100%;
+      margin-top: 0.35rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid #d5dde8;
+    }
+    .po007-surface.po007-edit-mode .po007-items-reset-widths-btn {
+      width: 100%;
+      font-size: 0.78rem;
+    }
     .po007-surface.po007-edit-mode .po007-items-line-no-mode {
       display: inline-flex;
       flex-wrap: wrap;
@@ -3572,17 +3582,52 @@
     .po007-surface.po007-edit-mode .po007-items-table col.po007-col-hidden {
       display: none;
     }
+    .po007-surface.po007-edit-mode .po007-items-table thead th {
+      position: relative;
+    }
     .po007-surface.po007-edit-mode .po007-items-table thead .po007-items-th-cell {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
+      position: relative;
+      padding-inline-end: 4px;
     }
     .po007-surface.po007-edit-mode .po007-items-col-tools {
       display: flex;
       gap: 2px;
       flex-wrap: wrap;
       justify-content: center;
+    }
+    .po007-surface.po007-edit-mode .po007-col-resize {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: -4px;
+      width: 8px;
+      cursor: col-resize;
+      z-index: 8;
+      touch-action: none;
+      user-select: none;
+    }
+    .po007-surface.po007-edit-mode .po007-col-resize::after {
+      content: "";
+      position: absolute;
+      inset-block: 18%;
+      inset-inline-end: 3px;
+      width: 2px;
+      border-radius: 1px;
+      background: rgba(255, 255, 255, 0.28);
+      transition: background 0.12s ease, width 0.12s ease;
+    }
+    .po007-surface.po007-edit-mode thead th:hover .po007-col-resize::after,
+    .po007-surface.po007-edit-mode .po007-col-resize:hover::after {
+      background: rgba(255, 255, 255, 0.85);
+      width: 3px;
+    }
+    body.po007-col-resizing,
+    body.po007-col-resizing * {
+      cursor: col-resize !important;
+      user-select: none !important;
     }
     .po007-surface.po007-edit-mode .po007-items-col-move,
     .po007-surface.po007-edit-mode .po007-items-row-move {
@@ -8298,6 +8343,8 @@
         genPo007ItemsDelExtraCol: "حذف العمود",
         genPo007ItemsColVisibility: "الأعمدة",
         genPo007ItemsColVisibilityTitle: "إظهار وإخفاء الأعمدة",
+        genPo007ItemsResetColWidths: "إعادة ضبط عرض الأعمدة",
+        genPo007ItemsColResize: "سحب لتغيير عرض العمود",
         genPo007ItemsLineNoLabel: "الترقيم",
         genPo007ItemsLineNoAuto: "تلقائي",
         genPo007ItemsLineNoManual: "يدوي",
@@ -9572,6 +9619,8 @@
         genPo007ItemsDelExtraCol: "Delete column",
         genPo007ItemsColVisibility: "Columns",
         genPo007ItemsColVisibilityTitle: "Show and hide columns",
+        genPo007ItemsResetColWidths: "Reset column widths",
+        genPo007ItemsColResize: "Drag to resize column",
         genPo007ItemsLineNoLabel: "Line no.",
         genPo007ItemsLineNoAuto: "Auto",
         genPo007ItemsLineNoManual: "Manual",
@@ -10671,6 +10720,107 @@
       return ["item", "desc", "unit", "qty", "included", "unitPrice", "total", "remarks"];
     }
 
+    /** نسب افتراضية تقريبية لعرض أعمدة جدول المواد (مجموع الأعمدة الافتراضية ≈ 100). */
+    function getDefaultPo007ItemsColumnWidths() {
+      return {
+        no: 4,
+        item: 12,
+        desc: 28,
+        unit: 7,
+        qty: 6,
+        included: 8,
+        unitPrice: 12,
+        total: 12,
+        remarks: 11,
+      };
+    }
+
+    function getDefaultPo007ItemsColumnWidth(colId) {
+      const defaults = getDefaultPo007ItemsColumnWidths();
+      if (defaults[colId] != null) return defaults[colId];
+      return 10;
+    }
+
+    function mergePo007ItemsColumnWidths(widths, columnOrder, extraColumns) {
+      const merged = { ...getDefaultPo007ItemsColumnWidths() };
+      const src = widths && typeof widths === "object" ? widths : {};
+      Object.keys(src).forEach((id) => {
+        const n = Number(src[id]);
+        if (Number.isFinite(n) && n > 0) merged[id] = Math.min(60, Math.max(3, n));
+      });
+      merged.no = Number.isFinite(Number(merged.no)) ? Math.min(60, Math.max(3, Number(merged.no))) : 4;
+      (columnOrder || []).forEach((id) => {
+        if (merged[id] == null) merged[id] = getDefaultPo007ItemsColumnWidth(id);
+      });
+      (extraColumns || []).forEach((c) => {
+        if (c?.id && merged[c.id] == null) merged[c.id] = getDefaultPo007ItemsColumnWidth(c.id);
+      });
+      return merged;
+    }
+
+    function po007ItemsWidthColIds(cfg, editorMode, docLang) {
+      return ["no", ...po007ItemsVisibleColumnOrder(cfg, editorMode, docLang)];
+    }
+
+    /** نسب مئوية للأعمدة الظاهرة فقط، مطبّعة إلى مجموع 100. */
+    function po007ItemsNormalizedWidthMap(cfg, editorMode, docLang) {
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const ids = po007ItemsWidthColIds(norm, editorMode, docLang);
+      const raw = ids.map((id) => {
+        let w = Number(norm.columnWidths?.[id]);
+        if (!Number.isFinite(w) || w <= 0) w = getDefaultPo007ItemsColumnWidth(id);
+        w = Math.min(60, Math.max(3, w));
+        return { id, w };
+      });
+      const sum = raw.reduce((s, x) => s + x.w, 0) || 1;
+      const out = {};
+      raw.forEach((x) => {
+        out[x.id] = Math.round((x.w / sum) * 1000) / 10;
+      });
+      const keys = Object.keys(out);
+      if (keys.length) {
+        const s2 = keys.reduce((s, k) => s + out[k], 0);
+        const last = keys[keys.length - 1];
+        out[last] = Math.round((out[last] + (100 - s2)) * 10) / 10;
+        if (out[last] < 3) out[last] = 3;
+      }
+      return out;
+    }
+
+    function po007ItemsColWidthStyle(colId, cfg, editorMode, docLang) {
+      const map = po007ItemsNormalizedWidthMap(cfg, editorMode, docLang);
+      const w = map[colId];
+      if (!Number.isFinite(w)) return "";
+      return ` style="width:${w}%"`;
+    }
+
+    function po007ItemsColMinPx(colId) {
+      if (colId === "no" || colId === "qty") return 48;
+      if (colId === "unit" || colId === "included") return 56;
+      if (colId === "unitPrice" || colId === "total") return 64;
+      return 72;
+    }
+
+    function applyPo007ItemsColumnWidthsToTable(table, cfg, editorMode, docLang) {
+      if (!table) return;
+      const map = po007ItemsNormalizedWidthMap(cfg, editorMode, docLang);
+      table.querySelectorAll("colgroup col").forEach((col) => {
+        const id = col.getAttribute("data-po007-items-col") || (col.classList.contains("po007-col-no") ? "no" : "");
+        if (!id || map[id] == null) return;
+        col.style.width = `${map[id]}%`;
+      });
+    }
+
+    function resetPo007ItemsColumnWidths(cfg, docLang) {
+      const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const columnWidths = mergePo007ItemsColumnWidths(
+        getDefaultPo007ItemsColumnWidths(),
+        norm.columnOrder,
+        norm.extraColumns
+      );
+      return { ...norm, columnWidths };
+    }
+
     function newPo007ItemsExtraColId() {
       return `ec_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
     }
@@ -10701,7 +10851,8 @@
       });
       const columnVisibility = mergePo007ItemsColumnVisibility(base.columnVisibility, columnOrder, extraColumns);
       const lineNumberMode = base.lineNumberMode === "manual" ? "manual" : "auto";
-      return { columnOrder, extraColumns, columnVisibility, lineNumberMode };
+      const columnWidths = mergePo007ItemsColumnWidths(base.columnWidths, columnOrder, extraColumns);
+      return { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths };
     }
 
     function po007ItemsColCssClass(colId) {
@@ -10783,15 +10934,24 @@
       const remarksIdx = columnOrder.indexOf("remarks");
       if (remarksIdx >= 0) columnOrder.splice(remarksIdx, 0, id);
       else columnOrder.push(id);
-      return { columnOrder, extraColumns };
+      return {
+        ...norm,
+        columnOrder,
+        extraColumns,
+        columnWidths: { ...norm.columnWidths, [id]: getDefaultPo007ItemsColumnWidth(id) },
+      };
     }
 
     function removePo007ItemsExtraColumn(cfg, colId, docLang) {
       const norm = normalizePo007ItemsTableConfig(cfg, docLang);
       if (!isPo007ItemsExtraColId(colId)) return norm;
+      const columnWidths = { ...norm.columnWidths };
+      delete columnWidths[colId];
       return {
+        ...norm,
         columnOrder: norm.columnOrder.filter((id) => id !== colId),
         extraColumns: norm.extraColumns.filter((c) => c.id !== colId),
+        columnWidths,
       };
     }
 
@@ -10800,9 +10960,11 @@
       const base = normalizePo007ItemsTableConfig(fallback, lang);
       const table = mount?.querySelector('[data-po007="items-table"]');
       if (!table) return base;
-      const heads = [...table.querySelectorAll("thead [data-po007-items-col]")];
+      const heads = [...table.querySelectorAll("thead th[data-po007-items-col]")];
       if (!heads.length) return base;
-      const columnOrder = heads.map((h) => h.getAttribute("data-po007-items-col")).filter(Boolean);
+      const columnOrder = heads
+        .map((h) => h.getAttribute("data-po007-items-col"))
+        .filter((id) => id && id !== "no");
       const extraColumns = base.extraColumns.map((c) => ({ ...c }));
       heads.forEach((h) => {
         const colId = h.getAttribute("data-po007-items-col");
@@ -10821,7 +10983,19 @@
       let lineNumberMode = base.lineNumberMode;
       const modeRadio = mount?.querySelector('[name="po007-line-no-mode"]:checked');
       if (modeRadio) lineNumberMode = modeRadio.value === "manual" ? "manual" : "auto";
-      return normalizePo007ItemsTableConfig({ columnOrder, extraColumns, columnVisibility, lineNumberMode }, lang);
+      const columnWidths = { ...base.columnWidths };
+      table.querySelectorAll("colgroup col").forEach((col) => {
+        const id = col.getAttribute("data-po007-items-col") || (col.classList.contains("po007-col-no") ? "no" : "");
+        if (!id) return;
+        const raw = String(col.style.width || "").trim();
+        if (!raw.endsWith("%")) return;
+        const n = parseFloat(raw);
+        if (Number.isFinite(n) && n > 0) columnWidths[id] = n;
+      });
+      return normalizePo007ItemsTableConfig(
+        { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths },
+        lang
+      );
     }
 
     function po007ItemsColsAfterTotal(cfg, editorMode, docLang) {
@@ -14940,6 +15114,13 @@
       };
     }
 
+    function renderPo007ColResizeHandle(colId, isLast, docLang) {
+      if (isLast) return "";
+      return `<span class="po007-col-resize" data-po007-items-col-resize="${escapeAttr(colId)}" title="${escapeAttr(
+        tPo007(docLang, "genPo007ItemsColResize")
+      )}"></span>`;
+    }
+
     function renderPo007ItemsColHead(colId, cfg, docLang, curSuffix, colIdx, colCount) {
       const css = po007ItemsColCssClass(colId) + po007ItemsColHiddenClass(cfg, colId);
       const label = po007ItemsColLabel(colId, cfg, docLang, curSuffix);
@@ -14956,7 +15137,13 @@
         : `<span>${escapeHtml(label)}</span>`;
       const inclTitle =
         colId === "included" ? ` title="${escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"))}"` : "";
-      return `<th class="${css}" data-po007-items-col="${escapeAttr(colId)}"${inclTitle}><div class="po007-items-th-cell">${tools}${labelHtml}</div></th>`;
+      const visible = po007ItemsVisibleColumnOrder(cfg, true, docLang);
+      const visIdx = visible.indexOf(colId);
+      const resize =
+        visIdx >= 0 && visIdx < visible.length - 1
+          ? renderPo007ColResizeHandle(colId, false, docLang)
+          : "";
+      return `<th class="${css}" data-po007-items-col="${escapeAttr(colId)}"${inclTitle}><div class="po007-items-th-cell">${tools}${labelHtml}${resize}</div></th>`;
     }
 
     function renderPo007ItemsColCellEditor(colId, l, docLang, cfg) {
@@ -15028,7 +15215,10 @@
           )}"${checked ? " checked" : ""} /> ${escapeHtml(label)}</label>`;
         })
         .join("");
-      return `${lockedHtml}${hideableHtml}`;
+      const resetBtn = `<button type="button" class="btn btn-secondary btn-sm po007-items-reset-widths-btn" data-po007="items-reset-col-widths">${escapeHtml(
+        tPo007(docLang, "genPo007ItemsResetColWidths")
+      )}</button>`;
+      return `${lockedHtml}${hideableHtml}<div class="po007-items-col-vis-actions">${resetBtn}</div>`;
     }
 
     function renderPo007ItemsLineNumberModeBar(cfg, docLang) {
@@ -15159,11 +15349,18 @@
       const discountHidden = discountAmt > 0 ? "" : " po007-summary-row--hidden";
       const discountDisp =
         discountAmt > 0 ? formatPo007EditorAmount(discountAmt, docLang) : "";
-      const colgroup = `<col class="po007-col-no" />${cfg.columnOrder
-        .map(
-          (colId) =>
-            `<col class="${po007ItemsColCssClass(colId)}${po007ItemsColHiddenClass(cfg, colId)}" data-po007-items-col="${escapeAttr(colId)}" />`
-        )
+      const widthMap = po007ItemsNormalizedWidthMap(cfg, true, docLang);
+      const visibleOrder = po007ItemsVisibleColumnOrder(cfg, true, docLang);
+      const noResize =
+        visibleOrder.length > 0 ? renderPo007ColResizeHandle("no", false, docLang) : "";
+      const colgroup = `<col class="po007-col-no" data-po007-items-col="no"${
+        widthMap.no != null ? ` style="width:${widthMap.no}%"` : ""
+      } />${cfg.columnOrder
+        .map((colId) => {
+          const w = widthMap[colId];
+          const wAttr = w != null ? ` style="width:${w}%"` : "";
+          return `<col class="${po007ItemsColCssClass(colId)}${po007ItemsColHiddenClass(cfg, colId)}" data-po007-items-col="${escapeAttr(colId)}"${wAttr} />`;
+        })
         .join("")}`;
       const headCells = cfg.columnOrder
         .map((colId, i) => renderPo007ItemsColHead(colId, cfg, docLang, curSuffix, i, colCount))
@@ -15193,7 +15390,7 @@
         <table class="po007-items-table" data-po007="items-table">
           <colgroup>${colgroup}</colgroup>
           <thead><tr>
-            <th class="po007-col-no" data-po007="th-no">${escapeHtml(lbl.no)}</th>
+            <th class="po007-col-no" data-po007="th-no" data-po007-items-col="no"><div class="po007-items-th-cell"><span>${escapeHtml(lbl.no)}</span>${noResize}</div></th>
             ${headCells}
           </tr></thead>
           <tbody>
@@ -15399,6 +15596,18 @@
       panel?.classList.toggle("is-open");
     }
 
+    function syncPo007ItemsColResizeHandles(mount, cfg, docLang) {
+      const table = mount?.querySelector('[data-po007="items-table"]');
+      if (!table) return;
+      const visible = po007ItemsVisibleColumnOrder(cfg, true, docLang);
+      const ids = ["no", ...visible];
+      table.querySelectorAll("[data-po007-items-col-resize]").forEach((h) => {
+        const id = h.getAttribute("data-po007-items-col-resize");
+        const idx = ids.indexOf(id);
+        h.style.display = idx >= 0 && idx < ids.length - 1 ? "" : "none";
+      });
+    }
+
     function onPo007ItemsColVisibilityChange(colId, visible) {
       const mount = getGeneralPo007Mount();
       const docLang = getPo007DocumentLang();
@@ -15410,7 +15619,132 @@
       const nextCfg = setPo007ItemsColumnVisibility(cfg, colId, visible, docLang);
       if (generalPo007EditorCachedMeta) generalPo007EditorCachedMeta.itemsTableConfig = nextCfg;
       applyPo007ItemsColumnVisibilityInMount(mount, nextCfg);
+      applyPo007ItemsColumnWidthsToTable(
+        mount?.querySelector('[data-po007="items-table"]'),
+        nextCfg,
+        true,
+        docLang
+      );
+      syncPo007ItemsColResizeHandles(mount, nextCfg, docLang);
       syncPo007ItemsTableColspans(mount, nextCfg, docLang);
+    }
+
+    let po007ColResizeState = null;
+
+    function endPo007ItemsColResize() {
+      if (!po007ColResizeState) return;
+      const { table, mount } = po007ColResizeState;
+      document.body.classList.remove("po007-col-resizing");
+      try {
+        po007ColResizeState.handle?.releasePointerCapture?.(po007ColResizeState.pointerId);
+      } catch (_) {
+        /* ignore */
+      }
+      const docLang = getPo007DocumentLang();
+      const tableW = table?.getBoundingClientRect?.().width || 0;
+      if (table && tableW > 0) {
+        const heads = [...table.querySelectorAll("thead th")].filter(
+          (th) => !th.classList.contains("po007-col-hidden")
+        );
+        const columnWidths = {
+          ...(generalPo007EditorCachedMeta?.itemsTableConfig?.columnWidths || {}),
+        };
+        heads.forEach((th) => {
+          const id = th.getAttribute("data-po007-items-col") || "";
+          if (!id) return;
+          const px = th.getBoundingClientRect().width;
+          const pct = Math.round((px / tableW) * 1000) / 10;
+          if (Number.isFinite(pct) && pct > 0) columnWidths[id] = Math.min(60, Math.max(3, pct));
+        });
+        const cfg = readPo007ItemsTableConfigFromMount(
+          mount,
+          {
+            ...(generalPo007EditorCachedMeta?.itemsTableConfig || {}),
+            columnWidths,
+          },
+          docLang
+        );
+        const next = { ...cfg, columnWidths: { ...cfg.columnWidths, ...columnWidths } };
+        if (generalPo007EditorCachedMeta) generalPo007EditorCachedMeta.itemsTableConfig = next;
+        applyPo007ItemsColumnWidthsToTable(table, next, true, docLang);
+      }
+      po007ColResizeState = null;
+    }
+
+    function po007ItemsVisibleColEls(table) {
+      const cols = [...table.querySelectorAll("colgroup col")].filter(
+        (c) => !c.classList.contains("po007-col-hidden")
+      );
+      const heads = [...table.querySelectorAll("thead th")].filter(
+        (th) => !th.classList.contains("po007-col-hidden")
+      );
+      return cols.map((col, i) => {
+        const id =
+          col.getAttribute("data-po007-items-col") ||
+          heads[i]?.getAttribute("data-po007-items-col") ||
+          (col.classList.contains("po007-col-no") ? "no" : "");
+        return { col, th: heads[i] || null, id };
+      }).filter((x) => x.id);
+    }
+
+    function onPo007ItemsColResizePointerDown(e) {
+      const handle = e.target.closest("[data-po007-items-col-resize]");
+      if (!handle) return;
+      const mount = getGeneralPo007Mount();
+      const table = handle.closest(".po007-items-table");
+      if (!mount || !table || !mount.contains(table)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const colId = handle.getAttribute("data-po007-items-col-resize");
+      const visible = po007ItemsVisibleColEls(table);
+      const idx = visible.findIndex((x) => x.id === colId);
+      if (idx < 0 || idx >= visible.length - 1) return;
+      const a = visible[idx];
+      const b = visible[idx + 1];
+      const wA = a.th?.getBoundingClientRect().width || a.col.getBoundingClientRect().width;
+      const wB = b.th?.getBoundingClientRect().width || b.col.getBoundingClientRect().width;
+      if (!(wA > 0) || !(wB > 0)) return;
+      const rtl = getComputedStyle(table).direction === "rtl";
+      po007ColResizeState = {
+        pointerId: e.pointerId,
+        handle,
+        table,
+        mount,
+        colA: a.col,
+        colB: b.col,
+        idA: a.id,
+        idB: b.id,
+        startX: e.clientX,
+        startWA: wA,
+        startWB: wB,
+        pair: wA + wB,
+        rtl,
+        minA: po007ItemsColMinPx(a.id),
+        minB: po007ItemsColMinPx(b.id),
+      };
+      document.body.classList.add("po007-col-resizing");
+      try {
+        handle.setPointerCapture(e.pointerId);
+      } catch (_) {
+        /* ignore */
+      }
+    }
+
+    function onPo007ItemsColResizePointerMove(e) {
+      const st = po007ColResizeState;
+      if (!st || e.pointerId !== st.pointerId) return;
+      e.preventDefault();
+      const delta = (e.clientX - st.startX) * (st.rtl ? -1 : 1);
+      let newA = st.startWA + delta;
+      newA = Math.max(st.minA, Math.min(st.pair - st.minB, newA));
+      const newB = st.pair - newA;
+      st.colA.style.width = `${newA}px`;
+      st.colB.style.width = `${newB}px`;
+    }
+
+    function onPo007ItemsColResizePointerUp(e) {
+      if (!po007ColResizeState || e.pointerId !== po007ColResizeState.pointerId) return;
+      endPo007ItemsColResize();
     }
 
     function formatPo007GrandTotalDisplay(sum, curSuffix, docLang) {
@@ -15839,6 +16173,13 @@
           reloadGeneralPo007Editor({ customSections });
         });
       }
+      if (!mount.dataset.po007ColResizeWired) {
+        mount.dataset.po007ColResizeWired = "1";
+        mount.addEventListener("pointerdown", onPo007ItemsColResizePointerDown);
+        mount.addEventListener("pointermove", onPo007ItemsColResizePointerMove);
+        mount.addEventListener("pointerup", onPo007ItemsColResizePointerUp);
+        mount.addEventListener("pointercancel", onPo007ItemsColResizePointerUp);
+      }
       mount.onclick = (e) => {
         const secActionBtn = e.target.closest("[data-po007-sec-action]");
         if (secActionBtn) {
@@ -15994,6 +16335,17 @@
         if (e.target.closest('[data-po007="items-col-visibility"]')) {
           e.preventDefault();
           togglePo007ItemsColVisibilityPanel();
+          return;
+        }
+        if (e.target.closest('[data-po007="items-reset-col-widths"]')) {
+          e.preventDefault();
+          const docLang = getPo007DocumentLang();
+          const cfg = readPo007ItemsTableConfigFromMount(
+            mount,
+            generalPo007EditorCachedMeta?.itemsTableConfig,
+            docLang
+          );
+          reloadGeneralPo007ItemsTableConfig(resetPo007ItemsColumnWidths(cfg, docLang));
           return;
         }
         if (e.target.closest('[data-po007="items-renumber"]')) {
@@ -16371,16 +16723,18 @@
       if (!mount) return;
       generalPo007EditorPo = po || {};
       const model = generalFormForEditor(g, po);
+      model.documentLang = getPo007DocumentLang();
+      model.currency = getPo007MetaCurrency();
+      model.poDate = getPo007MetaPoDateIso();
+      model.itemsTableConfig = normalizePo007ItemsTableConfig(model.itemsTableConfig, model.documentLang);
       generalPo007EditorCachedMeta = {
         sectionVisibility: { ...(model.sectionVisibility || {}) },
         sectionTitles: { ...(model.sectionTitles || {}) },
         sectionCustomDefaults: { ...(model.sectionCustomDefaults || {}) },
         sectionOrder: [...(model.sectionOrder || getDefaultPo007SectionOrder(model))],
         customSections: JSON.parse(JSON.stringify(model.customSections || [])),
+        itemsTableConfig: JSON.parse(JSON.stringify(model.itemsTableConfig || {})),
       };
-      model.documentLang = getPo007DocumentLang();
-      model.currency = getPo007MetaCurrency();
-      model.poDate = getPo007MetaPoDateIso();
       generalPo007EditorLogo =
         (po?.companyLogoDataUrlSnapshot || po?.companyLogoUrlSnapshot || "").trim() || generalPo007EditorLogo;
       generalPoInvoiceChecklistDraft = normalizeInvoiceChecklist(model.invoiceChecklist);
@@ -16673,8 +17027,15 @@
       const itemsTableHtml = editorMode
         ? renderGeneralPo007EditorItemsTable(lines, g)
         : (() => {
-            const colgroup = `<col class="po007-col-no" />${printColOrder
-              .map((colId) => `<col class="${po007ItemsColCssClass(colId)}" />`)
+            const printWidthMap = po007ItemsNormalizedWidthMap(itemsCfg, false, docLang);
+            const colgroup = `<col class="po007-col-no" data-po007-items-col="no"${
+              printWidthMap.no != null ? ` style="width:${printWidthMap.no}%"` : ""
+            } />${printColOrder
+              .map((colId) => {
+                const w = printWidthMap[colId];
+                const wAttr = w != null ? ` style="width:${w}%"` : "";
+                return `<col class="${po007ItemsColCssClass(colId)}" data-po007-items-col="${escapeAttr(colId)}"${wAttr} />`;
+              })
               .join("")}`;
             const headCells = printColOrder
               .map(
