@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.06.1" />
+  <meta name="app-version" content="2026.10.06.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -660,6 +660,35 @@
       cursor: pointer;
     }
 
+    .report-card-hidden {
+      display: none !important;
+    }
+    .report-subchecks {
+      margin: 0.25rem 0 0.65rem 1.1rem;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--border, #d5dde8);
+      border-radius: 8px;
+      background: #f7f9fc;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .report-subchecks.hidden {
+      display: none;
+    }
+    .report-subchecks .report-subchecks-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted, #64748b);
+      margin-bottom: 0.15rem;
+    }
+    .report-subchecks label {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
     .section-checkboxes.section-checkboxes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
@@ -5568,7 +5597,7 @@
       <!-- التقارير -->
       <section id="screen-reports" class="app-screen hidden">
         <h1 class="page-title" data-i18n="reportsTitle">التقارير</h1>
-        <div class="card">
+        <div class="card" data-report-card="purchasing">
           <h3 data-i18n="reportPurchasingPeriodTitle">تقرير مشتريات حسب الفترة</h3>
           <div class="po-projects-toolbar-strip" style="margin-bottom:0.65rem">
             <div class="po-projects-filter-fields" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
@@ -5654,7 +5683,7 @@
           </p>
           <div id="reports-purchasing-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
-        <div class="card">
+        <div class="card" data-report-card="materials">
           <h3 data-i18n="reportMaterialsPricesTitle">تقرير المواد وأسعارها</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportMaterialsPricesHint">
             يعرض بنود طلبات الشراء (المواد) مع الكميات والأسعار لكل طلب ضمن الفترة المحددة أدناه.
@@ -5762,7 +5791,7 @@
             </div>
           </details>
         </div>
-        <div class="card">
+        <div class="card" data-report-card="pricing">
           <h3 data-i18n="reportPricingTitle">تقرير التسعير</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportPricingHint">
             ملخّص تنفيذي للتسعير: التغطية السعرية (البنود المسعّرة مقابل غير المسعّرة)، إجمالي القيمة المسعّرة، والقيمة حسب المشروع والشهر وحالة المسار ضمن الفترة المحددة.
@@ -5824,7 +5853,7 @@
           </p>
           <div id="reports-pricing-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات ضمن الفترة.</p></div>
         </div>
-        <div class="card">
+        <div class="card" data-report-card="dept-achievements">
           <h3 data-i18n="reportDeptAchievementsTitle">إنجاز الأقسام (طلبات المشاريع)</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportDeptAchievementsHint">
             يعتمد هذا التقرير على تواريخ الانتقال بين مراحل المسار (المسجلة تلقائياً عند كل إجراء). يعرض عدد الإنجازات ضمن الفترة ومتوسط زمن الانتقال من المرحلة السابقة.
@@ -5869,7 +5898,7 @@
       <!-- تقارير الإدارة العامة -->
       <section id="screen-reports-general" class="app-screen hidden">
         <h1 class="page-title" data-i18n="reportsGeneralTitle">تقارير أوامر شراء الإدارة العامة</h1>
-        <div class="card">
+        <div class="card" data-report-card="gen-status">
           <h3 data-i18n="reportGenStatusTitle">تقرير حالة الطلبات</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenStatusHint">
             توزيع أوامر شراء الإدارة العامة حسب الحالة والمشروع، إجمالي القيمة، والقيمة حسب المشروع والمورد والشهر — مع طباعة احترافية ورسوم بيانية.
@@ -5933,7 +5962,7 @@
           <div id="reports-gstatus-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات</p></div>
         </div>
 
-        <div class="card">
+        <div class="card" data-report-card="gen-materials">
           <h3 data-i18n="reportGenMatTitle">تقرير مواد الإدارة العامة</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenMatHint">
             بنود المواد في أوامر شراء الإدارة العامة مع الكميات والأسعار، قابلة للفلترة والتجميع والتصدير.
@@ -5994,7 +6023,7 @@
           <div id="reports-gmat-wrap"><p class="empty-state" data-i18n="reportNoRows">لا توجد بيانات</p></div>
         </div>
 
-        <div class="card">
+        <div class="card" data-report-card="gen-rep-advances">
           <h3 data-i18n="reportGenRepAdvTitle">تقرير سلف المندوبين</h3>
           <p class="sub" style="margin-top:0;color:var(--muted)" data-i18n="reportGenRepAdvHint">
             لكل سلفة: مبلغها، إجمالي المصروف منها، الباقي، والمصروفات المرتبطة (المجهز وإيصال الشراء والطلبات) — مع طباعة وتصدير.
@@ -7747,6 +7776,15 @@
         alertWarehouseWrongRegion: "هذا الطلب لا يتبع إحدى مناطقك المسندة.",
         alertWarehouseReviewStale: "تمت معالجة هذا الطلب أو تغيّر وضعه. حدّث القائمة.",
         labelVisibleSections: "الأقسام الظاهرة في القائمة",
+        labelVisibleReports: "التقارير الظاهرة",
+        labelVisibleReportsHint: "عند تفعيل قسم التقارير، حدّد أي تقارير تظهر للمستخدم داخل ذلك القسم.",
+        reportCard_purchasing: "تقرير مشتريات حسب الفترة",
+        reportCard_materials: "تقرير المواد وأسعارها",
+        reportCard_pricing: "تقرير التسعير",
+        reportCard_deptAchievements: "إنجاز الأقسام",
+        reportCard_genStatus: "تقرير حالة الطلبات (إدارة عامة)",
+        reportCard_genMaterials: "تقرير مواد الإدارة العامة",
+        reportCard_genRepAdvances: "تقرير سلف المندوبين",
         userFormSectionIdentity: "البيانات الأساسية",
         userFormSectionRole: "الدور والصلاحيات",
         userFormSectionNav: "القائمة والأقسام الظاهرة",
@@ -9021,6 +9059,15 @@
         alertWarehouseWrongRegion: "This request is not in any of your assigned regions.",
         alertWarehouseReviewStale: "This request was already processed or its status changed. Refresh the list.",
         labelVisibleSections: "Visible menu sections",
+        labelVisibleReports: "Visible reports",
+        labelVisibleReportsHint: "When a reports section is enabled, choose which reports appear for the user in that section.",
+        reportCard_purchasing: "Purchasing report by period",
+        reportCard_materials: "Materials and prices report",
+        reportCard_pricing: "Pricing report",
+        reportCard_deptAchievements: "Department achievements",
+        reportCard_genStatus: "Order status report (general admin)",
+        reportCard_genMaterials: "General admin materials report",
+        reportCard_genRepAdvances: "Representative advances report",
         userFormSectionIdentity: "Account details",
         userFormSectionRole: "Role & permissions",
         userFormSectionNav: "Menu & visible sections",
@@ -10136,6 +10183,16 @@
     const CHAT_READ_KEY = "pot_chat_read";
 
     const DEFAULT_VISIBLE_SECTIONS = ["dashboard", "po-projects", "po-projects-rejected", "po-general"];
+
+    /** تقارير فرعية يمكن تقييدها لكل مستخدم عند تفعيل قسم التقارير. */
+    const REPORT_CARDS_BY_SECTION = {
+      reports: ["purchasing", "materials", "pricing", "dept-achievements"],
+      "reports-general": ["gen-status", "gen-materials", "gen-rep-advances"],
+    };
+    const ALL_REPORT_CARD_IDS = [
+      ...REPORT_CARDS_BY_SECTION.reports,
+      ...REPORT_CARDS_BY_SECTION["reports-general"],
+    ];
 
     /** ترتيب حالات أوامر شراء الإدارة العامة (scope=general). */
     const GENERAL_PO_STATUS_ORDER = [
@@ -19133,11 +19190,14 @@
     }
 
     async function loadReportsScreen() {
-      await loadPurchasingReportScreen();
-      await loadMaterialsReportScreen();
-      await loadMaterialLinkScreen();
-      await loadPricingReportScreen();
-      await loadDeptAchievementsReportScreen();
+      applyReportCardVisibility();
+      if (canViewReportCard("purchasing")) await loadPurchasingReportScreen();
+      if (canViewReportCard("materials")) {
+        await loadMaterialsReportScreen();
+        await loadMaterialLinkScreen();
+      }
+      if (canViewReportCard("pricing")) await loadPricingReportScreen();
+      if (canViewReportCard("dept-achievements")) await loadDeptAchievementsReportScreen();
     }
 
     function printPurchasingReport() {
@@ -19399,6 +19459,7 @@
     }
 
     async function runDeptAchievementsReport() {
+      if (!canViewReportCard("dept-achievements")) return;
       const wrap = $("reports-dept-ach-wrap");
       if (!wrap) return;
       wrap.innerHTML = `<p class="loading">${escapeHtml(t("loading"))}</p>`;
@@ -19998,6 +20059,7 @@
     }
 
     async function runPurchasingReport() {
+      if (!canViewReportCard("purchasing")) return;
       const wrap = $("reports-purchasing-wrap");
       if (!wrap) return;
       const from = ($("rep-purch-from")?.value || "").slice(0, 10);
@@ -20249,6 +20311,7 @@
     }
 
     async function runMaterialsReport() {
+      if (!canViewReportCard("materials")) return;
       const wrap = $("reports-materials-wrap");
       if (!wrap) return;
       const from = ($("rep-mat-from")?.value || "").slice(0, 10);
@@ -20749,6 +20812,7 @@
     }
 
     async function runPricingReport() {
+      if (!canViewReportCard("pricing")) return;
       const wrap = $("reports-pricing-wrap");
       if (!wrap) return;
       const from = ($("rep-pricing-from")?.value || "").slice(0, 10);
@@ -21313,9 +21377,10 @@
     }
 
     async function loadGeneralReportsScreen() {
-      await loadGeneralStatusReportScreen();
-      await loadGeneralMaterialsReportScreen();
-      await loadGeneralRepAdvancesReportScreen();
+      applyReportCardVisibility();
+      if (canViewReportCard("gen-status")) await loadGeneralStatusReportScreen();
+      if (canViewReportCard("gen-materials")) await loadGeneralMaterialsReportScreen();
+      if (canViewReportCard("gen-rep-advances")) await loadGeneralRepAdvancesReportScreen();
     }
 
     // ---- General order-status report ----
@@ -21724,6 +21789,7 @@
     }
 
     async function runGeneralStatusReport() {
+      if (!canViewReportCard("gen-status")) return;
       const wrap = $("reports-gstatus-wrap");
       if (!wrap) return;
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
@@ -22086,6 +22152,7 @@
     }
 
     async function runGeneralMaterialsReport() {
+      if (!canViewReportCard("gen-materials")) return;
       const wrap = $("reports-gmat-wrap");
       if (!wrap) return;
       const from = ($("rep-gmat-from")?.value || "").slice(0, 10);
@@ -22474,6 +22541,7 @@
     }
 
     async function runGeneralRepAdvancesReport() {
+      if (!canViewReportCard("gen-rep-advances")) return;
       const wrap = $("reports-gadv-wrap");
       if (!wrap) return;
       const from = ($("rep-gadv-from")?.value || "").slice(0, 10);
@@ -23204,6 +23272,58 @@
       return [...DEFAULT_VISIBLE_SECTIONS];
     }
 
+    function reportCardLabelKey(reportId) {
+      const map = {
+        purchasing: "reportCard_purchasing",
+        materials: "reportCard_materials",
+        pricing: "reportCard_pricing",
+        "dept-achievements": "reportCard_deptAchievements",
+        "gen-status": "reportCard_genStatus",
+        "gen-materials": "reportCard_genMaterials",
+        "gen-rep-advances": "reportCard_genRepAdvances",
+      };
+      return map[reportId] || reportId;
+    }
+
+    /**
+     * تقارير ظاهرة للمستخدم.
+     * إن لم يُحفظ الحقل سابقاً: كل تقارير الأقسام المفعّلة (توافق خلفي).
+     * إن وُجد مصفوفة (حتى فارغة): تُحترم كما هي ضمن الأقسام المفعّلة.
+     */
+    function normalizeVisibleReportsFromDoc(d, visibleSections) {
+      const sections = Array.isArray(visibleSections)
+        ? visibleSections
+        : normalizeVisibleSectionsFromDoc(d || {});
+      const enabledIds = [];
+      if (sections.includes("reports")) enabledIds.push(...REPORT_CARDS_BY_SECTION.reports);
+      if (sections.includes("reports-general")) enabledIds.push(...REPORT_CARDS_BY_SECTION["reports-general"]);
+      if (!enabledIds.length) return [];
+      if (!d || d.visibleReports === undefined) return [...enabledIds];
+      const allowed = new Set(ALL_REPORT_CARD_IDS);
+      const raw = Array.isArray(d.visibleReports) ? d.visibleReports.map(String).filter((id) => allowed.has(id)) : [];
+      return raw.filter((id) => enabledIds.includes(id));
+    }
+
+    function canViewReportCard(reportId) {
+      const id = String(reportId || "").trim();
+      if (!id) return false;
+      const list = currentUserProfile?.visibleReports;
+      if (!Array.isArray(list)) {
+        return normalizeVisibleReportsFromDoc(
+          { visibleReports: undefined },
+          currentUserProfile?.visibleSections
+        ).includes(id);
+      }
+      return list.includes(id);
+    }
+
+    function applyReportCardVisibility() {
+      document.querySelectorAll("[data-report-card]").forEach((el) => {
+        const id = el.getAttribute("data-report-card");
+        el.classList.toggle("report-card-hidden", !canViewReportCard(id));
+      });
+    }
+
     async function ensureUserProfile(u) {
       const ref = doc(db, "userProfiles", u.uid);
       const snap = await getDoc(ref);
@@ -23226,6 +23346,7 @@
           role: "user",
           displayName,
           visibleSections: [...DEFAULT_VISIBLE_SECTIONS],
+          visibleReports: [],
           canBypassLowerApprovals: false,
           assignedProjectIds: [],
           assignedRegionId: null,
@@ -23249,6 +23370,7 @@
           await updateDoc(ref, { visibleSections, updatedAt: serverTimestamp() });
         }
       }
+      const visibleReports = normalizeVisibleReportsFromDoc(d, visibleSections);
       const assignedProjectIds = Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [];
       const managedProjectIds = Array.isArray(d.managedProjectIds) ? d.managedProjectIds : [];
       const managedRegionIds = Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [];
@@ -23258,6 +23380,7 @@
         role: d.role || "user",
         displayName: d.displayName || u.email || "",
         visibleSections,
+        visibleReports,
         canBypassLowerApprovals: d.canBypassLowerApprovals === true,
         assignedProjectIds,
         assignedRegionId: assignedRegionIds[0] || null,
@@ -24416,6 +24539,7 @@
       if (list.includes("rep-advances")) return "rep-advances";
       if (list.includes("support-files")) return "support-files";
       if (list.includes("reports")) return "reports";
+      if (list.includes("reports-general")) return "reports-general";
       if (list.includes("admin")) return "admin";
       return "help";
     }
@@ -24436,6 +24560,7 @@
         if (visible) el.classList.remove("nav-section-hidden");
         else el.classList.add("nav-section-hidden");
       });
+      applyReportCardVisibility();
     }
 
     async function getProjectAllowlistForProjectPo() {
@@ -25019,6 +25144,8 @@
                                 ? "support-files"
                               : name === "reports"
                                 ? "reports"
+                              : name === "reports-general"
+                                ? "reports-general"
                             : name === "admin"
                               ? "admin"
                               : null;
@@ -32347,8 +32474,18 @@
         const navBody = appendUserFormSection(fields, "userFormSectionNav");
         const secWrap = document.createElement("div");
         secWrap.className = "field";
+        const reportChecksHtml = (sectionKey) =>
+          (REPORT_CARDS_BY_SECTION[sectionKey] || [])
+            .map(
+              (id) =>
+                `<label><input type="checkbox" data-report-check="${escapeAttr(id)}" data-report-section="${escapeAttr(
+                  sectionKey
+                )}" /> ${escapeHtml(t(reportCardLabelKey(id)))}</label>`
+            )
+            .join("");
         secWrap.innerHTML = `
           <span class="field-label-like">${escapeHtml(t("labelVisibleSections"))}</span>
+          <p class="user-form-hint" style="margin:0.25rem 0 0.5rem">${escapeHtml(t("labelVisibleReportsHint"))}</p>
           <div class="section-checkboxes section-checkboxes-grid">
             <label><input type="checkbox" data-section-check="dashboard" /> ${escapeHtml(t("navDashboard"))}</label>
             <label><input type="checkbox" data-section-check="po-projects" /> ${escapeHtml(t("navPoProjects"))}</label>
@@ -32367,8 +32504,37 @@
             <label><input type="checkbox" data-section-check="reports" /> ${escapeHtml(t("navReports"))}</label>
             <label><input type="checkbox" data-section-check="reports-general" /> ${escapeHtml(t("navReportsGeneral"))}</label>
             <label><input type="checkbox" data-section-check="admin" /> ${escapeHtml(t("navAdmin"))}</label>
+          </div>
+          <div class="report-subchecks hidden" data-report-subchecks="reports">
+            <div class="report-subchecks-title">${escapeHtml(t("labelVisibleReports"))} — ${escapeHtml(t("navReports"))}</div>
+            ${reportChecksHtml("reports")}
+          </div>
+          <div class="report-subchecks hidden" data-report-subchecks="reports-general">
+            <div class="report-subchecks-title">${escapeHtml(t("labelVisibleReports"))} — ${escapeHtml(t("navReportsGeneral"))}</div>
+            ${reportChecksHtml("reports-general")}
           </div>`;
         navBody.appendChild(secWrap);
+
+        const syncUserReportSubchecksUi = () => {
+          ["reports", "reports-general"].forEach((sectionKey) => {
+            const sectionCb = fields.querySelector(`[data-section-check="${sectionKey}"]`);
+            const panel = fields.querySelector(`[data-report-subchecks="${sectionKey}"]`);
+            const on = !!sectionCb?.checked;
+            panel?.classList.toggle("hidden", !on);
+            if (on) {
+              const boxes = [...fields.querySelectorAll(`[data-report-check][data-report-section="${sectionKey}"]`)];
+              if (boxes.length && boxes.every((b) => !b.checked)) {
+                boxes.forEach((b) => {
+                  b.checked = true;
+                });
+              }
+            }
+          });
+        };
+        fields.querySelectorAll('[data-section-check="reports"], [data-section-check="reports-general"]').forEach((cb) => {
+          cb.addEventListener("change", syncUserReportSubchecksUi);
+        });
+        fields._syncUserReportSubchecksUi = syncUserReportSubchecksUi;
 
         const scopeBody = appendUserFormSection(fields, "userFormSectionScope");
         const scopeIntro = document.createElement("p");
@@ -32793,9 +32959,15 @@
           }
           if (collectionName === "userProfiles" && userProjectAssign) {
             const d = snap.data();
+            const sections = normalizeVisibleSectionsFromDoc(d);
             fields.querySelectorAll("[data-section-check]").forEach((cb) => {
-              cb.checked = normalizeVisibleSectionsFromDoc(d).includes(cb.dataset.sectionCheck);
+              cb.checked = sections.includes(cb.dataset.sectionCheck);
             });
+            const reports = normalizeVisibleReportsFromDoc(d, sections);
+            fields.querySelectorAll("[data-report-check]").forEach((cb) => {
+              cb.checked = reports.includes(cb.dataset.reportCheck);
+            });
+            fields._syncUserReportSubchecksUi?.();
             userProjectAssign.ids = Array.isArray(d.assignedProjectIds) ? [...d.assignedProjectIds] : [];
             userProjectAssign.renderAssignChips();
             const sInp = fields.querySelector("#user-assign-search");
@@ -32904,6 +33076,14 @@
           $("entity-fields").querySelectorAll("[data-section-check]").forEach((cb) => {
             if (cb.checked) visibleSections.push(cb.dataset.sectionCheck);
           });
+          const visibleReports = [];
+          $("entity-fields").querySelectorAll("[data-report-check]").forEach((cb) => {
+            if (!cb.checked) return;
+            const id = cb.dataset.reportCheck;
+            const sectionKey = cb.dataset.reportSection;
+            if (!visibleSections.includes(sectionKey)) return;
+            if (ALL_REPORT_CARD_IDS.includes(id)) visibleReports.push(id);
+          });
           const assignedProjectIds = userProjectAssign?.ids ? [...userProjectAssign.ids] : [];
           const managedProjectIds = userPmProjectAssign?.ids ? [...userPmProjectAssign.ids] : [];
           const managedRegionIds = userGmRegionAssign?.ids ? [...userGmRegionAssign.ids] : [];
@@ -32914,6 +33094,7 @@
             displayName: (data.displayName || "").trim(),
             role: roleVal,
             visibleSections,
+            visibleReports,
             canBypassLowerApprovals:
               (roleVal === "project_manager" || roleVal === "group_manager") &&
               data.canBypassLowerApprovals === true,
@@ -32966,9 +33147,11 @@
           if (freshUserSnap.exists()) {
             const d = freshUserSnap.data();
             const clerkRegions = clerkAssignedRegionIds(d);
+            const visibleSectionsSync = normalizeVisibleSectionsFromDoc(d);
             const profForSync = {
               role: d.role || "user",
-              visibleSections: normalizeVisibleSectionsFromDoc(d),
+              visibleSections: visibleSectionsSync,
+              visibleReports: normalizeVisibleReportsFromDoc(d, visibleSectionsSync),
               canBypassLowerApprovals: d.canBypassLowerApprovals === true,
               assignedProjectIds: Array.isArray(d.assignedProjectIds) ? d.assignedProjectIds : [],
               assignedRegionId: clerkRegions[0] || null,
@@ -32989,6 +33172,8 @@
               refreshDashboard();
               const active = document.querySelector(".app-screen:not(.hidden)");
               if (active?.id === "screen-admin" && !hasAdminAccess()) showView(firstAllowedView());
+              if (active?.id === "screen-reports") void loadReportsScreen();
+              if (active?.id === "screen-reports-general") void loadGeneralReportsScreen();
               if (chatOverlayOpen) void loadCompanyChatChannels().then(() => loadDirectChatChannels()).then(() => renderChatChannelList());
             }
           }
