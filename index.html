@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.06.2" />
+  <meta name="app-version" content="2026.10.06.3" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -4068,6 +4068,55 @@
       border-color: var(--accent);
     }
 
+    #modal-invoice-links.modal-overlay {
+      z-index: 260;
+    }
+    .invoice-links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin: 0.65rem 0;
+      max-height: min(50vh, 22rem);
+      overflow: auto;
+    }
+    .invoice-link-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto auto;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .invoice-link-row input {
+      width: 100%;
+      min-width: 0;
+    }
+    .invoice-links-view {
+      list-style: none;
+      margin: 0.5rem 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .invoice-links-view a {
+      word-break: break-all;
+    }
+    .po-print-invoice-links {
+      margin: 0.75rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .po-print-invoice-links li {
+      margin: 0.25rem 0;
+    }
+    .po-print-invoice-links a {
+      word-break: break-all;
+    }
+    @media (max-width: 720px) {
+      .invoice-link-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -6867,6 +6916,9 @@
         <strong id="acc-po-grand-total">0</strong>
       </p>
       <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="modal-acc-invoice-links" data-i18n="btnViewInvoiceLinks">
+          روابط الفواتير
+        </button>
         <button type="button" class="btn btn-secondary" id="modal-acc-po-cancel" data-i18n="cancel">إلغاء</button>
         <button type="button" class="btn btn-secondary" id="modal-acc-po-save" data-i18n="btnSaveAccountingValues">
           حفظ القيم
@@ -6912,11 +6964,33 @@
       <button type="button" class="btn btn-secondary btn-sm" id="wr-add-line" data-i18n="btnAddReceiptMaterial" style="margin-top:0.5rem">
         إضافة مادة
       </button>
+      <button type="button" class="btn btn-secondary btn-sm" id="wr-invoice-links" data-i18n="btnInvoiceLinks" style="margin-top:0.5rem;margin-inline-start:0.4rem">
+        روابط الفواتير
+      </button>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="wr-cancel" data-i18n="cancel">إلغاء</button>
         <button type="button" class="btn btn-primary" id="wr-confirm" data-i18n="btnConfirmWarehouseReceiptQty">
           حفظ وإرسال للحسابات
         </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-invoice-links" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 id="invoice-links-title" data-i18n="invoiceLinksModalTitle">روابط الفواتير</h3>
+      <p id="invoice-links-hint" class="sub" style="margin-top:-0.35rem;color:var(--muted)" data-i18n="invoiceLinksModalHint">
+        أضف روابط فواتير الاستلام. يمكن للمستخدمين فتحها بعد الحفظ.
+      </p>
+      <input type="hidden" id="invoice-links-po-id" />
+      <div id="invoice-links-editor" class="hidden">
+        <div id="invoice-links-rows" class="invoice-links-list"></div>
+        <button type="button" class="btn btn-secondary btn-sm" id="invoice-links-add" data-i18n="btnAddInvoiceLink">إضافة رابط</button>
+      </div>
+      <div id="invoice-links-view" class="hidden"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="invoice-links-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="invoice-links-save" data-i18n="save">حفظ</button>
       </div>
     </div>
   </div>
@@ -7382,6 +7456,7 @@
         alertPoVehicleTypeRequired: "نوع الآلية/السيارة مطلوب لهذا النوع من الطلب.",
         alertPoVehicleNumberRequired: "رقم الآلية/السيارة مطلوب لهذا النوع من الطلب.",
         cancel: "إلغاء",
+        close: "إغلاق",
         save: "حفظ",
         alertSelectProject: "اختر المشروع.",
         saveFailed: "فشل الحفظ:",
@@ -8265,6 +8340,19 @@
         btnCloseAndSendToAccounting: "إغلاق وإرسال للحسابات",
         btnKeepOpenInReceipt: "إبقاءه مفتوحاً",
         alertWarehouseReceiptNoLines: "لا توجد بنود لتسجيل الاستلام.",
+        btnInvoiceLinks: "روابط الفواتير",
+        btnViewInvoiceLinks: "روابط الفواتير",
+        invoiceLinksModalTitle: "روابط الفواتير",
+        invoiceLinksModalHint: "أضف روابط فواتير الاستلام. يمكن للمستخدمين فتحها بعد الحفظ.",
+        invoiceLinksViewHint: "روابط فواتير الاستلام المرفقة بهذا الطلب.",
+        invoiceLinksUrlPlaceholder: "https://…",
+        invoiceLinksNotePlaceholder: "وصف اختياري",
+        btnAddInvoiceLink: "إضافة رابط",
+        invoiceLinksEmpty: "لا توجد روابط فواتير بعد.",
+        invoiceLinksInvalid: "أدخل رابطاً صحيحاً (يبدأ بـ http أو https).",
+        invoiceLinksSaved: "تم حفظ روابط الفواتير.",
+        invoiceLinksOpen: "فتح",
+        poPrintInvoiceLinksTitle: "روابط الفواتير",
         alertWarehouseSupervisorRegionsRequired: "حدّد المناطق المسندة لمسؤول استلام المستودع من الإدارة.",
         accountingQueueTitle: "الحسابات",
         accountingQueueHint: "سلفة ثم إقفال؛ وقسم المتابعة يعرض الطلبات بعد إطلاق السلفة وحتى اكتمال المسار.",
@@ -8665,6 +8753,7 @@
         alertPoVehicleTypeRequired: "Vehicle/equipment type is required for this request type.",
         alertPoVehicleNumberRequired: "Vehicle/equipment number is required for this request type.",
         cancel: "Cancel",
+        close: "Close",
         save: "Save",
         alertSelectProject: "Select a project.",
         saveFailed: "Save failed:",
@@ -9549,6 +9638,19 @@
         btnCloseAndSendToAccounting: "Close and send",
         btnKeepOpenInReceipt: "Keep open",
         alertWarehouseReceiptNoLines: "No line items to record receipt.",
+        btnInvoiceLinks: "Invoice links",
+        btnViewInvoiceLinks: "Invoice links",
+        invoiceLinksModalTitle: "Invoice links",
+        invoiceLinksModalHint: "Add invoice URLs for this receipt. Other users can open them after they are saved.",
+        invoiceLinksViewHint: "Invoice links attached to this request.",
+        invoiceLinksUrlPlaceholder: "https://…",
+        invoiceLinksNotePlaceholder: "Optional label",
+        btnAddInvoiceLink: "Add link",
+        invoiceLinksEmpty: "No invoice links yet.",
+        invoiceLinksInvalid: "Enter a valid link (http or https).",
+        invoiceLinksSaved: "Invoice links saved.",
+        invoiceLinksOpen: "Open",
+        poPrintInvoiceLinksTitle: "Invoice links",
         alertWarehouseSupervisorRegionsRequired: "Assign managed regions for this warehouse receipt supervisor in Administration.",
         alertWarehouseSupervisorRegionsSave: "Assign at least one region for this warehouse receipt supervisor.",
         accountingQueueTitle: "Accounting",
@@ -25044,6 +25146,15 @@
             </div>
           </section>
 
+          ${
+            normalizeInvoiceLinks(po.invoiceLinks).length
+              ? `<section class="po-print-section">
+            <h2 class="po-print-section-title">${escapeHtml(t("poPrintInvoiceLinksTitle"))}</h2>
+            ${invoiceLinksViewHtml(po.invoiceLinks)}
+          </section>`
+              : ""
+          }
+
           <section class="po-print-approvals-sign-panel">
             <div class="po-print-approvals-sign-grid">
               <div class="po-print-approvals-col">
@@ -27551,6 +27662,10 @@
                 <td class="td-approval-actions">
                   <div class="approval-actions-cell">
                     <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                      Array.isArray(r.invoiceLinks) && r.invoiceLinks.length
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-invoice-links-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnViewInvoiceLinks"))}</button>`
+                        : ""
+                    }${
                       canAct
                         ? `<button type="button" class="btn btn-primary btn-sm btn-warehouse-receipt-confirm" data-id="${escapeHtml(r.id)}">${escapeHtml(
                             r.warehouseReceiptRecordedAt || r.warehouseReceiptRecordedBy
@@ -27585,6 +27700,10 @@
                 <td class="td-approval-actions">
                   <div class="approval-actions-cell">
                     <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                      Array.isArray(r.invoiceLinks) && r.invoiceLinks.length
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-invoice-links-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnViewInvoiceLinks"))}</button>`
+                        : ""
+                    }${
                       canAct && r.workflowStatus === "pending_accounting"
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-warehouse-receipt-amend" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnAmendWarehouseReceipt"))}</button>`
                         : ""
@@ -27616,6 +27735,9 @@
       wrap.innerHTML = html;
       wrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
         btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-invoice-links-view").forEach((btn) => {
+        btn.addEventListener("click", () => void openInvoiceLinksModal(btn.dataset.id, { edit: canEditPoInvoiceLinks() }));
       });
       if (canAct) {
         wrap.querySelectorAll(".btn-warehouse-receipt-confirm").forEach((btn) => {
@@ -27909,8 +28031,16 @@
                   <div class="approval-actions-cell">
                     ${
                       canAcct
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button><button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnAccountingRecordValues"))}</button><button type="button" class="btn btn-primary btn-sm btn-accounting-close" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmAccountingClose"))}</button>`
-                        : `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>`
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                            Array.isArray(r.invoiceLinks) && r.invoiceLinks.length
+                              ? `<button type="button" class="btn btn-secondary btn-sm btn-invoice-links-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnViewInvoiceLinks"))}</button>`
+                              : ""
+                          }<button type="button" class="btn btn-secondary btn-sm btn-acc-open-po" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnAccountingRecordValues"))}</button><button type="button" class="btn btn-primary btn-sm btn-accounting-close" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnConfirmAccountingClose"))}</button>`
+                        : `<button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${
+                            Array.isArray(r.invoiceLinks) && r.invoiceLinks.length
+                              ? `<button type="button" class="btn btn-secondary btn-sm btn-invoice-links-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnViewInvoiceLinks"))}</button>`
+                              : ""
+                          }`
                     }
                   </div>
                 </td>
@@ -27920,6 +28050,9 @@
           </tbody></table></div>`;
         finWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
           btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        finWrap.querySelectorAll(".btn-invoice-links-view").forEach((btn) => {
+          btn.addEventListener("click", () => void openInvoiceLinksModal(btn.dataset.id, { edit: false }));
         });
         if (canAcct) {
           finWrap.querySelectorAll(".btn-acc-open-po").forEach((btn) => {
@@ -27975,7 +28108,13 @@
                   <div class="approval-actions-cell">
                     <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(
                       t("btnPoPrintView")
-                    )}</button>${reqBtn}${editBtn}${apprBtn}
+                    )}</button>${
+                      Array.isArray(r.invoiceLinks) && r.invoiceLinks.length
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-invoice-links-view" data-id="${escapeHtml(r.id)}">${escapeHtml(
+                            t("btnViewInvoiceLinks")
+                          )}</button>`
+                        : ""
+                    }${reqBtn}${editBtn}${apprBtn}
                   </div>
                 </td>
               </tr>`
@@ -27984,6 +28123,9 @@
           </tbody></table></div>`;
         trackWrap.querySelectorAll(".btn-po-print-view").forEach((btn) => {
           btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+        });
+        trackWrap.querySelectorAll(".btn-invoice-links-view").forEach((btn) => {
+          btn.addEventListener("click", () => void openInvoiceLinksModal(btn.dataset.id, { edit: false }));
         });
         trackWrap.querySelectorAll(".btn-acc-price-amend-request").forEach((btn) => {
           btn.addEventListener("click", () => requestPriceAmendmentForCompletedPo(btn.dataset.id));
@@ -29900,6 +30042,198 @@
 
     let wrEditBaseLines = null;
     let wrModalMode = "submit";
+    let invoiceLinksModalEdit = false;
+
+    function normalizeInvoiceLinkUrl(raw) {
+      let s = String(raw || "").trim();
+      if (!s) return "";
+      if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+      try {
+        const u = new URL(s);
+        if (u.protocol !== "http:" && u.protocol !== "https:") return "";
+        return u.href;
+      } catch (_) {
+        return "";
+      }
+    }
+
+    function normalizeInvoiceLinks(list) {
+      if (!Array.isArray(list)) return [];
+      return list
+        .map((row) => {
+          if (typeof row === "string") {
+            const url = normalizeInvoiceLinkUrl(row);
+            return url ? { url, note: "" } : null;
+          }
+          const url = normalizeInvoiceLinkUrl(row?.url || row?.href || "");
+          if (!url) return null;
+          return {
+            url,
+            note: String(row?.note || row?.label || "").trim(),
+            addedAt: row?.addedAt || null,
+            addedBy: row?.addedBy || null,
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function canEditPoInvoiceLinks() {
+      const role = currentUserProfile?.role || userRole;
+      return role === "warehouse_supervisor" || hasAdminAccess();
+    }
+
+    function invoiceLinksViewHtml(links) {
+      const rows = normalizeInvoiceLinks(links);
+      if (!rows.length) return `<p class="empty-state" style="margin:0.5rem 0 0">${escapeHtml(t("invoiceLinksEmpty"))}</p>`;
+      return `<ul class="invoice-links-view">${rows
+        .map((l) => {
+          const label = (l.note || "").trim() || l.url;
+          return `<li><a href="${escapeAttr(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+            label
+          )}</a>${l.note ? `<div class="muted" style="font-size:12px;word-break:break-all">${escapeHtml(l.url)}</div>` : ""}</li>`;
+        })
+        .join("")}</ul>`;
+    }
+
+    function invoiceLinkEditorRowHtml(link) {
+      const url = (link?.url || "").trim();
+      const note = (link?.note || "").trim();
+      return `<div class="invoice-link-row">
+        <input type="url" class="invoice-link-url" value="${escapeAttr(url)}" placeholder="${escapeAttr(
+        t("invoiceLinksUrlPlaceholder")
+      )}" />
+        <input type="text" class="invoice-link-note" value="${escapeAttr(note)}" placeholder="${escapeAttr(
+        t("invoiceLinksNotePlaceholder")
+      )}" />
+        <a class="btn btn-secondary btn-sm invoice-link-open" href="${escapeAttr(url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+        t("invoiceLinksOpen")
+      )}</a>
+        <button type="button" class="btn btn-secondary btn-sm invoice-link-remove">${escapeHtml(t("delete"))}</button>
+      </div>`;
+    }
+
+    function renderInvoiceLinksEditor(links) {
+      const box = $("invoice-links-rows");
+      if (!box) return;
+      const rows = normalizeInvoiceLinks(links);
+      box.innerHTML = (rows.length ? rows : [{ url: "", note: "" }]).map(invoiceLinkEditorRowHtml).join("");
+      box.querySelectorAll(".invoice-link-remove").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          btn.closest(".invoice-link-row")?.remove();
+          if (!box.querySelector(".invoice-link-row")) addInvoiceLinkEditorRow();
+        });
+      });
+      box.querySelectorAll(".invoice-link-url").forEach((inp) => {
+        inp.addEventListener("input", () => {
+          const a = inp.closest(".invoice-link-row")?.querySelector(".invoice-link-open");
+          if (!a) return;
+          const href = normalizeInvoiceLinkUrl(inp.value);
+          a.href = href || "#";
+        });
+      });
+    }
+
+    function addInvoiceLinkEditorRow() {
+      const box = $("invoice-links-rows");
+      if (!box) return;
+      box.insertAdjacentHTML("beforeend", invoiceLinkEditorRowHtml({ url: "", note: "" }));
+      const row = box.querySelector(".invoice-link-row:last-child");
+      row?.querySelector(".invoice-link-remove")?.addEventListener("click", () => {
+        row.remove();
+        if (!box.querySelector(".invoice-link-row")) addInvoiceLinkEditorRow();
+      });
+      row?.querySelector(".invoice-link-url")?.addEventListener("input", () => {
+        const a = row.querySelector(".invoice-link-open");
+        if (!a) return;
+        const href = normalizeInvoiceLinkUrl(row.querySelector(".invoice-link-url")?.value);
+        a.href = href || "#";
+      });
+      row?.querySelector(".invoice-link-url")?.focus();
+    }
+
+    function collectInvoiceLinksFromEditor() {
+      const box = $("invoice-links-rows");
+      if (!box) return { ok: true, links: [] };
+      const links = [];
+      const rows = [...box.querySelectorAll(".invoice-link-row")];
+      for (const row of rows) {
+        const rawUrl = (row.querySelector(".invoice-link-url")?.value || "").trim();
+        const note = (row.querySelector(".invoice-link-note")?.value || "").trim();
+        if (!rawUrl && !note) continue;
+        const url = normalizeInvoiceLinkUrl(rawUrl);
+        if (!url) return { ok: false, links: [] };
+        links.push({
+          url,
+          note,
+          addedAt: new Date().toISOString(),
+          addedBy: currentUser?.uid || null,
+        });
+      }
+      return { ok: true, links };
+    }
+
+    function closeInvoiceLinksModal() {
+      $("modal-invoice-links")?.classList.add("hidden");
+      $("invoice-links-po-id") && ($("invoice-links-po-id").value = "");
+      invoiceLinksModalEdit = false;
+    }
+
+    async function openInvoiceLinksModal(poId, { edit } = {}) {
+      const id = (poId || "").trim();
+      if (!id) return;
+      const snap = await getDoc(doc(db, "purchaseOrders", id));
+      if (!snap.exists()) return;
+      const po = snap.data();
+      const links = normalizeInvoiceLinks(po.invoiceLinks);
+      const canEdit = !!edit && canEditPoInvoiceLinks();
+      invoiceLinksModalEdit = canEdit;
+      $("invoice-links-po-id").value = id;
+      const titleEl = $("invoice-links-title");
+      const hintEl = $("invoice-links-hint");
+      if (titleEl) titleEl.textContent = t("invoiceLinksModalTitle");
+      if (hintEl) hintEl.textContent = t(canEdit ? "invoiceLinksModalHint" : "invoiceLinksViewHint");
+      $("invoice-links-editor")?.classList.toggle("hidden", !canEdit);
+      $("invoice-links-view")?.classList.toggle("hidden", canEdit);
+      $("invoice-links-save")?.classList.toggle("hidden", !canEdit);
+      const cancelBtn = $("invoice-links-cancel");
+      if (cancelBtn) cancelBtn.textContent = t(canEdit ? "cancel" : "close");
+      if (canEdit) renderInvoiceLinksEditor(links);
+      else {
+        const view = $("invoice-links-view");
+        if (view) view.innerHTML = invoiceLinksViewHtml(links);
+      }
+      $("modal-invoice-links")?.classList.remove("hidden");
+    }
+
+    async function saveInvoiceLinksModal() {
+      if (!invoiceLinksModalEdit) {
+        closeInvoiceLinksModal();
+        return;
+      }
+      const poId = ($("invoice-links-po-id")?.value || "").trim();
+      if (!poId) return;
+      if (!canEditPoInvoiceLinks()) {
+        alert(t("alertWorkflowRoleNoPoEdit"));
+        return;
+      }
+      const collected = collectInvoiceLinksFromEditor();
+      if (!collected.ok) {
+        alert(t("invoiceLinksInvalid"));
+        return;
+      }
+      try {
+        await updateDoc(doc(db, "purchaseOrders", poId), {
+          invoiceLinks: collected.links,
+          invoiceLinksUpdatedAt: serverTimestamp(),
+          invoiceLinksUpdatedBy: currentUser.uid,
+          updatedAt: serverTimestamp(),
+        });
+        closeInvoiceLinksModal();
+        alert(t("invoiceLinksSaved"));
+      } catch (err) {
+        alert(t("saveFailed") + " " + (err.message || ""));
+      }
+    }
 
     function warehouseReceiptQtySnapshot(lines) {
       return (lines || []).map((l) => ({
@@ -31265,6 +31599,17 @@
     $("wr-cancel")?.addEventListener("click", closeWarehouseReceiptQtyModal);
     $("wr-confirm")?.addEventListener("click", () => void submitWarehouseReceiptQtyModal());
     $("wr-add-line")?.addEventListener("click", () => addWarehouseReceiptMaterialLine());
+    $("wr-invoice-links")?.addEventListener("click", () => {
+      const poId = ($("wr-po-id")?.value || "").trim();
+      if (poId) void openInvoiceLinksModal(poId, { edit: true });
+    });
+    $("invoice-links-cancel")?.addEventListener("click", closeInvoiceLinksModal);
+    $("invoice-links-save")?.addEventListener("click", () => void saveInvoiceLinksModal());
+    $("invoice-links-add")?.addEventListener("click", () => addInvoiceLinkEditorRow());
+    $("modal-acc-invoice-links")?.addEventListener("click", () => {
+      const poId = ($("acc-po-id")?.value || "").trim();
+      if (poId) void openInvoiceLinksModal(poId, { edit: canEditPoInvoiceLinks() });
+    });
 
     $("modal-wh-cancel")?.addEventListener("click", closeWarehouseReviewModal);
     $("modal-wh-submit")?.addEventListener("click", async () => {
