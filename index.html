@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.06.3" />
+  <meta name="app-version" content="2026.10.06.4" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18709,6 +18709,7 @@
       const lineNote = (line?.lineNote || "").trim();
       const tr = document.createElement("tr");
       tr.dataset.accEffQty = String(effQty);
+      if (line?.addedAtReceipt) tr.dataset.addedAtReceipt = "1";
       const td1 = document.createElement("td");
       const inpDesc = document.createElement("input");
       inpDesc.type = "text";
@@ -18829,7 +18830,7 @@
             lineTotal,
           };
           if (hasReceived) line.receivedQty = receivedQty;
-          if (base.addedAtReceipt) line.addedAtReceipt = true;
+          if (base.addedAtReceipt || tr.dataset.addedAtReceipt === "1") line.addedAtReceipt = true;
           if (lineNote) line.lineNote = lineNote;
           if (base.availableQty != null && base.availableQty !== "")
             line.availableQty = Number(base.availableQty);
@@ -18844,6 +18845,11 @@
         .filter((l) => {
           if (!(l.item || "").trim()) return false;
           if (l.addedAtReceipt) return (Number(l.receivedQty) || 0) > 0 || (Number(l.qty) || 0) > 0;
+          // احتياطي: بند مستلم بلا كمية مطلوبة (مادة إضافية قديمة بلا العلامة)
+          if ((Number(l.qty) || 0) <= 0 && (Number(l.receivedQty) || 0) > 0) {
+            l.addedAtReceipt = true;
+            return true;
+          }
           return (Number(l.qty) || 0) > 0;
         });
     }
@@ -18916,6 +18922,7 @@
         lineTotal: l.lineTotal != null ? Number(l.lineTotal) : 0,
         lineNote: (l.lineNote || "").trim(),
         availableQty: l.availableQty,
+        addedAtReceipt: !!l.addedAtReceipt,
         warehouseAvailability:
           l.warehouseAvailability && typeof l.warehouseAvailability === "object"
             ? { ...l.warehouseAvailability }
@@ -19022,6 +19029,7 @@
           lineTotal: l.lineTotal,
           lineNote: (l.lineNote || "").trim(),
           availableQty: l.availableQty,
+          addedAtReceipt: !!l.addedAtReceipt,
           warehouseAvailability:
             l.warehouseAvailability && typeof l.warehouseAvailability === "object"
               ? { ...l.warehouseAvailability }
