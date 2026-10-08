@@ -557,6 +557,8 @@
     const PO007_MEASURE_UNITS = [
       { code: "m", ar: "متر", en: "Meter" },
       { code: "pcs", ar: "قطعة", en: "Piece" },
+      { code: "unit", ar: "وحدة", en: "Unit" },
+      { code: "svc", ar: "خدمة", en: "Service" },
       { code: "km", ar: "كم", en: "Km" },
       { code: "set", ar: "طقم", en: "Set" },
       { code: "kg", ar: "كغ", en: "Kg" },
@@ -570,10 +572,16 @@
       { code: "hr", ar: "ساعة", en: "Hour" },
       { code: "day", ar: "يوم", en: "Day" },
       { code: "lot", ar: "دفعة", en: "Lot" },
-      { code: "svc", ar: "خدمة", en: "Service" },
       { code: "month", ar: "شهر", en: "Month" },
       { code: "year", ar: "سنة", en: "Year" },
     ];
+
+    function isPoServiceUnit(unit) {
+      const u = String(unit || "")
+        .trim()
+        .toUpperCase();
+      return u === "SERVICE" || u === "SVC" || u === "خدمة" || u === "خدمات";
+    }
 
     function measureUnitLabel(code, lang) {
       const c = String(code || "").trim();
@@ -767,7 +775,10 @@
       if (colId === "item") return `<td>${esc((l.itemTag || "").trim())}</td>`;
       if (colId === "desc") return `<td><div class="multiline">${multilineHtml(l.description)}</div></td>`;
       if (colId === "unit") return `<td>${esc(measureUnitLabel(l.unit, lang))}</td>`;
-      if (colId === "qty") return `<td class="num">${esc(toWesternDigits(l.qty || ""))}</td>`;
+      if (colId === "qty")
+        return `<td class="num">${esc(
+          isPoServiceUnit(l.unit) ? (lang === "ar" ? "—" : "—") : toWesternDigits(l.qty || "")
+        )}</td>`;
       if (colId === "unitPrice")
         return `<td class="r">${incl ? t(lang, "included") : esc(toWesternDigits(String(l.priceText || "")))}</td>`;
       if (colId === "total")

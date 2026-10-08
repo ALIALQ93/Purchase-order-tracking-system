@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.08.2" />
+  <meta name="app-version" content="2026.10.08.3" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -3499,6 +3499,12 @@
       outline: none;
       text-align: center;
     }
+    .po007-surface.po007-edit-mode .po007-items-table .po007-qty.po007-qty--service {
+      color: var(--muted, #6b7280);
+      cursor: default;
+      background: transparent;
+    }
+
     .po007-surface.po007-edit-mode .po007-items-table .po007-measure-unit-select:focus {
       border-color: #1c4587;
       background: #f8fbff;
@@ -10750,11 +10756,20 @@
       if (totalInp) totalInp.value = included ? "" : totalInp.value;
     }
 
+    function isPoServiceUnit(unit) {
+      const u = String(unit || "")
+        .trim()
+        .toUpperCase();
+      return u === "SERVICE" || u === "SVC" || u === "خدمة" || u === "خدمات";
+    }
+
     function normalizeGeneralLineRow(l) {
       const x = l || {};
       const itemTag = (x.itemTag || x.item || "").trim();
       const description = (x.description || x.remark || "").trim();
-      const qty = Number(x.qty) || 0;
+      const unitNorm = normalizePo007MeasureUnit(x.unit || "");
+      const service = isPoServiceUnit(unitNorm) || isPoServiceUnit(x.unit);
+      const qty = service ? 0 : Number(x.qty) || 0;
       const includedInBasePrice = generalLineIsIncluded(x);
       const priceText =
         includedInBasePrice
@@ -10764,11 +10779,14 @@
             : x.price != null && x.price !== ""
               ? String(x.price)
               : "";
+      const unitPriceNum = parseFloat(String(priceText).replace(/,/g, "")) || 0;
       const lineTotal = includedInBasePrice
         ? 0
         : x.lineTotal != null && x.lineTotal !== ""
           ? Number(x.lineTotal)
-          : qty * (parseFloat(String(priceText).replace(/,/g, "")) || 0);
+          : service
+            ? unitPriceNum
+            : qty * unitPriceNum;
       const extraRaw = x.extra && typeof x.extra === "object" ? x.extra : {};
       const extra = {};
       Object.keys(extraRaw).forEach((k) => {
@@ -10778,7 +10796,7 @@
         itemTag,
         description,
         item: itemTag,
-        unit: normalizePo007MeasureUnit(x.unit || ""),
+        unit: unitNorm,
         remarks: (x.remarks || x.lineRemarks || "").trim(),
         qty,
         priceText,
@@ -10794,6 +10812,7 @@
       { code: "m", ar: "متر", en: "Meter", aliases: ["m", "meter", "metre", "م"] },
       { code: "pcs", ar: "قطعة", en: "Piece", aliases: ["pcs", "pc", "piece", "pieces", "قطعة", "قطع"] },
       { code: "unit", ar: "وحدة", en: "Unit", aliases: ["unit", "units", "وحدة", "وحدات"] },
+      { code: "svc", ar: "خدمة", en: "Service", aliases: ["svc", "service", "services", "SERVICE", "خدمة", "خدمات"] },
       { code: "km", ar: "كم", en: "Km", aliases: ["km", "kilometer", "kilometre"] },
       { code: "set", ar: "طقم", en: "Set", aliases: ["set", "sets", "طقم"] },
       { code: "kg", ar: "كغ", en: "Kg", aliases: ["kg", "kilo", "كيلو", "كغ"] },
@@ -10807,7 +10826,6 @@
       { code: "hr", ar: "ساعة", en: "Hour", aliases: ["hr", "hrs", "hour", "hours", "ساعة"] },
       { code: "day", ar: "يوم", en: "Day", aliases: ["day", "days", "يوم"] },
       { code: "lot", ar: "دفعة", en: "Lot", aliases: ["lot", "lots", "دفعة"] },
-      { code: "svc", ar: "خدمة", en: "Service", aliases: ["svc", "service", "services", "خدمة", "خدمات"] },
       { code: "month", ar: "شهر", en: "Month", aliases: ["month", "months", "mo", "شهر", "شهري", "شهور"] },
       { code: "year", ar: "سنة", en: "Year", aliases: ["year", "years", "yr", "سنة", "سنوي", "سنوات"] },
       { code: "week", ar: "أسبوع", en: "Week", aliases: ["week", "weeks", "wk", "أسبوع", "أسابيع"] },
@@ -15409,7 +15427,13 @@
         )}</div></td>`;
       }
       if (colId === "qty") {
-        return `<td class="${css}" data-po007-items-col="qty"><div class="po007-cell-box"><span class="po007-cell-field po007-cell-field--num po007-qty" contenteditable="true" spellcheck="false">${escapeHtml(qty)}</span></div></td>`;
+        const service = isPoServiceUnit(measureUnit);
+        const qtyDisp = service ? tPo007(docLang, "dash") : qty;
+        const qtyEdit = service ? "false" : "true";
+        const qtyTitle = service ? ` title="${escapeAttr(t("poServiceQtyNotRequired"))}"` : "";
+        return `<td class="${css}" data-po007-items-col="qty"><div class="po007-cell-box"><span class="po007-cell-field po007-cell-field--num po007-qty${
+          service ? " po007-qty--service" : ""
+        }" contenteditable="${qtyEdit}" spellcheck="false"${qtyTitle}>${escapeHtml(qtyDisp)}</span></div></td>`;
       }
       if (colId === "included") {
         return `<td class="${css}" data-po007-items-col="included"><label class="gen-line-included-lbl" title="${inclTitle}"><input type="checkbox" class="gen-line-included"${included ? " checked" : ""} /><span>${inclLbl}</span></label></td>`;
@@ -15522,7 +15546,10 @@
         )}</td>`;
       }
       if (colId === "qty") {
-        return `<td class="${css}">${escapeHtml(toWesternDigits(String(l.qty ?? "")))}</td>`;
+        const qtyDisp = isPoServiceUnit(measureUnit)
+          ? tPo007(docLang, "dash")
+          : toWesternDigits(String(l.qty ?? ""));
+        return `<td class="${css}">${escapeHtml(qtyDisp)}</td>`;
       }
       if (colId === "unitPrice") {
         return `<td class="${css}">${escapeHtml(priceDisp)}</td>`;
@@ -15672,6 +15699,35 @@
       </div>`;
     }
 
+    function syncPo007LineQtyForService(tr) {
+      if (!tr) return;
+      const unit = readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit"));
+      const qtyEl = tr.querySelector(".po007-qty");
+      if (!qtyEl) return;
+      const docLang = getPo007DocumentLang();
+      const service = isPoServiceUnit(unit);
+      if (service) {
+        qtyEl.contentEditable = "false";
+        qtyEl.textContent = tPo007(docLang, "dash");
+        qtyEl.title = t("poServiceQtyNotRequired");
+        qtyEl.classList.add("po007-qty--service");
+      } else {
+        qtyEl.contentEditable = "true";
+        qtyEl.title = "";
+        qtyEl.classList.remove("po007-qty--service");
+        const cur = (qtyEl.textContent || "").trim();
+        if (!cur || cur === tPo007(docLang, "dash") || cur === "—" || cur === "-") {
+          qtyEl.textContent = "1";
+        }
+      }
+    }
+
+    function syncAllPo007ServiceQtyFields(mount) {
+      const root = mount || getGeneralPo007Mount();
+      if (!root) return;
+      root.querySelectorAll("[data-po007-line]").forEach((tr) => syncPo007LineQtyForService(tr));
+    }
+
     function readGeneralPo007LinesFromMount() {
       const mount = getGeneralPo007Mount();
       if (!mount) return [];
@@ -15679,9 +15735,11 @@
       return [...mount.querySelectorAll("[data-po007-line]")]
         .map((tr) => {
           const included = !!tr.querySelector(".gen-line-included")?.checked;
-          const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
+          const unit = readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit"));
+          const service = isPoServiceUnit(unit);
+          const qty = service ? 0 : parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
           const unitPrice = included ? 0 : parsePo007EditorNum(tr.querySelector(".po007-unit-price")?.textContent);
-          const lineTotal = included ? 0 : qty * unitPrice;
+          const lineTotal = included ? 0 : service ? unitPrice : qty * unitPrice;
           const extra = {};
           tr.querySelectorAll("[data-po007-extra-col]").forEach((el) => {
             const colId = el.getAttribute("data-po007-extra-col");
@@ -15691,7 +15749,7 @@
           return normalizeGeneralLineRow({
             itemTag: (tr.querySelector(".po007-item-tag")?.textContent || "").trim(),
             description: (tr.querySelector(".po007-desc")?.textContent || "").trim(),
-            unit: readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit")),
+            unit,
             remarks: (tr.querySelector(".po007-line-remarks")?.textContent || "").trim(),
             qty,
             includedInBasePrice: included,
@@ -16119,13 +16177,15 @@
       mount.querySelectorAll("[data-po007-line]").forEach((tr) => {
         applyGeneralLineIncludedRowUi(tr, docLang);
         const included = !!tr.querySelector(".gen-line-included")?.checked;
-        const qty = parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
+        const measureUnit = readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit"));
+        const service = isPoServiceUnit(measureUnit);
+        const qty = service ? 0 : parsePo007EditorNum(tr.querySelector(".po007-qty")?.textContent);
         const priceEl = tr.querySelector(".po007-unit-price");
         const unit = included ? 0 : parsePo007EditorNum(priceEl?.textContent);
         if (priceEl && document.activeElement !== priceEl && !included) {
           applyPo007AmountFieldFormat(priceEl, docLang);
         }
-        const lineTotal = included ? 0 : qty * unit;
+        const lineTotal = included ? 0 : service ? unit : qty * unit;
         sum += lineTotal;
         const lt = tr.querySelector(".po007-line-total");
         if (lt) {
@@ -16213,6 +16273,7 @@
       const tr = wrap.querySelector("tr");
       if (!tr) return;
       tbody.insertBefore(tr, addRow);
+      syncPo007LineQtyForService(tr);
       recalcGeneralPo007ItemsTable();
       tr.querySelector("[contenteditable]")?.focus();
     }
@@ -16395,6 +16456,12 @@
       if (!mount.dataset.po007ChangeWired) {
         mount.dataset.po007ChangeWired = "1";
         mount.addEventListener("change", (e) => {
+          if (e.target.matches(".po007-measure-unit-select, .po007-measure-unit")) {
+            const tr = e.target.closest("[data-po007-line]");
+            syncPo007LineQtyForService(tr);
+            recalcGeneralPo007ItemsTable();
+            return;
+          }
           if (!e.target.matches(".po007-custom-table-show-header")) return;
           const block = e.target.closest("[data-po007-custom-section]");
           const sid = block?.dataset.po007CustomSection;
@@ -16973,6 +17040,7 @@
       generalPoInvoiceChecklistDraft = normalizeInvoiceChecklist(model.invoiceChecklist);
       mount.innerHTML = renderGeneralPo007Html(po || {}, model, { editor: true });
       bindGeneralPo007EditorEvents();
+      syncAllPo007ServiceQtyFields(mount);
       syncPo007InvoiceCheckBadge(generalPoInvoiceChecklistDraft);
       renumberPo007NoteItems();
       updateGeneralPo007ItemHeaders();
@@ -17420,17 +17488,21 @@
           const desc = (tr.querySelector(".desc .e-block, .desc, .po007-desc")?.textContent || "").trim();
           const measureUnit = readPo007MeasureUnitFromEl(tr.querySelector(".po007-measure-unit"));
           const remarks = (tr.querySelector(".po007-line-remarks")?.textContent || "").trim();
-          const qty =
-            parseFloat(
-              String(tr.querySelector("td.qty, .po007-qty")?.textContent || "").replace(/,/g, "")
-            ) || 0;
+          const service = isPoServiceUnit(measureUnit);
+          const qty = service
+            ? 0
+            : parseFloat(
+                String(tr.querySelector("td.qty, .po007-qty")?.textContent || "").replace(/,/g, "")
+              ) || 0;
           const priceText = (
             tr.querySelector("td.price:not(.line-total) .e, .po007-unit-price")?.textContent || ""
           ).trim();
-          const lineTotal =
+          const priceNum = parseFloat(String(priceText).replace(/,/g, "")) || 0;
+          const lineTotalRaw =
             parseFloat(
               String(tr.querySelector("td.line-total, .po007-line-total")?.textContent || "").replace(/,/g, "")
             ) || 0;
+          const lineTotal = service ? priceNum || lineTotalRaw : lineTotalRaw;
           return normalizeGeneralLineRow({
             itemTag: tag,
             description: desc,
@@ -17441,7 +17513,7 @@
             lineTotal,
           });
         })
-        .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal);
+        .filter((l) => l.itemTag || l.description || l.qty || l.priceText || l.lineTotal || isPoServiceUnit(l.unit));
     }
 
     function fillPo007StatusOptions(selectedStatus, po) {
@@ -18424,10 +18496,7 @@
     }
 
     function isProjectPoServiceUnit(unit) {
-      const u = String(unit || "")
-        .trim()
-        .toUpperCase();
-      return u === "SERVICE" || u === "SVC" || u === "خدمة" || u === "خدمات";
+      return isPoServiceUnit(unit);
     }
 
     function projectPoLineIsValid(line) {
