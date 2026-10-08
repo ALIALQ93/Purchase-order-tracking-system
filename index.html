@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.06.4" />
+  <meta name="app-version" content="2026.10.08.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -643,6 +643,14 @@
 
     .nav-section-hidden {
       display: none !important;
+    }
+
+    .po-extra-receipt-star {
+      color: #c27803;
+      font-weight: 800;
+      margin-inline-start: 0.2rem;
+      letter-spacing: 0;
+      user-select: none;
     }
 
     .section-checkboxes {
@@ -5295,6 +5303,14 @@
               <span data-i18n="filterRegionLabel">المنطقة</span>
               <select id="po-projects-filter-region"></select>
             </label>
+            <label class="po-filter-field">
+              <span data-i18n="filterExtraReceiptLabel">مواد إضافية ★</span>
+              <select id="po-projects-filter-extra-receipt">
+                <option value="" data-i18n="filterAll">الكل</option>
+                <option value="yes" data-i18n="filterExtraReceiptYes">بله ★</option>
+                <option value="no" data-i18n="filterExtraReceiptNo">بدون</option>
+              </select>
+            </label>
             <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="po-projects-filter-reset" data-i18n="poProjectsClearFilters">
               مسح الفلاتر
             </button>
@@ -5341,6 +5357,14 @@
               <label class="po-filter-field">
                 <span data-i18n="filterRegionLabel">المنطقة</span>
                 <select id="po-projects-rejected-filter-region"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterExtraReceiptLabel">مواد إضافية ★</span>
+                <select id="po-projects-rejected-filter-extra-receipt">
+                  <option value="" data-i18n="filterAll">الكل</option>
+                  <option value="yes" data-i18n="filterExtraReceiptYes">بله ★</option>
+                  <option value="no" data-i18n="filterExtraReceiptNo">بدون</option>
+                </select>
               </label>
               <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="po-projects-rejected-filter-reset" data-i18n="poProjectsClearFilters">
                 مسح الفلاتر
@@ -5440,6 +5464,14 @@
                   <option value="normal" data-i18n="poPriorityNormal">عادي</option>
                 </select>
               </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterExtraReceiptLabel">مواد إضافية ★</span>
+                <select id="pq-filter-extra-receipt">
+                  <option value="" data-i18n="filterAll">الكل</option>
+                  <option value="yes" data-i18n="filterExtraReceiptYes">بله ★</option>
+                  <option value="no" data-i18n="filterExtraReceiptNo">بدون</option>
+                </select>
+              </label>
               <button type="button" class="btn btn-secondary btn-sm" id="pq-filter-reset" data-i18n="warehouseReceiptClearFilters">
                 مسح الفلاتر
               </button>
@@ -5474,6 +5506,14 @@
               <label class="po-filter-field">
                 <span data-i18n="warehouseReceiptFilterRepLabel">مندوب المشتريات</span>
                 <select id="wrq-filter-rep"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterExtraReceiptLabel">مواد إضافية ★</span>
+                <select id="wrq-filter-extra-receipt">
+                  <option value="" data-i18n="filterAll">الكل</option>
+                  <option value="yes" data-i18n="filterExtraReceiptYes">بله ★</option>
+                  <option value="no" data-i18n="filterExtraReceiptNo">بدون</option>
+                </select>
               </label>
               <button type="button" class="btn btn-secondary btn-sm" id="wrq-filter-reset" data-i18n="warehouseReceiptClearFilters">
                 مسح الفلاتر
@@ -5515,6 +5555,14 @@
                 <option value="" data-i18n="filterAll">الكل</option>
                 <option value="urgent" data-i18n="poPriorityUrgent">عاجل</option>
                 <option value="normal" data-i18n="poPriorityNormal">عادي</option>
+              </select>
+            </label>
+            <label class="po-filter-field">
+              <span data-i18n="filterExtraReceiptLabel">مواد إضافية ★</span>
+              <select id="accq-filter-extra-receipt">
+                <option value="" data-i18n="filterAll">الكل</option>
+                <option value="yes" data-i18n="filterExtraReceiptYes">بله ★</option>
+                <option value="no" data-i18n="filterExtraReceiptNo">بدون</option>
               </select>
             </label>
             <button type="button" class="btn btn-secondary btn-sm" id="accq-filter-reset" data-i18n="warehouseReceiptClearFilters">
@@ -7387,6 +7435,9 @@
         filterPriorityLabel: "الأولوية",
         filterCompanyLabel: "الشركة",
         filterRegionLabel: "المنطقة",
+        filterExtraReceiptLabel: "مواد إضافية ★",
+        filterExtraReceiptYes: "بله ★",
+        filterExtraReceiptNo: "بدون",
         poProjectsClearFilters: "مسح الفلاتر",
         poProjectsNoFilterResults: "لا توجد نتائج تطابق البحث أو الفلاتر.",
         colTitle: "العنوان",
@@ -7448,7 +7499,8 @@
         colPoReference: "المرجع",
         colRequestDate: "تاريخ الطلب",
         colSubmittedAtIraq: "وقت الرفع (العراق)",
-        alertProjectPoLines: "أضف بنداً واحداً على الأقل بوصف وكمية أكبر من صفر.",
+        alertProjectPoLines: "أضف بنداً واحداً على الأقل بوصف وكمية أكبر من صفر (أو وحدة «خدمة» بدون كمية).",
+        poServiceQtyNotRequired: "بند الخدمة لا يتطلب كمية",
         alertPoTitleRequired: "أدخل عنوان الطلب.",
         alertPoReasonRequired: "سبب الطلب مطلوب.",
         alertPoRequestTypeRequired: "اختر نوع الطلب.",
@@ -8317,6 +8369,7 @@
         warehouseReceiptActualQtyCol: "المستلم فعلياً",
         btnAddReceiptMaterial: "إضافة مادة",
         warehouseReceiptAddedBadge: "مادة إضافية عند الاستلام",
+        poExtraReceiptMaterialsStar: "يحتوي مواداً إضافية أُضيفت عند الاستلام",
         warehouseReceiptAddedItemPlaceholder: "وصف المادة الإضافية",
         warehouseReceiptAddedQtyDash: "—",
         alertWarehouseReceiptAddedLineInvalid:
@@ -8684,6 +8737,9 @@
         filterPriorityLabel: "Priority",
         filterCompanyLabel: "Company",
         filterRegionLabel: "Region",
+        filterExtraReceiptLabel: "Extra materials ★",
+        filterExtraReceiptYes: "With ★",
+        filterExtraReceiptNo: "Without",
         poProjectsClearFilters: "Clear filters",
         poProjectsNoFilterResults: "No rows match your search or filters.",
         colTitle: "Title",
@@ -8745,7 +8801,8 @@
         colPoReference: "Reference",
         colRequestDate: "Date",
         colSubmittedAtIraq: "Submitted time (Iraq)",
-        alertProjectPoLines: "Add at least one line with a description and quantity greater than zero.",
+        alertProjectPoLines: "Add at least one line with a description and quantity greater than zero (or a Service unit without quantity).",
+        poServiceQtyNotRequired: "Service lines do not require a quantity",
         alertPoTitleRequired: "Enter a title for the order.",
         alertPoReasonRequired: "Reason is required.",
         alertPoRequestTypeRequired: "Select a request type.",
@@ -9615,6 +9672,7 @@
         warehouseReceiptActualQtyCol: "Received (actual)",
         btnAddReceiptMaterial: "Add material",
         warehouseReceiptAddedBadge: "Extra material at receipt",
+        poExtraReceiptMaterialsStar: "Includes extra materials added at receipt",
         warehouseReceiptAddedItemPlaceholder: "Extra material description",
         warehouseReceiptAddedQtyDash: "—",
         alertWarehouseReceiptAddedLineInvalid:
@@ -10452,6 +10510,11 @@
         rg.value = "";
         rg.selectedIndex = 0;
       }
+      const ex = $("po-projects-filter-extra-receipt");
+      if (ex) {
+        ex.value = "";
+        ex.selectedIndex = 0;
+      }
     }
 
     function resetRejectedProjectPoTableFilters() {
@@ -10465,6 +10528,16 @@
       if (co) co.value = "";
       const rg = $("po-projects-rejected-filter-region");
       if (rg) rg.value = "";
+      const ex = $("po-projects-rejected-filter-extra-receipt");
+      if (ex) ex.value = "";
+    }
+
+    function matchesExtraReceiptFilter(po, extraFilter) {
+      if (!extraFilter) return true;
+      const has = hasExtraReceiptMaterials(po);
+      if (extraFilter === "yes") return has;
+      if (extraFilter === "no") return !has;
+      return true;
     }
 
     /** طلبات مشاريع بعد تقييد الدور؛ قبل فصل المرفوض/غير المرفوض. */
@@ -10720,6 +10793,7 @@
     const PO007_MEASURE_UNITS = [
       { code: "m", ar: "متر", en: "Meter", aliases: ["m", "meter", "metre", "م"] },
       { code: "pcs", ar: "قطعة", en: "Piece", aliases: ["pcs", "pc", "piece", "pieces", "قطعة", "قطع"] },
+      { code: "unit", ar: "وحدة", en: "Unit", aliases: ["unit", "units", "وحدة", "وحدات"] },
       { code: "km", ar: "كم", en: "Km", aliases: ["km", "kilometer", "kilometre"] },
       { code: "set", ar: "طقم", en: "Set", aliases: ["set", "sets", "طقم"] },
       { code: "kg", ar: "كغ", en: "Kg", aliases: ["kg", "kilo", "كيلو", "كغ"] },
@@ -18333,6 +18407,8 @@
 
     const PROJECT_PO_UNIT_OPTIONS = [
       { v: "PCS", ar: "PCS — قطعة", en: "PCS — pcs" },
+      { v: "UNIT", ar: "UNIT — وحدة", en: "UNIT — unit" },
+      { v: "SERVICE", ar: "SERVICE — خدمة", en: "SERVICE — service" },
       { v: "BOX", ar: "BOX — كرتون", en: "BOX — box" },
       { v: "SET", ar: "SET — طقم", en: "SET — set" },
       { v: "M", ar: "M — متر", en: "M — meter" },
@@ -18345,6 +18421,36 @@
     function projectPoUnitLabel(opt) {
       if (lang === "ar") return opt.ar;
       return opt.en;
+    }
+
+    function isProjectPoServiceUnit(unit) {
+      const u = String(unit || "")
+        .trim()
+        .toUpperCase();
+      return u === "SERVICE" || u === "SVC" || u === "خدمة" || u === "خدمات";
+    }
+
+    function projectPoLineIsValid(line) {
+      if (!(line?.item || "").trim()) return false;
+      if (isProjectPoServiceUnit(line.unit)) return true;
+      return Number(line.qty) > 0;
+    }
+
+    function syncPoLineQtyInputForUnit(tr) {
+      const sel = tr?.querySelector(".po-line-unit, .wf-line-unit");
+      const qtyInp = tr?.querySelector(".po-line-qty, .wf-line-qty");
+      if (!sel || !qtyInp) return;
+      const service = isProjectPoServiceUnit(sel.value);
+      qtyInp.disabled = service;
+      qtyInp.readOnly = service;
+      if (service) {
+        qtyInp.value = "";
+        qtyInp.placeholder = t("dash");
+        qtyInp.title = t("poServiceQtyNotRequired");
+      } else {
+        qtyInp.placeholder = "";
+        qtyInp.title = "";
+      }
     }
 
     function addPoLineRow(desc, unit, qty) {
@@ -18364,7 +18470,14 @@
         `<option value=\"\">—</option>` +
         PROJECT_PO_UNIT_OPTIONS.map((o) => `<option value=\"${escapeAttr(o.v)}\">${escapeHtml(projectPoUnitLabel(o))}</option>`).join("");
       const u0 = (unit || "").trim();
+      if (u0 && ![...selUnit.options].some((o) => o.value === u0)) {
+        const opt = document.createElement("option");
+        opt.value = u0;
+        opt.textContent = u0;
+        selUnit.appendChild(opt);
+      }
       selUnit.value = u0 && [...selUnit.options].some((o) => o.value === u0) ? u0 : "PCS";
+      selUnit.addEventListener("change", () => syncPoLineQtyInputForUnit(tr));
       td2.appendChild(selUnit);
       const td3 = document.createElement("td");
       const inp2 = document.createElement("input");
@@ -18372,7 +18485,7 @@
       inp2.className = "po-line-qty";
       inp2.min = "0";
       inp2.step = "any";
-      if (qty != null && qty !== "" && !Number.isNaN(Number(qty))) inp2.value = String(qty);
+      if (qty != null && qty !== "" && !Number.isNaN(Number(qty)) && Number(qty) > 0) inp2.value = String(qty);
       td3.appendChild(inp2);
       const td4 = document.createElement("td");
       const btn = document.createElement("button");
@@ -18387,6 +18500,7 @@
       tr.appendChild(td3);
       tr.appendChild(td4);
       tbody.appendChild(tr);
+      syncPoLineQtyInputForUnit(tr);
     }
 
     function collectProjectLinesFromTable() {
@@ -18397,7 +18511,7 @@
           const item = tr.querySelector(".po-line-desc")?.value?.trim() || "";
           const unit = (tr.querySelector(".po-line-unit")?.value || "").trim() || null;
           const qtyRaw = tr.querySelector(".po-line-qty")?.value;
-          const qty = parseFloat(String(qtyRaw)) || 0;
+          const qty = isProjectPoServiceUnit(unit) ? 0 : parseFloat(String(qtyRaw)) || 0;
           return { item, unit, qty, price: 0, lineTotal: 0 };
         })
         .filter((l) => l.item || l.qty > 0);
@@ -18421,11 +18535,20 @@
       const td2 = document.createElement("td");
       const selUnit = document.createElement("select");
       selUnit.className = "wf-line-unit";
-      selUnit.innerHTML = PROJECT_PO_UNIT_OPTIONS.map(
-        (u) => `<option value="${escapeAttr(u.value)}">${escapeHtml(u.label)}</option>`
-      ).join("");
+      selUnit.innerHTML =
+        `<option value="">—</option>` +
+        PROJECT_PO_UNIT_OPTIONS.map(
+          (u) => `<option value="${escapeAttr(u.v)}">${escapeHtml(projectPoUnitLabel(u))}</option>`
+        ).join("");
       const u0 = (unit || "").trim();
-      selUnit.value = PROJECT_PO_UNIT_OPTIONS.some((o) => o.value === u0) ? u0 : PROJECT_PO_UNIT_OPTIONS[0]?.value || "PCS";
+      if (u0 && ![...selUnit.options].some((o) => o.value === u0)) {
+        const opt = document.createElement("option");
+        opt.value = u0;
+        opt.textContent = u0;
+        selUnit.appendChild(opt);
+      }
+      selUnit.value = u0 && [...selUnit.options].some((o) => o.value === u0) ? u0 : "PCS";
+      selUnit.addEventListener("change", () => syncPoLineQtyInputForUnit(tr));
       td2.appendChild(selUnit);
 
       const td3 = document.createElement("td");
@@ -18434,7 +18557,7 @@
       inp2.className = "wf-line-qty";
       inp2.min = "0";
       inp2.step = "any";
-      if (qty != null && qty !== "" && !Number.isNaN(Number(qty))) inp2.value = String(qty);
+      if (qty != null && qty !== "" && !Number.isNaN(Number(qty)) && Number(qty) > 0) inp2.value = String(qty);
       td3.appendChild(inp2);
 
       const td4 = document.createElement("td");
@@ -18468,6 +18591,7 @@
       tr.appendChild(td5);
       tr.appendChild(td6);
       tbody.appendChild(tr);
+      syncPoLineQtyInputForUnit(tr);
     }
 
     function collectWorkflowLinesFromTable(prevLines) {
@@ -18478,7 +18602,12 @@
         .map((tr) => {
           const item = tr.querySelector(".wf-line-desc")?.value?.trim() || "";
           const unitSel = (tr.querySelector(".wf-line-unit")?.value || "").trim();
-          const qty = parseFloat(String(tr.querySelector(".wf-line-qty")?.value)) || 0;
+          const unit =
+            unitSel
+              ? unitSel
+              : null;
+          const qtyRaw = parseFloat(String(tr.querySelector(".wf-line-qty")?.value)) || 0;
+          const qty = isProjectPoServiceUnit(unitSel) ? 0 : qtyRaw;
           let orig = null;
           if (item) {
             const i = pool.findIndex((p) => String(p.item || "").trim() === item);
@@ -18488,15 +18617,14 @@
             }
           }
           const price = orig && !Number.isNaN(Number(orig.price)) ? Number(orig.price) : 0;
-          const unit =
-            unitSel
-              ? unitSel
-              : orig && (orig.unit != null ? String(orig.unit) : "").trim()
-                ? String(orig.unit).trim()
-                : null;
+          const resolvedUnit =
+            unit ||
+            (orig && (orig.unit != null ? String(orig.unit) : "").trim()
+              ? String(orig.unit).trim()
+              : null);
           const line = {
             item,
-            unit,
+            unit: resolvedUnit,
             qty,
             price,
             lineTotal: price * qty,
@@ -18512,7 +18640,7 @@
             line.warehouseAvailability = { ...orig.warehouseAvailability };
           return line;
         })
-        .filter((l) => l.item && l.qty > 0);
+        .filter((l) => projectPoLineIsValid(l));
     }
 
     async function workflowPoLinesPermission(po, mode) {
@@ -18844,6 +18972,7 @@
         })
         .filter((l) => {
           if (!(l.item || "").trim()) return false;
+          if (isProjectPoServiceUnit(l.unit)) return true;
           if (l.addedAtReceipt) return (Number(l.receivedQty) || 0) > 0 || (Number(l.qty) || 0) > 0;
           // احتياطي: بند مستلم بلا كمية مطلوبة (مادة إضافية قديمة بلا العلامة)
           if ((Number(l.qty) || 0) <= 0 && (Number(l.receivedQty) || 0) > 0) {
@@ -24970,21 +25099,24 @@
       const linesRows = lines
         .map((l) => {
           const added = !!l.addedAtReceipt;
+          const service = isProjectPoServiceUnit(l.unit);
           const descBase = String(l.item || "").trim();
           const desc = escapeHtml(descBase) + (added ? ` <span class="muted">(${escapeHtml(t("warehouseReceiptAddedBadge"))})</span>` : "");
-          const qty = escapeHtml(added ? t("warehouseReceiptAddedQtyDash") : String(Number(l.qty) || 0));
+          const qty = escapeHtml(
+            added || service ? t("warehouseReceiptAddedQtyDash") : String(Number(l.qty) || 0)
+          );
           const unit = escapeHtml(String((l.unit || "").trim() || t("dash")));
           let cells = `<td>${desc}</td>${isProject ? `<td>${unit}</td>` : ""}<td class="po-print-num">${qty}</td>`;
           if (isProject)
-            cells += `<td>${escapeHtml(added ? t("dash") : poPrintLineAvailableText(l))}</td><td class="po-print-num">${escapeHtml(
-              added ? t("dash") : poPrintLineToBuyQty(l)
+            cells += `<td>${escapeHtml(added || service ? t("dash") : poPrintLineAvailableText(l))}</td><td class="po-print-num">${escapeHtml(
+              added || service ? t("dash") : poPrintLineToBuyQty(l)
             )}</td>`;
           if (showReceived) {
             const recv =
               l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
                 ? Number(l.receivedQty)
-                : added
-                  ? 0
+                : added || service
+                  ? t("warehouseReceiptAddedQtyDash")
                   : Number(l.qty) || 0;
             cells += `<td class="po-print-num">${escapeHtml(String(recv))}</td>`;
           }
@@ -25131,7 +25263,11 @@
               </div>
             </div>
             <div class="po-print-header-aside">
-              <div class="po-print-ref-pill">${escapeHtml(refText)}</div>
+              <div class="po-print-ref-pill">${escapeHtml(refText)}${
+                hasExtraReceiptMaterials(po)
+                  ? ` <span class="po-extra-receipt-star" title="${escapeAttr(t("poExtraReceiptMaterialsStar"))}">★</span>`
+                  : ""
+              }</div>
               <p class="po-print-date-line">${escapeHtml(t("poPrintMetaDate"))}: ${escapeHtml(poRowDisplayDate(po))}</p>
               ${priorityHtml}
             </div>
@@ -25568,13 +25704,28 @@
         .join(" ");
     }
 
-    function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg) {
+    function hasExtraReceiptMaterials(po) {
+      return (Array.isArray(po?.lines) ? po.lines : []).some((l) => !!l?.addedAtReceipt);
+    }
+
+    function projectPoReferenceCellHtml(r) {
+      const ref = escapeHtml((r.poReference || r.title || "").trim() || t("dash"));
+      const star = hasExtraReceiptMaterials(r)
+        ? ` <span class="po-extra-receipt-star" title="${escapeAttr(t("poExtraReceiptMaterialsStar"))}" aria-label="${escapeAttr(
+            t("poExtraReceiptMaterialsStar")
+          )}">★</span>`
+        : "";
+      return `<td>${ref}${star}</td>`;
+    }
+
+    function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg, extra) {
       if (wf && (r.workflowStatus || "") !== wf) return false;
       if (pri && normalizePoPriority(r.priority) !== pri) return false;
       const cDisp = projectPoCompanyDisplay(r, ctx);
       if (co && cDisp !== co) return false;
       const rName = projectPoRegionDisplayName(r);
       if (reg && rName !== reg) return false;
+      if (!matchesExtraReceiptFilter(r, extra)) return false;
       const q = (qRaw || "").trim();
       if (!q) return true;
       const hay = [
@@ -25634,7 +25785,13 @@
       projectPoFiltersWired = true;
       const debouncedRender = debounceFn(() => renderProjectPurchaseOrdersTable(), 280);
       $("po-projects-search")?.addEventListener("input", debouncedRender);
-      ["po-projects-filter-workflow", "po-projects-filter-priority", "po-projects-filter-company", "po-projects-filter-region"].forEach((fid) => {
+      [
+        "po-projects-filter-workflow",
+        "po-projects-filter-priority",
+        "po-projects-filter-company",
+        "po-projects-filter-region",
+        "po-projects-filter-extra-receipt",
+      ].forEach((fid) => {
         $(fid)?.addEventListener("change", () => renderProjectPurchaseOrdersTable());
       });
       $("po-projects-filter-reset")?.addEventListener("click", () => {
@@ -25655,7 +25812,8 @@
       const pri = afterSave ? "" : ($("po-projects-filter-priority")?.value || "");
       const co = afterSave ? "" : ($("po-projects-filter-company")?.value || "");
       const reg = afterSave ? "" : ($("po-projects-filter-region")?.value || "");
-      let filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg));
+      const extra = afterSave ? "" : ($("po-projects-filter-extra-receipt")?.value || "");
+      let filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg, extra));
       if (ensurePoId && !filtered.some((r) => r.id === ensurePoId)) {
         const forced = ctx.rows.find((r) => r.id === ensurePoId);
         if (forced) filtered = [forced, ...filtered];
@@ -25692,7 +25850,7 @@
           const canEditRow = canEdit && !lockedAfterPurchasing;
           return `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(formatFirestoreInstantIraq(r.createdAt))}</td>
                   <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
@@ -26006,7 +26164,13 @@
       rejectedProjectPoFiltersWired = true;
       const debouncedRender = debounceFn(() => renderRejectedProjectPurchaseOrdersTable(), 280);
       $("po-projects-rejected-search")?.addEventListener("input", debouncedRender);
-      ["po-projects-rejected-filter-workflow", "po-projects-rejected-filter-priority", "po-projects-rejected-filter-company", "po-projects-rejected-filter-region"].forEach((fid) => {
+      [
+        "po-projects-rejected-filter-workflow",
+        "po-projects-rejected-filter-priority",
+        "po-projects-rejected-filter-company",
+        "po-projects-rejected-filter-region",
+        "po-projects-rejected-filter-extra-receipt",
+      ].forEach((fid) => {
         $(fid)?.addEventListener("change", () => renderRejectedProjectPurchaseOrdersTable());
       });
       $("po-projects-rejected-filter-reset")?.addEventListener("click", () => {
@@ -26024,7 +26188,8 @@
       const pri = $("po-projects-rejected-filter-priority")?.value || "";
       const co = $("po-projects-rejected-filter-company")?.value || "";
       const reg = $("po-projects-rejected-filter-region")?.value || "";
-      const filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg));
+      const extra = $("po-projects-rejected-filter-extra-receipt")?.value || "";
+      const filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg, extra));
       filtered.sort(compareProjectPoRowsNewestFirst);
       const thead = `<tr>
               <th>${t("colPoReference")}</th>
@@ -26053,7 +26218,7 @@
           const contractNo = projectPoContractDisplay(r, ctx) || t("dash");
           return `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(formatFirestoreInstantIraq(r.createdAt))}</td>
                   <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
@@ -26269,7 +26434,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
@@ -26288,7 +26453,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${formatWorkflowTableCellForPo(r)}</td>
@@ -26446,7 +26611,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
@@ -26807,7 +26972,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
@@ -26897,7 +27062,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
@@ -27033,7 +27198,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
@@ -27119,7 +27284,7 @@
 
     let pqQueueDataCache = null;
 
-    function purchasingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority) {
+    function purchasingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority, extra) {
       if (projectId && (po?.projectId || "") !== projectId) return false;
       if (priority) {
         const pr = normalizePoPriority(po?.priority);
@@ -27130,6 +27295,7 @@
         const pn = (po?.purchasingRepresentativeName || "").trim();
         if (repIdOrName !== pid && repIdOrName !== pn) return false;
       }
+      if (!matchesExtraReceiptFilter(po, extra)) return false;
       const query = (q || "").trim().toLowerCase();
       if (!query) return true;
       const hay = [
@@ -27155,8 +27321,9 @@
       const proj = $("pq-filter-project");
       const rep = $("pq-filter-rep");
       const priority = $("pq-filter-priority");
+      const extra = $("pq-filter-extra-receipt");
       const reset = $("pq-filter-reset");
-      if (!search || !proj || !rep || !priority || !reset) return;
+      if (!search || !proj || !rep || !priority || !extra || !reset) return;
       if (reset.dataset.wired) return;
       reset.dataset.wired = "1";
       const rerender = () => {
@@ -27167,11 +27334,13 @@
       proj.addEventListener("change", rerender);
       rep.addEventListener("change", rerender);
       priority.addEventListener("change", rerender);
+      extra.addEventListener("change", rerender);
       reset.addEventListener("click", () => {
         search.value = "";
         proj.value = "";
         rep.value = "";
         priority.value = "";
+        extra.value = "";
         rerender();
       });
     }
@@ -27226,6 +27395,7 @@
       const fProject = ($("pq-filter-project")?.value || "").trim();
       const fRep = ($("pq-filter-rep")?.value || "").trim();
       const fPriority = ($("pq-filter-priority")?.value || "").trim();
+      const fExtra = ($("pq-filter-extra-receipt")?.value || "").trim();
       const rowOk = (r) =>
         purchasingRowMatchesFilters(
           r,
@@ -27233,12 +27403,13 @@
           qText,
           fProject,
           fRep,
-          fPriority
+          fPriority,
+          fExtra
         );
       let rowsUpstream = upstreamAll.filter(rowOk);
       let rowsAction = actionAll.filter(rowOk);
       let rowsTrack = trackAll.filter(rowOk);
-      const hasFilters = !!(qText || fProject || fRep || fPriority);
+      const hasFilters = !!(qText || fProject || fRep || fPriority || fExtra);
       const totalRows = upstreamAll.length + actionAll.length + trackAll.length;
 
       const upstreamRank = (x) => {
@@ -27342,7 +27513,7 @@
                   }
                   return `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
@@ -27380,7 +27551,7 @@
                     : "";
                   return `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
@@ -27405,7 +27576,7 @@
                 .map(
                   (r) => `
                 <tr>
-                  <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                  ${projectPoReferenceCellHtml(r)}
                   <td>${escapeHtml(poRowDisplayDate(r))}</td>
                   <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                   <td>${priorityBadge(r.priority)}</td>
@@ -27541,39 +27712,40 @@
       const search = $("wrq-search");
       const proj = $("wrq-filter-project");
       const rep = $("wrq-filter-rep");
+      const extra = $("wrq-filter-extra-receipt");
       const reset = $("wrq-filter-reset");
-      if (!search || !proj || !rep || !reset) return;
+      if (!search || !proj || !rep || !extra || !reset) return;
       if (reset.dataset.wired) return;
       reset.dataset.wired = "1";
       const fire = debounceFn(() => {
         if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
         else void loadWarehouseReceiptQueue();
       }, 260);
+      const rerender = () => {
+        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
+        else void loadWarehouseReceiptQueue();
+      };
       search.addEventListener("input", fire);
-      proj.addEventListener("change", () => {
-        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
-        else void loadWarehouseReceiptQueue();
-      });
-      rep.addEventListener("change", () => {
-        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
-        else void loadWarehouseReceiptQueue();
-      });
+      proj.addEventListener("change", rerender);
+      rep.addEventListener("change", rerender);
+      extra.addEventListener("change", rerender);
       reset.addEventListener("click", () => {
         search.value = "";
         proj.value = "";
         rep.value = "";
-        if (wrQueueDataCache) renderWarehouseReceiptQueueTable(wrQueueDataCache);
-        else void loadWarehouseReceiptQueue();
+        extra.value = "";
+        rerender();
       });
     }
 
-    function warehouseReceiptRowMatchesFilters(po, projectName, q, projectId, repIdOrName) {
+    function warehouseReceiptRowMatchesFilters(po, projectName, q, projectId, repIdOrName, extra) {
       if (projectId && (po?.projectId || "") !== projectId) return false;
       if (repIdOrName) {
         const pid = (po?.purchasingRepresentativeId || "").trim();
         const pn = (po?.purchasingRepresentativeName || "").trim();
         if (repIdOrName !== pid && repIdOrName !== pn) return false;
       }
+      if (!matchesExtraReceiptFilter(po, extra)) return false;
       const query = (q || "").trim().toLowerCase();
       if (!query) return true;
       const hay = [
@@ -27607,8 +27779,16 @@
       const qText = ($("wrq-search")?.value || "").trim();
       const fProject = ($("wrq-filter-project")?.value || "").trim();
       const fRep = ($("wrq-filter-rep")?.value || "").trim();
+      const fExtra = ($("wrq-filter-extra-receipt")?.value || "").trim();
       const rowOk = (r) =>
-        warehouseReceiptRowMatchesFilters(r, projectNames[r.projectId] || r.projectId || "", qText, fProject, fRep);
+        warehouseReceiptRowMatchesFilters(
+          r,
+          projectNames[r.projectId] || r.projectId || "",
+          qText,
+          fProject,
+          fRep,
+          fExtra
+        );
       let rowsAction = actionAll.filter(rowOk);
       let rowsTrack = trackAll.filter(rowOk);
       const sortReceipt = (rows) =>
@@ -27630,7 +27810,7 @@
         const tb = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
         return ta - tb;
       });
-      const hasFilters = !!(qText || fProject || fRep);
+      const hasFilters = !!(qText || fProject || fRep || fExtra);
       const totalRows = actionAll.length + trackAll.length;
       if (!rowsAction.length && !rowsTrack.length) {
         wrap.innerHTML = `<p class="empty-state">${escapeHtml(
@@ -27658,7 +27838,7 @@
               .map(
                 (r) => `
               <tr>
-                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                ${projectPoReferenceCellHtml(r)}
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                 <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
@@ -27696,7 +27876,7 @@
               .map(
                 (r) => `
               <tr>
-                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                ${projectPoReferenceCellHtml(r)}
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                 <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
@@ -27850,7 +28030,7 @@
       accountingQueueDataCache = null;
     }
 
-    function accountingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority) {
+    function accountingRowMatchesFilters(po, projectName, q, projectId, repIdOrName, priority, extra) {
       if (projectId && (po?.projectId || "") !== projectId) return false;
       if (priority) {
         const pr = normalizePoPriority(po?.priority);
@@ -27861,6 +28041,7 @@
         const pn = (po?.purchasingRepresentativeName || "").trim();
         if (repIdOrName !== pid && repIdOrName !== pn) return false;
       }
+      if (!matchesExtraReceiptFilter(po, extra)) return false;
       const queryText = (q || "").trim().toLowerCase();
       if (!queryText) return true;
       const hay = [
@@ -27883,8 +28064,9 @@
       const proj = $("accq-filter-project");
       const rep = $("accq-filter-rep");
       const priority = $("accq-filter-priority");
+      const extra = $("accq-filter-extra-receipt");
       const reset = $("accq-filter-reset");
-      if (!search || !proj || !rep || !priority || !reset) return;
+      if (!search || !proj || !rep || !priority || !extra || !reset) return;
       if (reset.dataset.wired) return;
       reset.dataset.wired = "1";
       const rerender = () => {
@@ -27895,11 +28077,13 @@
       proj.addEventListener("change", rerender);
       rep.addEventListener("change", rerender);
       priority.addEventListener("change", rerender);
+      extra.addEventListener("change", rerender);
       reset.addEventListener("click", () => {
         search.value = "";
         proj.value = "";
         rep.value = "";
         priority.value = "";
+        extra.value = "";
         rerender();
       });
     }
@@ -27956,12 +28140,21 @@
       const fProject = ($("accq-filter-project")?.value || "").trim();
       const fRep = ($("accq-filter-rep")?.value || "").trim();
       const fPriority = ($("accq-filter-priority")?.value || "").trim();
+      const fExtra = ($("accq-filter-extra-receipt")?.value || "").trim();
       const rowOk = (r) =>
-        accountingRowMatchesFilters(r, projectNames[r.projectId] || r.projectId || "", qText, fProject, fRep, fPriority);
+        accountingRowMatchesFilters(
+          r,
+          projectNames[r.projectId] || r.projectId || "",
+          qText,
+          fProject,
+          fRep,
+          fPriority,
+          fExtra
+        );
       const advF = rowsAdv.filter(rowOk);
       const finF = rowsFin.filter(rowOk);
       const trackF = rowsTrack.filter(rowOk);
-      const hasFilters = !!(qText || fProject || fRep || fPriority);
+      const hasFilters = !!(qText || fProject || fRep || fPriority || fExtra);
       const canAcct = role === "accountant" || hasAdminAccess();
       const emptyMsg = (filteredEmpty, totalHas, emptyKey) =>
         `<p class="empty-state">${escapeHtml(
@@ -27984,7 +28177,7 @@
               .map(
                 (r) => `
               <tr>
-                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                ${projectPoReferenceCellHtml(r)}
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                 <td>${priorityBadge(r.priority)}</td>
@@ -28029,7 +28222,7 @@
               .map(
                 (r) => `
               <tr>
-                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                ${projectPoReferenceCellHtml(r)}
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                 <td>${priorityBadge(r.priority)}</td>
@@ -28106,7 +28299,7 @@
                   : "";
                 return `
               <tr>
-                <td>${escapeHtml((r.poReference || r.title || "").trim() || t("dash"))}</td>
+                ${projectPoReferenceCellHtml(r)}
                 <td>${escapeHtml(poRowDisplayDate(r))}</td>
                 <td>${escapeHtml(projectNames[r.projectId] || r.projectId || t("dash"))}</td>
                 <td>${priorityBadge(r.priority)}</td>
@@ -30269,7 +30462,7 @@
 
     function warehouseReceiptIsPartial(lines) {
       return (lines || []).some((l) => {
-        if (l.addedAtReceipt) return false;
+        if (l.addedAtReceipt || isProjectPoServiceUnit(l.unit)) return false;
         return (Number(l.receivedQty) || 0) < (Number(l.qty) || 0);
       });
     }
@@ -30350,13 +30543,14 @@
       tb.innerHTML = "";
       (lines || []).forEach((l, idx) => {
         const added = !!l.addedAtReceipt;
+        const service = isProjectPoServiceUnit(l.unit);
         const item = (l.item || "").trim();
         const unit = (l.unit || "").trim();
         const qty = Number(l.qty) || 0;
         const recv0 =
           l.receivedQty != null && l.receivedQty !== "" && !Number.isNaN(Number(l.receivedQty))
             ? Number(l.receivedQty)
-            : added
+            : added || service
               ? 0
               : qty;
         const tr = document.createElement("tr");
@@ -30372,9 +30566,10 @@
               t("poLineUnitCol")
             )}" />`
           : escapeHtml(unit || t("dash"));
-        const qtyCell = added
-          ? `<span class="muted">${escapeHtml(t("warehouseReceiptAddedQtyDash"))}</span>`
-          : escapeHtml(String(qty));
+        const qtyCell =
+          added || service
+            ? `<span class="muted">${escapeHtml(t("warehouseReceiptAddedQtyDash"))}</span>`
+            : escapeHtml(String(qty));
         const badge = added
           ? `<div class="muted" style="font-size:11px;margin-top:.2rem">${escapeHtml(
               t("warehouseReceiptAddedBadge")
@@ -30385,13 +30580,14 @@
               t("delete")
             )}</button>`
           : "";
+        const recvDisabled = service ? ` disabled title="${escapeAttr(t("poServiceQtyNotRequired"))}"` : "";
         tr.innerHTML = `
           <td>${itemCell}${badge}</td>
           <td>${unitCell}</td>
           <td class="po-print-num">${qtyCell}</td>
           <td><input type="number" class="wr-line-received" min="0" step="any" value="${escapeAttr(
             String(recv0)
-          )}" /></td>
+          )}"${recvDisabled} /></td>
           <td>${removeBtn}</td>`;
         tb.appendChild(tr);
       });
@@ -31317,7 +31513,7 @@
           alert(t("alertProjectNotAssigned"));
           return;
         }
-        const okLines = collectProjectLinesFromTable().filter((l) => l.item && Number(l.qty) > 0);
+        const okLines = collectProjectLinesFromTable().filter((l) => projectPoLineIsValid(l));
         if (!okLines.length) {
           alert(t("alertProjectPoLines"));
           return;
