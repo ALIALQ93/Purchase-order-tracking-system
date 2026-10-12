@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.08.3" />
+  <meta name="app-version" content="2026.10.12.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -7625,7 +7625,15 @@
         addWarehouse: "إضافة مستودع",
         addUserProfile: "إضافة / تحديث ملف مستخدم",
         userProfilesHint:
-          "أنشئ الحساب أولاً من Firebase Authentication، ثم أضف هنا نفس معرّف المستخدم (UID) مع الدور.",
+          "أنشئ الحساب أولاً من Firebase Authentication، ثم أضف هنا نفس معرّف المستخدم (UID) مع الدور. يمكنك تعطيل الحساب من التعديل لمنع الدخول دون حذف الملف.",
+        labelUserAccountActive: "الحساب نشط (يسمح بالدخول)",
+        labelUserAccountActiveHint: "عند إلغاء التفعيل يُمنع المستخدم من الدخول فوراً. لا يمكن تعطيل حسابك الحالي.",
+        colUserStatus: "الحالة",
+        userStatusActive: "نشط",
+        userStatusDisabled: "معطّل",
+        usersFilterStatus: "حالة الحساب",
+        alertAccountDisabled: "هذا الحساب معطّل. راجع المشرف.",
+        alertCannotDisableSelf: "لا يمكنك تعطيل حسابك أثناء تسجيل الدخول به.",
         colName: "الاسم",
         colCode: "الرمز",
         colActive: "نشط",
@@ -8929,7 +8937,15 @@
         addWarehouse: "Add warehouse",
         addUserProfile: "Add / update user profile",
         userProfilesHint:
-          "Create the account in Firebase Authentication first, then add the same user UID and role here.",
+          "Create the account in Firebase Authentication first, then add the same user UID and role here. You can disable an account from Edit to block sign-in without deleting the profile.",
+        labelUserAccountActive: "Account active (allows sign-in)",
+        labelUserAccountActiveHint: "When unchecked, the user is blocked from signing in immediately. You cannot disable your own account.",
+        colUserStatus: "Status",
+        userStatusActive: "Active",
+        userStatusDisabled: "Disabled",
+        usersFilterStatus: "Account status",
+        alertAccountDisabled: "This account is disabled. Contact an administrator.",
+        alertCannotDisableSelf: "You cannot disable the account you are currently signed in with.",
         colName: "Name",
         colCode: "Code",
         colActive: "Active",
@@ -23641,6 +23657,7 @@
           email: u.email || "",
           displayName,
           role: "user",
+          active: true,
           visibleSections: [...DEFAULT_VISIBLE_SECTIONS],
           canBypassLowerApprovals: false,
           assignedProjectIds: [],
@@ -23653,6 +23670,7 @@
         return {
           role: "user",
           displayName,
+          active: true,
           visibleSections: [...DEFAULT_VISIBLE_SECTIONS],
           visibleReports: [],
           canBypassLowerApprovals: false,
@@ -23665,6 +23683,9 @@
         };
       }
       const d = snap.data();
+      if (d.active === false) {
+        return { active: false, role: d.role || "user", displayName: d.displayName || u.email || "" };
+      }
       let visibleSections = d.visibleSections;
       if (!Array.isArray(visibleSections) || visibleSections.length === 0) {
         visibleSections = normalizeVisibleSectionsFromDoc(d);
@@ -23687,6 +23708,7 @@
       return {
         role: d.role || "user",
         displayName: d.displayName || u.email || "",
+        active: d.active !== false,
         visibleSections,
         visibleReports,
         canBypassLowerApprovals: d.canBypassLowerApprovals === true,
@@ -32527,6 +32549,14 @@
               <span>${escapeHtml(t("usersFilterVisibleSection"))}</span>
               <select id="users-filter-section"></select>
             </label>
+            <label class="po-filter-field">
+              <span>${escapeHtml(t("usersFilterStatus"))}</span>
+              <select id="users-filter-status">
+                <option value="">${escapeHtml(t("filterAll"))}</option>
+                <option value="active">${escapeHtml(t("filterActiveOnly"))}</option>
+                <option value="inactive">${escapeHtml(t("filterInactiveOnly"))}</option>
+              </select>
+            </label>
             <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="users-filter-reset">
               ${escapeHtml(t("poProjectsClearFilters"))}
             </button>
@@ -32534,11 +32564,12 @@
         </div>
         <p style="color:var(--muted);font-size:0.9rem;margin-top:0;">${t("userProfilesHint")}</p>
         <div class="table-scroll"><table class="data-table">
-          <thead><tr><th>${t("colUserEmail")}</th><th>${t("colUid")}</th><th>${t("colRole")}</th><th>${t("colAssignedProjects")}</th><th>${t("colManagedProjectsPm")}</th><th>${t("colManagedRegionsGm")}</th><th>${t("colAssignedRegion")}</th><th></th></tr></thead>
+          <thead><tr><th>${t("colUserEmail")}</th><th>${t("colUid")}</th><th>${t("colRole")}</th><th>${t("colUserStatus")}</th><th>${t("colAssignedProjects")}</th><th>${t("colManagedProjectsPm")}</th><th>${t("colManagedRegionsGm")}</th><th>${t("colAssignedRegion")}</th><th></th></tr></thead>
           <tbody></tbody>
         </table></div>`;
       const roleSel = panel.querySelector("#users-filter-role");
       const sectionSel = panel.querySelector("#users-filter-section");
+      const statusSel = panel.querySelector("#users-filter-status");
       const searchInp = panel.querySelector("#users-filter-search");
       const resetBtn = panel.querySelector("#users-filter-reset");
       const uniqRoles = [...new Set(rows.map((r) => (r.role || "").trim()).filter(Boolean))].sort();
@@ -32566,7 +32597,11 @@
         const q = (searchInp?.value || "").trim().toLowerCase();
         const roleVal = roleSel?.value || "";
         const secVal = sectionSel?.value || "";
+        const statusVal = statusSel?.value || "";
         const filtered = rows.filter((r) => {
+          const isActive = r.active !== false;
+          if (statusVal === "active" && !isActive) return false;
+          if (statusVal === "inactive" && isActive) return false;
           if (roleVal && String(r.role || "") !== roleVal) return false;
           if (secVal) {
             const secs = Array.isArray(r.visibleSections) ? r.visibleSections.map(String) : [];
@@ -32579,6 +32614,7 @@
             r.id,
             r.role,
             roleLabelDisplay(r.role),
+            isActive ? t("userStatusActive") : t("userStatusDisabled"),
           ]
             .filter(Boolean)
             .join(" ")
@@ -32588,7 +32624,7 @@
         const tb = panel.querySelector("tbody");
         if (!tb) return;
         if (!filtered.length) {
-          tb.innerHTML = `<tr><td colspan="8" class="empty-state">${escapeHtml(
+          tb.innerHTML = `<tr><td colspan="9" class="empty-state">${escapeHtml(
             rows.length ? t("companiesFilterNoMatch") : t("noUserProfiles")
           )}</td></tr>`;
           return;
@@ -32600,11 +32636,16 @@
             const managedGmCnt = Array.isArray(r.managedRegionIds) ? r.managedRegionIds.length : 0;
             const regText =
               r.role === "warehouse_clerk" ? clerkAssignedRegionsDisplayLabels(r, rmap) : t("dash");
+            const isActive = r.active !== false;
+            const statusHtml = isActive
+              ? `<span style="color:#166534;font-weight:600">${escapeHtml(t("userStatusActive"))}</span>`
+              : `<span style="color:#b45309;font-weight:600">${escapeHtml(t("userStatusDisabled"))}</span>`;
             return `
-              <tr>
+              <tr${isActive ? "" : ' style="opacity:.72"'}>
                 <td>${escapeHtml(r.displayName || r.email || "")}</td>
                 <td style="font-size:0.8rem;word-break:break-all;">${escapeHtml(r.id)}</td>
                 <td>${escapeHtml(roleLabelDisplay(r.role))}</td>
+                <td>${statusHtml}</td>
                 <td>${assignedCnt}</td>
                 <td>${managedPmCnt}</td>
                 <td>${managedGmCnt}</td>
@@ -32623,10 +32664,12 @@
       searchInp?.addEventListener("input", debounced);
       roleSel?.addEventListener("change", applyUserFilters);
       sectionSel?.addEventListener("change", applyUserFilters);
+      statusSel?.addEventListener("change", applyUserFilters);
       resetBtn?.addEventListener("click", () => {
         if (searchInp) searchInp.value = "";
         if (roleSel) roleSel.value = "";
         if (sectionSel) sectionSel.value = "";
+        if (statusSel) statusSel.value = "";
         applyUserFilters();
       });
 
@@ -33059,6 +33102,23 @@
         const addToMeta = appendFieldTo(metaGrid);
         addToMeta("email", t("labelEmailDisplay"));
         addToMeta("displayName", t("labelDisplayName"));
+
+        const activeWrap = document.createElement("div");
+        activeWrap.className = "field field--full";
+        activeWrap.innerHTML = `
+          <label style="display:flex;gap:0.6rem;align-items:center;cursor:pointer;">
+            <input type="checkbox" id="ef-active" data-field="active" checked />
+            ${escapeHtml(t("labelUserAccountActive"))}
+          </label>
+          <p class="user-form-hint" style="margin-top:0.35rem;margin-bottom:0">${escapeHtml(t("labelUserAccountActiveHint"))}</p>`;
+        identityBody.appendChild(activeWrap);
+        if (existingId && existingId === currentUser?.uid) {
+          const activeCbSelf = activeWrap.querySelector('[data-field="active"]');
+          if (activeCbSelf) {
+            activeCbSelf.disabled = true;
+            activeCbSelf.title = t("alertCannotDisableSelf");
+          }
+        }
 
         const roleOpts = [
           { value: "user", label: t("roleOptUser") },
@@ -33707,10 +33767,17 @@
           const managedRegionIds = userGmRegionAssign?.ids ? [...userGmRegionAssign.ids] : [];
           const assignedRegionIds = userClerkRegionAssign?.ids ? [...userClerkRegionAssign.ids] : [];
           const roleVal = data.role || "user";
+          const activeCb = $("entity-fields").querySelector('[data-field="active"]');
+          const accountActive = activeCb ? !!activeCb.checked : data.active !== false;
+          if (existingId && existingId === currentUser?.uid && !accountActive) {
+            alert(t("alertCannotDisableSelf"));
+            return;
+          }
           const payload = {
             email: (data.email || "").trim(),
             displayName: (data.displayName || "").trim(),
             role: roleVal,
+            active: accountActive,
             visibleSections,
             visibleReports,
             canBypassLowerApprovals:
@@ -34757,6 +34824,11 @@
       currentUser = user;
       if (user) {
         const profile = await ensureUserProfile(user);
+        if (profile?.active === false) {
+          alert(t("alertAccountDisabled"));
+          await signOut(auth);
+          return;
+        }
         const profForSync = {
           ...profile,
           email: user.email || "",
