@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.12.1" />
+  <meta name="app-version" content="2026.10.20.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -8024,6 +8024,7 @@
         invoiceChecklistStatusComplete: "مستوفية المتطلبات",
         colInvoiceCheck: "تدقيق الفاتورة",
         invoiceCheckItem_invoiceDateNo: "تاريخ ورقم الفاتورة",
+        invoiceCheckItem_poSalesContractRef: "الإشارة إلى رقم طلب الشراء وعقد البيع",
         invoiceCheckItem_paymentTerms: "شروط الدفع",
         invoiceCheckItem_shippingTerms: "شروط الشحن",
         invoiceCheckItem_valueCurrency: "القيمة وعملة الفاتورة",
@@ -9334,6 +9335,7 @@
         invoiceChecklistStatusComplete: "Requirements met",
         colInvoiceCheck: "Invoice check",
         invoiceCheckItem_invoiceDateNo: "Invoice date and number",
+        invoiceCheckItem_poSalesContractRef: "Reference to purchase order number and sales contract",
         invoiceCheckItem_paymentTerms: "Payment terms",
         invoiceCheckItem_shippingTerms: "Shipping terms",
         invoiceCheckItem_valueCurrency: "Invoice value and currency",
@@ -28503,6 +28505,7 @@
     /** تدقيق متطلبات الفاتورة التجارية (تعميم البنك المركزي 9/4/267) لطلبات الإدارة العامة. */
     const INVOICE_CHECKLIST_ITEM_IDS = [
       "invoiceDateNo",
+      "poSalesContractRef",
       "paymentTerms",
       "shippingTerms",
       "valueCurrency",
