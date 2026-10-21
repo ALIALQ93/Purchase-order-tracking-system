@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.20.1" />
+  <meta name="app-version" content="2026.10.21.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -6768,6 +6768,18 @@
     </div>
   </div>
 
+  <!-- سجل تعديلات طلب المشروع -->
+  <div id="modal-po-amendments" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="po-amendments-title">
+    <div class="modal po-modal-wide" style="max-width:720px">
+      <h3 id="po-amendments-title" data-i18n="poAmendmentsTitle">تعديلات الطلب</h3>
+      <p id="po-amendments-sub" class="sub" style="margin-top:-0.35rem;color:var(--muted)"></p>
+      <div id="po-amendments-list" class="detail-panel" style="max-height:min(60vh,480px);overflow:auto"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="po-amendments-close" data-i18n="cancel">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
   <!-- محرّر أمر شراء الإدارة العامة (نموذج PO007) -->
   <div id="modal-general-po007" class="modal-overlay hidden po007-editing" role="dialog" aria-modal="true">
     <div class="modal po-modal-wide po007-editor-modal">
@@ -7837,6 +7849,31 @@
           "هذا الدور يعتمد على الشاشات المخصصة (مشتريات، استلام، حسابات، إلخ) ولا يعدّل أوامر الشراء من القائمة العامة.",
         alertPoLockedAfterPurchasing:
           "لا يمكن تعديل هذا الطلب بعد تحويله إلى «قيد الشراء» أو «طلب سلفة» إلا من مشرف الإدارة.",
+        alertPoLockedAfterHigherApproval:
+          "لا يمكن تعديل هذا الطلب بعد موافقة مستوى أعلى من صلاحيتك.",
+        btnPoAmendments: "التعديلات",
+        poAmendmentsTitle: "تعديلات الطلب",
+        poAmendmentsEmpty: "لا توجد تعديلات مسجّلة على هذا الطلب.",
+        poAmendmentsBy: "بواسطة",
+        poAmendmentsAtStage: "المرحلة وقت التعديل",
+        poAmendmentsSourceMain: "تعديل من قائمة الطلبات",
+        poAmendmentsSourceWorkflow: "تعديل بنود أثناء الموافقة",
+        poAmendField_reasonRequest: "سبب الطلب",
+        poAmendField_usageNote: "الاستخدام",
+        poAmendField_notes: "ملاحظات",
+        poAmendField_priority: "الأولوية",
+        poAmendField_requestType: "نوع الطلب",
+        poAmendField_vehicleType: "نوع المركبة",
+        poAmendField_vehicleNumber: "رقم المركبة",
+        poAmendField_requestDate: "تاريخ الطلب",
+        poAmendField_projectId: "المشروع",
+        poAmendField_lines: "البنود",
+        poAmendLinesSummary: "{count} بنداً تغيّر",
+        poAmendLineChanged: "بند: {item}",
+        poAmendLineAdded: "إضافة بند: {item}",
+        poAmendLineRemoved: "حذف بند: {item}",
+        poAmendQtyFromTo: "الكمية {from} → {to}",
+        poAmendUnitFromTo: "الوحدة {from} → {to}",
         alertBypassLowerApprovalsNotAllowed: "لا تملك صلاحية تجاوز الموافقات الأدنى.",
         confirmRejectPoEf: "رفض هذا الطلب؟ سيتم إيقاف المسار عند مهندس أول.",
         btnApprove: "موافقة",
@@ -9148,6 +9185,31 @@
           "This role uses dedicated screens (purchasing, receipt, accounting, etc.) and cannot edit purchase orders from the main list.",
         alertPoLockedAfterPurchasing:
           "This purchase order cannot be edited after it reaches “in progress (purchasing)” or “work advance requested” except by an admin supervisor.",
+        alertPoLockedAfterHigherApproval:
+          "You cannot edit this order after a higher approval level than your role.",
+        btnPoAmendments: "Amendments",
+        poAmendmentsTitle: "Order amendments",
+        poAmendmentsEmpty: "No amendments recorded for this order.",
+        poAmendmentsBy: "By",
+        poAmendmentsAtStage: "Workflow stage at edit",
+        poAmendmentsSourceMain: "Edited from project orders list",
+        poAmendmentsSourceWorkflow: "Line edit during approval",
+        poAmendField_reasonRequest: "Request reason",
+        poAmendField_usageNote: "Usage",
+        poAmendField_notes: "Notes",
+        poAmendField_priority: "Priority",
+        poAmendField_requestType: "Request type",
+        poAmendField_vehicleType: "Vehicle type",
+        poAmendField_vehicleNumber: "Vehicle number",
+        poAmendField_requestDate: "Request date",
+        poAmendField_projectId: "Project",
+        poAmendField_lines: "Lines",
+        poAmendLinesSummary: "{count} line(s) changed",
+        poAmendLineChanged: "Line: {item}",
+        poAmendLineAdded: "Added line: {item}",
+        poAmendLineRemoved: "Removed line: {item}",
+        poAmendQtyFromTo: "Qty {from} → {to}",
+        poAmendUnitFromTo: "Unit {from} → {to}",
         alertBypassLowerApprovalsNotAllowed: "You are not allowed to bypass lower approvals.",
         confirmRejectPoEf: "Reject this request? The workflow will stop at engineer first review.",
         btnApprove: "Approve",
@@ -18834,11 +18896,25 @@
         return;
       }
       try {
-        await updateDoc(ref, {
+        const beforeSnap = projectPoEditSnapshot(po);
+        const afterSnap = projectPoEditSnapshot({ ...po, lines: newLines });
+        const changes = buildProjectPoAmendmentChanges(beforeSnap, afterSnap);
+        const patch = {
           lines: newLines,
           totalAmount: sumLines(newLines),
           updatedAt: serverTimestamp(),
-        });
+        };
+        if (changes.length) {
+          patch.amendments = appendProjectPoAmendmentEntry(po.amendments, {
+            at: new Date().toISOString(),
+            by: currentUser.uid,
+            byName: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+            workflowStatus: po.workflowStatus || "",
+            source: "workflow",
+            changes,
+          });
+        }
+        await updateDoc(ref, patch);
         closeWorkflowPoDetailModal();
         refreshWorkflowQueuesByActiveScreen();
         refreshActiveProjectPoListIfAny();
@@ -24943,6 +25019,308 @@
       ].includes(r);
     }
 
+    /** أعلى موافقة وصلت للطلب (0=قبل مهندس أول … 5=شراء أو بعده). */
+    function projectPoHighestApprovalRank(po) {
+      const ws = String(po?.workflowStatus || "");
+      if (
+        [
+          "in_progress_purchasing",
+          "pending_advance_accounting",
+          "pending_warehouse_receipt",
+          "pending_accounting",
+          "workflow_complete",
+        ].includes(ws)
+      )
+        return 5;
+      if (ws === "pending_purchasing" || po?.supervisorApprovedAt || po?.supervisorSkippedAt) return 4;
+      if (ws === "pending_supervisor" || po?.groupManagerApprovedAt) return 3;
+      if (ws === "pending_group_manager" || po?.projectManagerApprovedAt) return 2;
+      if (ws === "pending_project_manager" || po?.engineerFirstApprovedAt) return 1;
+      return 0;
+    }
+
+    /** أقصى رتبة موافقة يُسمح لهذا الدور بالتعديل عندها أو دونها. */
+    function projectPoEditorMaxApprovalRank(role) {
+      if (hasAdminAccess()) return 99;
+      const r = role || currentUserProfile?.role || userRole;
+      if (r === "group_manager") return 2;
+      if (r === "project_manager") return 1;
+      if (r === "engineer") return 0;
+      return -1;
+    }
+
+    function canEditProjectPoAgainstApprovals(po) {
+      if (!po) return false;
+      if (hasAdminAccess()) return true;
+      const ws = String(po.workflowStatus || "");
+      if (
+        [
+          "in_progress_purchasing",
+          "pending_advance_accounting",
+          "pending_warehouse_receipt",
+          "pending_accounting",
+          "workflow_complete",
+        ].includes(ws)
+      )
+        return false;
+      return projectPoHighestApprovalRank(po) <= projectPoEditorMaxApprovalRank();
+    }
+
+    function projectPoHasAmendments(po) {
+      return Array.isArray(po?.amendments) && po.amendments.length > 0;
+    }
+
+    function projectPoEditSnapshot(po) {
+      const lines = (Array.isArray(po?.lines) ? po.lines : []).map((l) => ({
+        item: String(l?.item || "").trim(),
+        unit: String(l?.unit || "").trim(),
+        qty: Number(l?.qty) || 0,
+      }));
+      return {
+        projectId: String(po?.projectId || "").trim(),
+        requestDate: String(po?.requestDate || "").slice(0, 10),
+        reasonRequest: String(po?.reasonRequest || "").trim(),
+        usageNote: String(po?.usageNote || "").trim(),
+        notes: String(po?.notes || "").trim(),
+        priority: normalizePoPriority(po?.priority),
+        requestType: String(po?.requestType || "").trim(),
+        vehicleType: String(po?.vehicleType || "").trim(),
+        vehicleNumber: String(po?.vehicleNumber || "").trim(),
+        lines,
+      };
+    }
+
+    function projectPoLinesDiffEntries(beforeLines, afterLines) {
+      const entries = [];
+      const max = Math.max(beforeLines.length, afterLines.length);
+      for (let i = 0; i < max; i++) {
+        const a = beforeLines[i];
+        const b = afterLines[i];
+        if (!a && b) {
+          entries.push({
+            kind: "added",
+            item: b.item || t("dash"),
+            toQty: b.qty,
+            toUnit: b.unit,
+          });
+          continue;
+        }
+        if (a && !b) {
+          entries.push({
+            kind: "removed",
+            item: a.item || t("dash"),
+            fromQty: a.qty,
+            fromUnit: a.unit,
+          });
+          continue;
+        }
+        if (!a || !b) continue;
+        if (a.item !== b.item || a.unit !== b.unit || a.qty !== b.qty) {
+          entries.push({
+            kind: "changed",
+            item: b.item || a.item || t("dash"),
+            fromItem: a.item,
+            toItem: b.item,
+            fromQty: a.qty,
+            toQty: b.qty,
+            fromUnit: a.unit,
+            toUnit: b.unit,
+          });
+        }
+      }
+      return entries;
+    }
+
+    function buildProjectPoAmendmentChanges(beforeSnap, afterSnap) {
+      const changes = [];
+      const fields = [
+        "projectId",
+        "requestDate",
+        "reasonRequest",
+        "usageNote",
+        "notes",
+        "priority",
+        "requestType",
+        "vehicleType",
+        "vehicleNumber",
+      ];
+      fields.forEach((key) => {
+        const from = beforeSnap[key] == null ? "" : String(beforeSnap[key]);
+        const to = afterSnap[key] == null ? "" : String(afterSnap[key]);
+        if (from !== to) changes.push({ field: key, from, to });
+      });
+      const lineDiffs = projectPoLinesDiffEntries(beforeSnap.lines || [], afterSnap.lines || []);
+      if (lineDiffs.length) changes.push({ field: "lines", lineDiffs });
+      return changes;
+    }
+
+    function mergeProjectLinesPreservingExtras(oldLines, newLines) {
+      const old = Array.isArray(oldLines) ? oldLines : [];
+      const used = new Set();
+      return (newLines || []).map((nl) => {
+        const item = String(nl.item || "").trim();
+        let matchIdx = -1;
+        for (let i = 0; i < old.length; i++) {
+          if (used.has(i)) continue;
+          if (String(old[i]?.item || "").trim() === item) {
+            matchIdx = i;
+            break;
+          }
+        }
+        if (matchIdx < 0) {
+          for (let i = 0; i < old.length; i++) {
+            if (!used.has(i)) {
+              matchIdx = i;
+              break;
+            }
+          }
+        }
+        const line = {
+          item,
+          unit: (nl.unit || "").trim() || null,
+          qty: Number(nl.qty) || 0,
+          price: 0,
+          lineTotal: 0,
+        };
+        if (matchIdx >= 0) {
+          used.add(matchIdx);
+          const prev = old[matchIdx] || {};
+          if (Number(prev.price) > 0) {
+            line.price = Number(prev.price);
+            line.lineTotal = line.qty * line.price;
+          }
+          if (prev.currency) line.currency = prev.currency;
+          if (prev.receivedQty != null && !Number.isNaN(Number(prev.receivedQty)))
+            line.receivedQty = Number(prev.receivedQty);
+          if (prev.addedAtReceipt) line.addedAtReceipt = true;
+          if (prev.lineNote) line.lineNote = prev.lineNote;
+          if (prev.availableQty != null && prev.availableQty !== "")
+            line.availableQty = Number(prev.availableQty);
+          if (
+            prev.warehouseAvailability &&
+            typeof prev.warehouseAvailability === "object" &&
+            Object.keys(prev.warehouseAvailability).length
+          )
+            line.warehouseAvailability = { ...prev.warehouseAvailability };
+        }
+        return line;
+      });
+    }
+
+    function appendProjectPoAmendmentEntry(existingAmendments, entry) {
+      const list = Array.isArray(existingAmendments) ? [...existingAmendments] : [];
+      list.push(entry);
+      return list.slice(-40);
+    }
+
+    function formatPoAmendmentChangeHtml(ch) {
+      if (!ch) return "";
+      if (ch.field === "lines") {
+        const diffs = Array.isArray(ch.lineDiffs) ? ch.lineDiffs : [];
+        const parts = diffs.map((d) => {
+          if (d.kind === "added")
+            return `<li>${escapeHtml(t("poAmendLineAdded").replace("{item}", d.item || t("dash")))}</li>`;
+          if (d.kind === "removed")
+            return `<li>${escapeHtml(t("poAmendLineRemoved").replace("{item}", d.item || t("dash")))}</li>`;
+          const bits = [];
+          if (d.fromItem !== d.toItem)
+            bits.push(`${escapeHtml(d.fromItem || t("dash"))} → ${escapeHtml(d.toItem || t("dash"))}`);
+          if (d.fromQty !== d.toQty)
+            bits.push(
+              escapeHtml(
+                t("poAmendQtyFromTo")
+                  .replace("{from}", String(d.fromQty ?? t("dash")))
+                  .replace("{to}", String(d.toQty ?? t("dash")))
+              )
+            );
+          if (d.fromUnit !== d.toUnit)
+            bits.push(
+              escapeHtml(
+                t("poAmendUnitFromTo")
+                  .replace("{from}", d.fromUnit || t("dash"))
+                  .replace("{to}", d.toUnit || t("dash"))
+              )
+            );
+          return `<li>${escapeHtml(t("poAmendLineChanged").replace("{item}", d.item || t("dash")))}${
+            bits.length ? `: ${bits.join(" · ")}` : ""
+          }</li>`;
+        });
+        return `<div><strong>${escapeHtml(t("poAmendField_lines"))}</strong> — ${escapeHtml(
+          t("poAmendLinesSummary").replace("{count}", String(diffs.length))
+        )}<ul style="margin:.35rem 0 0;padding-inline-start:1.2rem">${parts.join("")}</ul></div>`;
+      }
+      const label = t(`poAmendField_${ch.field}`);
+      const lab = label && label !== `poAmendField_${ch.field}` ? label : ch.field;
+      let from = ch.from;
+      let to = ch.to;
+      if (ch.field === "priority") {
+        from = from === "urgent" ? t("poPriorityUrgent") : t("poPriorityNormal");
+        to = to === "urgent" ? t("poPriorityUrgent") : t("poPriorityNormal");
+      }
+      if (ch.field === "requestType") {
+        from = projectPoRequestTypeLabel(from);
+        to = projectPoRequestTypeLabel(to);
+      }
+      return `<div><strong>${escapeHtml(lab)}</strong>: ${escapeHtml(from || t("dash"))} → ${escapeHtml(
+        to || t("dash")
+      )}</div>`;
+    }
+
+    function closePoAmendmentsModal() {
+      $("modal-po-amendments")?.classList.add("hidden");
+      const list = $("po-amendments-list");
+      if (list) list.innerHTML = "";
+    }
+
+    async function openPoAmendmentsModal(poId) {
+      if (!poId) return;
+      const snap = await getDoc(doc(db, "purchaseOrders", poId));
+      if (!snap.exists()) return;
+      const po = { id: snap.id, ...snap.data() };
+      const amendments = Array.isArray(po.amendments) ? [...po.amendments] : [];
+      $("po-amendments-sub").textContent = [po.poReference || po.title || po.id, poRowDisplayDate(po)]
+        .filter(Boolean)
+        .join(" · ");
+      const list = $("po-amendments-list");
+      if (!list) return;
+      if (!amendments.length) {
+        list.innerHTML = `<p class="empty-state" style="margin:0">${escapeHtml(t("poAmendmentsEmpty"))}</p>`;
+      } else {
+        const nameCache = {};
+        const uids = [...new Set(amendments.map((a) => a.by).filter(Boolean))];
+        await Promise.all(
+          uids.map(async (uid) => {
+            nameCache[uid] = await displayNameForUserProfileUid(uid);
+          })
+        );
+        const ordered = amendments.slice().reverse();
+        list.innerHTML = ordered
+          .map((a) => {
+            const when = a.at ? escapeHtml(String(a.at).replace("T", " ").slice(0, 19)) : escapeHtml(t("dash"));
+            const who = escapeHtml(a.byName || nameCache[a.by] || a.by || t("dash"));
+            const stage = escapeHtml(a.workflowStatus ? workflowLabel(a.workflowStatus) : t("dash"));
+            const src =
+              a.source === "workflow"
+                ? t("poAmendmentsSourceWorkflow")
+                : t("poAmendmentsSourceMain");
+            const changesHtml = (Array.isArray(a.changes) ? a.changes : [])
+              .map((ch) => formatPoAmendmentChangeHtml(ch))
+              .join("");
+            return `<article style="border-bottom:1px solid var(--border);padding:0.75rem 0">
+              <div style="font-size:0.9rem;margin-bottom:0.35rem"><strong>${when}</strong> · ${escapeHtml(
+                t("poAmendmentsBy")
+              )}: ${who}</div>
+              <div class="muted" style="font-size:0.82rem;margin-bottom:0.45rem">${escapeHtml(
+                t("poAmendmentsAtStage")
+              )}: ${stage} · ${escapeHtml(src)}</div>
+              <div style="display:flex;flex-direction:column;gap:0.35rem">${changesHtml || escapeHtml(t("dash"))}</div>
+            </article>`;
+          })
+          .join("");
+      }
+      $("modal-po-amendments")?.classList.remove("hidden");
+    }
+
     /** محاسب: إنشاء طلب مشروع جديد فقط (لا تعديل من القائمة ولا أوامر الإدارة العامة من هنا). */
     function accountantMayOpenNewProjectPoModal(scope, existingId) {
       const r = currentUserProfile?.role || userRole;
@@ -25937,10 +26315,8 @@
         .map((r) => {
           const compName = projectPoCompanyDisplay(r, ctx) || t("dash");
           const contractNo = projectPoContractDisplay(r, ctx) || t("dash");
-          const lockedAfterPurchasing =
-            !hasAdminAccess() &&
-            ["in_progress_purchasing", "pending_advance_accounting"].includes(String(r.workflowStatus || ""));
-          const canEditRow = canEdit && !lockedAfterPurchasing;
+          const canEditRow = canEdit && canEditProjectPoAgainstApprovals(r);
+          const hasAmends = projectPoHasAmendments(r);
           return `
                 <tr>
                   ${projectPoReferenceCellHtml(r)}
@@ -25958,6 +26334,13 @@
                   <td>${formatWorkflowTableCellForPo(r)}</td>
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
+                    ${
+                      hasAmends
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-amendments" data-id="${r.id}">${t(
+                            "btnPoAmendments"
+                          )}</button>`
+                        : ""
+                    }
                     ${
                       hasAdminAccess()
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
@@ -25983,6 +26366,9 @@
       });
       wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
         btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-po-amendments").forEach((btn) => {
+        btn.addEventListener("click", () => void openPoAmendmentsModal(btn.dataset.id));
       });
       wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
         btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
@@ -26327,6 +26713,13 @@
                   <td>
                     <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
                     ${
+                      projectPoHasAmendments(r)
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-amendments" data-id="${r.id}">${t(
+                            "btnPoAmendments"
+                          )}</button>`
+                        : ""
+                    }
+                    ${
                       hasAdminAccess()
                         ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
                             "orderNoteButton"
@@ -26343,6 +26736,9 @@
           </table></div>`;
       wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
         btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-po-amendments").forEach((btn) => {
+        btn.addEventListener("click", () => void openPoAmendmentsModal(btn.dataset.id));
       });
       wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
         btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
@@ -31381,6 +31777,23 @@
         alert(isWarehouseClerkRestricted() ? t("alertWarehouseClerkNoPoEdit") : t("alertWorkflowRoleNoPoEdit"));
         return;
       }
+      try {
+        const snap = await getDoc(doc(db, "purchaseOrders", id));
+        if (snap.exists()) {
+          const po = snap.data();
+          if (po.scope === "project" && !canEditProjectPoAgainstApprovals(po)) {
+            const ws = String(po.workflowStatus || "");
+            alert(
+              ["in_progress_purchasing", "pending_advance_accounting"].includes(ws)
+                ? t("alertPoLockedAfterPurchasing")
+                : t("alertPoLockedAfterHigherApproval")
+            );
+            return;
+          }
+        }
+      } catch (_) {
+        /* ignore and continue to confirm */
+      }
       if (!confirm(t("confirmDeletePo"))) return;
       await deleteDoc(doc(db, "purchaseOrders", id));
       const active = document.querySelector(".app-screen:not(.hidden)");
@@ -31443,15 +31856,14 @@
         if (scope === "project") existingProjectId = poData.projectId || null;
       }
 
-      // After purchasing starts / advance is requested, only admin supervisor can edit the PO.
-      if (
-        scope === "project" &&
-        existingId &&
-        poData &&
-        !hasAdminAccess() &&
-        ["in_progress_purchasing", "pending_advance_accounting"].includes(String(poData.workflowStatus || ""))
-      ) {
-        alert(t("alertPoLockedAfterPurchasing"));
+      // بعد موافقة أعلى / بدء الشراء: تقييد حسب الدور (الأدمن مستثنى).
+      if (scope === "project" && existingId && poData && !canEditProjectPoAgainstApprovals(poData)) {
+        const ws = String(poData.workflowStatus || "");
+        alert(
+          ["in_progress_purchasing", "pending_advance_accounting"].includes(ws)
+            ? t("alertPoLockedAfterPurchasing")
+            : t("alertPoLockedAfterHigherApproval")
+        );
         return;
       }
 
@@ -31669,7 +32081,7 @@
           alert(t("alertPoRegionRequired"));
           return;
         }
-        const lines = okLines.map((l) => ({
+        const draftLines = okLines.map((l) => ({
           item: l.item,
           unit: (l.unit || "").trim() || null,
           qty: Number(l.qty),
@@ -31703,8 +32115,8 @@
           status: ($("po-status-project-snapshot")?.value || "draft").trim() || "draft",
           scope,
           projectId: pid,
-          lines,
-          totalAmount: sumLines(lines),
+          lines: draftLines,
+          totalAmount: sumLines(draftLines),
           notes: ($("po-notes").value || "").trim(),
           updatedAt: serverTimestamp(),
         };
@@ -31766,7 +32178,31 @@
             id = "";
           } else if (scope === "project") {
             const prev = existingSnap.data() || {};
+            if (!canEditProjectPoAgainstApprovals(prev)) {
+              const ws = String(prev.workflowStatus || "");
+              alert(
+                ["in_progress_purchasing", "pending_advance_accounting"].includes(ws)
+                  ? t("alertPoLockedAfterPurchasing")
+                  : t("alertPoLockedAfterHigherApproval")
+              );
+              return;
+            }
             if (!prev.workflowStatus && !payload.workflowStatus) payload.workflowStatus = "warehouse_review";
+            payload.lines = mergeProjectLinesPreservingExtras(prev.lines, payload.lines);
+            payload.totalAmount = sumLines(payload.lines);
+            const beforeSnap = projectPoEditSnapshot(prev);
+            const afterSnap = projectPoEditSnapshot({ ...prev, ...payload });
+            const changes = buildProjectPoAmendmentChanges(beforeSnap, afterSnap);
+            if (changes.length) {
+              payload.amendments = appendProjectPoAmendmentEntry(prev.amendments, {
+                at: new Date().toISOString(),
+                by: currentUser.uid,
+                byName: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+                workflowStatus: prev.workflowStatus || "",
+                source: "main",
+                changes,
+              });
+            }
           }
         }
         if (id) {
@@ -34751,6 +35187,10 @@
       updateOrderNoteRecipientCount();
     });
     $("order-note-alert-close")?.addEventListener("click", () => void closeOrderNoteAlert(false));
+    $("po-amendments-close")?.addEventListener("click", () => closePoAmendmentsModal());
+    $("modal-po-amendments")?.addEventListener("click", (e) => {
+      if (e.target === $("modal-po-amendments")) closePoAmendmentsModal();
+    });
     $("order-note-alert-open-po")?.addEventListener("click", () => void closeOrderNoteAlert(true));
 
     $("btn-chat")?.addEventListener("click", (e) => {
