@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.24.6" />
+  <meta name="app-version" content="2026.10.24.7" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -5770,7 +5770,10 @@
         <div class="card" style="margin-bottom:1rem">
           <div class="toolbar" style="justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap">
             <h2 style="margin:0;font-size:1.05rem" id="rep-desk-expenses-heading" data-i18n="repDeskExpensesTitle">مصروفاتي</h2>
-            <button type="button" class="btn btn-primary btn-sm" id="btn-rep-expense-new" data-i18n="btnRepExpenseNew">تسجيل مصروف</button>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-rep-expense-help" data-i18n="btnRepExpenseHelp">كيف أسجّل مصروفاً؟</button>
+              <button type="button" class="btn btn-primary btn-sm" id="btn-rep-expense-new" data-i18n="btnRepExpenseNew">تسجيل مصروف</button>
+            </div>
           </div>
           <div id="rep-desk-expenses-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
@@ -7360,6 +7363,72 @@
     </div>
   </div>
 
+
+  <!-- دليل تسجيل مصروف مندوب (توضيحي) -->
+  <div id="modal-rep-expense-help" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-rep-expense-help-title">
+    <div class="modal" style="max-width:720px">
+      <h3 id="modal-rep-expense-help-title" data-i18n="modalRepExpenseHelpTitle">دليل تسجيل المصروف</h3>
+      <p class="user-form-hint" style="margin-top:0.35rem" data-i18n="modalRepExpenseHelpIntro">هذه نافذة توضيحية بنفس شكل تسجيل المصروف. اتبع الأرقام بالترتيب، ثم أغلق الدليل وافتح «تسجيل مصروف» لإدخال بياناتك الحقيقية.</p>
+      <div class="field">
+        <label data-i18n="repAmountLabel">المبلغ</label>
+        <input type="text" value="150000" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepAmount"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="reportBaseCurrencyLabel">العملة</label>
+        <input type="text" value="IQD" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepCurrency"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repExpenseDateLabel">تاريخ الصرف</label>
+        <input type="text" value="2026-10-24" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepDate"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repExpenseVendorLabel">المجهز</label>
+        <input type="text" data-i18n-placeholder="repExpenseHelpDemoVendor" placeholder="مثال: شركة التجهيزات" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepVendor"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repExpenseReceiptNoLabel">رقم إيصال الشراء</label>
+        <input type="text" data-i18n-placeholder="repExpenseHelpDemoReceipt" placeholder="مثال: 12345" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepReceiptNo"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repExpenseReceiptDateLabel">تاريخ إيصال الشراء</label>
+        <input type="text" value="2026-10-24" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepReceiptDate"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repExpenseAdvancesLabel">السلف (يمكن اختيار أكثر من سلفة)</label>
+        <div style="border:1px solid var(--border);border-radius:10px;padding:.55rem;background:var(--surface2,#f8fafc)">
+          <label style="display:flex;gap:.55rem;align-items:flex-start;cursor:default">
+            <input type="checkbox" checked disabled />
+            <span>
+              <strong data-i18n="repExpenseHelpDemoAdvance">سلفة مفتوحة — باقي متاح 500,000</strong>
+              <input type="text" value="150000" disabled style="display:block;margin-top:.35rem;max-width:160px;opacity:.85" />
+            </span>
+          </label>
+        </div>
+        <p class="user-form-hint" style="margin:.45rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepAdvances"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repExpensePosLabel">طلبات الشراء المرتبطة</label>
+        <input type="text" data-i18n-placeholder="repExpenseHelpDemoPo" placeholder="اختياري — ابحث برقم الطلب…" disabled style="opacity:.85" />
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepPos"></p>
+      </div>
+      <div class="field">
+        <label data-i18n="repNoteLabel">ملاحظة</label>
+        <textarea rows="2" disabled style="opacity:.85"></textarea>
+        <p class="user-form-hint" style="margin:.35rem 0 0;color:var(--accent,#0f766e);font-weight:600" data-i18n="repExpenseHelpStepNote"></p>
+      </div>
+      <p class="user-form-hint" style="margin:0 0 .75rem;color:var(--accent,#0f766e);font-weight:700" data-i18n="repExpenseHelpStepSave"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="modal-rep-expense-help-close" data-i18n="repExpenseHelpClose">فهمت — إغلاق الدليل</button>
+      </div>
+    </div>
+  </div>
+
   <!-- إصدار سلفة مندوب -->
   <div id="modal-rep-advance-issue" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal">
@@ -8249,7 +8318,28 @@
         userFormSectionNav: "القائمة والأقسام الظاهرة",
         userFormSectionScope: "نطاق العمل حسب الدور",
         userFormBypassHint: "يُستخدم لمدير المشروع أو مسؤول المجموعة للتصرف مبكراً في مراحل معيّنة من المسار عند تفعيله.",
-        userFormScopeHint: "يظهر أحد هذه البلوكات فقط حسب الدور المختار (مشاريع، منطقة أمين مستودع، إلخ).",
+        userFormScopeHint: "تظهر البلوكات المناسبة حسب الأدوار المختارة (يمكن الجمع بين أكثر من دور).",
+        labelPrimaryRole: "الدور الأساسي",
+        labelExtraRoles: "أدوار إضافية",
+        labelExtraRolesHint: "اختر أدواراً إضافية لنفس المستخدم، مثل مسؤول مجموعة + مندوب مشتريات. الدور الأساسي يبقى للعرض الافتراضي.",
+        btnRepExpenseHelp: "كيف أسجّل مصروفاً؟",
+        modalRepExpenseHelpTitle: "دليل تسجيل المصروف",
+        modalRepExpenseHelpIntro: "هذه نافذة توضيحية بنفس شكل تسجيل المصروف. اتبع الأرقام بالترتيب، ثم أغلق الدليل وافتح «تسجيل مصروف» لإدخال بياناتك الحقيقية.",
+        repExpenseHelpStepAmount: "1) المبلغ يُحسب تلقائياً من مجموع ما تخصصه على السلف أدناه — لا حاجة لكتابته يدوياً عادة.",
+        repExpenseHelpStepCurrency: "2) اختر عملة الصرف (دينار أو دولار) لتطابق عملة السلفة.",
+        repExpenseHelpStepDate: "3) تاريخ الصرف الفعلي.",
+        repExpenseHelpStepVendor: "4) اسم المجهز / البائع كما في الإيصال.",
+        repExpenseHelpStepReceiptNo: "5) رقم إيصال الشراء للتوثيق.",
+        repExpenseHelpStepReceiptDate: "6) تاريخ الإيصال (قد يختلف عن تاريخ الصرف).",
+        repExpenseHelpStepAdvances: "7) أهم خطوة: أشّر السلفة المفتوحة وأدخل كم صرفت منها. يمكن توزيع المبلغ على أكثر من سلفة. يظهر الباقي المتاح لكل سلفة.",
+        repExpenseHelpStepPos: "8) اختياري: ابحث عن طلب شراء واربط المصروف به (أو بأكثر من طلب). يمكن الحفظ بدون ربط.",
+        repExpenseHelpStepNote: "9) ملاحظة داخلية إن لزم.",
+        repExpenseHelpStepSave: "10) اضغط حفظ ليُخصم المبلغ من رصيد السلفة ويظهر في قائمة مصروفاتك.",
+        repExpenseHelpDemoVendor: "مثال: شركة التجهيزات",
+        repExpenseHelpDemoReceipt: "مثال: 12345",
+        repExpenseHelpDemoAdvance: "سلفة مفتوحة — باقي متاح 500,000",
+        repExpenseHelpDemoPo: "اختياري — ابحث برقم الطلب…",
+        repExpenseHelpClose: "فهمت — إغلاق الدليل",
         labelAssignedProjects: "المشاريع المسندة (طلبات شراء المشاريع)",
         assignedProjectsHint: "ابحث عن مشروع ثم أضفه. يمكن إزالة أي مشروع من القائمة. ينطبق على دور المهندس.",
         assignProjectSearchPlaceholder: "بحث: رمز أو اسم مشروع…",
@@ -9643,7 +9733,28 @@
         userFormSectionScope: "Scope by role",
         userFormBypassHint:
           "For project managers and group managers: when enabled, allows acting earlier on certain workflow stages.",
-        userFormScopeHint: "Only one of the blocks below applies, depending on the selected role.",
+        userFormScopeHint: "Matching scope blocks appear for every selected role (multiple roles allowed).",
+        labelPrimaryRole: "Primary role",
+        labelExtraRoles: "Additional roles",
+        labelExtraRolesHint: "Add extra roles for the same user, e.g. group manager + purchasing representative. The primary role is the default label.",
+        btnRepExpenseHelp: "How do I record an expense?",
+        modalRepExpenseHelpTitle: "Expense entry guide",
+        modalRepExpenseHelpIntro: "This is a demo of the expense form. Follow the numbered steps, then close and open “Record expense” to enter real data.",
+        repExpenseHelpStepAmount: "1) Amount is usually calculated from the advance allocations below.",
+        repExpenseHelpStepCurrency: "2) Choose the currency to match the advance.",
+        repExpenseHelpStepDate: "3) Actual spend date.",
+        repExpenseHelpStepVendor: "4) Vendor / seller name as on the receipt.",
+        repExpenseHelpStepReceiptNo: "5) Purchase receipt number.",
+        repExpenseHelpStepReceiptDate: "6) Receipt date (may differ from spend date).",
+        repExpenseHelpStepAdvances: "7) Key step: tick an open advance and enter how much you spent from it. You can split across advances; remaining balance is shown.",
+        repExpenseHelpStepPos: "8) Optional: search and link one or more POs. You can save without linking.",
+        repExpenseHelpStepNote: "9) Optional internal note.",
+        repExpenseHelpStepSave: "10) Save to deduct from the advance and list the expense.",
+        repExpenseHelpDemoVendor: "Example: Supplies Co.",
+        repExpenseHelpDemoReceipt: "Example: 12345",
+        repExpenseHelpDemoAdvance: "Open advance — remaining 500,000",
+        repExpenseHelpDemoPo: "Optional — search by PO number…",
+        repExpenseHelpClose: "Got it — close guide",
         labelAssignedProjects: "Assigned projects (project purchase orders)",
         assignedProjectsHint: "Search and add projects; remove with ×. Applies to the engineer role.",
         assignProjectSearchPlaceholder: "Search: code or project name…",
@@ -18886,15 +18997,15 @@
       if (userOwnsProjectPoRow(row)) return true;
       if (hasAdminAccess()) return true;
       const r = currentUserProfile?.role || userRole;
-      if (r === "engineer" || r === "engineer_first" || r === "viewer") {
+      if (hasRole("engineer") || hasRole("engineer_first") || hasRole("viewer")) {
         const allowed = currentUserProfile?.assignedProjectIds || [];
         return !!(row.projectId && allowed.includes(row.projectId));
       }
-      if (r === "project_manager") {
+      if (hasRole("project_manager")) {
         const allowed = currentUserProfile?.managedProjectIds || [];
         return !!(row.projectId && allowed.includes(row.projectId));
       }
-      if (r === "group_manager") {
+      if (hasRole("group_manager")) {
         const regions = currentUserProfile?.managedRegionIds || [];
         if (!regions.length) return false;
         return !!(row.projectId && poMatchesAnyManagedRegion(row, projectRegion[row.projectId], regions));
@@ -19183,7 +19294,7 @@
       if (mode === "pm") {
         const managed = currentUserProfile?.managedProjectIds || [];
         return (
-          role === "project_manager" &&
+          hasRole("project_manager") &&
           managed.length > 0 &&
           managed.includes(po.projectId) &&
           pmCanActOnWorkflowStatus(po.workflowStatus)
@@ -19191,7 +19302,7 @@
       }
       const regions = currentUserProfile?.managedRegionIds || [];
       return (
-        role === "group_manager" &&
+        hasRole("group_manager") &&
         regions.length > 0 &&
         regId &&
         regions.includes(regId) &&
@@ -19541,12 +19652,12 @@
           po.workflowStatus === "workflow_complete"
         );
       const role = currentUserProfile?.role || userRole;
-      if (role === "accountant") {
+      if (hasRole("accountant")) {
         if (po.workflowStatus === "pending_accounting") return true;
         if (po.workflowStatus === "workflow_complete") return !!po.pricesAmendmentApproved;
         return false;
       }
-      if (role === "purchasing_officer")
+      if (hasRole("purchasing_officer"))
         return (
           po.workflowStatus === "in_progress_purchasing" ||
           po.workflowStatus === "pending_advance_accounting" ||
@@ -19559,7 +19670,7 @@
     async function openAccountingPoModal(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "accountant" && role !== "purchasing_officer" && !hasAdminAccess()) return;
+      if (!hasRole("accountant") && !hasRole("purchasing_officer") && !hasAdminAccess()) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -19568,17 +19679,17 @@
         alert(t("alertWarehouseReviewStale"));
         return;
       }
-      const isPurchasingOfficer = role === "purchasing_officer" && !hasAdminAccess();
+      const isPurchasingOfficer = hasRole("purchasing_officer") && !hasAdminAccess();
       accPoAllowVerifyMode = (isPurchasingOfficer || hasAdminAccess()) && po.workflowStatus === "pending_accounting";
       const isComplete = po.workflowStatus === "workflow_complete";
       const isAdmin = hasAdminAccess();
       const canEditAmended =
-        isComplete && !!po.pricesAmendmentApproved && (role === "accountant" || isAdmin);
+        isComplete && !!po.pricesAmendmentApproved && (hasRole("accountant") || isAdmin);
       accPoReadOnlyMode = isComplete && !canEditAmended;
       const canSavePrices =
-        (role === "accountant" || isPurchasingOfficer || isAdmin) && (!isComplete || canEditAmended);
+        (hasRole("accountant") || isPurchasingOfficer || isAdmin) && (!isComplete || canEditAmended);
       const canCloseFromModal =
-        (role === "accountant" || isAdmin) && !isComplete && po.workflowStatus === "pending_accounting";
+        (hasRole("accountant") || isAdmin) && !isComplete && po.workflowStatus === "pending_accounting";
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const pname = pr.exists() ? projectDisplayName(pr.data()) : po.projectId || t("dash");
       const snapLines = Array.isArray(po.lines) ? po.lines : [];
@@ -19633,7 +19744,7 @@
       if (btnVerify) btnVerify.classList.toggle("hidden", !accPoAllowVerifyMode || verified);
       const btnReq = $("modal-acc-po-amend-request");
       const btnAppr = $("modal-acc-po-amend-approve");
-      const mayReq = !isAdmin && role === "accountant" && isComplete && !po.pricesAmendmentApproved;
+      const mayReq = !isAdmin && hasRole("accountant") && isComplete && !po.pricesAmendmentApproved;
       const mayAppr = isAdmin && isComplete && !!po.pricesAmendmentRequested && !po.pricesAmendmentApproved;
       if (btnReq) btnReq.classList.toggle("hidden", !mayReq);
       if (btnAppr) btnAppr.classList.toggle("hidden", !mayAppr);
@@ -19656,8 +19767,8 @@
       if (!poId || !accPoEditBaseLines) return false;
       const saveRole = currentUserProfile?.role || userRole;
       if (
-        saveRole !== "accountant" &&
-        saveRole !== "purchasing_officer" &&
+        !hasRole("accountant") &&
+        !hasRole("purchasing_officer") &&
         !hasAdminAccess()
       )
         return false;
@@ -19719,7 +19830,7 @@
       const poId = $("acc-po-id")?.value;
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "purchasing_officer" && !hasAdminAccess()) {
+      if (!hasRole("purchasing_officer") && !hasAdminAccess()) {
         alert(t("alertVerifyPricesNotAllowed"));
         return;
       }
@@ -19757,7 +19868,7 @@
     async function requestPriceAmendmentForCompletedPo(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "accountant" && !hasAdminAccess()) return;
+      if (!hasRole("accountant") && !hasAdminAccess()) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -24161,8 +24272,10 @@
       const managedRegionIds = Array.isArray(d.managedRegionIds) ? d.managedRegionIds : [];
       const assignedRegionIds = clerkAssignedRegionIds(d);
       const companyIds = Array.isArray(d.companyIds) ? d.companyIds.filter(Boolean) : [];
+      const rolePrimary = d.role || "user";
       return {
-        role: d.role || "user",
+        role: rolePrimary,
+        roles: normalizeProfileRoles({ role: rolePrimary, roles: d.roles }),
         displayName: d.displayName || u.email || "",
         active: d.active !== false,
         visibleSections,
@@ -24188,41 +24301,36 @@
     }
 
     async function getProjectIdsForCompanyResolution(profile) {
-      const r = profile?.role || "user";
-      if (r === "engineer" || r === "engineer_first" || r === "viewer") {
-        return [...(profile.assignedProjectIds || [])];
+      const roles = normalizeProfileRoles(profile);
+      const has = (x) => roles.includes(x);
+      const out = new Set();
+      if (has("engineer") || has("engineer_first") || has("viewer")) {
+        (profile.assignedProjectIds || []).forEach((id) => out.add(id));
       }
-      if (r === "project_manager") {
-        return [...(profile.managedProjectIds || [])];
+      if (has("project_manager")) {
+        (profile.managedProjectIds || []).forEach((id) => out.add(id));
       }
-      if (r === "group_manager" || r === "warehouse_supervisor") {
-        const regions = profile.managedRegionIds || [];
-        if (!regions.length) return [];
-        const snap = await getDocs(collection(db, "projects"));
-        const out = [];
-        snap.forEach((d) => {
-          const pRegions = projectRegionIdsFromDoc(d.data());
-          if (pRegions.some((rid) => regions.includes(rid))) out.push(d.id);
-        });
-        return out;
+      if (has("group_manager") || has("warehouse_supervisor") || has("warehouse_clerk")) {
+        const regions = has("warehouse_clerk")
+          ? clerkAssignedRegionIds(profile)
+          : profile.managedRegionIds || [];
+        if (regions.length) {
+          const snap = await getDocs(collection(db, "projects"));
+          snap.forEach((d) => {
+            const pRegions = projectRegionIdsFromDoc(d.data());
+            if (pRegions.some((rid) => regions.includes(rid))) out.add(d.id);
+          });
+        }
       }
-      if (r === "warehouse_clerk") {
-        const regions = clerkAssignedRegionIds(profile);
-        if (!regions.length) return [];
-        const snap = await getDocs(collection(db, "projects"));
-        const out = [];
-        snap.forEach((d) => {
-          const pRegions = projectRegionIdsFromDoc(d.data());
-          if (pRegions.some((rid) => regions.includes(rid))) out.push(d.id);
-        });
-        return out;
-      }
-      return [];
+      return [...out];
     }
 
     async function resolveCompanyIdsForProfile(profile) {
       const r = profile?.role || "user";
-      if (profileHasAdminAccess(profile) || r === "purchasing_officer" || r === "accountant") {
+      if (
+        profileHasAdminAccess(profile) ||
+        profileHasRole(profile, "purchasing_officer", "accountant")
+      ) {
         const snap = await getDocs(collection(db, "companies"));
         const ids = [];
         snap.forEach((d) => ids.push(d.id));
@@ -24481,14 +24589,14 @@
     async function fetchLinkablePurchaseOrders() {
       const r = currentUserProfile?.role || userRole;
       const rows = [];
-      if (hasAdminAccess() || r === "purchasing_officer" || r === "accountant") {
+      if (hasAdminAccess() || hasRole("purchasing_officer") || hasRole("accountant")) {
         const snap = await getDocs(collection(db, "purchaseOrders"));
         snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
       } else {
         const ctx = await fetchProjectPurchaseOrdersTableContext();
         rows.push(...ctx.rows);
         const sections = currentUserProfile?.visibleSections || [];
-        if (r !== "viewer" && sections.includes("po-general")) {
+        if (!hasRole("viewer") && sections.includes("po-general")) {
           const gq = query(collection(db, "purchaseOrders"), where("scope", "==", "general"));
           const gsnap = await getDocs(gq);
           gsnap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
@@ -25306,6 +25414,59 @@
       return Array.isArray(currentUserProfile?.visibleSections) && currentUserProfile.visibleSections.includes("admin");
     }
 
+    const ALL_USER_ROLE_VALUES = [
+      "user",
+      "engineer",
+      "engineer_first",
+      "viewer",
+      "warehouse_clerk",
+      "project_manager",
+      "group_manager",
+      "purchasing_officer",
+      "purchasing_representative",
+      "warehouse_supervisor",
+      "accountant",
+      "admin",
+    ];
+
+    function normalizeProfileRoles(profile) {
+      const primary = String(profile?.role || "user").trim() || "user";
+      const extras = Array.isArray(profile?.roles)
+        ? profile.roles.map((x) => String(x || "").trim()).filter(Boolean)
+        : [];
+      const out = [];
+      const seen = new Set();
+      for (const r of [primary, ...extras]) {
+        if (!r || seen.has(r)) continue;
+        seen.add(r);
+        out.push(r);
+      }
+      return out.length ? out : ["user"];
+    }
+
+    function getUserRoles(profile) {
+      if (profile) return normalizeProfileRoles(profile);
+      return normalizeProfileRoles(currentUserProfile || { role: userRole || "user" });
+    }
+
+    function hasRole(...wanted) {
+      const set = new Set(getUserRoles());
+      return wanted.some((w) => set.has(w));
+    }
+
+    function profileHasRole(profile, ...wanted) {
+      const set = new Set(normalizeProfileRoles(profile));
+      return wanted.some((w) => set.has(w));
+    }
+
+    function rolesLabelDisplay(profileOrRoles) {
+      const list = Array.isArray(profileOrRoles)
+        ? profileOrRoles
+        : normalizeProfileRoles(profileOrRoles || {});
+      return list.map((r) => roleLabelDisplay(r)).join(" + ");
+    }
+
+
     function firstAllowedView() {
       const list =
         Array.isArray(currentUserProfile?.visibleSections) && currentUserProfile.visibleSections.length > 0
@@ -25351,42 +25512,40 @@
 
     async function getProjectAllowlistForProjectPo() {
       if (hasAdminAccess()) return null;
-      const r = currentUserProfile?.role || userRole || "user";
-      if (r === "engineer" || r === "engineer_first") {
-        const ids = currentUserProfile?.assignedProjectIds || [];
-        return [...ids];
+      const roles = getUserRoles();
+      const has = (x) => roles.includes(x);
+      const scoped = new Set();
+      let hasScoped = false;
+      if (has("engineer") || has("engineer_first") || has("viewer")) {
+        hasScoped = true;
+        (currentUserProfile?.assignedProjectIds || []).forEach((id) => scoped.add(id));
       }
-      if (r === "viewer") {
-        const ids = currentUserProfile?.assignedProjectIds || [];
-        return [...ids];
+      if (has("project_manager")) {
+        hasScoped = true;
+        (currentUserProfile?.managedProjectIds || []).forEach((id) => scoped.add(id));
       }
-      if (r === "project_manager") {
-        const ids = currentUserProfile?.managedProjectIds || [];
-        return [...ids];
-      }
-      if (r === "group_manager") {
+      if (has("group_manager")) {
+        hasScoped = true;
         const regions = currentUserProfile?.managedRegionIds || [];
-        if (!regions.length) return [];
-        const snap = await getDocs(collection(db, "projects"));
-        const out = [];
-        snap.forEach((d) => {
-          const pd = d.data();
-          const pRegions = projectRegionIdsFromDoc(pd);
-          if (pRegions.some((rid) => regions.includes(rid))) out.push(d.id);
-        });
-        return out;
+        if (regions.length) {
+          const snap = await getDocs(collection(db, "projects"));
+          snap.forEach((d) => {
+            const pRegions = projectRegionIdsFromDoc(d.data());
+            if (pRegions.some((rid) => regions.includes(rid))) scoped.add(d.id);
+          });
+        }
       }
-      return null;
+      if (!hasScoped) return null;
+      return [...scoped];
     }
 
     function isWarehouseClerkRestricted() {
-      return (currentUserProfile?.role || userRole) === "warehouse_clerk" && !hasAdminAccess();
+      return hasRole("warehouse_clerk") && !hasAdminAccess() && getUserRoles().every((r) => r === "warehouse_clerk");
     }
 
     function isPoEditorRoleBlocked() {
-      const r = currentUserProfile?.role || userRole;
       if (hasAdminAccess()) return false;
-      return [
+      const blocked = new Set([
         "warehouse_clerk",
         "purchasing_officer",
         "purchasing_representative",
@@ -25394,7 +25553,9 @@
         "accountant",
         "viewer",
         "engineer_first",
-      ].includes(r);
+      ]);
+      // يُسمح بالتعديل إن وُجد أي دور غير محظور (مثل مسؤول مجموعة + مندوب)
+      return !getUserRoles().some((r) => !blocked.has(r));
     }
 
     /** أعلى موافقة وصلت للطلب (0=قبل مهندس أول … 5=شراء أو بعده). */
@@ -25702,7 +25863,7 @@
     /** محاسب: إنشاء طلب مشروع جديد فقط (لا تعديل من القائمة ولا أوامر الإدارة العامة من هنا). */
     function accountantMayOpenNewProjectPoModal(scope, existingId) {
       const r = currentUserProfile?.role || userRole;
-      if (r !== "accountant") return false;
+      if (!hasRole("accountant")) return false;
       const id = (existingId || "").trim();
       return scope === "project" && !id;
     }
@@ -25710,7 +25871,7 @@
     /** مسؤول مشتريات: إنشاء طلب جديد (مشروع أو إدارة عامة) فقط؛ التعديل والحذف من القائمة يبقى محظوراً. */
     function purchasingOfficerMayOpenNewPoModal(scope, existingId) {
       const r = currentUserProfile?.role || userRole;
-      if (r !== "purchasing_officer") return false;
+      if (!hasRole("purchasing_officer")) return false;
       const id = (existingId || "").trim();
       if (id) return false;
       return scope === "project" || scope === "general";
@@ -25748,9 +25909,27 @@
       return body;
     }
 
+    function collectUserFormRoles(container) {
+      if (!container) return ["user"];
+      const primary = (container.querySelector('[data-field="role"]')?.value || "user").trim() || "user";
+      const extras = [];
+      container.querySelectorAll("[data-extra-role]").forEach((cb) => {
+        if (cb.checked) extras.push(cb.dataset.extraRole);
+      });
+      return normalizeProfileRoles({ role: primary, roles: extras });
+    }
+
     function syncUserProfileRoleFields(container) {
       if (!container) return;
-      const role = container.querySelector('[data-field="role"]')?.value;
+      const primary = container.querySelector('[data-field="role"]')?.value || "user";
+      container.querySelectorAll("[data-extra-role]").forEach((cb) => {
+        const r = cb.dataset.extraRole;
+        const isPrimary = r === primary;
+        cb.disabled = isPrimary;
+        if (isPrimary) cb.checked = false;
+      });
+      const roles = collectUserFormRoles(container);
+      const has = (r) => roles.includes(r);
       const eng = container.querySelector("#user-engineer-projects-wrap");
       const clerk = container.querySelector("#user-clerk-region-wrap");
       const pm = container.querySelector("#user-pm-projects-wrap");
@@ -25758,19 +25937,21 @@
       const bypass = container.querySelector("#user-bypass-wrap");
       const gmLabel = container.querySelector("#user-gm-regions-wrap label");
       const gmHint = container.querySelector("#user-gm-regions-wrap .user-form-hint");
-      const showBypass = role === "project_manager" || role === "group_manager";
+      const showBypass = has("project_manager") || has("group_manager");
       if (bypass) bypass.classList.toggle("hidden", !showBypass);
-      if (eng) eng.classList.toggle("hidden", role !== "engineer" && role !== "engineer_first" && role !== "viewer");
-      if (clerk) clerk.classList.toggle("hidden", role !== "warehouse_clerk");
-      if (pm) pm.classList.toggle("hidden", role !== "project_manager");
-      if (gm) gm.classList.toggle("hidden", role !== "group_manager" && role !== "warehouse_supervisor");
+      if (eng) eng.classList.toggle("hidden", !(has("engineer") || has("engineer_first") || has("viewer")));
+      if (clerk) clerk.classList.toggle("hidden", !has("warehouse_clerk"));
+      if (pm) pm.classList.toggle("hidden", !has("project_manager"));
+      if (gm) gm.classList.toggle("hidden", !(has("group_manager") || has("warehouse_supervisor")));
       if (gmLabel) {
-        gmLabel.textContent =
-          role === "warehouse_supervisor" ? t("labelManagedRegionsWs") : t("labelManagedRegionsGm");
+        gmLabel.textContent = has("warehouse_supervisor") && !has("group_manager")
+          ? t("labelManagedRegionsWs")
+          : t("labelManagedRegionsGm");
       }
       if (gmHint) {
-        gmHint.textContent =
-          role === "warehouse_supervisor" ? t("managedRegionsWsHint") : t("managedRegionsGmHint");
+        gmHint.textContent = has("warehouse_supervisor") && !has("group_manager")
+          ? t("managedRegionsWsHint")
+          : t("managedRegionsGmHint");
       }
     }
 
@@ -26319,7 +26500,9 @@
     let activeAdminTab = "companies";
 
     function dashboardRoleLabel() {
-      const r = userRole || "user";
+      const roles = getUserRoles();
+      if (roles.length > 1) return rolesLabelDisplay(roles);
+      const r = roles[0] || "user";
       if (r === "admin") return t("roleAdmin");
       if (r === "engineer") return t("roleOptEngineer");
       if (r === "engineer_first") return t("roleOptEngineerFirst");
@@ -27017,7 +27200,7 @@
         let rows = [];
         snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
         const r = currentUserProfile?.role || userRole;
-        if (!hasAdminAccess() && r === "viewer") rows = [];
+        if (!hasAdminAccess() && hasRole("viewer")) rows = [];
         rows.sort((a, b) => {
           const da = generalPoRowDateYmd(a);
           const dbY = generalPoRowDateYmd(b);
@@ -27364,7 +27547,7 @@
       if (!wrap) return;
       const role = currentUserProfile?.role || userRole;
       const clerkRegions = clerkAssignedRegionIds(currentUserProfile);
-      if (role === "warehouse_clerk" && !clerkRegions.length) {
+      if (hasRole("warehouse_clerk") && !clerkRegions.length) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertWarehouseRegionRequired"))}</p>`;
         return;
       }
@@ -27396,7 +27579,7 @@
           projectRegion[d.id] = pd.regionId || null;
           projectNames[d.id] = projectDisplayName(pd);
         });
-        if (role === "warehouse_clerk" && clerkRegions.length) {
+        if (hasRole("warehouse_clerk") && clerkRegions.length) {
           rowsAction = rowsAction.filter((r) => {
             const poReg = poEffectiveRegionId(r, projectRegion[r.projectId]);
             return poReg && clerkRegions.includes(poReg);
@@ -27510,7 +27693,7 @@
         alert(t("alertWarehouseReviewStale"));
         return;
       }
-      if (role === "engineer_first" && managed.length && !managed.includes(po.projectId)) {
+      if (hasRole("engineer_first") && managed.length && !managed.includes(po.projectId)) {
         alert(t("alertProjectNotAssigned"));
         return;
       }
@@ -27541,7 +27724,7 @@
         alert(t("alertWarehouseReviewStale"));
         return;
       }
-      if (role === "engineer_first" && managed.length && !managed.includes(po.projectId)) {
+      if (hasRole("engineer_first") && managed.length && !managed.includes(po.projectId)) {
         alert(t("alertProjectNotAssigned"));
         return;
       }
@@ -27567,7 +27750,7 @@
       const role = currentUserProfile?.role || userRole;
       const managed = currentUserProfile?.assignedProjectIds || [];
 
-      if (role === "engineer_first" && !managed.length) {
+      if (hasRole("engineer_first") && !managed.length) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertEfProjectsRequired"))}</p>`;
         return;
       }
@@ -27587,7 +27770,7 @@
         const projectNames = {};
         pSnap.forEach((d) => (projectNames[d.id] = projectDisplayName(d.data())));
 
-        if (role === "engineer_first" && managed.length) {
+        if (hasRole("engineer_first") && managed.length) {
           rows = rows.filter((r) => r.projectId && managed.includes(r.projectId));
         } else if (!hasAdminAccess()) {
           rows = [];
@@ -27600,7 +27783,7 @@
           return;
         }
 
-        const canAct = role === "engineer_first" || hasAdminAccess();
+        const canAct = hasRole("engineer_first") || hasAdminAccess();
         wrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
               <th>${t("colPoReference")}</th>
               <th>${t("colRequestDate")}</th>
@@ -27670,7 +27853,7 @@
         else alert(t("alertWarehouseReviewStale"));
         return;
       }
-      if (role === "project_manager" && managed.length && !managed.includes(po.projectId)) {
+      if (hasRole("project_manager") && managed.length && !managed.includes(po.projectId)) {
         alert(t("alertProjectNotAssigned"));
         return;
       }
@@ -27725,7 +27908,7 @@
         else alert(t("alertWarehouseReviewStale"));
         return;
       }
-      if (role === "project_manager" && managed.length && !managed.includes(po.projectId)) {
+      if (hasRole("project_manager") && managed.length && !managed.includes(po.projectId)) {
         alert(t("alertProjectNotAssigned"));
         return;
       }
@@ -27805,7 +27988,7 @@
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
-      if (role === "group_manager" && regions.length && (!poReg || !regions.includes(poReg))) {
+      if (hasRole("group_manager") && regions.length && (!poReg || !regions.includes(poReg))) {
         alert(t("alertWarehouseWrongRegion"));
         return;
       }
@@ -27887,7 +28070,7 @@
       }
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const poReg = poEffectiveRegionId(po, pr.exists() ? projectPrimaryRegionId(pr.data()) : null);
-      if (role === "group_manager" && regions.length && (!poReg || !regions.includes(poReg))) {
+      if (hasRole("group_manager") && regions.length && (!poReg || !regions.includes(poReg))) {
         alert(t("alertWarehouseWrongRegion"));
         return;
       }
@@ -27931,7 +28114,7 @@
       if (!wrap) return;
       const role = currentUserProfile?.role || userRole;
       const managed = currentUserProfile?.managedProjectIds || [];
-      if (role === "project_manager" && !managed.length) {
+      if (hasRole("project_manager") && !managed.length) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertPmProjectsRequired"))}</p>`;
         return;
       }
@@ -27951,7 +28134,7 @@
         const pSnap = await getDocs(collection(db, "projects"));
         const projectNames = {};
         pSnap.forEach((d) => (projectNames[d.id] = projectDisplayName(d.data())));
-        if (role === "project_manager" && managed.length) {
+        if (hasRole("project_manager") && managed.length) {
           rows = rows.filter((r) => r.projectId && managed.includes(r.projectId));
         } else if (!hasAdminAccess()) {
           rows = [];
@@ -27961,7 +28144,7 @@
           wrap.innerHTML = `<p class="empty-state">${t("emptyPmQueue")}</p>`;
           return;
         }
-        const canAct = role === "project_manager" || hasAdminAccess();
+        const canAct = hasRole("project_manager") || hasAdminAccess();
         wrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
               <th>${t("colPoReference")}</th>
               <th>${t("colRequestDate")}</th>
@@ -28012,7 +28195,7 @@
       if (!wrap) return;
       const role = currentUserProfile?.role || userRole;
       const regions = currentUserProfile?.managedRegionIds || [];
-      if (role === "group_manager" && !regions.length) {
+      if (hasRole("group_manager") && !regions.length) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertGmRegionsRequired"))}</p>`;
         return;
       }
@@ -28040,7 +28223,7 @@
           projectNames[d.id] = projectDisplayName(pd);
           projectRegion[d.id] = pd.regionId || null;
         });
-        if (role === "group_manager" && regions.length) {
+        if (hasRole("group_manager") && regions.length) {
           rows = rows.filter((r) => r.projectId && poMatchesAnyManagedRegion(r, projectRegion[r.projectId], regions));
         } else if (!hasAdminAccess()) {
           rows = [];
@@ -28050,7 +28233,7 @@
           wrap.innerHTML = `<p class="empty-state">${t("emptyGmQueue")}</p>`;
           return;
         }
-        const canAct = role === "group_manager" || hasAdminAccess();
+        const canAct = hasRole("group_manager") || hasAdminAccess();
         wrap.innerHTML = `<div class="table-scroll"><table class="data-table"><thead><tr>
               <th>${t("colPoReference")}</th>
               <th>${t("colRequestDate")}</th>
@@ -28233,20 +28416,20 @@
 
     function filterPurchaseOrdersByStakeholder(rows, projectRegion) {
       const rStake = currentUserProfile?.role || userRole;
-      if (hasAdminAccess() || rStake === "purchasing_officer") return rows;
-      if (rStake === "engineer") {
+      if (hasAdminAccess() || hasRole("purchasing_officer")) return rows;
+      if (hasRole("engineer")) {
         const allowed = currentUserProfile?.assignedProjectIds || [];
         return rows.filter((row) => row.projectId && allowed.includes(row.projectId));
       }
-      if (rStake === "viewer") {
+      if (hasRole("viewer")) {
         const allowed = currentUserProfile?.assignedProjectIds || [];
         return rows.filter((row) => row.projectId && allowed.includes(row.projectId));
       }
-      if (rStake === "project_manager") {
+      if (hasRole("project_manager")) {
         const allowed = currentUserProfile?.managedProjectIds || [];
         return rows.filter((row) => row.projectId && allowed.includes(row.projectId));
       }
-      if (rStake === "group_manager") {
+      if (hasRole("group_manager")) {
         const regions = currentUserProfile?.managedRegionIds || [];
         if (!regions.length) return [];
         return rows.filter((row) => row.projectId && poMatchesAnyManagedRegion(row, projectRegion[row.projectId], regions));
@@ -28943,7 +29126,7 @@
       if (!wrap) return;
       const role = currentUserProfile?.role || userRole;
       const regions = currentUserProfile?.managedRegionIds || [];
-      if (role === "warehouse_supervisor" && !regions.length) {
+      if (hasRole("warehouse_supervisor") && !regions.length) {
         wrap.innerHTML = `<p class="error-msg">${escapeHtml(t("alertWarehouseSupervisorRegionsRequired"))}</p>`;
         return;
       }
@@ -30567,32 +30750,24 @@
 
     function canIssueRepCashAdvance() {
       if (hasAdminAccess()) return true;
-      const r = currentUserProfile?.role || userRole;
-      return (
-        r === "accountant" ||
-        r === "purchasing_officer" ||
-        r === "purchasing_representative" ||
-        r === "project_manager" ||
-        r === "group_manager"
+      return hasRole(
+        "accountant",
+        "purchasing_officer",
+        "purchasing_representative",
+        "project_manager",
+        "group_manager"
       );
     }
 
     function canSettleRepCashAdvance() {
       if (hasAdminAccess()) return true;
-      const r = currentUserProfile?.role || userRole;
-      return r === "accountant" || r === "purchasing_officer";
+      return hasRole("accountant", "purchasing_officer");
     }
 
     /** المدير / الحسابات / المشتريات يرون مكتب كل المندوبين كأنهم مرتبطون بالكل. */
     function canViewAllRepDesks() {
       if (hasAdminAccess()) return true;
-      const r = currentUserProfile?.role || userRole;
-      return (
-        r === "accountant" ||
-        r === "purchasing_officer" ||
-        r === "project_manager" ||
-        r === "group_manager"
-      );
+      return hasRole("accountant", "purchasing_officer", "project_manager", "group_manager");
     }
 
     /** حذف المصروف للمدير (ومن يرى مكتب كل المندوبين). */
@@ -30963,6 +31138,15 @@
       $("rep-adv-filter-rep")?.addEventListener("change", () => void loadRepAdvancesScreen());
       $("rep-adv-filter-status")?.addEventListener("change", () => void loadRepAdvancesScreen());
       $("btn-rep-expense-new")?.addEventListener("click", () => void openRepExpenseModal());
+      $("btn-rep-expense-help")?.addEventListener("click", () => {
+        $("modal-rep-expense-help")?.classList.remove("hidden");
+      });
+      $("modal-rep-expense-help-close")?.addEventListener("click", () => {
+        $("modal-rep-expense-help")?.classList.add("hidden");
+      });
+      $("modal-rep-expense-help")?.addEventListener("click", (ev) => {
+        if (ev.target === $("modal-rep-expense-help")) $("modal-rep-expense-help")?.classList.add("hidden");
+      });
       $("rep-expense-rep")?.addEventListener("change", () => void onRepExpenseRepChanged());
       $("modal-rep-expense-cancel")?.addEventListener("click", () => {
         repExpenseEditingId = null;
@@ -31564,10 +31748,10 @@
       if (dateInp) dateInp.value = formatTodayYmd();
       if (note) note.value = "";
       const viewAll = canViewAllRepDesks();
-      const myRep = !viewAll && role === "purchasing_representative"
+      const myRep = !viewAll && hasRole("purchasing_representative")
         ? await resolvePurchasingRepForCurrentUser()
         : null;
-      if (!viewAll && role === "purchasing_representative" && !myRep) {
+      if (!viewAll && hasRole("purchasing_representative") && !myRep) {
         alert(t("repNoLinkedProfile"));
         return;
       }
@@ -31602,7 +31786,7 @@
       if (!canIssueRepCashAdvance()) return;
       const role = currentUserProfile?.role || userRole;
       let repId = ($("rep-advance-rep")?.value || "").trim();
-      if (!canViewAllRepDesks() && role === "purchasing_representative") {
+      if (!canViewAllRepDesks() && hasRole("purchasing_representative")) {
         const myRep = await resolvePurchasingRepForCurrentUser();
         if (!myRep) {
           alert(t("repNoLinkedProfile"));
@@ -31713,7 +31897,7 @@
     async function openPurchasingRepresentativeModal(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "purchasing_officer" && !hasAdminAccess()) return;
+      if (!hasRole("purchasing_officer") && !hasAdminAccess()) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -31758,7 +31942,7 @@
         return;
       }
       const role = currentUserProfile?.role || userRole;
-      if (role !== "purchasing_officer" && !hasAdminAccess()) return;
+      if (!hasRole("purchasing_officer") && !hasAdminAccess()) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -31803,7 +31987,7 @@
     async function runPurchasingSubmitToAdvanceAccounting(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "purchasing_officer" && !hasAdminAccess()) return;
+      if (!hasRole("purchasing_officer") && !hasAdminAccess()) return;
       if (!confirm(t("confirmPurchasingSendAdvance"))) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
@@ -31837,7 +32021,7 @@
     async function runAdvanceAccountingRelease(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "accountant" && !hasAdminAccess()) return;
+      if (!hasRole("accountant") && !hasAdminAccess()) return;
       if (!confirm(t("confirmAdvanceAccountingRelease"))) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
@@ -31902,7 +32086,7 @@
 
     function canEditPoInvoiceLinks() {
       const role = currentUserProfile?.role || userRole;
-      return role === "warehouse_supervisor" || hasAdminAccess();
+      return hasRole("warehouse_supervisor") || hasAdminAccess();
     }
 
     function invoiceLinksViewHtml(links) {
@@ -32412,7 +32596,7 @@
     async function runAccountingClose(poId) {
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
-      if (role !== "accountant" && !hasAdminAccess()) return;
+      if (!hasRole("accountant") && !hasAdminAccess()) return;
       const ref = doc(db, "purchaseOrders", poId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
@@ -32447,7 +32631,7 @@
       if (!poId) return;
       const role = currentUserProfile?.role || userRole;
       const clerkRegions = clerkAssignedRegionIds(currentUserProfile);
-      if (role === "warehouse_clerk" && !clerkRegions.length) {
+      if (hasRole("warehouse_clerk") && !clerkRegions.length) {
         alert(t("alertWarehouseRegionRequired"));
         return;
       }
@@ -32462,7 +32646,7 @@
       const pr = await getDoc(doc(db, "projects", po.projectId));
       const prData = pr.exists() ? pr.data() : {};
       const poRegionId = poEffectiveRegionId(po, projectPrimaryRegionId(prData));
-      if (role === "warehouse_clerk" && clerkRegions.length) {
+      if (hasRole("warehouse_clerk") && clerkRegions.length) {
         if (!poRegionId || !clerkRegions.includes(poRegionId)) {
           alert(t("alertWarehouseWrongRegion"));
           return;
@@ -33003,9 +33187,9 @@
         const allow = await getProjectAllowlistForProjectPo();
         if (Array.isArray(allow) && allow.length === 0) {
           const r = currentUserProfile?.role || userRole;
-          if (r === "engineer" || r === "engineer_first" || r === "viewer") alert(t("alertNoAssignedProjects"));
-          else if (r === "project_manager") alert(t("alertPmProjectsRequired"));
-          else if (r === "group_manager") alert(t("alertGmRegionsRequired"));
+          if (hasRole("engineer") || hasRole("engineer_first") || hasRole("viewer")) alert(t("alertNoAssignedProjects"));
+          else if (hasRole("project_manager")) alert(t("alertPmProjectsRequired"));
+          else if (hasRole("group_manager")) alert(t("alertGmRegionsRequired"));
           else alert(t("alertSelectProject"));
           return;
         }
@@ -33480,7 +33664,7 @@
     $("modal-wh-cancel")?.addEventListener("click", closeWarehouseReviewModal);
     $("modal-wh-submit")?.addEventListener("click", async () => {
       const role = currentUserProfile?.role || userRole;
-      if (role !== "warehouse_clerk" && !hasAdminAccess()) return;
+      if (!hasRole("warehouse_clerk") && !hasAdminAccess()) return;
       if (!whReviewPoSnapshot || !$("wh-po-id")?.value) return;
       const poId = $("wh-po-id").value;
       const newLines = buildWarehouseReviewLinesFromModal(whReviewPoSnapshot);
@@ -34547,7 +34731,7 @@
           const isActive = r.active !== false;
           if (statusVal === "active" && !isActive) return false;
           if (statusVal === "inactive" && isActive) return false;
-          if (roleVal && String(r.role || "") !== roleVal) return false;
+          if (roleVal && !normalizeProfileRoles({ role: r.role, roles: r.roles }).includes(roleVal)) return false;
           if (secVal) {
             const secs = Array.isArray(r.visibleSections) ? r.visibleSections.map(String) : [];
             if (!secs.includes(secVal)) return false;
@@ -34558,7 +34742,9 @@
             r.email,
             r.id,
             r.role,
+            ...(Array.isArray(r.roles) ? r.roles : []),
             roleLabelDisplay(r.role),
+            rolesLabelDisplay({ role: r.role, roles: r.roles }),
             isActive ? t("userStatusActive") : t("userStatusDisabled"),
           ]
             .filter(Boolean)
@@ -34589,7 +34775,7 @@
               <tr${isActive ? "" : ' style="opacity:.72"'}>
                 <td>${escapeHtml(r.displayName || r.email || "")}</td>
                 <td style="font-size:0.8rem;word-break:break-all;">${escapeHtml(r.id)}</td>
-                <td>${escapeHtml(roleLabelDisplay(r.role))}</td>
+                <td>${escapeHtml(rolesLabelDisplay({ role: r.role, roles: r.roles }))}</td>
                 <td>${statusHtml}</td>
                 <td>${assignedCnt}</td>
                 <td>${managedPmCnt}</td>
@@ -35084,7 +35270,25 @@
         ];
 
         const roleBody = appendUserFormSection(fields, "userFormSectionRole");
-        appendFieldTo(roleBody)("role", t("labelRole"), "select", roleOpts);
+        appendFieldTo(roleBody)("role", t("labelPrimaryRole"), "select", roleOpts);
+
+        const extraRolesWrap = document.createElement("div");
+        extraRolesWrap.className = "field";
+        extraRolesWrap.id = "user-extra-roles-wrap";
+        extraRolesWrap.innerHTML = `
+          <span class="field-label-like">${escapeHtml(t("labelExtraRoles"))}</span>
+          <p class="user-form-hint" style="margin:0.25rem 0 0.5rem">${escapeHtml(t("labelExtraRolesHint"))}</p>
+          <div class="section-checkboxes section-checkboxes-grid" id="user-extra-roles-grid">
+            ${roleOpts
+              .map(
+                (o) =>
+                  `<label><input type="checkbox" data-extra-role="${escapeAttr(o.value)}" /> ${escapeHtml(
+                    o.label
+                  )}</label>`
+              )
+              .join("")}
+          </div>`;
+        roleBody.appendChild(extraRolesWrap);
 
         const bypassWrap = document.createElement("div");
         bypassWrap.id = "user-bypass-wrap";
@@ -35509,8 +35713,11 @@
         const roleSelU = fields.querySelector('[data-field="role"]');
         if (roleSelU) {
           roleSelU.addEventListener("change", () => syncUserProfileRoleFields(fields));
-          syncUserProfileRoleFields(fields);
         }
+        fields.querySelectorAll("[data-extra-role]").forEach((cb) => {
+          cb.addEventListener("change", () => syncUserProfileRoleFields(fields));
+        });
+        syncUserProfileRoleFields(fields);
       }
 
       if (existingId) {
@@ -35620,6 +35827,12 @@
               if (clerkS) clerkS.value = "";
               userClerkRegionAssign.renderAssignResults("");
             }
+            const allRoles = normalizeProfileRoles({ role: d.role || "user", roles: d.roles });
+            const primaryRole = d.role || "user";
+            fields.querySelectorAll("[data-extra-role]").forEach((cb) => {
+              const r = cb.dataset.extraRole;
+              cb.checked = r !== primaryRole && allRoles.includes(r);
+            });
             syncUserProfileRoleFields(fields);
           }
         }
@@ -35715,6 +35928,8 @@
           const managedRegionIds = userGmRegionAssign?.ids ? [...userGmRegionAssign.ids] : [];
           const assignedRegionIds = userClerkRegionAssign?.ids ? [...userClerkRegionAssign.ids] : [];
           const roleVal = data.role || "user";
+          const rolesList = collectUserFormRoles($("entity-fields"));
+          const hasR = (x) => rolesList.includes(x);
           const activeCb = $("entity-fields").querySelector('[data-field="active"]');
           const accountActive = activeCb ? !!activeCb.checked : data.active !== false;
           if (existingId && existingId === currentUser?.uid && !accountActive) {
@@ -35725,50 +35940,38 @@
             email: (data.email || "").trim(),
             displayName: (data.displayName || "").trim(),
             role: roleVal,
+            roles: rolesList,
             active: accountActive,
             visibleSections,
             visibleReports,
             canBypassLowerApprovals:
-              (roleVal === "project_manager" || roleVal === "group_manager") &&
+              (hasR("project_manager") || hasR("group_manager")) &&
               data.canBypassLowerApprovals === true,
             updatedAt: serverTimestamp(),
           };
-          if (roleVal === "engineer" || roleVal === "engineer_first" || roleVal === "viewer") {
-            payload.assignedProjectIds = assignedProjectIds;
-            payload.managedProjectIds = deleteField();
-            payload.managedRegionIds = deleteField();
-            payload.assignedRegionId = deleteField();
-            payload.assignedRegionIds = deleteField();
-          } else if (roleVal === "project_manager") {
-            payload.managedProjectIds = managedProjectIds;
-            payload.assignedProjectIds = deleteField();
-            payload.managedRegionIds = deleteField();
-            payload.assignedRegionId = deleteField();
-            payload.assignedRegionIds = deleteField();
-          } else if (roleVal === "group_manager" || roleVal === "warehouse_supervisor") {
-            if (roleVal === "warehouse_supervisor" && !managedRegionIds.length) {
-              alert(t("alertWarehouseSupervisorRegionsSave"));
-              return;
-            }
-            payload.managedRegionIds = managedRegionIds;
-            payload.assignedProjectIds = deleteField();
-            payload.managedProjectIds = deleteField();
-            payload.assignedRegionId = deleteField();
-            payload.assignedRegionIds = deleteField();
-          } else if (roleVal === "warehouse_clerk") {
-            if (!assignedRegionIds.length) {
-              alert(t("alertClerkRegionsRequired"));
-              return;
-            }
+          // نطاقات متعددة حسب الأدوار المجمّعة
+          const needsAssignedProjects = hasR("engineer") || hasR("engineer_first") || hasR("viewer");
+          const needsManagedProjects = hasR("project_manager");
+          const needsManagedRegions = hasR("group_manager") || hasR("warehouse_supervisor");
+          const needsClerkRegions = hasR("warehouse_clerk");
+          if (needsClerkRegions && !assignedRegionIds.length) {
+            alert(t("alertClerkRegionsRequired"));
+            return;
+          }
+          if (hasR("warehouse_supervisor") && !managedRegionIds.length) {
+            alert(t("alertWarehouseSupervisorRegionsSave"));
+            return;
+          }
+          if (needsAssignedProjects) payload.assignedProjectIds = assignedProjectIds;
+          else payload.assignedProjectIds = deleteField();
+          if (needsManagedProjects) payload.managedProjectIds = managedProjectIds;
+          else payload.managedProjectIds = deleteField();
+          if (needsManagedRegions) payload.managedRegionIds = managedRegionIds;
+          else payload.managedRegionIds = deleteField();
+          if (needsClerkRegions) {
             payload.assignedRegionIds = assignedRegionIds;
             payload.assignedRegionId = assignedRegionIds[0] || null;
-            payload.assignedProjectIds = deleteField();
-            payload.managedProjectIds = deleteField();
-            payload.managedRegionIds = deleteField();
           } else {
-            payload.assignedProjectIds = deleteField();
-            payload.managedProjectIds = deleteField();
-            payload.managedRegionIds = deleteField();
             payload.assignedRegionId = deleteField();
             payload.assignedRegionIds = deleteField();
           }
@@ -35781,8 +35984,10 @@
             const d = freshUserSnap.data();
             const clerkRegions = clerkAssignedRegionIds(d);
             const visibleSectionsSync = normalizeVisibleSectionsFromDoc(d);
+            const rolePrimarySync = d.role || "user";
             const profForSync = {
-              role: d.role || "user",
+              role: rolePrimarySync,
+              roles: normalizeProfileRoles({ role: rolePrimarySync, roles: d.roles }),
               visibleSections: visibleSectionsSync,
               visibleReports: normalizeVisibleReportsFromDoc(d, visibleSectionsSync),
               canBypassLowerApprovals: d.canBypassLowerApprovals === true,
