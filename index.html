@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.24.4" />
+  <meta name="app-version" content="2026.10.24.6" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -3305,50 +3305,106 @@
     }
     #modal-gen-sales-invoice .inv-type-opt:has(input:checked) { border-color: #0b5cad; background: #eaf3fc; }
     #modal-gen-sales-invoice .inv-check-hint { display: block; margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
-    .sales-inv-surface {
-      background: #fff; color: #1b2433; border: 1px solid #d9e3ef; border-radius: 4px;
-      padding: 1.25rem 1.35rem 1.5rem; font-size: 0.92rem; line-height: 1.55;
+    /* فاتورة بيع مولّدة — معاينة/طباعة A4 */
+    .sales-inv-a4-surface {
+      --sales-inv-a4-w: 210mm;
+      --sales-inv-a4-min-h: 297mm;
+      --sales-inv-pad-y: 14mm;
+      --sales-inv-pad-x: 14mm;
+      width: 100%;
+      background: transparent;
     }
-    .sales-inv-surface[dir="rtl"] { text-align: right; }
-    .sales-inv-surface[dir="ltr"] { text-align: left; }
+    #modal-po-print-view .po-print-sheet:has(.sales-inv-a4-surface) {
+      background: #c9cfd8;
+      border: none;
+      box-shadow: none;
+      padding: 1rem 0.75rem 1.25rem;
+      max-width: none;
+    }
+    .sales-inv-page {
+      width: var(--sales-inv-a4-w);
+      max-width: calc(100vw - 1.5rem);
+      min-height: var(--sales-inv-a4-min-h);
+      margin: 0 auto;
+      padding: var(--sales-inv-pad-y) var(--sales-inv-pad-x);
+      box-sizing: border-box;
+      background: #fff;
+      color: #1b2433;
+      box-shadow: 0 4px 22px rgba(15, 23, 42, 0.14);
+      font-size: 11pt;
+      line-height: 1.45;
+      font-family: "Tajawal", "Inter", system-ui, sans-serif;
+    }
+    .sales-inv-page[dir="rtl"] { text-align: right; font-family: "Tajawal", "Inter", system-ui, sans-serif; }
+    .sales-inv-page[dir="ltr"] { text-align: left; font-family: "Inter", "Tajawal", system-ui, sans-serif; }
+    .sales-inv-page-content { min-height: calc(var(--sales-inv-a4-min-h) - (2 * var(--sales-inv-pad-y))); }
     .sales-inv-badge {
       display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;
-      padding: 0.2rem 0.55rem; border-radius: 6px; background: #0b2a5b; color: #fff; margin-bottom: 0.65rem;
+      padding: 0.2rem 0.55rem; border-radius: 6px; background: #0b2a5b; color: #fff; margin-bottom: 0.55rem;
     }
     .sales-inv-badge.proforma { background: #7a5200; }
-    .sales-inv-title { margin: 0 0 0.35rem; font-size: 1.35rem; font-weight: 900; color: #0b2a5b; }
-    .sales-inv-note { margin: 0 0 0.85rem; font-size: 0.8rem; color: #5d6b80; }
+    .sales-inv-title { margin: 0 0 0.25rem; font-size: 1.35rem; font-weight: 900; color: #0b2a5b; }
+    .sales-inv-note { margin: 0 0 0.75rem; font-size: 0.78rem; color: #5d6b80; }
     .sales-inv-meta {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.55rem 1rem;
-      margin: 0 0 1rem; padding: 0.7rem 0.85rem; background: #eaf3fc; border-radius: 10px; border: 1px solid #cfe2f6;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.45rem 0.75rem;
+      margin: 0 0 0.85rem; padding: 0.55rem 0.7rem; background: #eaf3fc; border-radius: 8px; border: 1px solid #cfe2f6;
     }
-    .sales-inv-meta small { display: block; font-size: 0.72rem; color: #5d6b80; font-weight: 700; }
-    .sales-inv-meta b { display: block; margin-top: 0.1rem; color: #0b2a5b; font-size: 0.95rem; }
-    .sales-inv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin: 0 0 1rem; }
-    .sales-inv-party { border: 1px solid #d9e3ef; border-radius: 10px; padding: 0.7rem 0.85rem; background: #f8fafc; }
-    .sales-inv-party h4 { margin: 0 0 0.35rem; font-size: 0.78rem; color: #5d6b80; text-transform: uppercase; letter-spacing: 0.03em; }
-    .sales-inv-party strong { display: block; color: #0b2a5b; margin-bottom: 0.25rem; }
-    .sales-inv-party p { margin: 0.1rem 0; font-size: 0.85rem; color: #2b3546; }
-    .sales-inv-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0 0 0.75rem; }
-    .sales-inv-table th, .sales-inv-table td { border: 1px solid #d9e3ef; padding: 0.4rem 0.5rem; vertical-align: top; }
+    .sales-inv-meta small { display: block; font-size: 0.7rem; color: #5d6b80; font-weight: 700; }
+    .sales-inv-meta b { display: block; margin-top: 0.1rem; color: #0b2a5b; font-size: 0.9rem; word-break: break-word; }
+    .sales-inv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 0 0 0.85rem; }
+    .sales-inv-party { border: 1px solid #d9e3ef; border-radius: 8px; padding: 0.55rem 0.7rem; background: #f8fafc; }
+    .sales-inv-party h4 { margin: 0 0 0.3rem; font-size: 0.72rem; color: #5d6b80; text-transform: uppercase; letter-spacing: 0.03em; }
+    .sales-inv-party strong { display: block; color: #0b2a5b; margin-bottom: 0.2rem; font-size: 0.95rem; }
+    .sales-inv-party p { margin: 0.08rem 0; font-size: 0.82rem; color: #2b3546; }
+    .sales-inv-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0 0 0.65rem; }
+    .sales-inv-table th, .sales-inv-table td { border: 1px solid #d9e3ef; padding: 0.35rem 0.45rem; vertical-align: top; }
     .sales-inv-table thead th { background: #0b2a5b; color: #fff; font-weight: 700; }
     .sales-inv-table .num { text-align: center; white-space: nowrap; }
     .sales-inv-table .amt { text-align: end; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .sales-inv-totals { margin: 0 0 0.85rem; }
-    .sales-inv-totals table { width: min(100%, 320px); margin-inline-start: auto; border-collapse: collapse; }
-    .sales-inv-totals td { padding: 0.3rem 0.45rem; border-bottom: 1px solid #e2e8f0; }
+    .sales-inv-totals { margin: 0 0 0.65rem; }
+    .sales-inv-totals table { width: min(100%, 280px); margin-inline-start: auto; border-collapse: collapse; }
+    .sales-inv-totals td { padding: 0.25rem 0.4rem; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
     .sales-inv-totals td:last-child { text-align: end; font-weight: 700; font-variant-numeric: tabular-nums; }
-    .sales-inv-totals .grand td { border-bottom: 0; border-top: 2px solid #0b2a5b; color: #0b2a5b; font-size: 1.02rem; }
-    .sales-inv-terms { display: grid; gap: 0.55rem; margin-top: 0.5rem; }
-    .sales-inv-terms h4 { margin: 0 0 0.2rem; font-size: 0.85rem; color: #0b2a5b; }
-    .sales-inv-terms p { margin: 0; white-space: pre-wrap; font-size: 0.85rem; color: #2b3546; }
-    .sales-inv-banks { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #d9e3ef; display: grid; gap: 0.55rem; }
-    .sales-inv-banks h4 { margin: 0; font-size: 0.85rem; color: #0b2a5b; }
-    .sales-inv-bank { border: 1px solid #d9e3ef; border-radius: 10px; padding: 0.55rem 0.75rem; background: #f8fafc; }
-    .sales-inv-bank strong { display: block; margin-bottom: 0.2rem; color: #0b2a5b; font-size: 0.88rem; }
-    .sales-inv-bank p { margin: 0.1rem 0; font-size: 0.84rem; color: #2b3546; }
+    .sales-inv-totals .grand td { border-bottom: 0; border-top: 2px solid #0b2a5b; color: #0b2a5b; font-size: 0.95rem; }
+    .sales-inv-words { margin: 0 0 0.65rem; font-size: 0.85rem; }
+    .sales-inv-terms { display: grid; gap: 0.45rem; margin-top: 0.35rem; }
+    .sales-inv-terms h4 { margin: 0 0 0.15rem; font-size: 0.82rem; color: #0b2a5b; }
+    .sales-inv-terms p { margin: 0; white-space: pre-wrap; font-size: 0.82rem; color: #2b3546; }
+    .sales-inv-banks { margin-top: 0.75rem; padding-top: 0.65rem; border-top: 1px solid #d9e3ef; display: grid; gap: 0.45rem; }
+    .sales-inv-banks h4 { margin: 0; font-size: 0.82rem; color: #0b2a5b; }
+    .sales-inv-bank { border: 1px solid #d9e3ef; border-radius: 8px; padding: 0.45rem 0.65rem; background: #f8fafc; }
+    .sales-inv-bank strong { display: block; margin-bottom: 0.15rem; color: #0b2a5b; font-size: 0.85rem; }
+    .sales-inv-bank p { margin: 0.08rem 0; font-size: 0.8rem; color: #2b3546; }
     @media (max-width: 700px) {
       .sales-inv-parties { grid-template-columns: 1fr; }
+      .sales-inv-meta { grid-template-columns: 1fr 1fr; }
+    }
+    @media print {
+      #modal-po-print-view .po-print-sheet:has(.sales-inv-a4-surface) {
+        background: #fff !important;
+        padding: 0 !important;
+      }
+      #modal-po-print-view .sales-inv-page {
+        width: 100% !important;
+        max-width: none !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 10mm 12mm !important;
+        box-shadow: none !important;
+        font-size: 10pt !important;
+      }
+      #modal-po-print-view .sales-inv-page-content {
+        min-height: auto !important;
+      }
+      #modal-po-print-view .sales-inv-note { display: none !important; }
+      #modal-po-print-view .sales-inv-table thead { display: table-header-group; }
+      #modal-po-print-view .sales-inv-party,
+      #modal-po-print-view .sales-inv-bank,
+      #modal-po-print-view .sales-inv-totals,
+      #modal-po-print-view .sales-inv-meta {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
     }
     .po007-meta-bar {
       display: flex;
@@ -29574,7 +29630,12 @@
         invoice: {
           invoiceType: type,
           invoiceNumber: salesInvoiceNumberFromPo(poNumber, type),
-          invoiceDate: formatTodayYmd(),
+          invoiceDate:
+            generalPoRowDateYmd(po) ||
+            String(g.poDate || po?.generalPoDate || "")
+              .trim()
+              .slice(0, 10) ||
+            formatTodayYmd(),
           poNumber,
           salesContractNumber,
           currency: curCode,
@@ -29747,53 +29808,57 @@
       const sellerBankBlock = bankRowsHtml
         ? `<div class="sales-inv-banks"><h4>${escapeHtml(t("genSalesInvoiceSellerBankTitle"))}</h4>${bankRowsHtml}</div>`
         : "";
-      return `<div class="po-print-doc sales-inv-surface" dir="${dir}" lang="${docLang}">
-        <span class="sales-inv-badge${isProforma ? " proforma" : ""}">${escapeHtml(
-          isProforma ? "PROFORMA" : "COMMERCIAL INVOICE"
-        )}</span>
-        <h2 class="sales-inv-title">${escapeHtml(title)}</h2>
-        <p class="sales-inv-note">${escapeHtml(t("genSalesInvoiceReadonlyNote"))}</p>
-        <div class="sales-inv-meta">
-          <div><small>${escapeHtml(t("genSalesInvoiceMetaInvoiceNo"))}</small><b>${escapeHtml(inv.invoiceNumber || dash)}</b></div>
-          <div><small>${escapeHtml(t("genSalesInvoiceMetaDate"))}</small><b>${escapeHtml(
-            formatPo007DisplayDate(inv.invoiceDate) || inv.invoiceDate || dash
-          )}</b></div>
-          <div><small>${escapeHtml(t("genSalesInvoiceMetaPo"))}</small><b>${escapeHtml(inv.poNumber || dash)}</b></div>
-          <div><small>${escapeHtml(t("genSalesInvoiceMetaSc"))}</small><b>${escapeHtml(inv.salesContractNumber || dash)}</b></div>
+      return `<div class="sales-inv-a4-surface">
+        <div class="sales-inv-page" dir="${dir}" lang="${docLang}">
+          <div class="sales-inv-page-content">
+            <span class="sales-inv-badge${isProforma ? " proforma" : ""}">${escapeHtml(
+              isProforma ? "PROFORMA" : "COMMERCIAL INVOICE"
+            )}</span>
+            <h2 class="sales-inv-title">${escapeHtml(title)}</h2>
+            <p class="sales-inv-note no-print">${escapeHtml(t("genSalesInvoiceReadonlyNote"))}</p>
+            <div class="sales-inv-meta">
+              <div><small>${escapeHtml(t("genSalesInvoiceMetaInvoiceNo"))}</small><b>${escapeHtml(inv.invoiceNumber || dash)}</b></div>
+              <div><small>${escapeHtml(t("genSalesInvoiceMetaDate"))}</small><b>${escapeHtml(
+                formatPo007DisplayDate(inv.invoiceDate) || inv.invoiceDate || dash
+              )}</b></div>
+              <div><small>${escapeHtml(t("genSalesInvoiceMetaPo"))}</small><b>${escapeHtml(inv.poNumber || dash)}</b></div>
+              <div><small>${escapeHtml(t("genSalesInvoiceMetaSc"))}</small><b>${escapeHtml(inv.salesContractNumber || dash)}</b></div>
+            </div>
+            <div class="sales-inv-parties">
+              ${partyBlock(inv.seller, t("genSalesInvoiceSeller"))}
+              ${partyBlock(inv.buyer, t("genSalesInvoiceBuyer"))}
+            </div>
+            <table class="sales-inv-table">
+              <thead>
+                <tr>
+                  <th class="num">${docLang === "ar" ? "م" : "No."}</th>
+                  <th>${docLang === "ar" ? "الوصف" : "Description"}</th>
+                  <th class="num">${docLang === "ar" ? "الكمية" : "Qty"}</th>
+                  <th class="num">${docLang === "ar" ? "الوحدة" : "Unit"}</th>
+                  <th class="amt">${docLang === "ar" ? "سعر الوحدة" : "Unit price"}</th>
+                  <th class="amt">${docLang === "ar" ? "الإجمالي" : "Total"}</th>
+                </tr>
+              </thead>
+              <tbody>${lineRows}</tbody>
+            </table>
+            <div class="sales-inv-totals">
+              <table>
+                <tr><td>${escapeHtml(docLang === "ar" ? "المجموع" : "Subtotal")}</td><td>${escapeHtml(
+                  formatSalesInvAmount(inv.totalAmount, curSuffix, docLang)
+                )}</td></tr>
+                ${discountRow}
+                <tr class="grand"><td>${escapeHtml(docLang === "ar" ? "الصافي" : "Net total")}</td><td>${escapeHtml(
+                  formatSalesInvAmount(inv.netAmount, curSuffix, docLang)
+                )}</td></tr>
+              </table>
+            </div>
+            <p class="sales-inv-words"><strong>${escapeHtml(
+              docLang === "ar" ? "المبلغ كتابةً:" : "Amount in words:"
+            )}</strong> ${escapeHtml(inv.totalWords || dash)}</p>
+            ${termsBlocks.length ? `<div class="sales-inv-terms">${termsBlocks.join("")}</div>` : ""}
+            ${sellerBankBlock}
+          </div>
         </div>
-        <div class="sales-inv-parties">
-          ${partyBlock(inv.seller, t("genSalesInvoiceSeller"))}
-          ${partyBlock(inv.buyer, t("genSalesInvoiceBuyer"))}
-        </div>
-        <table class="sales-inv-table">
-          <thead>
-            <tr>
-              <th class="num">${docLang === "ar" ? "م" : "No."}</th>
-              <th>${docLang === "ar" ? "الوصف" : "Description"}</th>
-              <th class="num">${docLang === "ar" ? "الكمية" : "Qty"}</th>
-              <th class="num">${docLang === "ar" ? "الوحدة" : "Unit"}</th>
-              <th class="amt">${docLang === "ar" ? "سعر الوحدة" : "Unit price"}</th>
-              <th class="amt">${docLang === "ar" ? "الإجمالي" : "Total"}</th>
-            </tr>
-          </thead>
-          <tbody>${lineRows}</tbody>
-        </table>
-        <div class="sales-inv-totals">
-          <table>
-            <tr><td>${escapeHtml(docLang === "ar" ? "المجموع" : "Subtotal")}</td><td>${escapeHtml(
-              formatSalesInvAmount(inv.totalAmount, curSuffix, docLang)
-            )}</td></tr>
-            ${discountRow}
-            <tr class="grand"><td>${escapeHtml(docLang === "ar" ? "الصافي" : "Net total")}</td><td>${escapeHtml(
-              formatSalesInvAmount(inv.netAmount, curSuffix, docLang)
-            )}</td></tr>
-          </table>
-        </div>
-        <p style="margin:0 0 0.75rem;font-size:0.88rem"><strong>${escapeHtml(
-          docLang === "ar" ? "المبلغ كتابةً:" : "Amount in words:"
-        )}</strong> ${escapeHtml(inv.totalWords || dash)}</p>
-        ${termsBlocks.length ? `<div class="sales-inv-terms">${termsBlocks.join("")}</div>` : ""}
-        ${sellerBankBlock}
       </div>`;
     }
 
