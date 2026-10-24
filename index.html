@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.21.1" />
+  <meta name="app-version" content="2026.10.24.4" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -242,6 +242,39 @@
       margin-bottom: 0.65rem;
     }
 
+    .company-banks-list { display: grid; gap: 0.55rem; max-height: min(42vh, 360px); overflow: auto; margin-bottom: 0.35rem; }
+    .company-banks-list:empty::before {
+      content: attr(data-empty);
+      display: block; padding: 0.85rem; color: var(--muted); font-size: 0.88rem;
+      border: 1px dashed var(--border); border-radius: 10px; text-align: center;
+    }
+    .company-bank-card {
+      border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.75rem;
+      background: var(--surface2, #f8fafc); display: grid; gap: 0.35rem;
+    }
+    .company-bank-card.is-default { border-color: #0b5cad; background: #eaf3fc; }
+    .company-bank-card-head { display: flex; flex-wrap: wrap; gap: 0.35rem 0.65rem; align-items: center; justify-content: space-between; }
+    .company-bank-card-title { font-weight: 800; color: var(--navy, #0b2a5b); font-size: 0.95rem; }
+    .company-bank-card-meta { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+    .company-bank-card-meta b { color: #1b2433; font-weight: 700; }
+    .company-bank-card-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .company-bank-default-badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 800; padding: 0.12rem 0.45rem;
+      border-radius: 6px; background: #0b2a5b; color: #fff;
+    }
+    .company-banks-form {
+      margin-top: 0.75rem; padding: 0.75rem 0.85rem; border: 1px solid var(--border);
+      border-radius: 10px; background: #fff;
+    }
+    .company-banks-form.hidden { display: none !important; }
+    .company-banks-form-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.55rem 0.75rem;
+    }
+    .company-banks-form-grid .field { display: flex; flex-direction: column; gap: 0.2rem; margin: 0; font-size: 0.82rem; }
+    .company-banks-form-grid .field input,
+    .company-banks-form-grid .field select {
+      font: inherit; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 8px;
+    }
     .companies-toolbar-compact .btn-add-company {
       padding: 0.3rem 0.55rem;
       font-size: 0.8rem;
@@ -3259,6 +3292,64 @@
       border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
     }
     #modal-invoice-checklist .inv-type-opt:has(input:checked) { border-color: #0b5cad; background: #eaf3fc; }
+    #modal-invoice-checklist .inv-gen-banner {
+      margin: 0.5rem 0 0; padding: 0.55rem 0.7rem; border-radius: 8px;
+      background: #eaf3fc; border: 1px solid #bcd4f0; font-size: 0.86rem;
+      display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; justify-content: space-between;
+    }
+    #modal-invoice-checklist .inv-gen-banner.hidden { display: none !important; }
+    #modal-gen-sales-invoice .inv-type-opts { display: grid; gap: 0.45rem; margin: 0.5rem 0 0.75rem; }
+    #modal-gen-sales-invoice .inv-type-opt {
+      display: flex; gap: 0.55rem; align-items: flex-start; padding: 0.55rem 0.7rem;
+      border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+    }
+    #modal-gen-sales-invoice .inv-type-opt:has(input:checked) { border-color: #0b5cad; background: #eaf3fc; }
+    #modal-gen-sales-invoice .inv-check-hint { display: block; margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+    .sales-inv-surface {
+      background: #fff; color: #1b2433; border: 1px solid #d9e3ef; border-radius: 4px;
+      padding: 1.25rem 1.35rem 1.5rem; font-size: 0.92rem; line-height: 1.55;
+    }
+    .sales-inv-surface[dir="rtl"] { text-align: right; }
+    .sales-inv-surface[dir="ltr"] { text-align: left; }
+    .sales-inv-badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;
+      padding: 0.2rem 0.55rem; border-radius: 6px; background: #0b2a5b; color: #fff; margin-bottom: 0.65rem;
+    }
+    .sales-inv-badge.proforma { background: #7a5200; }
+    .sales-inv-title { margin: 0 0 0.35rem; font-size: 1.35rem; font-weight: 900; color: #0b2a5b; }
+    .sales-inv-note { margin: 0 0 0.85rem; font-size: 0.8rem; color: #5d6b80; }
+    .sales-inv-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.55rem 1rem;
+      margin: 0 0 1rem; padding: 0.7rem 0.85rem; background: #eaf3fc; border-radius: 10px; border: 1px solid #cfe2f6;
+    }
+    .sales-inv-meta small { display: block; font-size: 0.72rem; color: #5d6b80; font-weight: 700; }
+    .sales-inv-meta b { display: block; margin-top: 0.1rem; color: #0b2a5b; font-size: 0.95rem; }
+    .sales-inv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin: 0 0 1rem; }
+    .sales-inv-party { border: 1px solid #d9e3ef; border-radius: 10px; padding: 0.7rem 0.85rem; background: #f8fafc; }
+    .sales-inv-party h4 { margin: 0 0 0.35rem; font-size: 0.78rem; color: #5d6b80; text-transform: uppercase; letter-spacing: 0.03em; }
+    .sales-inv-party strong { display: block; color: #0b2a5b; margin-bottom: 0.25rem; }
+    .sales-inv-party p { margin: 0.1rem 0; font-size: 0.85rem; color: #2b3546; }
+    .sales-inv-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0 0 0.75rem; }
+    .sales-inv-table th, .sales-inv-table td { border: 1px solid #d9e3ef; padding: 0.4rem 0.5rem; vertical-align: top; }
+    .sales-inv-table thead th { background: #0b2a5b; color: #fff; font-weight: 700; }
+    .sales-inv-table .num { text-align: center; white-space: nowrap; }
+    .sales-inv-table .amt { text-align: end; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .sales-inv-totals { margin: 0 0 0.85rem; }
+    .sales-inv-totals table { width: min(100%, 320px); margin-inline-start: auto; border-collapse: collapse; }
+    .sales-inv-totals td { padding: 0.3rem 0.45rem; border-bottom: 1px solid #e2e8f0; }
+    .sales-inv-totals td:last-child { text-align: end; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .sales-inv-totals .grand td { border-bottom: 0; border-top: 2px solid #0b2a5b; color: #0b2a5b; font-size: 1.02rem; }
+    .sales-inv-terms { display: grid; gap: 0.55rem; margin-top: 0.5rem; }
+    .sales-inv-terms h4 { margin: 0 0 0.2rem; font-size: 0.85rem; color: #0b2a5b; }
+    .sales-inv-terms p { margin: 0; white-space: pre-wrap; font-size: 0.85rem; color: #2b3546; }
+    .sales-inv-banks { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #d9e3ef; display: grid; gap: 0.55rem; }
+    .sales-inv-banks h4 { margin: 0; font-size: 0.85rem; color: #0b2a5b; }
+    .sales-inv-bank { border: 1px solid #d9e3ef; border-radius: 10px; padding: 0.55rem 0.75rem; background: #f8fafc; }
+    .sales-inv-bank strong { display: block; margin-bottom: 0.2rem; color: #0b2a5b; font-size: 0.88rem; }
+    .sales-inv-bank p { margin: 0.1rem 0; font-size: 0.84rem; color: #2b3546; }
+    @media (max-width: 700px) {
+      .sales-inv-parties { grid-template-columns: 1fr; }
+    }
     .po007-meta-bar {
       display: flex;
       flex-wrap: wrap;
@@ -5689,9 +5780,30 @@
       <section id="screen-po-general" class="app-screen hidden">
         <h1 class="page-title" data-i18n="poGeneralTitle">أوامر شراء الإدارة العامة</h1>
         <div class="card">
-          <div class="toolbar">
+          <div class="po-projects-toolbar-strip">
             <button type="button" class="btn btn-primary btn-sm" id="btn-new-po-general" data-i18n="newPoRequest">طلب شراء جديد</button>
             <button type="button" class="btn btn-secondary btn-sm hidden" id="btn-edit-general-po-template" data-i18n="btnEditGeneralPoTemplate">تعديل القالب الافتراضي</button>
+            <div id="po-general-filter-bar" class="po-projects-filter-fields hidden">
+              <label class="po-filter-field">
+                <span data-i18n="reportFromDateLabel">من تاريخ</span>
+                <input type="date" id="po-general-filter-from" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="reportToDateLabel">إلى تاريخ</span>
+                <input type="date" id="po-general-filter-to" />
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterCompanyLabel">الشركة</span>
+                <select id="po-general-filter-company"></select>
+              </label>
+              <label class="po-filter-field">
+                <span data-i18n="filterSupplierLabel">المورد</span>
+                <select id="po-general-filter-supplier"></select>
+              </label>
+              <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="po-general-filter-reset" data-i18n="poProjectsClearFilters">
+                مسح الفلاتر
+              </button>
+            </div>
           </div>
           <div id="po-general-table-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
@@ -6787,6 +6899,7 @@
         <div class="po007-editor-toolbar-title" data-i18n="genPo007EditorTitle">أمر شراء ادارة عامة</div>
         <div class="po007-editor-toolbar-actions">
           <span id="po007-invoice-check-badge" class="badge badge-invoice-none po007-meta-po-only" hidden></span>
+          <button type="button" class="btn btn-secondary btn-sm po007-meta-po-only" id="po007-editor-sales-invoice" data-i18n="btnGenerateSalesInvoice">توليد فاتورة بيع</button>
           <button type="button" class="btn btn-secondary btn-sm po007-meta-po-only" id="po007-editor-invoice-check" data-i18n="btnInvoiceChecklist">تدقيق الفاتورة</button>
           <button type="button" class="btn btn-secondary btn-sm" id="po007-editor-preview" data-i18n="view">معاينة</button>
           <button type="button" class="btn btn-secondary btn-sm" id="po007-editor-cancel" data-i18n="cancel">إلغاء</button>
@@ -6856,6 +6969,10 @@
         راجع الفاتورة وأشّر البنود المستوفاة وفق تعميم البنك المركزي 9/4/267. يُحفظ التدقيق مع أمر الشراء.
       </p>
       <p id="invoice-checklist-po-ref" class="sub" style="margin:0.35rem 0 0;font-weight:700;color:var(--navy,#0b2a5b)"></p>
+      <p id="invoice-checklist-generated-banner" class="inv-gen-banner hidden">
+        <span id="invoice-checklist-generated-label"></span>
+        <button type="button" class="btn btn-secondary btn-sm" id="invoice-checklist-view-generated" data-i18n="btnViewGeneratedSalesInvoice">عرض الفاتورة المولّدة</button>
+      </p>
       <div class="inv-check-progress">
         <span id="invoice-checklist-count">0 / 12</span>
         <div class="inv-check-bar"><i id="invoice-checklist-bar"></i></div>
@@ -6899,6 +7016,39 @@
         <button type="button" class="btn btn-secondary" id="invoice-checklist-reset" data-i18n="invoiceChecklistReset">مسح التأشير</button>
         <button type="button" class="btn btn-secondary" id="invoice-checklist-cancel" data-i18n="cancel">إلغاء</button>
         <button type="button" class="btn btn-primary" id="invoice-checklist-save" data-i18n="invoiceChecklistSave">حفظ التدقيق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- توليد فاتورة بيع من أمر إدارة عامة (غير قابلة للتعديل) -->
+  <div id="modal-gen-sales-invoice" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="gen-sales-invoice-title">
+    <div class="modal" style="max-width:560px">
+      <h3 id="gen-sales-invoice-title" data-i18n="genSalesInvoiceTitle">توليد فاتورة بيع</h3>
+      <p class="sub" style="margin-top:-0.35rem;color:var(--muted);font-size:0.88rem" data-i18n="genSalesInvoiceHint">
+        تُنشأ فاتورة ثابتة من بيانات أمر الشراء (غير قابلة للتعديل). ينطبق عليها تدقيق متطلبات الفاتورة.
+      </p>
+      <p id="gen-sales-invoice-po-ref" class="sub" style="margin:0.35rem 0 0.75rem;font-weight:700"></p>
+      <h4 style="margin:0 0 0.45rem;font-size:0.95rem" data-i18n="genSalesInvoiceTypeTitle">نوع الفاتورة</h4>
+      <div class="inv-type-opts">
+        <label class="inv-type-opt">
+          <input type="radio" name="gen-sales-invoice-type" value="final" checked />
+          <span>
+            <strong data-i18n="genSalesInvoiceTypeFinal">فاتورة تجارية نهائية</strong>
+          </span>
+        </label>
+        <label class="inv-type-opt">
+          <input type="radio" name="gen-sales-invoice-type" value="proforma" />
+          <span>
+            <strong data-i18n="genSalesInvoiceTypeProforma">فاتورة أولية (Proforma)</strong>
+            <span class="inv-check-hint" data-i18n="genSalesInvoiceTypeProformaHint">للعقود الداخلية بين شركات المجموعة، أو عند اعتماد الفاتورة الأولية + عقد البيع.</span>
+          </span>
+        </label>
+      </div>
+      <p id="gen-sales-invoice-existing" class="muted" style="margin:0.75rem 0 0;font-size:0.85rem"></p>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button type="button" class="btn btn-secondary" id="gen-sales-invoice-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-secondary hidden" id="gen-sales-invoice-view" data-i18n="btnViewGeneratedSalesInvoice">عرض المولّدة</button>
+        <button type="button" class="btn btn-primary" id="gen-sales-invoice-confirm" data-i18n="btnGenerateSalesInvoiceConfirm">توليد</button>
       </div>
     </div>
   </div>
@@ -7299,6 +7449,51 @@
     </div>
   </div>
 
+  <!-- المعلومات المصرفية للشركة -->
+  <div id="modal-company-banks" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="company-banks-title">
+    <div class="modal" style="max-width:720px">
+      <h3 id="company-banks-title" data-i18n="companyBanksTitle">المعلومات المصرفية</h3>
+      <p id="company-banks-sub" class="sub" style="margin-top:-0.35rem;color:var(--muted);font-size:0.88rem"></p>
+      <div class="toolbar" style="margin:0.5rem 0 0.75rem;display:flex;flex-wrap:wrap;gap:0.45rem;align-items:center">
+        <button type="button" class="btn btn-primary btn-sm" id="company-banks-add" data-i18n="companyBanksAdd">إضافة حساب بنكي</button>
+      </div>
+      <div id="company-banks-list" class="company-banks-list"></div>
+      <div id="company-banks-form" class="company-banks-form hidden">
+        <h4 id="company-banks-form-title" style="margin:0 0 0.65rem;font-size:0.95rem" data-i18n="companyBanksFormAdd">حساب بنكي جديد</h4>
+        <input type="hidden" id="cba-edit-id" />
+        <div class="company-banks-form-grid">
+          <label class="field"><span data-i18n="companyBankLabel">اسم العرض</span><input type="text" id="cba-label" autocomplete="off" /></label>
+          <label class="field"><span data-i18n="companyBankName">اسم البنك</span><input type="text" id="cba-bankName" autocomplete="off" required /></label>
+          <label class="field"><span data-i18n="companyBankAccountName">اسم صاحب الحساب</span><input type="text" id="cba-accountName" autocomplete="off" /></label>
+          <label class="field"><span data-i18n="companyBankAccountNumber">رقم الحساب</span><input type="text" id="cba-accountNumber" dir="ltr" autocomplete="off" /></label>
+          <label class="field"><span data-i18n="companyBankIban">IBAN</span><input type="text" id="cba-iban" dir="ltr" autocomplete="off" /></label>
+          <label class="field"><span data-i18n="companyBankSwift">SWIFT / BIC</span><input type="text" id="cba-swift" dir="ltr" autocomplete="off" /></label>
+          <label class="field"><span data-i18n="companyBankCurrency">العملة</span>
+            <select id="cba-currency">
+              <option value="IQD">IQD</option>
+              <option value="USD">USD</option>
+            </select>
+          </label>
+          <label class="field"><span data-i18n="companyBankBranch">الفرع</span><input type="text" id="cba-branch" autocomplete="off" /></label>
+          <label class="field" style="grid-column:1/-1"><span data-i18n="companyBankNotes">ملاحظات</span><input type="text" id="cba-notes" autocomplete="off" /></label>
+          <label class="field" style="grid-column:1/-1;flex-direction:row;align-items:center;gap:0.45rem">
+            <input type="checkbox" id="cba-isDefault" />
+            <span data-i18n="companyBankIsDefault">تعيين كحساب افتراضي</span>
+          </label>
+        </div>
+        <div class="modal-actions" style="margin-top:0.75rem">
+          <button type="button" class="btn btn-secondary btn-sm" id="company-banks-form-cancel" data-i18n="cancel">إلغاء</button>
+          <button type="button" class="btn btn-primary btn-sm" id="company-banks-form-apply" data-i18n="companyBanksApply">تطبيق على القائمة</button>
+        </div>
+      </div>
+      <p id="company-banks-msg" class="sub" style="margin:0.5rem 0 0;min-height:1.2em;font-size:0.82rem;color:var(--muted)"></p>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button type="button" class="btn btn-secondary" id="company-banks-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="company-banks-save" data-i18n="save">حفظ</button>
+      </div>
+    </div>
+  </div>
+
   <!-- المحادثات الداخلية -->
   <div id="chat-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="chat-shell-title">
     <div class="chat-shell">
@@ -7452,6 +7647,9 @@
         filterWorkflowLabel: "مرحلة المسار",
         filterPriorityLabel: "الأولوية",
         filterCompanyLabel: "الشركة",
+        filterSupplierLabel: "المورد",
+        colGenPoDate: "التاريخ",
+        poGeneralFilterNoMatch: "لا توجد أوامر تطابق الفلاتر.",
         filterRegionLabel: "المنطقة",
         filterExtraReceiptLabel: "مواد إضافية ★",
         filterExtraReceiptYes: "بله ★",
@@ -7631,6 +7829,33 @@
         labelPurchasingRepName: "اسم المندوب",
         tabSuppliers: "الموردون",
         addCompany: "إضافة شركة",
+        btnCompanyBanks: "المعلومات المصرفية",
+        btnCompanyBanksCount: "مصرفي ({n})",
+        btnSupplierBanks: "المعلومات المصرفية",
+        btnSupplierBanksCount: "مصرفي ({n})",
+        companyBanksTitle: "المعلومات المصرفية",
+        companyBanksSub: "حسابات: {name}",
+        supplierBanksSub: "حسابات المورد: {name}",
+        companyBanksAdd: "إضافة حساب بنكي",
+        companyBanksFormAdd: "حساب بنكي جديد",
+        companyBanksFormEdit: "تعديل حساب بنكي",
+        companyBanksApply: "تطبيق على القائمة",
+        companyBanksEmpty: "لا توجد حسابات بنكية بعد. اضغط «إضافة حساب بنكي».",
+        companyBanksSaved: "تم حفظ المعلومات المصرفية.",
+        companyBanksNeedBankOrIban: "أدخل اسم البنك ورقم الحساب أو IBAN.",
+        companyBankLabel: "اسم العرض",
+        companyBankName: "اسم البنك",
+        companyBankAccountName: "اسم صاحب الحساب",
+        companyBankAccountNumber: "رقم الحساب",
+        companyBankIban: "IBAN",
+        companyBankSwift: "SWIFT / BIC",
+        companyBankCurrency: "العملة",
+        companyBankBranch: "الفرع",
+        companyBankNotes: "ملاحظات",
+        companyBankIsDefault: "تعيين كحساب افتراضي",
+        companyBankDefaultBadge: "افتراضي",
+        companyBankSetDefault: "تعيين افتراضي",
+        companyBankConfirmDelete: "حذف هذا الحساب البنكي من القائمة؟",
         addSupplier: "إضافة مورد",
         addProject: "إضافة مشروع",
         addRegion: "إضافة منطقة",
@@ -8062,6 +8287,33 @@
         colInvoiceCheck: "تدقيق الفاتورة",
         invoiceCheckItem_invoiceDateNo: "تاريخ ورقم الفاتورة",
         invoiceCheckItem_poSalesContractRef: "الإشارة إلى رقم طلب الشراء وعقد البيع",
+        btnGenerateSalesInvoice: "توليد فاتورة بيع",
+        btnViewGeneratedSalesInvoice: "عرض الفاتورة المولّدة",
+        btnGenerateSalesInvoiceConfirm: "توليد",
+        genSalesInvoiceTitle: "توليد فاتورة بيع",
+        genSalesInvoiceHint:
+          "تُنشأ فاتورة ثابتة من بيانات أمر الشراء (غير قابلة للتعديل). ينطبق عليها تدقيق متطلبات الفاتورة.",
+        genSalesInvoiceTypeTitle: "نوع الفاتورة",
+        genSalesInvoiceTypeFinal: "فاتورة تجارية نهائية",
+        genSalesInvoiceTypeProforma: "فاتورة أولية (Proforma)",
+        genSalesInvoiceTypeProformaHint:
+          "للعقود الداخلية بين شركات المجموعة، أو عند اعتماد الفاتورة الأولية + عقد البيع.",
+        genSalesInvoiceExisting: "توجد فاتورة مولّدة مسبقاً ({type} — {no}). التوليد مجدداً يستبدلها.",
+        genSalesInvoiceGeneratedOk: "تم توليد الفاتورة. يمكنك تدقيقها الآن.",
+        genSalesInvoiceNeedPo: "احفظ أمر الشراء أولاً ثم ولّد الفاتورة.",
+        genSalesInvoiceNoLines: "لا توجد بنود صالحة لتوليد الفاتورة.",
+        genSalesInvoicePrintTitle: "فاتورة بيع",
+        genSalesInvoicePrintTitleProforma: "فاتورة أولية (Proforma Invoice)",
+        genSalesInvoicePrintTitleFinal: "فاتورة تجارية",
+        genSalesInvoiceMetaInvoiceNo: "رقم الفاتورة",
+        genSalesInvoiceMetaDate: "التاريخ",
+        genSalesInvoiceMetaPo: "رقم طلب الشراء",
+        genSalesInvoiceMetaSc: "رقم عقد البيع",
+        genSalesInvoiceSeller: "البائع",
+        genSalesInvoiceBuyer: "المشتري",
+        genSalesInvoiceReadonlyNote: "مستند مولّد تلقائياً — غير قابل للتعديل.",
+        genSalesInvoiceSellerBankTitle: "المعلومات المصرفية للبائع",
+        invoiceChecklistGeneratedBanner: "فاتورة مولّدة: {type} — {no}",
         invoiceCheckItem_paymentTerms: "شروط الدفع",
         invoiceCheckItem_shippingTerms: "شروط الشحن",
         invoiceCheckItem_valueCurrency: "القيمة وعملة الفاتورة",
@@ -8788,6 +9040,9 @@
         filterWorkflowLabel: "Workflow stage",
         filterPriorityLabel: "Priority",
         filterCompanyLabel: "Company",
+        filterSupplierLabel: "Supplier",
+        colGenPoDate: "Date",
+        poGeneralFilterNoMatch: "No orders match the filters.",
         filterRegionLabel: "Region",
         filterExtraReceiptLabel: "Extra materials ★",
         filterExtraReceiptYes: "With ★",
@@ -8969,6 +9224,33 @@
         labelPurchasingRepName: "Representative name",
         tabSuppliers: "Suppliers",
         addCompany: "Add company",
+        btnCompanyBanks: "Bank details",
+        btnCompanyBanksCount: "Banks ({n})",
+        btnSupplierBanks: "Bank details",
+        btnSupplierBanksCount: "Banks ({n})",
+        companyBanksTitle: "Bank details",
+        companyBanksSub: "Accounts for: {name}",
+        supplierBanksSub: "Supplier accounts: {name}",
+        companyBanksAdd: "Add bank account",
+        companyBanksFormAdd: "New bank account",
+        companyBanksFormEdit: "Edit bank account",
+        companyBanksApply: "Apply to list",
+        companyBanksEmpty: "No bank accounts yet. Click “Add bank account”.",
+        companyBanksSaved: "Bank details saved.",
+        companyBanksNeedBankOrIban: "Enter the bank name and either an account number or IBAN.",
+        companyBankLabel: "Display label",
+        companyBankName: "Bank name",
+        companyBankAccountName: "Account holder name",
+        companyBankAccountNumber: "Account number",
+        companyBankIban: "IBAN",
+        companyBankSwift: "SWIFT / BIC",
+        companyBankCurrency: "Currency",
+        companyBankBranch: "Branch",
+        companyBankNotes: "Notes",
+        companyBankIsDefault: "Set as default account",
+        companyBankDefaultBadge: "Default",
+        companyBankSetDefault: "Set default",
+        companyBankConfirmDelete: "Remove this bank account from the list?",
         addSupplier: "Add supplier",
         addProject: "Add project",
         addRegion: "Add region",
@@ -9398,6 +9680,33 @@
         colInvoiceCheck: "Invoice check",
         invoiceCheckItem_invoiceDateNo: "Invoice date and number",
         invoiceCheckItem_poSalesContractRef: "Reference to purchase order number and sales contract",
+        btnGenerateSalesInvoice: "Generate sales invoice",
+        btnViewGeneratedSalesInvoice: "View generated invoice",
+        btnGenerateSalesInvoiceConfirm: "Generate",
+        genSalesInvoiceTitle: "Generate sales invoice",
+        genSalesInvoiceHint:
+          "Creates a frozen invoice from the purchase order (not editable). The commercial invoice checklist applies to it.",
+        genSalesInvoiceTypeTitle: "Invoice type",
+        genSalesInvoiceTypeFinal: "Final commercial invoice",
+        genSalesInvoiceTypeProforma: "Proforma invoice",
+        genSalesInvoiceTypeProformaHint:
+          "For internal contracts between group companies, or when proforma + sales contract is accepted.",
+        genSalesInvoiceExisting: "A generated invoice already exists ({type} — {no}). Generating again will replace it.",
+        genSalesInvoiceGeneratedOk: "Invoice generated. You can run the checklist now.",
+        genSalesInvoiceNeedPo: "Save the purchase order first, then generate the invoice.",
+        genSalesInvoiceNoLines: "No valid lines to generate an invoice.",
+        genSalesInvoicePrintTitle: "Sales invoice",
+        genSalesInvoicePrintTitleProforma: "Proforma invoice",
+        genSalesInvoicePrintTitleFinal: "Commercial invoice",
+        genSalesInvoiceMetaInvoiceNo: "Invoice no.",
+        genSalesInvoiceMetaDate: "Date",
+        genSalesInvoiceMetaPo: "Purchase order no.",
+        genSalesInvoiceMetaSc: "Sales contract no.",
+        genSalesInvoiceSeller: "Seller",
+        genSalesInvoiceBuyer: "Buyer",
+        genSalesInvoiceReadonlyNote: "Auto-generated document — not editable.",
+        genSalesInvoiceSellerBankTitle: "Seller bank details",
+        invoiceChecklistGeneratedBanner: "Generated invoice: {type} — {no}",
         invoiceCheckItem_paymentTerms: "Payment terms",
         invoiceCheckItem_shippingTerms: "Shipping terms",
         invoiceCheckItem_valueCurrency: "Invoice value and currency",
@@ -10388,6 +10697,8 @@
     let projectRejectedPurchaseOrdersContext = null;
     let projectPoFiltersWired = false;
     let rejectedProjectPoFiltersWired = false;
+    let generalPurchaseOrdersContext = null;
+    let generalPoFiltersWired = false;
     let lastPoPrintDoc = null;
     /** مصدر بيانات الطباعة — منفصل عن DOM المعاينة */
     let lastPo007PrintSource = null;
@@ -11438,6 +11749,11 @@
         x.salesContractNumber = scNum;
       }
       x.invoiceChecklist = normalizeInvoiceChecklist(x.invoiceChecklist);
+      if (x.generatedSalesInvoice && typeof x.generatedSalesInvoice === "object") {
+        x.generatedSalesInvoice = normalizeGeneratedSalesInvoice(x.generatedSalesInvoice);
+      } else {
+        x.generatedSalesInvoice = null;
+      }
       return normalizePo007SectionMeta(x);
     }
 
@@ -17118,6 +17434,7 @@
       generalPo007EditorLogo =
         (po?.companyLogoDataUrlSnapshot || po?.companyLogoUrlSnapshot || "").trim() || generalPo007EditorLogo;
       generalPoInvoiceChecklistDraft = normalizeInvoiceChecklist(model.invoiceChecklist);
+      generalPoGeneratedSalesInvoiceDraft = normalizeGeneratedSalesInvoice(model.generatedSalesInvoice);
       mount.innerHTML = renderGeneralPo007Html(po || {}, model, { editor: true });
       bindGeneralPo007EditorEvents();
       syncAllPo007ServiceQtyFields(mount);
@@ -17206,6 +17523,7 @@
       const salesContractVal =
         read("sales-contract-number") || salesContractNumberFromPo(poNumberVal);
       const invoiceChecklistVal = normalizeInvoiceChecklist(generalPoInvoiceChecklistDraft);
+      const generatedSalesInvoiceVal = normalizeGeneratedSalesInvoice(generalPoGeneratedSalesInvoiceDraft);
       const printForm = enrichGeneralFormPo007({
         lines,
         documentLang: getPo007DocumentLang(),
@@ -17213,6 +17531,7 @@
         poNumber: poNumberVal,
         salesContractNumber: salesContractVal,
         invoiceChecklist: invoiceChecklistVal,
+        generatedSalesInvoice: generatedSalesInvoiceVal,
         poRev: read("po-rev"),
         projectName: read("project"),
         poDate: getPo007MetaPoDateIso(),
@@ -17243,6 +17562,7 @@
         poNumber: poNumberVal,
         salesContractNumber: salesContractVal,
         invoiceChecklist: invoiceChecklistVal,
+        generatedSalesInvoice: generatedSalesInvoiceVal,
         poDate: getPo007MetaPoDateIso(),
         poRev: read("po-rev"),
         projectId,
@@ -17920,6 +18240,7 @@
         g.poNumber = "—";
         g.salesContractNumber = "—";
         g.invoiceChecklist = emptyInvoiceChecklist();
+        g.generatedSalesInvoice = null;
         g.poDate = getPo007MetaPoDateIso();
       }
       mountGeneralPo007Editor(g, po);
@@ -17934,6 +18255,7 @@
       generalPo007EditorLogo = "";
       generalPo007PendingLoad = null;
       generalPoInvoiceChecklistDraft = null;
+      generalPoGeneratedSalesInvoiceDraft = null;
       generalPo007EditorMode = "po";
       syncGeneralPo007EditorModeUi();
     }
@@ -26271,6 +26593,228 @@
       });
     }
 
+    function generalPoRowDateYmd(r) {
+      const gd = String(r?.generalPoDate || r?.generalForm?.poDate || "")
+        .trim()
+        .slice(0, 10);
+      if (gd && /^\d{4}-\d{2}-\d{2}$/.test(gd)) return gd;
+      return r?.createdAt?.seconds ? formatYmdFromFirestore(r.createdAt) : "";
+    }
+
+    function generalPoCompanyDisplay(r) {
+      return (r?.companyNameSnapshot || "").trim() || t("dash");
+    }
+
+    function generalPoSupplierDisplay(r) {
+      const g = r?.generalForm && typeof r.generalForm === "object" ? r.generalForm : null;
+      return (r?.supplierName || g?.vendor?.name || "").trim() || t("dash");
+    }
+
+    function resetGeneralPoTableFilters() {
+      const from = $("po-general-filter-from");
+      const to = $("po-general-filter-to");
+      const co = $("po-general-filter-company");
+      const su = $("po-general-filter-supplier");
+      if (from) from.value = "";
+      if (to) to.value = "";
+      if (co) {
+        co.value = "";
+        co.selectedIndex = 0;
+      }
+      if (su) {
+        su.value = "";
+        su.selectedIndex = 0;
+      }
+    }
+
+    function generalPoRowMatchesFilters(r, from, to, company, supplier) {
+      const ymd = generalPoRowDateYmd(r);
+      if (from && (!ymd || ymd < from)) return false;
+      if (to && (!ymd || ymd > to)) return false;
+      if (company && generalPoCompanyDisplay(r) !== company) return false;
+      if (supplier && generalPoSupplierDisplay(r) !== supplier) return false;
+      return true;
+    }
+
+    function populateGeneralPoFilterOptions() {
+      const ctx = generalPurchaseOrdersContext;
+      if (!ctx) return;
+      const coSel = $("po-general-filter-company");
+      const suSel = $("po-general-filter-supplier");
+      if (!coSel || !suSel) return;
+      const loc = lang === "ar" ? "ar" : "en";
+      const dash = t("dash");
+      const companies = [
+        ...new Set(ctx.rows.map((r) => generalPoCompanyDisplay(r)).filter((x) => x && x !== dash)),
+      ].sort((a, b) => a.localeCompare(b, loc));
+      const suppliers = [
+        ...new Set(ctx.rows.map((r) => generalPoSupplierDisplay(r)).filter((x) => x && x !== dash)),
+      ].sort((a, b) => a.localeCompare(b, loc));
+      const coVal = coSel.value;
+      coSel.innerHTML =
+        `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+        companies.map((c) => `<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join("");
+      coSel.value = companies.includes(coVal) ? coVal : "";
+      const suVal = suSel.value;
+      suSel.innerHTML =
+        `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+        suppliers.map((s) => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join("");
+      suSel.value = suppliers.includes(suVal) ? suVal : "";
+    }
+
+    function wireGeneralPoFiltersOnce() {
+      if (generalPoFiltersWired) return;
+      generalPoFiltersWired = true;
+      ["po-general-filter-from", "po-general-filter-to", "po-general-filter-company", "po-general-filter-supplier"].forEach(
+        (fid) => {
+          $(fid)?.addEventListener("change", () => renderGeneralPurchaseOrdersTable());
+        }
+      );
+      $("po-general-filter-reset")?.addEventListener("click", () => {
+        resetGeneralPoTableFilters();
+        renderGeneralPurchaseOrdersTable();
+      });
+    }
+
+    function bindGeneralPurchaseOrdersTableActions(wrap, rows) {
+      if (!wrap) return;
+      wrap.querySelectorAll(".btn-edit-po").forEach((btn) => {
+        btn.addEventListener("click", () => openPoModal(btn.dataset.scope, btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
+        btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
+        btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-gen-po-pro-print").forEach((btn) => {
+        btn.addEventListener("click", () => openGeneralPoProPrint(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-gen-po-sales-invoice").forEach((btn) => {
+        btn.addEventListener("click", () => void openGenerateSalesInvoiceModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-gen-po-invoice-check").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const row = rows.find((x) => x.id === btn.dataset.id);
+          const g = row?.generalForm && typeof row.generalForm === "object" ? row.generalForm : null;
+          const poRef = (g?.poNumber || row?.title || "").trim();
+          openInvoiceChecklistModal({
+            mode: "po",
+            poId: btn.dataset.id,
+            checklist: g?.invoiceChecklist,
+            poRef,
+            scRef: (g?.salesContractNumber || "").trim() || salesContractNumberFromPo(poRef),
+            supplier: (row?.supplierName || g?.vendor?.name || "").trim(),
+            generatedInvoice: g?.generatedSalesInvoice,
+          });
+        });
+      });
+      wrap.querySelectorAll(".btn-gen-po-status").forEach((btn) => {
+        btn.addEventListener("click", () => void openGeneralPoStatusModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-gen-po-duplicate").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!confirm(t("confirmDuplicateGenPo"))) return;
+          void openGeneralPo007Modal(btn.dataset.id, { duplicate: true });
+        });
+      });
+      wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
+        btn.addEventListener("click", () => deletePo(btn.dataset.id));
+      });
+    }
+
+    function renderGeneralPurchaseOrdersTable() {
+      const wrap = $("po-general-table-wrap");
+      const ctx = generalPurchaseOrdersContext;
+      if (!wrap || !ctx) return;
+      const canEdit = !isPoEditorRoleBlocked();
+      const from = ($("po-general-filter-from")?.value || "").trim();
+      const to = ($("po-general-filter-to")?.value || "").trim();
+      const company = ($("po-general-filter-company")?.value || "").trim();
+      const supplier = ($("po-general-filter-supplier")?.value || "").trim();
+      const rows = (ctx.rows || []).filter((r) => generalPoRowMatchesFilters(r, from, to, company, supplier));
+      if (!rows.length) {
+        wrap.innerHTML = `<p class="empty-state">${t(
+          from || to || company || supplier ? "poGeneralFilterNoMatch" : "noOrdersYet"
+        )}</p>`;
+        return;
+      }
+      const thead = `<tr>
+              <th>${t("colGenPoPoNo")}</th>
+              <th>${t("colGenPoDate")}</th>
+              <th>${t("colGenPoCompany")}</th>
+              <th>${t("colSupplier")}</th>
+              <th>${t("colStatus")}</th>
+              <th>${t("colInvoiceCheck")}</th>
+              <th>${t("colTotal")}</th>
+              <th></th>
+            </tr>`;
+      const tbody = rows
+        .map((r) => {
+          const g = r.generalForm && typeof r.generalForm === "object" ? r.generalForm : null;
+          const poNo = (g?.poNumber || r.title || "").trim() || t("dash");
+          const poDate = generalPoRowDateYmd(r) || t("dash");
+          const comp = generalPoCompanyDisplay(r);
+          const sup = generalPoSupplierDisplay(r);
+          const invCl = normalizeInvoiceChecklist(g?.invoiceChecklist);
+          return `
+                <tr>
+                  <td>${escapeHtml(poNo)}</td>
+                  <td>${escapeHtml(poDate)}</td>
+                  <td>${escapeHtml(comp)}</td>
+                  <td>${escapeHtml(sup)}</td>
+                  <td>${statusBadge(r.status || "draft", "general", r)}</td>
+                  <td>${invoiceChecklistBadgeHtml(invCl)}</td>
+                  <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
+                  <td>
+                    <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
+                    ${
+                      hasAdminAccess()
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
+                            "orderNoteButton"
+                          )}</button>`
+                        : ""
+                    }
+                    <button type="button" class="btn btn-primary btn-sm btn-gen-po-pro-print" data-id="${r.id}">${t(
+                      "btnGenPoProPrint"
+                    )}</button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-gen-po-sales-invoice" data-id="${r.id}">${
+                      normalizeGeneratedSalesInvoice(g?.generatedSalesInvoice)
+                        ? t("btnViewGeneratedSalesInvoice")
+                        : t("btnGenerateSalesInvoice")
+                    }</button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-gen-po-invoice-check" data-id="${r.id}">${t(
+                      "btnInvoiceChecklist"
+                    )}</button>
+                    ${
+                      canEdit
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-status" data-id="${r.id}">${t(
+                            "btnUpdateStatus"
+                          )}</button><button type="button" class="btn btn-secondary btn-sm btn-gen-po-duplicate" data-id="${r.id}">${t(
+                            "btnDuplicatePo"
+                          )}</button>`
+                        : ""
+                    }
+                    ${
+                      canEdit
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="general">${t(
+                            "edit"
+                          )}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t(
+                            "delete"
+                          )}</button>`
+                        : ""
+                    }
+                  </td>
+                </tr>`;
+        })
+        .join("");
+      wrap.innerHTML = `<div class="table-scroll"><table class="data-table">
+            <thead>${thead}</thead>
+            <tbody>${tbody}</tbody>
+          </table></div>`;
+      bindGeneralPurchaseOrdersTableActions(wrap, rows);
+    }
+
     function renderProjectPurchaseOrdersTable(renderOpts) {
       const wrap = $("po-projects-table-wrap");
       const ctx = projectPurchaseOrdersContext;
@@ -26382,10 +26926,14 @@
       const wrapId = scope === "project" ? "po-projects-table-wrap" : "po-general-table-wrap";
       const wrap = $(wrapId);
       const filterBar = $("po-projects-filter-bar");
+      const generalFilterBar = $("po-general-filter-bar");
       if (scope !== "project") {
         projectPurchaseOrdersContext = null;
         filterBar?.classList.add("hidden");
         syncGeneralPoToolbarButtons();
+      } else {
+        generalPurchaseOrdersContext = null;
+        generalFilterBar?.classList.add("hidden");
       }
       wrap.innerHTML = `<p class="loading">${t("loading")}</p>`;
       try {
@@ -26407,6 +26955,7 @@
           return;
         }
 
+        resetGeneralPoTableFilters();
         const q = query(collection(db, "purchaseOrders"), where("scope", "==", scope));
         const snap = await getDocs(q);
         let rows = [];
@@ -26414,124 +26963,31 @@
         const r = currentUserProfile?.role || userRole;
         if (!hasAdminAccess() && r === "viewer") rows = [];
         rows.sort((a, b) => {
-          const pri = (x) => poPrioritySortWeight(x.priority);
-          const pd = pri(b) - pri(a);
-          if (pd !== 0) return pd;
+          const da = generalPoRowDateYmd(a);
+          const dbY = generalPoRowDateYmd(b);
+          if (da && dbY && da !== dbY) return dbY.localeCompare(da);
           return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
         });
 
         if (!rows.length) {
+          generalPurchaseOrdersContext = null;
+          generalFilterBar?.classList.add("hidden");
           wrap.innerHTML = `<p class="empty-state">${t("noOrdersYet")}</p>`;
           return;
         }
-        const canEdit = !isPoEditorRoleBlocked();
-        const thead = `<tr>
-              <th>${t("colGenPoPoNo")}</th>
-              <th>${t("colGenPoCompany")}</th>
-              <th>${t("colSupplier")}</th>
-              <th>${t("colStatus")}</th>
-              <th>${t("colInvoiceCheck")}</th>
-              <th>${t("colTotal")}</th>
-              <th></th>
-            </tr>`;
-        const tbody = rows
-          .map((r) => {
-            const g = r.generalForm && typeof r.generalForm === "object" ? r.generalForm : null;
-            const poNo = (g?.poNumber || r.title || "").trim() || t("dash");
-            const comp = (r.companyNameSnapshot || "").trim() || t("dash");
-            const sup = (r.supplierName || g?.vendor?.name || "").trim() || t("dash");
-            const invCl = normalizeInvoiceChecklist(g?.invoiceChecklist);
-            return `
-                <tr>
-                  <td>${escapeHtml(poNo)}</td>
-                  <td>${escapeHtml(comp)}</td>
-                  <td>${escapeHtml(sup)}</td>
-                  <td>${statusBadge(r.status || "draft", scope, r)}</td>
-                  <td>${invoiceChecklistBadgeHtml(invCl)}</td>
-                  <td>${(r.totalAmount ?? 0).toLocaleString(localeTag())}</td>
-                  <td>
-                    <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
-                    ${
-                      hasAdminAccess()
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
-                            "orderNoteButton"
-                          )}</button>`
-                        : ""
-                    }
-                    ${
-                      scope === "general"
-                        ? `<button type="button" class="btn btn-primary btn-sm btn-gen-po-pro-print" data-id="${r.id}">${t("btnGenPoProPrint")}</button>`
-                        : ""
-                    }
-                    ${
-                      scope === "general"
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-invoice-check" data-id="${r.id}">${t("btnInvoiceChecklist")}</button>`
-                        : ""
-                    }
-                    ${
-                      scope === "general" && canEdit
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-gen-po-status" data-id="${r.id}">${t("btnUpdateStatus")}</button><button type="button" class="btn btn-secondary btn-sm btn-gen-po-duplicate" data-id="${r.id}">${t("btnDuplicatePo")}</button>`
-                        : ""
-                    }
-                    ${
-                      canEdit
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t(
-                            "edit"
-                          )}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
-                        : ""
-                    }
-                  </td>
-                </tr>`;
-          })
-          .join("");
-        wrap.innerHTML = `<div class="table-scroll"><table class="data-table">
-            <thead>${thead}</thead>
-            <tbody>${tbody}</tbody>
-          </table></div>`;
-        wrap.querySelectorAll(".btn-edit-po").forEach((btn) => {
-          btn.addEventListener("click", () => openPoModal(btn.dataset.scope, btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-view-po").forEach((btn) => {
-          btn.addEventListener("click", () => openPoPrintViewModal(btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-order-note").forEach((btn) => {
-          btn.addEventListener("click", () => void openOrderNoteSendModal(btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-gen-po-pro-print").forEach((btn) => {
-          btn.addEventListener("click", () => openGeneralPoProPrint(btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-gen-po-invoice-check").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const row = rows.find((x) => x.id === btn.dataset.id);
-            const g = row?.generalForm && typeof row.generalForm === "object" ? row.generalForm : null;
-            const poRef = (g?.poNumber || row?.title || "").trim();
-            openInvoiceChecklistModal({
-              mode: "po",
-              poId: btn.dataset.id,
-              checklist: g?.invoiceChecklist,
-              poRef,
-              scRef: (g?.salesContractNumber || "").trim() || salesContractNumberFromPo(poRef),
-              supplier: (row?.supplierName || g?.vendor?.name || "").trim(),
-            });
-          });
-        });
-        wrap.querySelectorAll(".btn-gen-po-status").forEach((btn) => {
-          btn.addEventListener("click", () => void openGeneralPoStatusModal(btn.dataset.id));
-        });
-        wrap.querySelectorAll(".btn-gen-po-duplicate").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            if (!confirm(t("confirmDuplicateGenPo"))) return;
-            void openGeneralPo007Modal(btn.dataset.id, { duplicate: true });
-          });
-        });
-        wrap.querySelectorAll(".btn-del-po").forEach((btn) => {
-          btn.addEventListener("click", () => deletePo(btn.dataset.id));
-        });
+        generalPurchaseOrdersContext = { rows };
+        generalFilterBar?.classList.remove("hidden");
+        populateGeneralPoFilterOptions();
+        wireGeneralPoFiltersOnce();
+        renderGeneralPurchaseOrdersTable();
       } catch (e) {
         console.error(e);
         if (scope === "project") {
           projectPurchaseOrdersContext = null;
           filterBar?.classList.add("hidden");
+        } else {
+          generalPurchaseOrdersContext = null;
+          generalFilterBar?.classList.add("hidden");
         }
         wrap.innerHTML = `<p class="error-msg">${t("loadError")} ${e.message || ""}</p>`;
       }
@@ -28898,6 +29354,602 @@
       }
     }
 
+    /** فاتورة بيع مولّدة من أمر إدارة عامة — لقطة ثابتة غير قابلة للتعديل. */
+    let genSalesInvoiceModalPoId = "";
+
+    function emptyGeneratedSalesInvoice() {
+      return {
+        invoiceType: "",
+        invoiceNumber: "",
+        invoiceDate: "",
+        poNumber: "",
+        salesContractNumber: "",
+        currency: "IQD",
+        documentLang: "ar",
+        seller: { name: "", attn: "", phone: "", email: "", address: "" },
+        buyer: { name: "", attn: "", phone: "", email: "", emails: [], address: "" },
+        paymentTermsText: "",
+        shippingTermsText: "",
+        lines: [],
+        discountAmount: 0,
+        totalAmount: 0,
+        netAmount: 0,
+        totalWords: "",
+        generatedAt: "",
+        generatedBy: "",
+        sourcePoId: "",
+        readonly: true,
+      };
+    }
+
+    function normalizeGeneratedSalesParty(raw) {
+      const x = raw && typeof raw === "object" ? raw : {};
+      const emails = Array.isArray(x.emails)
+        ? x.emails.map((e) => String(e || "").trim()).filter(Boolean)
+        : String(x.email || "")
+            .split(/[\n,;]+/)
+            .map((e) => e.trim())
+            .filter(Boolean);
+      return {
+        name: String(x.name || "").trim(),
+        attn: String(x.attn || "").trim(),
+        phone: String(x.phone || "").trim(),
+        email: String(x.email || emails[0] || "").trim(),
+        emails,
+        address: String(x.address || x.extraNotes || "").trim(),
+      };
+    }
+
+    function normalizeGeneratedSalesInvoice(raw) {
+      const base = emptyGeneratedSalesInvoice();
+      if (!raw || typeof raw !== "object") return null;
+      const invoiceType = raw.invoiceType === "proforma" ? "proforma" : raw.invoiceType === "final" ? "final" : "";
+      if (!invoiceType && !(raw.invoiceNumber || "").trim()) return null;
+      const lines = (Array.isArray(raw.lines) ? raw.lines : []).map((l, i) => {
+        const row = l && typeof l === "object" ? l : {};
+        return {
+          no: String(row.no != null ? row.no : i + 1).trim() || String(i + 1),
+          description: String(row.description || "").trim(),
+          qty: Number(row.qty) || 0,
+          unit: String(row.unit || "").trim(),
+          unitLabel: String(row.unitLabel || row.unit || "").trim(),
+          unitPrice: Number(row.unitPrice) || 0,
+          lineTotal: Number(row.lineTotal) || 0,
+          included: !!row.included,
+          service: !!row.service,
+        };
+      });
+      return {
+        ...base,
+        invoiceType: invoiceType || "final",
+        invoiceNumber: String(raw.invoiceNumber || "").trim(),
+        invoiceDate: String(raw.invoiceDate || "").trim(),
+        poNumber: String(raw.poNumber || "").trim(),
+        salesContractNumber: String(raw.salesContractNumber || "").trim(),
+        currency: raw.currency === "USD" ? "USD" : "IQD",
+        documentLang: raw.documentLang === "en" ? "en" : "ar",
+        seller: normalizeGeneratedSalesParty(raw.seller),
+        buyer: normalizeGeneratedSalesParty(raw.buyer),
+        paymentTermsText: String(raw.paymentTermsText || "").trim(),
+        shippingTermsText: String(raw.shippingTermsText || "").trim(),
+        lines,
+        discountAmount: generalPo007DiscountAmount(raw.discountAmount),
+        totalAmount: Number(raw.totalAmount) || 0,
+        netAmount: Number(raw.netAmount) || 0,
+        totalWords: String(raw.totalWords || "").trim(),
+        generatedAt: String(raw.generatedAt || "").trim(),
+        generatedBy: String(raw.generatedBy || "").trim(),
+        sourcePoId: String(raw.sourcePoId || "").trim(),
+        sellerBankAccounts: normalizeCompanyBankAccounts(raw.sellerBankAccounts),
+        readonly: true,
+      };
+    }
+
+    function salesInvoiceNumberFromPo(poNumber, invoiceType) {
+      const raw = String(poNumber || "").trim();
+      let core = raw;
+      if (/^PO-/i.test(core)) core = core.slice(3);
+      else if (/^PO\s+/i.test(core)) core = core.replace(/^PO\s+/i, "").replace(/\s+/g, "-");
+      core = core.replace(/^INV-/i, "").replace(/^PI-/i, "").trim() || "DRAFT";
+      return (invoiceType === "proforma" ? "PI-" : "INV-") + core;
+    }
+
+    function generalFormPaymentTermsText(g) {
+      const terms = Array.isArray(g?.paymentTerms) ? g.paymentTerms : [];
+      const fromArr = terms
+        .map((p) => `${(p.pct || "").trim()} ${(p.text || "").trim()}`.trim())
+        .filter(Boolean);
+      if (fromArr.length) return fromArr.join("\n");
+      return String(g?.termsPayment || "").trim();
+    }
+
+    function generalFormShippingTermsText(g) {
+      const docs = Array.isArray(g?.docListItems) ? g.docListItems.map((x) => String(x || "").trim()).filter(Boolean) : [];
+      if (docs.length) return docs.join("\n");
+      const packing = String(g?.termsPacking || "").trim();
+      if (packing) return packing;
+      return String(g?.termsShipping || "").trim();
+    }
+
+    /**
+     * حسابات البائع المصرفية للفاتورة:
+     * 1) من بطاقة المورد (supplierId) إن وُجدت
+     * 2) وإلا من شركة مطابقة لاسم البائع (عقود داخلية بين شركات المجموعة)
+     */
+    async function resolveSellerBankAccounts(opts) {
+      const sellerName =
+        typeof opts === "string" ? opts : String(opts?.sellerName || "").trim();
+      const supplierId =
+        typeof opts === "string" ? "" : String(opts?.supplierId || "").trim();
+      if (!db) return [];
+      try {
+        if (supplierId) {
+          const snap = await getDoc(doc(db, "suppliers", supplierId));
+          if (snap.exists()) {
+            const accounts = normalizeCompanyBankAccounts(snap.data()?.bankAccounts);
+            if (accounts.length) return accounts;
+          }
+        }
+        const key = sellerName.trim().toLowerCase();
+        if (!key) return [];
+        const snap = await getDocs(collection(db, "companies"));
+        let match = null;
+        snap.forEach((d) => {
+          if (match) return;
+          const c = d.data() || {};
+          const names = [c.nameAr, c.nameEn, c.name]
+            .map((n) => String(n || "").trim().toLowerCase())
+            .filter(Boolean);
+          if (names.includes(key)) match = c;
+        });
+        return match ? normalizeCompanyBankAccounts(match.bankAccounts) : [];
+      } catch (err) {
+        console.warn("resolveSellerBankAccounts", err);
+        return [];
+      }
+    }
+
+    /** يفضّل الحسابات المطابقة لعملة الفاتورة، ثم الافتراضي أولاً. */
+    function pickSellerBankAccountsForInvoice(accounts, currency) {
+      const list = normalizeCompanyBankAccounts(accounts);
+      if (!list.length) return [];
+      const cur = currency === "USD" ? "USD" : "IQD";
+      const sameCur = list.filter((a) => a.currency === cur);
+      const pool = sameCur.length ? sameCur : list;
+      return pool.slice().sort((a, b) => Number(b.isDefault) - Number(a.isDefault));
+    }
+
+    async function buildGeneratedSalesInvoiceSnapshot(po, gIn, invoiceType) {
+      const g = enrichGeneralFormPo007(gIn || normalizeGeneralFormFromPo(po));
+      const type = invoiceType === "proforma" ? "proforma" : "final";
+      const docLang = g.documentLang === "en" ? "en" : "ar";
+      const poNumber = (g.poNumber || po?.title || "").trim();
+      const salesContractNumber =
+        (g.salesContractNumber || "").trim() || salesContractNumberFromPo(poNumber);
+      const buyerName =
+        (g.buyerName || "").trim() || (po?.companyNameSnapshot || "").trim();
+      const v = g.vendor || {};
+      const be = g.buyerExtra || {};
+      const buyerEmails = String(be.emails || "")
+        .split(/\n/)
+        .map((e) => e.trim())
+        .filter(Boolean);
+      const curCode = g.currency === "USD" ? "USD" : "IQD";
+      const linesSrc = Array.isArray(g.lines) ? g.lines : [];
+      const lines = linesSrc.map((l, i) => {
+        const row = normalizeGeneralLineRow(l);
+        const service = isPoServiceUnit(row.unit);
+        const unitPrice = parseFloat(String(row.priceText || "").replace(/,/g, "")) || 0;
+        return {
+          no: row.lineNo || String(i + 1),
+          description: row.description || row.itemTag || "",
+          qty: row.qty,
+          unit: row.unit,
+          unitLabel: po007MeasureUnitLabel(row.unit, docLang) || row.unit,
+          unitPrice,
+          lineTotal: Number(row.lineTotal) || 0,
+          included: !!row.includedInBasePrice,
+          service,
+        };
+      });
+      const hasContent = lines.some((l) => l.description || l.lineTotal > 0 || l.qty > 0 || l.service);
+      if (!hasContent) return { error: "noLines" };
+      const discountAmount = generalPo007DiscountAmount(g.discountAmount);
+      const totalAmount = generalLinesBillableTotal(linesSrc);
+      const netAmount = generalPo007BillableNetTotal(linesSrc, discountAmount);
+      const totalWords =
+        (g.totalWords || "").trim() ||
+        (netAmount > 0
+          ? formatPo007TotalWordsDisplay(netAmount, curCode, docLang)
+          : docLang === "ar"
+            ? "صفر"
+            : "Zero");
+      const sellerName = String(v.name || po?.supplierName || "").trim();
+      const supplierId = String(g.supplierId || po?.supplierId || "").trim();
+      const sellerBankAccounts = pickSellerBankAccountsForInvoice(
+        await resolveSellerBankAccounts({ sellerName, supplierId }),
+        curCode
+      );
+      return {
+        invoice: {
+          invoiceType: type,
+          invoiceNumber: salesInvoiceNumberFromPo(poNumber, type),
+          invoiceDate: formatTodayYmd(),
+          poNumber,
+          salesContractNumber,
+          currency: curCode,
+          documentLang: docLang,
+          seller: {
+            name: sellerName,
+            attn: String(v.attn || "").trim(),
+            phone: String(v.phone || "").trim(),
+            email: String(v.email || "").trim(),
+            emails: String(v.email || "")
+              .split(/[\n,;]+/)
+              .map((e) => e.trim())
+              .filter(Boolean),
+            address: String(v.extraNotes || "").trim(),
+          },
+          buyer: {
+            name: buyerName,
+            attn: String(be.attn || "").trim(),
+            phone: String(be.phone || "").trim(),
+            email: buyerEmails[0] || "",
+            emails: buyerEmails,
+            address: String(be.extraNotes || "").trim(),
+          },
+          paymentTermsText: generalFormPaymentTermsText(g),
+          shippingTermsText: generalFormShippingTermsText(g),
+          lines,
+          discountAmount,
+          totalAmount,
+          netAmount,
+          totalWords,
+          generatedAt: new Date().toISOString(),
+          generatedBy: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+          sourcePoId: String(po?.id || "").trim(),
+          sellerBankAccounts,
+          readonly: true,
+        },
+      };
+    }
+
+    function suggestInvoiceChecklistFromGenerated(inv) {
+      const c = {};
+      if (!inv) return c;
+      c.invoiceDateNo = !!(inv.invoiceNumber && inv.invoiceDate);
+      c.poSalesContractRef = !!(inv.poNumber || inv.salesContractNumber);
+      c.paymentTerms = !!(inv.paymentTermsText || "").trim();
+      c.shippingTerms = !!(inv.shippingTermsText || "").trim();
+      c.valueCurrency = !!(inv.currency && (inv.netAmount > 0 || inv.totalAmount > 0 || (inv.lines || []).length));
+      const sellerOk = !!(inv.seller?.name || inv.seller?.address || inv.seller?.phone || inv.seller?.email);
+      const buyerOk = !!(inv.buyer?.name || inv.buyer?.address || inv.buyer?.phone || inv.buyer?.email);
+      c.addresses = sellerOk && buyerOk;
+      c.goodsDesc = (inv.lines || []).some((l) => (l.description || "").trim());
+      c.qtyUnit = (inv.lines || []).some((l) => l.service || l.qty > 0 || (l.unit || "").trim());
+      c.unitTotalPrice = (inv.lines || []).some((l) => !l.included && (l.unitPrice > 0 || l.lineTotal > 0));
+      return c;
+    }
+
+    function mergeInvoiceChecklistWithGenerated(existing, inv) {
+      const base = normalizeInvoiceChecklist(existing);
+      const suggested = suggestInvoiceChecklistFromGenerated(inv);
+      const checked = { ...base.checked };
+      Object.keys(suggested).forEach((id) => {
+        if (suggested[id]) checked[id] = true;
+      });
+      const invoiceType =
+        inv?.invoiceType === "proforma" || inv?.invoiceType === "final"
+          ? inv.invoiceType
+          : base.invoiceType;
+      return normalizeInvoiceChecklist({
+        ...base,
+        checked,
+        invoiceType,
+        started: true,
+        updatedAt: new Date().toISOString(),
+        updatedBy: (currentUserProfile?.displayName || currentUser?.email || currentUser?.uid || "").trim(),
+      });
+    }
+
+    function salesInvoiceTypeLabel(type) {
+      return type === "proforma" ? t("genSalesInvoiceTypeProforma") : t("genSalesInvoiceTypeFinal");
+    }
+
+    function formatSalesInvAmount(n, curSuffix, docLang) {
+      return formatPo007GrandTotalDisplay(n, curSuffix, docLang);
+    }
+
+    function renderGeneratedSalesInvoiceHtml(invIn) {
+      const inv = normalizeGeneratedSalesInvoice(invIn);
+      if (!inv) return `<p class="error-msg">${escapeHtml(t("loadError"))}</p>`;
+      const docLang = inv.documentLang === "en" ? "en" : "ar";
+      const dir = docLang === "ar" ? "rtl" : "ltr";
+      const dash = t("dash");
+      const curSuffix = po007CurrencySuffix(inv.currency, docLang);
+      const isProforma = inv.invoiceType === "proforma";
+      const title = isProforma ? t("genSalesInvoicePrintTitleProforma") : t("genSalesInvoicePrintTitleFinal");
+      const partyBlock = (party, heading) => {
+        const emails = (party.emails || []).length ? party.emails : party.email ? [party.email] : [];
+        return `<div class="sales-inv-party">
+          <h4>${escapeHtml(heading)}</h4>
+          <strong>${escapeHtml(party.name || dash)}</strong>
+          ${party.attn ? `<p>${escapeHtml(docLang === "ar" ? "عناية" : "Attn")}: ${escapeHtml(party.attn)}</p>` : ""}
+          ${party.phone ? `<p>${escapeHtml(t("labelPhone") || "Tel")}: ${escapeHtml(party.phone)}</p>` : ""}
+          ${emails.map((em) => `<p>${escapeHtml(em)}</p>`).join("")}
+          ${party.address ? `<p>${escapeHtml(party.address)}</p>` : ""}
+        </div>`;
+      };
+      const lineRows = (inv.lines || []).length
+        ? inv.lines
+            .map((l) => {
+              const qtyDisp = l.service
+                ? dash
+                : l.included
+                  ? dash
+                  : String(l.qty || 0);
+              const priceDisp = l.included
+                ? dash
+                : formatSalesInvAmount(l.unitPrice, curSuffix, docLang);
+              const totalDisp = l.included
+                ? dash
+                : formatSalesInvAmount(l.lineTotal, curSuffix, docLang);
+              return `<tr>
+                <td class="num">${escapeHtml(l.no)}</td>
+                <td>${escapeHtml(l.description || dash)}</td>
+                <td class="num">${escapeHtml(qtyDisp)}</td>
+                <td class="num">${escapeHtml(l.unitLabel || l.unit || dash)}</td>
+                <td class="amt">${escapeHtml(priceDisp)}</td>
+                <td class="amt">${escapeHtml(totalDisp)}</td>
+              </tr>`;
+            })
+            .join("")
+        : `<tr><td colspan="6">${escapeHtml(dash)}</td></tr>`;
+      const discountRow =
+        inv.discountAmount > 0
+          ? `<tr><td>${escapeHtml(docLang === "ar" ? "الخصم" : "Discount")}</td><td>${escapeHtml(
+              formatSalesInvAmount(inv.discountAmount, curSuffix, docLang)
+            )}</td></tr>`
+          : "";
+      const termsBlocks = [];
+      if ((inv.paymentTermsText || "").trim()) {
+        termsBlocks.push(
+          `<div><h4>${escapeHtml(t("invoiceCheckItem_paymentTerms"))}</h4><p>${escapeHtml(inv.paymentTermsText)}</p></div>`
+        );
+      }
+      if ((inv.shippingTermsText || "").trim()) {
+        termsBlocks.push(
+          `<div><h4>${escapeHtml(t("invoiceCheckItem_shippingTerms"))}</h4><p>${escapeHtml(inv.shippingTermsText)}</p></div>`
+        );
+      }
+      const bankRowsHtml = (inv.sellerBankAccounts || [])
+        .map((a) => {
+          const parts = [];
+          const add = (label, val, ltr) => {
+            if (!(val || "").trim()) return;
+            parts.push(
+              `<p><b>${escapeHtml(label)}:</b> <span${ltr ? ' dir="ltr"' : ""}>${escapeHtml(val)}</span></p>`
+            );
+          };
+          add(t("companyBankName"), a.bankName);
+          add(t("companyBankAccountName"), a.accountName);
+          add(t("companyBankAccountNumber"), a.accountNumber, true);
+          add(t("companyBankIban"), a.iban, true);
+          add(t("companyBankSwift"), a.swift, true);
+          add(t("companyBankCurrency"), a.currency);
+          add(t("companyBankBranch"), a.branch);
+          add(t("companyBankNotes"), a.notes);
+          return `<div class="sales-inv-bank">${
+            a.label ? `<strong>${escapeHtml(a.label)}</strong>` : ""
+          }${parts.join("")}</div>`;
+        })
+        .join("");
+      const sellerBankBlock = bankRowsHtml
+        ? `<div class="sales-inv-banks"><h4>${escapeHtml(t("genSalesInvoiceSellerBankTitle"))}</h4>${bankRowsHtml}</div>`
+        : "";
+      return `<div class="po-print-doc sales-inv-surface" dir="${dir}" lang="${docLang}">
+        <span class="sales-inv-badge${isProforma ? " proforma" : ""}">${escapeHtml(
+          isProforma ? "PROFORMA" : "COMMERCIAL INVOICE"
+        )}</span>
+        <h2 class="sales-inv-title">${escapeHtml(title)}</h2>
+        <p class="sales-inv-note">${escapeHtml(t("genSalesInvoiceReadonlyNote"))}</p>
+        <div class="sales-inv-meta">
+          <div><small>${escapeHtml(t("genSalesInvoiceMetaInvoiceNo"))}</small><b>${escapeHtml(inv.invoiceNumber || dash)}</b></div>
+          <div><small>${escapeHtml(t("genSalesInvoiceMetaDate"))}</small><b>${escapeHtml(
+            formatPo007DisplayDate(inv.invoiceDate) || inv.invoiceDate || dash
+          )}</b></div>
+          <div><small>${escapeHtml(t("genSalesInvoiceMetaPo"))}</small><b>${escapeHtml(inv.poNumber || dash)}</b></div>
+          <div><small>${escapeHtml(t("genSalesInvoiceMetaSc"))}</small><b>${escapeHtml(inv.salesContractNumber || dash)}</b></div>
+        </div>
+        <div class="sales-inv-parties">
+          ${partyBlock(inv.seller, t("genSalesInvoiceSeller"))}
+          ${partyBlock(inv.buyer, t("genSalesInvoiceBuyer"))}
+        </div>
+        <table class="sales-inv-table">
+          <thead>
+            <tr>
+              <th class="num">${docLang === "ar" ? "م" : "No."}</th>
+              <th>${docLang === "ar" ? "الوصف" : "Description"}</th>
+              <th class="num">${docLang === "ar" ? "الكمية" : "Qty"}</th>
+              <th class="num">${docLang === "ar" ? "الوحدة" : "Unit"}</th>
+              <th class="amt">${docLang === "ar" ? "سعر الوحدة" : "Unit price"}</th>
+              <th class="amt">${docLang === "ar" ? "الإجمالي" : "Total"}</th>
+            </tr>
+          </thead>
+          <tbody>${lineRows}</tbody>
+        </table>
+        <div class="sales-inv-totals">
+          <table>
+            <tr><td>${escapeHtml(docLang === "ar" ? "المجموع" : "Subtotal")}</td><td>${escapeHtml(
+              formatSalesInvAmount(inv.totalAmount, curSuffix, docLang)
+            )}</td></tr>
+            ${discountRow}
+            <tr class="grand"><td>${escapeHtml(docLang === "ar" ? "الصافي" : "Net total")}</td><td>${escapeHtml(
+              formatSalesInvAmount(inv.netAmount, curSuffix, docLang)
+            )}</td></tr>
+          </table>
+        </div>
+        <p style="margin:0 0 0.75rem;font-size:0.88rem"><strong>${escapeHtml(
+          docLang === "ar" ? "المبلغ كتابةً:" : "Amount in words:"
+        )}</strong> ${escapeHtml(inv.totalWords || dash)}</p>
+        ${termsBlocks.length ? `<div class="sales-inv-terms">${termsBlocks.join("")}</div>` : ""}
+        ${sellerBankBlock}
+      </div>`;
+    }
+
+    function openGeneratedSalesInvoicePrint(invIn) {
+      const inv = normalizeGeneratedSalesInvoice(invIn);
+      if (!inv) return;
+      const el = $("po-print-content");
+      if (!el) return;
+      const html = renderGeneratedSalesInvoiceHtml(inv);
+      el.innerHTML = html;
+      lastPo007PrintSource = null;
+      lastPoPrintDoc = {
+        title: `${inv.invoiceNumber || "invoice"} - ${inv.poNumber || ""}`.trim(),
+        html,
+      };
+      $("po007-preview-hint")?.classList.add("hidden");
+      $("modal-po-print-view")?.classList.remove("hidden");
+    }
+
+    function syncGenSalesInvoiceModalUi(existing) {
+      const existingEl = $("gen-sales-invoice-existing");
+      const viewBtn = $("gen-sales-invoice-view");
+      const inv = normalizeGeneratedSalesInvoice(existing);
+      if (inv) {
+        const msg = t("genSalesInvoiceExisting")
+          .split("{type}")
+          .join(salesInvoiceTypeLabel(inv.invoiceType))
+          .split("{no}")
+          .join(inv.invoiceNumber || t("dash"));
+        if (existingEl) existingEl.textContent = msg;
+        if (viewBtn) viewBtn.classList.remove("hidden");
+        document.querySelectorAll('#modal-gen-sales-invoice input[name="gen-sales-invoice-type"]').forEach((r) => {
+          r.checked = r.value === inv.invoiceType;
+        });
+      } else {
+        if (existingEl) existingEl.textContent = "";
+        if (viewBtn) viewBtn.classList.add("hidden");
+      }
+    }
+
+    async function openGenerateSalesInvoiceModal(poId) {
+      const id = (poId || "").trim();
+      if (!id) {
+        alert(t("genSalesInvoiceNeedPo"));
+        return;
+      }
+      genSalesInvoiceModalPoId = id;
+      try {
+        const snap = await getDoc(doc(db, "purchaseOrders", id));
+        if (!snap.exists()) {
+          alert(t("loadError"));
+          return;
+        }
+        const po = { id: snap.id, ...snap.data() };
+        const g = enrichGeneralFormPo007(
+          po.generalForm && typeof po.generalForm === "object" ? po.generalForm : normalizeGeneralFormFromPo(po)
+        );
+        const poRef = (g.poNumber || po.title || "").trim() || t("dash");
+        const refEl = $("gen-sales-invoice-po-ref");
+        if (refEl) refEl.textContent = poRef;
+        syncGenSalesInvoiceModalUi(g.generatedSalesInvoice);
+        $("modal-gen-sales-invoice")?.classList.remove("hidden");
+      } catch (e) {
+        console.error(e);
+        alert(t("loadError") + " " + (e.message || ""));
+      }
+    }
+
+    function closeGenerateSalesInvoiceModal() {
+      $("modal-gen-sales-invoice")?.classList.add("hidden");
+      genSalesInvoiceModalPoId = "";
+    }
+
+    async function viewGeneratedSalesInvoiceForPo(poId) {
+      const id = (poId || genSalesInvoiceModalPoId || "").trim();
+      if (!id) return;
+      const snap = await getDoc(doc(db, "purchaseOrders", id));
+      if (!snap.exists()) return;
+      const g = enrichGeneralFormPo007(snap.data().generalForm || {});
+      const inv = normalizeGeneratedSalesInvoice(g.generatedSalesInvoice);
+      if (!inv) {
+        alert(t("genSalesInvoiceNeedPo"));
+        return;
+      }
+      closeGenerateSalesInvoiceModal();
+      openGeneratedSalesInvoicePrint(inv);
+    }
+
+    async function confirmGenerateSalesInvoice() {
+      const id = (genSalesInvoiceModalPoId || "").trim();
+      if (!id) {
+        alert(t("genSalesInvoiceNeedPo"));
+        return;
+      }
+      const typeEl = document.querySelector('#modal-gen-sales-invoice input[name="gen-sales-invoice-type"]:checked');
+      const invoiceType = typeEl?.value === "proforma" ? "proforma" : "final";
+      try {
+        const ref = doc(db, "purchaseOrders", id);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) throw new Error(t("loadError"));
+        const po = { id: snap.id, ...snap.data() };
+        const gBase =
+          po.generalForm && typeof po.generalForm === "object" ? po.generalForm : normalizeGeneralFormFromPo(po);
+        const built = await buildGeneratedSalesInvoiceSnapshot(po, gBase, invoiceType);
+        if (built.error === "noLines") {
+          alert(t("genSalesInvoiceNoLines"));
+          return;
+        }
+        const inv = normalizeGeneratedSalesInvoice(built.invoice);
+        const checklist = mergeInvoiceChecklistWithGenerated(gBase.invoiceChecklist, inv);
+        const g = serializeGeneralFormForFirestore(
+          enrichGeneralFormPo007({
+            ...gBase,
+            generatedSalesInvoice: inv,
+            invoiceChecklist: checklist,
+          })
+        );
+        await updateDoc(ref, { generalForm: g, updatedAt: serverTimestamp() });
+        const editorId = ($("po007-editor-id")?.value || "").trim();
+        if (editorId && editorId === id) {
+          generalPoGeneratedSalesInvoiceDraft = inv;
+          generalPoInvoiceChecklistDraft = checklist;
+          syncPo007InvoiceCheckBadge(checklist);
+        }
+        closeGenerateSalesInvoiceModal();
+        openGeneratedSalesInvoicePrint(inv);
+        alert(t("genSalesInvoiceGeneratedOk"));
+        if (typeof loadPurchaseOrders === "function") {
+          const act = document.querySelector(".app-screen:not(.hidden)");
+          if (act?.id === "screen-po-general") void loadPurchaseOrders("general");
+        }
+      } catch (e) {
+        console.error(e);
+        alert(t("saveFailed") + " " + (e.message || ""));
+      }
+    }
+
+    function updateInvoiceChecklistGeneratedBanner(inv) {
+      const banner = $("invoice-checklist-generated-banner");
+      const label = $("invoice-checklist-generated-label");
+      const normalized = normalizeGeneratedSalesInvoice(inv);
+      if (!banner) return;
+      if (!normalized) {
+        banner.classList.add("hidden");
+        if (label) label.textContent = "";
+        return;
+      }
+      const text = t("invoiceChecklistGeneratedBanner")
+        .split("{type}")
+        .join(salesInvoiceTypeLabel(normalized.invoiceType))
+        .split("{no}")
+        .join(normalized.invoiceNumber || t("dash"));
+      if (label) label.textContent = text;
+      banner.classList.remove("hidden");
+    }
+
     /** تدقيق متطلبات الفاتورة التجارية (تعميم البنك المركزي 9/4/267) لطلبات الإدارة العامة. */
     const INVOICE_CHECKLIST_ITEM_IDS = [
       "invoiceDateNo",
@@ -28916,6 +29968,7 @@
     ];
 
     let generalPoInvoiceChecklistDraft = null;
+    let generalPoGeneratedSalesInvoiceDraft = null;
     let invoiceChecklistModalCtx = null;
 
     function emptyInvoiceChecklist() {
@@ -29208,6 +30261,7 @@
       let refText = "";
       let scRef = (opts?.scRef || "").trim();
       let supplier = (opts?.supplier || "").trim();
+      let generatedInv = normalizeGeneratedSalesInvoice(opts?.generatedInvoice);
       if (mode === "editor") {
         if (generalPo007EditorMode === "template") return;
         cl = normalizeInvoiceChecklist(generalPoInvoiceChecklistDraft);
@@ -29218,25 +30272,38 @@
           (mount?.querySelector('[data-po007="sales-contract-number"]')?.textContent || "").trim() ||
           salesContractNumberFromPo(refText);
         supplier = (mount?.querySelector('[data-po007="seller"]')?.textContent || "").trim();
+        if (!generatedInv) generatedInv = normalizeGeneratedSalesInvoice(generalPoGeneratedSalesInvoiceDraft);
       } else {
         cl = normalizeInvoiceChecklist(opts?.checklist);
         refText = (opts?.poRef || "").trim() || t("dash");
         if (!scRef) scRef = salesContractNumberFromPo(refText);
       }
-      invoiceChecklistModalCtx = { mode, poId, poRef: refText, scRef, supplier };
+      invoiceChecklistModalCtx = {
+        mode,
+        poId,
+        poRef: refText,
+        scRef,
+        supplier,
+        generatedInvoice: generatedInv,
+      };
       const refEl = $("invoice-checklist-po-ref");
       if (refEl) refEl.textContent = refText;
       const ta = $("invoice-checklist-email-text");
       const msg = $("invoice-checklist-email-msg");
       if (ta) ta.value = "";
       if (msg) msg.textContent = "";
+      if (generatedInv && !cl.invoiceType) {
+        cl = normalizeInvoiceChecklist({ ...cl, invoiceType: generatedInv.invoiceType, started: true });
+      }
       renderInvoiceChecklistModalBody(cl);
+      updateInvoiceChecklistGeneratedBanner(generatedInv);
       $("modal-invoice-checklist")?.classList.remove("hidden");
     }
 
     function closeInvoiceChecklistModal() {
       $("modal-invoice-checklist")?.classList.add("hidden");
       invoiceChecklistModalCtx = null;
+      updateInvoiceChecklistGeneratedBanner(null);
       const ta = $("invoice-checklist-email-text");
       const msg = $("invoice-checklist-email-msg");
       if (ta) ta.value = "";
@@ -32424,7 +33491,20 @@
     $("btn-edit-general-po-template")?.addEventListener("click", () => void openGeneralPoTemplateEditor());
     $("po007-editor-save")?.addEventListener("click", () => void saveGeneralPo007Modal());
     $("po007-editor-cancel")?.addEventListener("click", closeGeneralPo007Modal);
-    $("po007-editor-invoice-check")?.addEventListener("click", () => openInvoiceChecklistModal({ mode: "editor" }));
+    $("po007-editor-sales-invoice")?.addEventListener("click", () => {
+      const editorId = ($("po007-editor-id")?.value || "").trim();
+      if (!editorId) {
+        alert(t("genSalesInvoiceNeedPo"));
+        return;
+      }
+      void openGenerateSalesInvoiceModal(editorId);
+    });
+    $("po007-editor-invoice-check")?.addEventListener("click", () =>
+      openInvoiceChecklistModal({
+        mode: "editor",
+        generatedInvoice: generalPoGeneratedSalesInvoiceDraft,
+      })
+    );
     $("invoice-checklist-cancel")?.addEventListener("click", closeInvoiceChecklistModal);
     $("invoice-checklist-save")?.addEventListener("click", () => void saveInvoiceChecklistModal());
     $("invoice-checklist-reset")?.addEventListener("click", () => {
@@ -32436,6 +33516,13 @@
     });
     $("invoice-checklist-email-gen")?.addEventListener("click", () => generateInvoiceChecklistEmail());
     $("invoice-checklist-email-copy")?.addEventListener("click", () => void copyInvoiceChecklistEmail());
+    $("invoice-checklist-view-generated")?.addEventListener("click", () => {
+      const inv = normalizeGeneratedSalesInvoice(invoiceChecklistModalCtx?.generatedInvoice);
+      if (inv) openGeneratedSalesInvoicePrint(inv);
+    });
+    $("gen-sales-invoice-cancel")?.addEventListener("click", closeGenerateSalesInvoiceModal);
+    $("gen-sales-invoice-view")?.addEventListener("click", () => void viewGeneratedSalesInvoiceForPo());
+    $("gen-sales-invoice-confirm")?.addEventListener("click", () => void confirmGenerateSalesInvoice());
     $("po007-items-bulk-cancel")?.addEventListener("click", closePo007ItemsBulkInsertModal);
     $("po007-items-bulk-apply")?.addEventListener("click", applyPo007ItemsBulkInsert);
     $("po007-editor-preview")?.addEventListener("click", () => {
@@ -32557,6 +33644,354 @@
       }
     }
 
+    function newCompanyBankAccountId() {
+      return `ba-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+    }
+
+    function emptyBankAccount() {
+      return {
+        id: newCompanyBankAccountId(),
+        label: "",
+        bankName: "",
+        accountName: "",
+        accountNumber: "",
+        iban: "",
+        swift: "",
+        currency: "IQD",
+        branch: "",
+        notes: "",
+        isDefault: false,
+      };
+    }
+
+    function normalizeBankAccount(raw) {
+      const x = raw && typeof raw === "object" ? raw : {};
+      const currency = String(x.currency || "").trim().toUpperCase() === "USD" ? "USD" : "IQD";
+      return {
+        id: String(x.id || "").trim() || newCompanyBankAccountId(),
+        label: String(x.label || "").trim(),
+        bankName: String(x.bankName || "").trim(),
+        accountName: String(x.accountName || "").trim(),
+        accountNumber: String(x.accountNumber || "").trim(),
+        iban: String(x.iban || "").trim(),
+        swift: String(x.swift || "").trim(),
+        currency,
+        branch: String(x.branch || "").trim(),
+        notes: String(x.notes || "").trim(),
+        isDefault: !!x.isDefault,
+      };
+    }
+
+    function normalizeCompanyBankAccounts(raw) {
+      const list = (Array.isArray(raw) ? raw : []).map(normalizeBankAccount).filter((a) => a.bankName || a.accountNumber || a.iban);
+      if (!list.length) return [];
+      const defaults = list.filter((a) => a.isDefault);
+      if (defaults.length === 0) {
+        list[0].isDefault = true;
+      } else if (defaults.length > 1) {
+        let kept = false;
+        list.forEach((a) => {
+          if (!a.isDefault) return;
+          if (kept) a.isDefault = false;
+          else kept = true;
+        });
+      }
+      return list;
+    }
+
+    function companyBanksButtonLabel(r) {
+      const n = normalizeCompanyBankAccounts(r?.bankAccounts).length;
+      if (n > 0) return t("btnCompanyBanksCount").split("{n}").join(String(n));
+      return t("btnCompanyBanks");
+    }
+
+    function supplierBanksButtonLabel(r) {
+      const n = normalizeCompanyBankAccounts(r?.bankAccounts).length;
+      if (n > 0) return t("btnSupplierBanksCount").split("{n}").join(String(n));
+      return t("btnSupplierBanks");
+    }
+
+    let companyBanksModalCtx = null;
+
+    function setCompanyBanksMsg(text, isError) {
+      const el = $("company-banks-msg");
+      if (!el) return;
+      el.textContent = text || "";
+      el.style.color = isError ? "var(--danger, #b91c1c)" : "var(--muted)";
+    }
+
+    function hideCompanyBanksForm() {
+      $("company-banks-form")?.classList.add("hidden");
+      const editId = $("cba-edit-id");
+      if (editId) editId.value = "";
+    }
+
+    function fillCompanyBanksForm(acc) {
+      const a = normalizeBankAccount(acc || emptyBankAccount());
+      const set = (id, val) => {
+        const el = $(id);
+        if (el) el.value = val == null ? "" : String(val);
+      };
+      set("cba-edit-id", a.id);
+      set("cba-label", a.label);
+      set("cba-bankName", a.bankName);
+      set("cba-accountName", a.accountName);
+      set("cba-accountNumber", a.accountNumber);
+      set("cba-iban", a.iban);
+      set("cba-swift", a.swift);
+      set("cba-currency", a.currency === "USD" ? "USD" : "IQD");
+      set("cba-branch", a.branch);
+      set("cba-notes", a.notes);
+      const def = $("cba-isDefault");
+      if (def) def.checked = !!a.isDefault;
+      const title = $("company-banks-form-title");
+      if (title) {
+        title.textContent = acc ? t("companyBanksFormEdit") : t("companyBanksFormAdd");
+      }
+      $("company-banks-form")?.classList.remove("hidden");
+      $("cba-bankName")?.focus();
+    }
+
+    function readCompanyBanksForm() {
+      const bankName = ($("cba-bankName")?.value || "").trim();
+      const accountNumber = ($("cba-accountNumber")?.value || "").trim();
+      const iban = ($("cba-iban")?.value || "").trim();
+      if (!bankName || (!accountNumber && !iban)) {
+        setCompanyBanksMsg(t("companyBanksNeedBankOrIban"), true);
+        return null;
+      }
+      return normalizeBankAccount({
+        id: ($("cba-edit-id")?.value || "").trim() || newCompanyBankAccountId(),
+        label: ($("cba-label")?.value || "").trim(),
+        bankName,
+        accountName: ($("cba-accountName")?.value || "").trim(),
+        accountNumber,
+        iban,
+        swift: ($("cba-swift")?.value || "").trim(),
+        currency: ($("cba-currency")?.value || "").trim() === "USD" ? "USD" : "IQD",
+        branch: ($("cba-branch")?.value || "").trim(),
+        notes: ($("cba-notes")?.value || "").trim(),
+        isDefault: !!$("cba-isDefault")?.checked,
+      });
+    }
+
+    function ensureSingleDefaultBankAccounts(list, preferId) {
+      const accounts = (Array.isArray(list) ? list : []).map((a) => ({ ...a }));
+      if (!accounts.length) return accounts;
+      if (preferId) {
+        accounts.forEach((a) => {
+          a.isDefault = a.id === preferId;
+        });
+        if (!accounts.some((a) => a.isDefault)) accounts[0].isDefault = true;
+        return accounts;
+      }
+      const defaults = accounts.filter((a) => a.isDefault);
+      if (!defaults.length) accounts[0].isDefault = true;
+      else if (defaults.length > 1) {
+        let kept = false;
+        accounts.forEach((a) => {
+          if (!a.isDefault) return;
+          if (kept) a.isDefault = false;
+          else kept = true;
+        });
+      }
+      return accounts;
+    }
+
+    function applyCompanyBanksFormToDraft() {
+      if (!companyBanksModalCtx) return;
+      const acc = readCompanyBanksForm();
+      if (!acc) return;
+      let list = [...(companyBanksModalCtx.accounts || [])];
+      const idx = list.findIndex((a) => a.id === acc.id);
+      if (idx >= 0) list[idx] = acc;
+      else list.push(acc);
+      if (acc.isDefault) list = ensureSingleDefaultBankAccounts(list, acc.id);
+      else list = ensureSingleDefaultBankAccounts(list);
+      companyBanksModalCtx.accounts = list;
+      hideCompanyBanksForm();
+      setCompanyBanksMsg("");
+      renderCompanyBanksList();
+    }
+
+    function renderCompanyBanksList() {
+      const wrap = $("company-banks-list");
+      if (!wrap) return;
+      wrap.setAttribute("data-empty", t("companyBanksEmpty"));
+      const accounts = companyBanksModalCtx?.accounts || [];
+      if (!accounts.length) {
+        wrap.innerHTML = "";
+        return;
+      }
+      wrap.innerHTML = accounts
+        .map((a) => {
+          const title = (a.label || a.bankName || t("dash")).trim() || t("dash");
+          const lines = [
+            a.bankName ? `<div><b>${escapeHtml(t("companyBankName"))}:</b> ${escapeHtml(a.bankName)}</div>` : "",
+            a.accountName
+              ? `<div><b>${escapeHtml(t("companyBankAccountName"))}:</b> ${escapeHtml(a.accountName)}</div>`
+              : "",
+            a.accountNumber
+              ? `<div><b>${escapeHtml(t("companyBankAccountNumber"))}:</b> <span dir="ltr">${escapeHtml(
+                  a.accountNumber
+                )}</span></div>`
+              : "",
+            a.iban
+              ? `<div><b>${escapeHtml(t("companyBankIban"))}:</b> <span dir="ltr">${escapeHtml(a.iban)}</span></div>`
+              : "",
+            a.swift
+              ? `<div><b>${escapeHtml(t("companyBankSwift"))}:</b> <span dir="ltr">${escapeHtml(a.swift)}</span></div>`
+              : "",
+            `<div><b>${escapeHtml(t("companyBankCurrency"))}:</b> ${escapeHtml(a.currency || "IQD")}</div>`,
+            a.branch ? `<div><b>${escapeHtml(t("companyBankBranch"))}:</b> ${escapeHtml(a.branch)}</div>` : "",
+            a.notes ? `<div><b>${escapeHtml(t("companyBankNotes"))}:</b> ${escapeHtml(a.notes)}</div>` : "",
+          ]
+            .filter(Boolean)
+            .join("");
+          return `<div class="company-bank-card${a.isDefault ? " is-default" : ""}" data-bank-id="${escapeAttr(a.id)}">
+            <div class="company-bank-card-head">
+              <span class="company-bank-card-title">${escapeHtml(title)}${
+                a.isDefault
+                  ? ` <span class="company-bank-default-badge">${escapeHtml(t("companyBankDefaultBadge"))}</span>`
+                  : ""
+              }</span>
+              <div class="company-bank-card-actions">
+                ${
+                  a.isDefault
+                    ? ""
+                    : `<button type="button" class="btn btn-secondary btn-sm btn-cba-default" data-id="${escapeAttr(
+                        a.id
+                      )}">${escapeHtml(t("companyBankSetDefault"))}</button>`
+                }
+                <button type="button" class="btn btn-secondary btn-sm btn-cba-edit" data-id="${escapeAttr(
+                  a.id
+                )}">${escapeHtml(t("edit"))}</button>
+                <button type="button" class="btn btn-danger btn-sm btn-cba-del" data-id="${escapeAttr(
+                  a.id
+                )}">${escapeHtml(t("delete"))}</button>
+              </div>
+            </div>
+            <div class="company-bank-card-meta">${lines}</div>
+          </div>`;
+        })
+        .join("");
+      wrap.querySelectorAll(".btn-cba-edit").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const acc = companyBanksModalCtx?.accounts?.find((x) => x.id === btn.dataset.id);
+          if (acc) {
+            setCompanyBanksMsg("");
+            fillCompanyBanksForm(acc);
+          }
+        });
+      });
+      wrap.querySelectorAll(".btn-cba-del").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!companyBanksModalCtx) return;
+          if (!confirm(t("companyBankConfirmDelete"))) return;
+          let list = (companyBanksModalCtx.accounts || []).filter((x) => x.id !== btn.dataset.id);
+          list = ensureSingleDefaultBankAccounts(list);
+          companyBanksModalCtx.accounts = list;
+          if (($("cba-edit-id")?.value || "") === btn.dataset.id) hideCompanyBanksForm();
+          setCompanyBanksMsg("");
+          renderCompanyBanksList();
+        });
+      });
+      wrap.querySelectorAll(".btn-cba-default").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (!companyBanksModalCtx) return;
+          companyBanksModalCtx.accounts = ensureSingleDefaultBankAccounts(
+            companyBanksModalCtx.accounts || [],
+            btn.dataset.id
+          );
+          setCompanyBanksMsg("");
+          renderCompanyBanksList();
+        });
+      });
+    }
+
+    async function openEntityBanksModal(collectionName, entityId) {
+      const collection = collectionName === "suppliers" ? "suppliers" : "companies";
+      const id = (entityId || "").trim();
+      if (!id) return;
+      try {
+        const snap = await getDoc(doc(db, collection, id));
+        if (!snap.exists()) {
+          alert(t("loadError"));
+          return;
+        }
+        const data = { id: snap.id, ...snap.data() };
+        const entityName =
+          collection === "suppliers" ? supplierDisplayName(data) : companyDisplayName(data);
+        companyBanksModalCtx = {
+          collection,
+          companyId: id,
+          entityId: id,
+          companyName: entityName,
+          accounts: normalizeCompanyBankAccounts(data.bankAccounts),
+        };
+        const titleEl = $("company-banks-title");
+        if (titleEl) titleEl.textContent = t("companyBanksTitle");
+        const sub = $("company-banks-sub");
+        if (sub) {
+          const subKey = collection === "suppliers" ? "supplierBanksSub" : "companyBanksSub";
+          sub.textContent = t(subKey).split("{name}").join(entityName || t("dash"));
+        }
+        hideCompanyBanksForm();
+        setCompanyBanksMsg("");
+        renderCompanyBanksList();
+        $("modal-company-banks")?.classList.remove("hidden");
+      } catch (e) {
+        console.error(e);
+        alert(t("loadError") + " " + (e.message || ""));
+      }
+    }
+
+    function openCompanyBanksModal(companyId) {
+      return openEntityBanksModal("companies", companyId);
+    }
+
+    function openSupplierBanksModal(supplierId) {
+      return openEntityBanksModal("suppliers", supplierId);
+    }
+
+    function closeCompanyBanksModal() {
+      $("modal-company-banks")?.classList.add("hidden");
+      companyBanksModalCtx = null;
+      hideCompanyBanksForm();
+      setCompanyBanksMsg("");
+    }
+
+    async function persistCompanyBankAccounts() {
+      const ctx = companyBanksModalCtx;
+      const entityId = (ctx?.entityId || ctx?.companyId || "").trim();
+      if (!ctx || !entityId) return;
+      const collection = ctx.collection === "suppliers" ? "suppliers" : "companies";
+      const accounts = normalizeCompanyBankAccounts(
+        ensureSingleDefaultBankAccounts(ctx.accounts || [])
+      );
+      try {
+        await updateDoc(doc(db, collection, entityId), {
+          bankAccounts: accounts,
+          updatedAt: serverTimestamp(),
+        });
+        if (collection === "companies") {
+          const panel = $("admin-panel-companies");
+          if (panel?._companyRows) {
+            const row = panel._companyRows.find((r) => r.id === entityId);
+            if (row) row.bankAccounts = accounts;
+            applyCompanyFilters(panel);
+          }
+        } else if (hasAdminAccess() && activeAdminTab === "suppliers") {
+          await loadAdminTab("suppliers");
+        }
+        closeCompanyBanksModal();
+        alert(t("companyBanksSaved"));
+      } catch (e) {
+        console.error(e);
+        setCompanyBanksMsg(t("saveFailed") + " " + (e.message || ""), true);
+      }
+    }
+
     function companyTableRowHtml(r) {
       return `
               <tr>
@@ -32572,6 +34007,9 @@
                 <td>${r.active !== false ? t("yes") : t("no")}</td>
                 <td>
                   <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="companies" data-id="${r.id}">${t("edit")}</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-company-banks" data-id="${r.id}">${escapeHtml(
+                    companyBanksButtonLabel(r)
+                  )}</button>
                   <button type="button" class="btn btn-danger btn-sm btn-del-entity" data-collection="companies" data-id="${r.id}">${t("delete")}</button>
                 </td>
               </tr>`;
@@ -32688,6 +34126,9 @@
                 <td>${r.active !== false ? t("yes") : t("no")}</td>
                 <td>
                   <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="suppliers" data-id="${r.id}">${t("edit")}</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-supplier-banks" data-id="${r.id}">${escapeHtml(
+                    supplierBanksButtonLabel(r)
+                  )}</button>
                   <button type="button" class="btn btn-danger btn-sm btn-del-entity" data-collection="suppliers" data-id="${r.id}">${t("delete")}</button>
                 </td>
               </tr>`
@@ -33125,6 +34566,9 @@
       });
       panel.querySelectorAll(".btn-del-entity").forEach((btn) => {
         btn.addEventListener("click", () => deleteEntity(btn.dataset.collection, btn.dataset.id));
+      });
+      panel.querySelectorAll(".btn-supplier-banks").forEach((btn) => {
+        btn.addEventListener("click", () => void openSupplierBanksModal(btn.dataset.id));
       });
     }
 
@@ -34567,6 +36011,11 @@
         openEntityModal("companies", null);
         return;
       }
+      const banks = e.target.closest(".btn-company-banks");
+      if (banks) {
+        void openCompanyBanksModal(banks.dataset.id);
+        return;
+      }
       const edit = e.target.closest('.btn-edit-entity[data-collection="companies"]');
       if (edit) {
         openEntityModal("companies", edit.dataset.id);
@@ -34577,6 +36026,20 @@
         deleteEntity("companies", del.dataset.id);
       }
     });
+
+    $("company-banks-cancel")?.addEventListener("click", closeCompanyBanksModal);
+    $("company-banks-save")?.addEventListener("click", () => void persistCompanyBankAccounts());
+    $("company-banks-add")?.addEventListener("click", () => {
+      setCompanyBanksMsg("");
+      const draft = emptyBankAccount();
+      draft.isDefault = !(companyBanksModalCtx?.accounts || []).some((a) => a.isDefault);
+      fillCompanyBanksForm(draft);
+    });
+    $("company-banks-form-cancel")?.addEventListener("click", () => {
+      hideCompanyBanksForm();
+      setCompanyBanksMsg("");
+    });
+    $("company-banks-form-apply")?.addEventListener("click", () => applyCompanyBanksFormToDraft());
 
     window.matchMedia("(min-width: 901px)").addEventListener("change", (e) => {
       if (e.matches) closeMobileNav();
