@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.24.7" />
+  <meta name="app-version" content="2026.10.25.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Tajawal:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Manrope:wght@500;600;700&family=Tajawal:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       /* Precision Procurement — DESIGN.md tokens */
@@ -5273,9 +5273,393 @@
         min-width: max(100%, 480px);
       }
     }
+
+    /* —— PO Splash (motion graphics) — ألوان التطبيق —— */
+    #po-splash {
+      --po-splash-ink: var(--ds-text-main);
+      --po-splash-muted: var(--ds-on-surface-variant);
+      --po-splash-accent: var(--ds-secondary);
+      --po-splash-accent-2: var(--ds-secondary-container);
+      --po-splash-success: var(--ds-status-success);
+      --po-splash-surface: rgba(255, 255, 255, 0.72);
+      --po-splash-border: rgba(0, 88, 190, 0.16);
+      --po-splash-track: rgba(15, 20, 25, 0.1);
+      --po-splash-glow: rgba(33, 112, 228, 0.35);
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #eff4fb 0%, var(--ds-background) 45%, var(--ds-surface-container) 100%);
+      color: var(--po-splash-ink);
+      overflow: hidden;
+      font-family: "Inter", "Tajawal", system-ui, sans-serif;
+    }
+    #po-splash.po-splash--hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .55s ease, visibility 0s linear .55s;
+    }
+    #po-splash .po-splash-skip {
+      position: absolute;
+      top: 16px;
+      inset-inline-end: 16px;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 22px;
+      border: 1px solid var(--po-splash-accent);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--po-splash-accent);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: var(--shadow);
+    }
+    #po-splash .po-splash-skip:hover {
+      background: var(--po-splash-accent);
+      color: var(--ds-on-secondary);
+    }
+    #po-splash .po-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 26px;
+      padding: 32px 20px 56px;
+      box-sizing: border-box;
+      text-align: center;
+      animation: po-exit .8s cubic-bezier(.7,0,.84,0) 4.5s forwards;
+    }
+    #po-splash .po-card {
+      position: relative;
+      width: 150px;
+      height: 104px;
+      box-sizing: border-box;
+      padding: 16px 18px;
+      border-radius: var(--radius-lg);
+      background: var(--po-splash-surface);
+      border: 1px solid var(--po-splash-border);
+      box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,.85);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      opacity: 0;
+      transform: translateY(20px) scale(.94);
+      filter: blur(6px);
+      animation: po-in .9s cubic-bezier(.16,1,.3,1) .1s forwards;
+    }
+    #po-splash .po-card-doc {
+      stroke: var(--po-splash-accent);
+    }
+    #po-splash .po-sk {
+      height: 7px;
+      border-radius: 4px;
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      animation: po-sx .6s cubic-bezier(.16,1,.3,1) forwards;
+      background: var(--po-splash-track);
+    }
+    #po-splash .po-sk--accent { background: var(--po-splash-accent); opacity: .9; }
+    #po-splash .po-sk--accent2 { background: var(--po-splash-accent-2); }
+    #po-splash.po-rtl .po-sk { transform-origin: 100% 50%; }
+    #po-splash .po-stamp {
+      position: absolute;
+      bottom: -12px;
+      inset-inline-end: -12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--po-splash-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0, 88, 190, .35);
+      transform: scale(0) rotate(-30deg);
+      animation: po-stamp .55s cubic-bezier(.34,1.56,.64,1) 2.95s forwards;
+    }
+    #po-splash .po-title {
+      margin: 0;
+      padding: 0 8px;
+      font-family: "Manrope", "Inter", system-ui, sans-serif;
+      font-size: clamp(28px, 4.8vw, 56px);
+      font-weight: 700;
+      line-height: 1.15;
+      clip-path: inset(0 100% 0 0);
+      background-image: linear-gradient(
+        100deg,
+        var(--po-splash-ink) 0%,
+        var(--po-splash-ink) 40%,
+        var(--po-splash-accent) 47%,
+        #9ec5ff 50%,
+        var(--po-splash-accent) 53%,
+        var(--po-splash-ink) 60%,
+        var(--po-splash-ink) 100%
+      );
+      background-size: 300% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: po-wipe 1s cubic-bezier(.16,1,.3,1) .45s forwards, po-shine 1.3s cubic-bezier(.45,0,.55,1) 3.05s forwards;
+    }
+    #po-splash.po-rtl .po-title {
+      clip-path: inset(0 0 0 100%);
+      font-family: "Tajawal", "IBM Plex Sans Arabic", system-ui, sans-serif;
+      font-size: clamp(26px, 4.4vw, 48px);
+    }
+    #po-splash .po-brand {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--po-splash-accent);
+      opacity: 0;
+      transform: translateY(8px);
+      animation: po-up .8s cubic-bezier(.16,1,.3,1) .9s forwards;
+    }
+    #po-splash .po-brand-en {
+      margin: 0;
+      font-size: clamp(10px, 1.1vw, 13px);
+      font-weight: 600;
+      letter-spacing: .32em;
+      color: var(--po-splash-accent);
+    }
+    #po-splash .po-brand-en .po-ch {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(8px);
+      filter: blur(3px);
+      animation: po-ch .55s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    #po-splash .po-pipe {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      width: min(860px, 100%);
+    }
+    #po-splash .po-node {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: po-up .6s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    #po-splash .po-dot {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      flex: none;
+      border-radius: 50%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--po-splash-surface);
+      border: 1.5px solid var(--po-splash-border);
+      color: var(--po-splash-muted);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+    #po-splash .po-on {
+      position: absolute;
+      inset: -1.5px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--po-splash-success);
+      transform: scale(0);
+      animation: po-pop .45s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    #po-splash .po-ring {
+      position: absolute;
+      inset: -1.5px;
+      border-radius: 50%;
+      border: 2px solid var(--po-splash-success);
+      opacity: 0;
+      animation: po-ring .9s ease-out forwards;
+    }
+    #po-splash .po-check {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: po-draw .35s ease-out forwards;
+    }
+    #po-splash .po-track {
+      position: absolute;
+      left: calc(100% / 12);
+      right: calc(100% / 12);
+      top: 21px;
+      height: 2px;
+      border-radius: 1px;
+      background: var(--po-splash-track);
+      opacity: 0;
+      animation: po-fadein .5s ease-out .55s forwards;
+    }
+    #po-splash .po-fill {
+      position: absolute;
+      inset: 0;
+      border-radius: 1px;
+      background: linear-gradient(90deg, var(--po-splash-accent), var(--po-splash-accent-2), var(--po-splash-success));
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      animation: po-fx 1.65s linear 1s forwards;
+    }
+    #po-splash.po-rtl .po-fill { transform-origin: 100% 50%; }
+    #po-splash .po-label {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--po-splash-ink);
+    }
+    #po-splash .po-tagline,
+    #po-splash .po-loading {
+      margin: 0;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: po-up .8s cubic-bezier(.16,1,.3,1) forwards;
+      color: var(--po-splash-muted);
+    }
+    #po-splash .po-tagline {
+      max-width: 520px;
+      font-size: clamp(14px, 1.4vw, 17px);
+      line-height: 1.6;
+      animation-delay: 2.7s;
+    }
+    #po-splash .po-loading { font-size: 12px; letter-spacing: .04em; animation-delay: .3s; }
+    #po-splash .po-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    #po-splash .po-progress-track {
+      width: 100%;
+      height: 3px;
+      background: var(--po-splash-track);
+    }
+    #po-splash .po-progress {
+      height: 3px;
+      background: linear-gradient(90deg, var(--po-splash-accent), var(--po-splash-accent-2));
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      animation: po-fx 3.9s cubic-bezier(.5,0,.2,1) .1s forwards;
+    }
+    #po-splash.po-rtl .po-progress { transform-origin: 100% 50%; }
+    #po-splash .po-beam {
+      position: absolute;
+      width: 180px;
+      height: 170%;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--po-splash-glow) 50%, rgba(255,255,255,0) 100%);
+      opacity: 0;
+      transform: translateX(-62vw) rotate(18deg);
+      filter: blur(10px);
+      animation: po-beam 1.5s cubic-bezier(.45,0,.25,1) 2.9s forwards;
+      pointer-events: none;
+    }
+    #po-splash .po-spark {
+      opacity: 0;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: scale(0);
+      animation: po-tw 1.1s ease-in-out 3.1s forwards;
+      fill: var(--po-splash-accent-2);
+    }
+    @keyframes po-in{to{opacity:1;transform:none;filter:blur(0)}}
+    @keyframes po-sx{to{transform:scaleX(1)}}
+    @keyframes po-stamp{to{transform:scale(1) rotate(0)}}
+    @keyframes po-wipe{to{clip-path:inset(0 0 0 0)}}
+    @keyframes po-shine{from{background-position:100% 0}to{background-position:0 0}}
+    @keyframes po-ch{to{opacity:1;transform:none;filter:blur(0)}}
+    @keyframes po-up{to{opacity:1;transform:none}}
+    @keyframes po-fadein{to{opacity:1}}
+    @keyframes po-pop{to{transform:scale(1)}}
+    @keyframes po-ring{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+    @keyframes po-draw{to{stroke-dashoffset:0}}
+    @keyframes po-fx{to{transform:scaleX(1)}}
+    @keyframes po-fy{to{transform:scaleY(1)}}
+    @keyframes po-beam{0%{opacity:0;transform:translateX(-62vw) rotate(18deg)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateX(62vw) rotate(18deg)}}
+    @keyframes po-tw{0%{opacity:0;transform:scale(0) rotate(0)}45%{opacity:1;transform:scale(1) rotate(45deg)}100%{opacity:0;transform:scale(0) rotate(90deg)}}
+    @keyframes po-exit{to{opacity:0;transform:translateY(-14px);filter:blur(6px)}}
+    @media (max-width: 640px) {
+      #po-splash .po-pipe { grid-template-columns: minmax(0, 1fr); width: 200px; }
+      #po-splash .po-node { flex-direction: row; height: 52px; gap: 14px; }
+      #po-splash .po-track { left: 21px; right: auto; top: 26px; bottom: 26px; width: 2px; height: auto; }
+      #po-splash.po-rtl .po-track { left: auto; right: 21px; }
+      #po-splash .po-fill {
+        transform: scaleY(0);
+        transform-origin: 50% 0;
+        animation-name: po-fy;
+      }
+      #po-splash.po-rtl .po-fill { transform-origin: 50% 0; }
+      #po-splash .po-label { font-size: 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #po-splash .po-stage,
+      #po-splash .po-stage * { animation-duration: .01s !important; animation-delay: 0s !important; }
+      #po-splash .po-beam,
+      #po-splash .po-spark,
+      #po-splash .po-ring { display: none; }
+    }
+
   </style>
 </head>
 <body>
+  <!-- شاشة الافتتاح المتحركة -->
+  <div id="po-splash" class="hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-label="">
+    <button type="button" class="po-splash-skip" id="po-splash-skip" data-i18n="poSplashSkip">تخطي</button>
+    <div class="po-stage" id="po-splash-stage">
+      <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center">
+        <div class="po-beam"></div>
+      </div>
+      <div class="po-card" aria-hidden="true">
+        <svg width="30" height="38" viewBox="0 0 30 38" style="flex:none">
+          <path class="po-card-doc" d="M2 4 Q2 2 4 2 L20 2 L28 10 L28 34 Q28 36 26 36 L4 36 Q2 36 2 34 Z" fill="none" stroke-width="2" stroke-linejoin="round"></path>
+          <path class="po-card-doc" d="M20 2 L20 10 L28 10" fill="none" stroke-width="2" stroke-linejoin="round"></path>
+        </svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px;padding-top:2px">
+          <div class="po-sk po-sk--accent" style="width:100%;animation-delay:.45s"></div>
+          <div class="po-sk" style="width:72%;animation-delay:.55s"></div>
+          <div class="po-sk" style="width:86%;animation-delay:.65s"></div>
+          <div class="po-sk po-sk--accent2" style="width:48%;animation-delay:.75s"></div>
+        </div>
+        <div class="po-stamp">
+          <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.5 L6.5 11.2 L12.5 5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+        <svg width="40" height="40" viewBox="-20 -20 40 40" style="position:absolute;top:-18px;inset-inline-start:-18px;overflow:visible">
+          <path class="po-spark" d="M0 -16 L2.4 -2.4 L16 0 L2.4 2.4 L0 16 L-2.4 2.4 L-16 0 L-2.4 -2.4 Z"></path>
+        </svg>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%">
+        <h1 class="po-title" id="po-splash-title">نظام تتبع أوامر الشراء</h1>
+        <p class="po-brand" id="po-splash-brand-ar">روزميري للحلول البرمجية</p>
+        <p class="po-brand-en hidden" id="po-splash-brand-en" aria-label="Rosemary Software Solutions"></p>
+      </div>
+      <div class="po-pipe" id="po-splash-pipe" role="list" aria-label=""></div>
+      <p class="po-tagline" id="po-splash-tagline"></p>
+      <div class="po-footer">
+        <span class="po-loading" id="po-splash-loading"></span>
+        <div class="po-progress-track" aria-hidden="true"><div class="po-progress"></div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- تسجيل الدخول -->
   <div id="view-login">
     <div class="lang-switch">
@@ -7739,6 +8123,18 @@
         loginButton: "دخول",
         invalidCredentials: "بيانات الدخول غير صحيحة.",
         brand: "أوامر الشراء",
+        poSplashSkip: "تخطي",
+        poSplashTitle: "نظام تتبع أوامر الشراء",
+        poSplashBrand: "روزميري للحلول البرمجية",
+        poSplashTagline: "من الطلب حتى الإقفال المحاسبي — كل أمر، في كل مرحلة.",
+        poSplashLoading: "جاري تجهيز مساحة العمل…",
+        poSplashPipeLabel: "مراحل أمر الشراء",
+        poSplashStage1: "الطلب",
+        poSplashStage2: "المستودع",
+        poSplashStage3: "الموافقات",
+        poSplashStage4: "المشتريات",
+        poSplashStage5: "الاستلام",
+        poSplashStage6: "الحسابات",
         navDashboard: "لوحة التحكم",
         navPoProjects: "أوامر شراء المشاريع",
         navPoProjectsRejected: "طلبات مرفوضة (مشاريع)",
@@ -9153,6 +9549,18 @@
         loginButton: "Sign in",
         invalidCredentials: "Invalid email or password.",
         brand: "Purchase Orders",
+        poSplashSkip: "Skip",
+        poSplashTitle: "Purchase Order Tracking",
+        poSplashBrand: "Rosemary Software Solutions",
+        poSplashTagline: "From request to final accounting — every order, at every stage.",
+        poSplashLoading: "Preparing your workspace…",
+        poSplashPipeLabel: "Purchase order stages",
+        poSplashStage1: "Request",
+        poSplashStage2: "Warehouse",
+        poSplashStage3: "Approvals",
+        poSplashStage4: "Purchasing",
+        poSplashStage5: "Receipt",
+        poSplashStage6: "Accounts",
         navDashboard: "Dashboard",
         navPoProjects: "Project purchase orders",
         navPoProjectsRejected: "Rejected (projects)",
@@ -36996,6 +37404,174 @@
     $("chat-po-pick-cancel")?.addEventListener("click", () => closeChatPoPicker());
     $("chat-po-pending-clear")?.addEventListener("click", () => clearChatPendingPoLink());
 
+
+    let poSplashTimer = null;
+    let poSplashDone = null;
+
+    function prefersReducedMotion() {
+      try {
+        return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function buildPoSplashPipe() {
+      const pipe = $("po-splash-pipe");
+      if (!pipe) return;
+      const ar = lang === "ar";
+      const labels = [
+        t("poSplashStage1"),
+        t("poSplashStage2"),
+        t("poSplashStage3"),
+        t("poSplashStage4"),
+        t("poSplashStage5"),
+        t("poSplashStage6"),
+      ];
+      const digits = ar ? ["١", "٢", "٣", "٤", "٥", "٦"] : ["1", "2", "3", "4", "5", "6"];
+      pipe.setAttribute("aria-label", t("poSplashPipeLabel"));
+      pipe.innerHTML =
+        `<div class="po-track" aria-hidden="true"><div class="po-fill"></div></div>` +
+        labels
+          .map((label, i) => {
+            const inDelay = (0.6 + i * 0.07).toFixed(2) + "s";
+            const onDelay = (1.0 + i * 0.33).toFixed(2) + "s";
+            const checkDelay = (1.18 + i * 0.33).toFixed(2) + "s";
+            return `<div class="po-node" role="listitem" style="animation-delay:${inDelay}">
+              <div class="po-dot">
+                <span>${digits[i]}</span>
+                <div class="po-ring" style="animation-delay:${onDelay}"></div>
+                <div class="po-on" style="animation-delay:${onDelay}">
+                  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path class="po-check" style="animation-delay:${checkDelay}" pathLength="100" d="M4 9.5 L7.5 12.5 L14 6" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </div>
+              </div>
+              <span class="po-label">${escapeHtml(label)}</span>
+            </div>`;
+          })
+          .join("");
+    }
+
+    function syncPoSplashCopy() {
+      const ar = lang === "ar";
+      const root = $("po-splash");
+      if (!root) return;
+      root.classList.toggle("po-rtl", ar);
+      root.classList.toggle("po-ltr", !ar);
+      root.setAttribute("dir", ar ? "rtl" : "ltr");
+      root.setAttribute("aria-label", t("poSplashTitle"));
+      const title = $("po-splash-title");
+      if (title) title.textContent = t("poSplashTitle");
+      const brandAr = $("po-splash-brand-ar");
+      const brandEn = $("po-splash-brand-en");
+      if (brandAr) {
+        brandAr.textContent = t("poSplashBrand");
+        brandAr.classList.toggle("hidden", !ar);
+      }
+      if (brandEn) {
+        brandEn.classList.toggle("hidden", ar);
+        if (!ar) {
+          brandEn.innerHTML = "ROSEMARY SOFTWARE SOLUTIONS"
+            .split("")
+            .map((c, i) => {
+              const ch = c === " " ? "&nbsp;" : escapeHtml(c);
+              const delay = (0.9 + i * 0.025).toFixed(3) + "s";
+              return `<span class="po-ch" aria-hidden="true" style="animation-delay:${delay}">${ch}</span>`;
+            })
+            .join("");
+        }
+      }
+      const tag = $("po-splash-tagline");
+      if (tag) tag.textContent = t("poSplashTagline");
+      const loading = $("po-splash-loading");
+      if (loading) loading.textContent = t("poSplashLoading");
+      buildPoSplashPipe();
+    }
+
+    function remountPoSplashStage() {
+      const stage = $("po-splash-stage");
+      if (!stage || !stage.parentNode) return;
+      const clone = stage.cloneNode(true);
+      clone.id = "po-splash-stage";
+      stage.parentNode.replaceChild(clone, stage);
+    }
+
+    function finishPoSplash() {
+      const root = $("po-splash");
+      if (!root || root.classList.contains("hidden")) {
+        if (typeof poSplashDone === "function") {
+          const cb = poSplashDone;
+          poSplashDone = null;
+          cb();
+        }
+        return;
+      }
+      clearTimeout(poSplashTimer);
+      poSplashTimer = null;
+      root.classList.add("po-splash--hide");
+      root.setAttribute("aria-hidden", "true");
+      setTimeout(() => {
+        root.classList.add("hidden");
+        root.classList.remove("po-splash--hide");
+        if (typeof poSplashDone === "function") {
+          const cb = poSplashDone;
+          poSplashDone = null;
+          cb();
+        }
+      }, 560);
+    }
+
+    /**
+     * يعرض شاشة الافتتاح بعد الدخول.
+     * تُعرض مرة واحدة لكل جلسة تبويب؛ عند تسجيل الخروج تُعاد.
+     */
+    function playPoSplash(onDone) {
+      const root = $("po-splash");
+      poSplashDone = typeof onDone === "function" ? onDone : null;
+      if (!root) {
+        if (poSplashDone) poSplashDone();
+        return;
+      }
+      try {
+        if (sessionStorage.getItem("poSplashPlayed") === "1") {
+          if (poSplashDone) {
+            const cb = poSplashDone;
+            poSplashDone = null;
+            cb();
+          }
+          return;
+        }
+        sessionStorage.setItem("poSplashPlayed", "1");
+      } catch (_) {
+        /* ignore */
+      }
+
+      remountPoSplashStage();
+      syncPoSplashCopy();
+      // إجبار إعادة تدفق CSS حتى تبدأ الحركات من الصفر
+      void root.offsetWidth;
+      root.classList.remove("hidden", "po-splash--hide");
+      root.setAttribute("aria-hidden", "false");
+      try {
+        $("po-splash-skip")?.focus({ preventScroll: true });
+      } catch (_) {
+        /* ignore */
+      }
+
+      clearTimeout(poSplashTimer);
+      const ms = prefersReducedMotion() ? 400 : 5300;
+      poSplashTimer = setTimeout(() => finishPoSplash(), ms);
+    }
+
+    function wirePoSplashOnce() {
+      if (wirePoSplashOnce.done) return;
+      wirePoSplashOnce.done = true;
+      $("po-splash-skip")?.addEventListener("click", () => finishPoSplash());
+      $("po-splash")?.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") finishPoSplash();
+      });
+    }
+    wirePoSplashOnce.done = false;
+
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user) {
@@ -37022,7 +37598,8 @@
         void refreshChatUnreadState();
         refreshDashboard();
         showView(firstAllowedView());
-        maybeShowWhatsNewModal();
+        wirePoSplashOnce();
+        playPoSplash(() => maybeShowWhatsNewModal());
       } else {
         stopNotificationsListener();
         orderNoteAlertCurrent = null;
@@ -37038,6 +37615,8 @@
         closeMobileNav();
         $("view-app").classList.add("hidden");
         $("view-login").classList.remove("hidden");
+        finishPoSplash();
+        try { sessionStorage.removeItem("poSplashPlayed"); } catch (_) {}
         currentUserProfile = null;
         userRole = "user";
         currentRepProfileCache = null;
