@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.25.2" />
+  <meta name="app-version" content="2026.10.26.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -7711,6 +7711,25 @@
         <input type="date" id="rep-expense-receipt-date" />
       </div>
       <div class="field">
+        <label data-i18n="repExpenseReceiptLabel">إرفاق إيصال</label>
+        <p class="user-form-hint" style="margin:0 0 .45rem" data-i18n="repExpenseReceiptHint">التقط صورة أو اختر ملفاً. تُضغط الصورة تلقائياً قبل الرفع.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
+          <label class="btn btn-secondary btn-sm" style="margin:0;cursor:pointer">
+            <span data-i18n="repExpenseReceiptPick">اختيار صورة</span>
+            <input type="file" id="rep-expense-receipt-file" accept="image/jpeg,image/png,image/webp,image/*" class="hidden" />
+          </label>
+          <label class="btn btn-secondary btn-sm" style="margin:0;cursor:pointer">
+            <span data-i18n="repExpenseReceiptCapture">كاميرا</span>
+            <input type="file" id="rep-expense-receipt-camera" accept="image/*" capture="environment" class="hidden" />
+          </label>
+          <button type="button" class="btn btn-secondary btn-sm hidden" id="rep-expense-receipt-remove" data-i18n="repExpenseReceiptRemove">إزالة</button>
+        </div>
+        <div id="rep-expense-receipt-preview-wrap" class="hidden" style="margin-top:.65rem">
+          <img id="rep-expense-receipt-preview" alt="" style="max-width:min(280px,100%);max-height:180px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff" />
+        </div>
+        <p id="rep-expense-receipt-status" class="user-form-hint" style="margin:.45rem 0 0"></p>
+      </div>
+      <div class="field">
         <label data-i18n="repExpenseAdvancesLabel">السلف (يمكن اختيار أكثر من سلفة)</label>
         <p class="user-form-hint" style="margin:0 0 .45rem" data-i18n="repExpenseAdvancesHint">أشّر السلفة وأدخل المبلغ المصروف منها. يظهر الباقي المتاح لكل سلفة.</p>
         <div
@@ -7747,6 +7766,20 @@
     </div>
   </div>
 
+
+  <!-- عرض إيصال مصروف -->
+  <div id="modal-rep-receipt-view" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal" style="max-width:min(920px,96vw)">
+      <h3 data-i18n="repExpenseReceiptView">عرض الإيصال</h3>
+      <div style="text-align:center;margin-top:.75rem">
+        <img id="rep-receipt-view-img" alt="" style="max-width:100%;max-height:70vh;border-radius:10px;border:1px solid var(--border);background:#fff" />
+      </div>
+      <div class="modal-actions">
+        <a class="btn btn-secondary" id="rep-receipt-view-open" href="#" target="_blank" rel="noopener noreferrer">Open</a>
+        <button type="button" class="btn btn-primary" id="modal-rep-receipt-view-close" data-i18n="cancel">إلغاء</button>
+      </div>
+    </div>
+  </div>
 
   <!-- دليل تسجيل مصروف مندوب (توضيحي) -->
   <div id="modal-rep-expense-help" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-rep-expense-help-title">
@@ -8109,6 +8142,7 @@
       deleteField,
       runTransaction,
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm";
 
     const LANG_KEY = "pot_lang";
     let lang = localStorage.getItem(LANG_KEY) || "ar";
@@ -8953,6 +8987,22 @@
         repAmountRequired: "أدخل مبلغاً صحيحاً أكبر من صفر.",
         repSelectRepRequired: "اختر المندوب.",
         repExpenseSaved: "تم حفظ المصروف.",
+        repExpenseReceiptLabel: "إرفاق إيصال",
+        repExpenseReceiptHint: "التقط صورة أو اختر ملفاً. تُضغط الصورة تلقائياً قبل الرفع.",
+        repExpenseReceiptPick: "اختيار صورة",
+        repExpenseReceiptCapture: "كاميرا",
+        repExpenseReceiptRemove: "إزالة",
+        repExpenseReceiptView: "عرض الإيصال",
+        repExpenseReceiptCol: "إيصال",
+        repExpenseReceiptUploading: "جاري رفع الإيصال…",
+        repExpenseReceiptUploadFailed: "فشل رفع الإيصال:",
+        repExpenseReceiptNotConfigured: "رفع الإيصالات غير مُعدّ بعد. أدخل رابط ومفتاح Supabase من إعدادات النظام.",
+        repExpenseReceiptInvalidType: "اختر صورة (JPG / PNG / WebP).",
+        repExpenseReceiptTooLarge: "الصورة كبيرة جداً بعد الضغط. جرّب صورة أوضح وأقرب.",
+        settingSupabaseTitle: "تخزين إيصالات المصروف (Supabase)",
+        settingSupabaseHint: "مشروع منفصل منطقياً عن الأرشيف: bucket po-receipts وجدول po_expense_receipts. الصق Project URL و anon public key.",
+        settingSupabaseUrl: "Supabase URL",
+        settingSupabaseAnonKey: "Supabase anon key",
         repAdvanceIssued: "تم إصدار السلفة.",
         repAdvanceSettled: "تم تصفية السلفة.",
         repAdvanceSettleSummary: "السلفة: {amount} {currency} — مصروفات مرتبطة: {expenses} — المتبقي التقديري: {remaining}",
@@ -10380,6 +10430,22 @@
         repAmountRequired: "Enter a valid amount greater than zero.",
         repSelectRepRequired: "Select a representative.",
         repExpenseSaved: "Expense saved.",
+        repExpenseReceiptLabel: "Attach receipt",
+        repExpenseReceiptHint: "Take a photo or pick a file. The image is compressed before upload.",
+        repExpenseReceiptPick: "Choose image",
+        repExpenseReceiptCapture: "Camera",
+        repExpenseReceiptRemove: "Remove",
+        repExpenseReceiptView: "View receipt",
+        repExpenseReceiptCol: "Receipt",
+        repExpenseReceiptUploading: "Uploading receipt…",
+        repExpenseReceiptUploadFailed: "Receipt upload failed:",
+        repExpenseReceiptNotConfigured: "Receipt upload is not configured. Add Supabase URL and anon key in System settings.",
+        repExpenseReceiptInvalidType: "Choose an image (JPG / PNG / WebP).",
+        repExpenseReceiptTooLarge: "Image is still too large after compression. Try a clearer closer photo.",
+        settingSupabaseTitle: "Expense receipt storage (Supabase)",
+        settingSupabaseHint: "Logically isolated from the company archive: bucket po-receipts and table po_expense_receipts. Paste Project URL and anon public key.",
+        settingSupabaseUrl: "Supabase URL",
+        settingSupabaseAnonKey: "Supabase anon key",
         repAdvanceIssued: "Advance issued.",
         repAdvanceSettled: "Advance settled.",
         repAdvanceSettleSummary: "Advance: {amount} {currency} — linked expenses: {expenses} — estimated remaining: {remaining}",
@@ -14693,7 +14759,14 @@
     let generalPo007EditorLogo = "";
     let generalPo007EditorMode = "po";
     const generalPoTemplateCache = { ar: null, en: null, loaded: false };
-    const appSettingsCache = { supervisorApprovalsEnabled: true, loaded: false };
+    const appSettingsCache = {
+      supervisorApprovalsEnabled: true,
+      supabaseUrl: "",
+      supabaseAnonKey: "",
+      loaded: false,
+    };
+    let supabasePoClient = null;
+    let supabasePoClientKey = "";
 
     function appSettingsDocRef() {
       return doc(db, "appConfig", "generalSettings");
@@ -14705,9 +14778,13 @@
         const snap = await getDoc(appSettingsDocRef());
         const data = snap.exists() ? snap.data() : {};
         appSettingsCache.supervisorApprovalsEnabled = data.supervisorApprovalsEnabled !== false;
+        appSettingsCache.supabaseUrl = String(data.supabaseUrl || "").trim();
+        appSettingsCache.supabaseAnonKey = String(data.supabaseAnonKey || "").trim();
       } catch (e) {
         console.error(e);
         appSettingsCache.supervisorApprovalsEnabled = true;
+        appSettingsCache.supabaseUrl = "";
+        appSettingsCache.supabaseAnonKey = "";
       }
       appSettingsCache.loaded = true;
       return appSettingsCache;
@@ -31073,7 +31150,191 @@
     let repExpensePoSearchTimer = null;
     let repExpenseOpenAdvancesCache = [];
     let repExpenseEditingId = null;
+    let repExpenseReceiptDraft = null;
+    let repExpenseReceiptExisting = null;
+    let repExpenseReceiptClearExisting = false;
+    const PO_RECEIPTS_BUCKET = "po-receipts";
     const REP_EXPENSE_EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+    async function getSupabasePoClient() {
+      await loadAppSettingsCache();
+      const url = (appSettingsCache.supabaseUrl || "").trim();
+      const key = (appSettingsCache.supabaseAnonKey || "").trim();
+      if (!url || !key) return null;
+      const cacheKey = url + "\0" + key;
+      if (!supabasePoClient || supabasePoClientKey !== cacheKey) {
+        supabasePoClient = createClient(url, key, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        supabasePoClientKey = cacheKey;
+      }
+      return supabasePoClient;
+    }
+
+    function isSupabaseReceiptConfigured() {
+      return !!(appSettingsCache.supabaseUrl || "").trim() && !!(appSettingsCache.supabaseAnonKey || "").trim();
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const parts = String(dataUrl || "").split(",");
+      if (parts.length < 2) throw new Error("image");
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : "image/jpeg";
+      const bin = atob(parts[1]);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return new Blob([arr], { type: mime });
+    }
+
+    function revokeRepExpenseReceiptPreview() {
+      if (repExpenseReceiptDraft?.previewUrl && String(repExpenseReceiptDraft.previewUrl).startsWith("blob:")) {
+        try {
+          URL.revokeObjectURL(repExpenseReceiptDraft.previewUrl);
+        } catch (_) {}
+      }
+    }
+
+    function resetRepExpenseReceiptUi() {
+      revokeRepExpenseReceiptPreview();
+      repExpenseReceiptDraft = null;
+      repExpenseReceiptExisting = null;
+      repExpenseReceiptClearExisting = false;
+      const fileInp = $("rep-expense-receipt-file");
+      const camInp = $("rep-expense-receipt-camera");
+      if (fileInp) fileInp.value = "";
+      if (camInp) camInp.value = "";
+      syncRepExpenseReceiptPreview();
+    }
+
+    function syncRepExpenseReceiptPreview() {
+      const wrap = $("rep-expense-receipt-preview-wrap");
+      const img = $("rep-expense-receipt-preview");
+      const removeBtn = $("rep-expense-receipt-remove");
+      const status = $("rep-expense-receipt-status");
+      const preview =
+        repExpenseReceiptDraft?.previewUrl ||
+        (!repExpenseReceiptClearExisting ? repExpenseReceiptExisting?.url : "") ||
+        "";
+      if (img) {
+        img.src = preview || "";
+        img.alt = preview ? t("repExpenseReceiptLabel") : "";
+      }
+      wrap?.classList.toggle("hidden", !preview);
+      removeBtn?.classList.toggle("hidden", !preview);
+      if (status && !status.dataset.busy) {
+        if (!isSupabaseReceiptConfigured()) status.textContent = t("repExpenseReceiptNotConfigured");
+        else status.textContent = "";
+      }
+    }
+
+    async function handleRepExpenseReceiptFile(file) {
+      const status = $("rep-expense-receipt-status");
+      if (!file) return;
+      if (!file.type || !file.type.startsWith("image/")) {
+        alert(t("repExpenseReceiptInvalidType"));
+        return;
+      }
+      try {
+        if (status) {
+          status.dataset.busy = "1";
+          status.textContent = t("loading");
+        }
+        const dataUrl = await compressImageFileToDataUrl(file, 1280, 0.72, 1800000);
+        const blob = dataUrlToBlob(dataUrl);
+        if (blob.size > 1.8 * 1024 * 1024) throw new Error("large");
+        revokeRepExpenseReceiptPreview();
+        const previewUrl = URL.createObjectURL(blob);
+        repExpenseReceiptDraft = {
+          blob,
+          previewUrl,
+          fileName: ((file.name || "receipt").replace(/\.[^.]+$/, "") || "receipt") + ".jpg",
+          contentType: "image/jpeg",
+          size: blob.size,
+        };
+        repExpenseReceiptClearExisting = false;
+        syncRepExpenseReceiptPreview();
+      } catch (e) {
+        if (e?.message === "large") alert(t("repExpenseReceiptTooLarge"));
+        else alert(t("repExpenseReceiptInvalidType"));
+      } finally {
+        if (status) {
+          delete status.dataset.busy;
+          syncRepExpenseReceiptPreview();
+        }
+      }
+    }
+
+    function clearRepExpenseReceiptSelection() {
+      revokeRepExpenseReceiptPreview();
+      repExpenseReceiptDraft = null;
+      if (repExpenseReceiptExisting) repExpenseReceiptClearExisting = true;
+      const fileInp = $("rep-expense-receipt-file");
+      const camInp = $("rep-expense-receipt-camera");
+      if (fileInp) fileInp.value = "";
+      if (camInp) camInp.value = "";
+      syncRepExpenseReceiptPreview();
+    }
+
+    function openRepReceiptView(url) {
+      const u = (url || "").trim();
+      if (!u) return;
+      const img = $("rep-receipt-view-img");
+      const openA = $("rep-receipt-view-open");
+      if (img) img.src = u;
+      if (openA) openA.href = u;
+      $("modal-rep-receipt-view")?.classList.remove("hidden");
+    }
+
+    async function deleteSupabaseExpenseReceipt(meta) {
+      const path = (meta?.storagePath || meta?.receiptStoragePath || "").trim();
+      if (!path) return;
+      const sb = await getSupabasePoClient();
+      if (!sb) return;
+      try {
+        await sb.storage.from(PO_RECEIPTS_BUCKET).remove([path]);
+      } catch (e) {
+        console.warn("receipt storage delete", e);
+      }
+      try {
+        await sb.from("po_expense_receipts").delete().eq("storage_path", path);
+      } catch (e) {
+        console.warn("receipt row delete", e);
+      }
+    }
+
+    async function uploadRepExpenseReceipt(expenseId) {
+      if (!repExpenseReceiptDraft?.blob) return null;
+      const sb = await getSupabasePoClient();
+      if (!sb) throw new Error(t("repExpenseReceiptNotConfigured"));
+      const safeName = String(repExpenseReceiptDraft.fileName || "receipt.jpg").replace(/[^a-zA-Z0-9._-]/g, "_");
+      const storagePath = `${expenseId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
+      const { error: upErr } = await sb.storage.from(PO_RECEIPTS_BUCKET).upload(storagePath, repExpenseReceiptDraft.blob, {
+        contentType: repExpenseReceiptDraft.contentType || "image/jpeg",
+        upsert: false,
+      });
+      if (upErr) throw upErr;
+      const { data: pub } = sb.storage.from(PO_RECEIPTS_BUCKET).getPublicUrl(storagePath);
+      const publicUrl = pub?.publicUrl || "";
+      const row = {
+        expense_id: expenseId,
+        storage_path: storagePath,
+        file_name: repExpenseReceiptDraft.fileName || null,
+        content_type: repExpenseReceiptDraft.contentType || "image/jpeg",
+        size_bytes: repExpenseReceiptDraft.size || null,
+        uploaded_by_uid: currentUser?.uid || null,
+        uploaded_by_email: currentUser?.email || null,
+      };
+      const { data: inserted, error: insErr } = await sb.from("po_expense_receipts").insert(row).select("id").maybeSingle();
+      if (insErr) throw insErr;
+      return {
+        receiptId: inserted?.id || null,
+        receiptStoragePath: storagePath,
+        receiptPublicUrl: publicUrl,
+        receiptFileName: row.file_name,
+        receiptContentType: row.content_type,
+        receiptSizeBytes: row.size_bytes,
+      };
+    }
 
     function getRepExpenseCreatedAtMs(expense) {
       const c = expense?.createdAt;
@@ -31135,6 +31396,9 @@
       root.querySelectorAll(".btn-rep-expense-delete").forEach((btn) => {
         btn.addEventListener("click", () => void deleteRepExpense(btn.dataset.id));
       });
+      root.querySelectorAll(".btn-rep-receipt-view").forEach((btn) => {
+        btn.addEventListener("click", () => openRepReceiptView(btn.dataset.url));
+      });
     }
 
     async function deleteRepExpense(expenseId) {
@@ -31146,6 +31410,9 @@
       }
       if (!confirm(t("confirmRepExpenseDelete"))) return;
       try {
+        const snap = await getDoc(doc(db, REP_EXPENSES_COL, id));
+        const data = snap.exists() ? snap.data() : null;
+        if (data?.receiptStoragePath) await deleteSupabaseExpenseReceipt(data);
         await deleteDoc(doc(db, REP_EXPENSES_COL, id));
         alert(t("repExpenseDeleted"));
         await loadRepDesk();
@@ -31424,6 +31691,7 @@
           <th>${escapeHtml(t("repExpenseVendorLabel"))}</th>
           <th>${escapeHtml(t("repExpenseReceiptNoLabel"))}</th>
           <th>${escapeHtml(t("repExpenseReceiptDateLabel"))}</th>
+          <th>${escapeHtml(t("repExpenseReceiptCol"))}</th>
           <th>${escapeHtml(t("repColSpentAt"))}</th>
           <th>${escapeHtml(t("repColLinkedPos"))}</th>
           <th>${escapeHtml(t("repNoteLabel"))}</th>
@@ -31443,6 +31711,12 @@
                 editBtn || deleteBtn
                   ? `<span style="display:inline-flex;flex-wrap:wrap;gap:.35rem">${editBtn}${deleteBtn}</span>`
                   : "";
+              const receiptUrl = (r.receiptPublicUrl || "").trim();
+              const receiptCell = receiptUrl
+                ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-receipt-view" data-url="${escapeAttr(
+                    receiptUrl
+                  )}">${escapeHtml(t("repExpenseReceiptView"))}</button>`
+                : escapeHtml(t("dash"));
               return `<tr>
                 <td>${escapeHtml((r.representativeName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(formatRepMoney(r.amount, r.currency))}</td>
@@ -31450,6 +31724,7 @@
                 <td>${escapeHtml((r.vendorName || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.receiptNumber || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml((r.receiptDate || "").trim() || t("dash"))}</td>
+                <td>${receiptCell}</td>
                 <td>${escapeHtml((r.spentAt || "").trim() || t("dash"))}</td>
                 <td>${escapeHtml(refs.length ? refs.join(" · ") : t("dash"))}</td>
                 <td>${escapeHtml((r.note || "").trim() || t("dash"))}</td>
@@ -31546,6 +31821,25 @@
       $("rep-adv-filter-rep")?.addEventListener("change", () => void loadRepAdvancesScreen());
       $("rep-adv-filter-status")?.addEventListener("change", () => void loadRepAdvancesScreen());
       $("btn-rep-expense-new")?.addEventListener("click", () => void openRepExpenseModal());
+      $("rep-expense-receipt-file")?.addEventListener("change", (ev) => {
+        const f = ev.target?.files?.[0];
+        if (f) void handleRepExpenseReceiptFile(f);
+      });
+      $("rep-expense-receipt-camera")?.addEventListener("change", (ev) => {
+        const f = ev.target?.files?.[0];
+        if (f) void handleRepExpenseReceiptFile(f);
+      });
+      $("rep-expense-receipt-remove")?.addEventListener("click", () => clearRepExpenseReceiptSelection());
+      $("modal-rep-receipt-view-close")?.addEventListener("click", () => {
+        $("modal-rep-receipt-view")?.classList.add("hidden");
+        const img = $("rep-receipt-view-img");
+        if (img) img.src = "";
+      });
+      $("modal-rep-receipt-view")?.addEventListener("click", (ev) => {
+        if (ev.target === $("modal-rep-receipt-view")) {
+          $("modal-rep-receipt-view")?.classList.add("hidden");
+        }
+      });
       $("btn-rep-expense-help")?.addEventListener("click", () => {
         $("modal-rep-expense-help")?.classList.remove("hidden");
       });
@@ -31558,6 +31852,7 @@
       $("rep-expense-rep")?.addEventListener("change", () => void onRepExpenseRepChanged());
       $("modal-rep-expense-cancel")?.addEventListener("click", () => {
         repExpenseEditingId = null;
+        resetRepExpenseReceiptUi();
         const repSel = $("rep-expense-rep");
         if (repSel) repSel.disabled = false;
         setRepExpenseModalMode(false);
@@ -31913,6 +32208,8 @@
         return;
       }
 
+      resetRepExpenseReceiptUi();
+      await loadAppSettingsCache();
       repExpenseEditingId = null;
       let existing = null;
       const editId = (expenseId || "").trim();
@@ -31983,6 +32280,13 @@
         if (receiptNo) receiptNo.value = (existing.receiptNumber || "").trim();
         if (receiptDate) receiptDate.value = (existing.receiptDate || "").trim().slice(0, 10);
         if (note) note.value = (existing.note || "").trim();
+        if ((existing.receiptPublicUrl || existing.receiptStoragePath || "").trim()) {
+          repExpenseReceiptExisting = {
+            url: (existing.receiptPublicUrl || "").trim(),
+            storagePath: (existing.receiptStoragePath || "").trim(),
+            receiptId: existing.receiptId || null,
+          };
+        }
         const ids = Array.isArray(existing.purchaseOrderIds) ? existing.purchaseOrderIds : [];
         const refs = Array.isArray(existing.purchaseOrderRefs) ? existing.purchaseOrderRefs : [];
         repExpenseSelectedPos = ids
@@ -31998,6 +32302,7 @@
         if (note) note.value = "";
         repExpenseSelectedPos = [];
       }
+      syncRepExpenseReceiptPreview();
       if (search) search.value = "";
       renderRepExpenseSelectedPos();
       $("rep-expense-po-results")?.classList.add("hidden");
@@ -32095,7 +32400,10 @@
         purchaseOrderRefs: poRefs,
         updatedAt: serverTimestamp(),
       };
+      const statusEl = $("rep-expense-receipt-status");
       try {
+        let expenseId = repExpenseEditingId;
+        let existingReceiptMeta = null;
         if (repExpenseEditingId) {
           const editRef = doc(db, REP_EXPENSES_COL, repExpenseEditingId);
           const snap = await getDoc(editRef);
@@ -32104,6 +32412,7 @@
             return;
           }
           const existing = { id: snap.id, ...snap.data() };
+          existingReceiptMeta = existing;
           const linkedRep = await resolvePurchasingRepForCurrentUser();
           if (!canEditRepExpense(existing, linkedRep)) {
             alert(t("repExpenseEditWindowExpired"));
@@ -32114,7 +32423,7 @@
             updatedBy: currentUser.uid,
           });
         } else {
-          await addDoc(collection(db, REP_EXPENSES_COL), {
+          const created = await addDoc(collection(db, REP_EXPENSES_COL), {
             representativeId: rep.id,
             representativeName: (rep.name || "").trim() || null,
             ...payload,
@@ -32122,9 +32431,44 @@
             createdBy: currentUser.uid,
             createdAt: serverTimestamp(),
           });
+          expenseId = created.id;
         }
+
+        const receiptPatch = {};
+        if (repExpenseReceiptDraft) {
+          if (!isSupabaseReceiptConfigured()) {
+            alert(t("repExpenseReceiptNotConfigured"));
+          } else {
+            if (statusEl) {
+              statusEl.dataset.busy = "1";
+              statusEl.textContent = t("repExpenseReceiptUploading");
+            }
+            if (existingReceiptMeta?.receiptStoragePath) {
+              await deleteSupabaseExpenseReceipt(existingReceiptMeta);
+            }
+            const uploaded = await uploadRepExpenseReceipt(expenseId);
+            Object.assign(receiptPatch, uploaded);
+          }
+        } else if (repExpenseReceiptClearExisting && existingReceiptMeta?.receiptStoragePath) {
+          await deleteSupabaseExpenseReceipt(existingReceiptMeta);
+          receiptPatch.receiptId = deleteField();
+          receiptPatch.receiptStoragePath = deleteField();
+          receiptPatch.receiptPublicUrl = deleteField();
+          receiptPatch.receiptFileName = deleteField();
+          receiptPatch.receiptContentType = deleteField();
+          receiptPatch.receiptSizeBytes = deleteField();
+        }
+
+        if (Object.keys(receiptPatch).length) {
+          await updateDoc(doc(db, REP_EXPENSES_COL, expenseId), {
+            ...receiptPatch,
+            updatedAt: serverTimestamp(),
+          });
+        }
+
         const wasEdit = !!repExpenseEditingId;
         repExpenseEditingId = null;
+        resetRepExpenseReceiptUi();
         const repSel = $("rep-expense-rep");
         if (repSel) repSel.disabled = false;
         setRepExpenseModalMode(false);
@@ -32135,7 +32479,17 @@
         const act = document.querySelector(".app-screen:not(.hidden)");
         if (act?.id === "screen-rep-advances") await loadRepAdvancesScreen();
       } catch (e) {
-        alert(t("saveFailed") + " " + (e.message || ""));
+        const msg = e?.message || e?.error_description || String(e || "");
+        if (String(msg).includes("receipt") || String(msg).includes("storage") || String(msg).includes("Bucket")) {
+          alert(t("repExpenseReceiptUploadFailed") + " " + msg);
+        } else {
+          alert(t("saveFailed") + " " + msg);
+        }
+      } finally {
+        if (statusEl) {
+          delete statusEl.dataset.busy;
+          syncRepExpenseReceiptPreview();
+        }
       }
     }
 
@@ -34859,6 +35213,21 @@
               )}</span>
             </span>
           </label>
+          <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0" />
+          <h3 style="margin:0 0 .5rem;font-size:1.05rem">${escapeHtml(t("settingSupabaseTitle"))}</h3>
+          <p class="user-form-hint" style="margin:0 0 .75rem">${escapeHtml(t("settingSupabaseHint"))}</p>
+          <div class="field">
+            <label for="setting-supabase-url">${escapeHtml(t("settingSupabaseUrl"))}</label>
+            <input type="url" id="setting-supabase-url" autocomplete="off" value="${escapeAttr(
+              appSettingsCache.supabaseUrl || ""
+            )}" placeholder="https://xxxx.supabase.co" />
+          </div>
+          <div class="field">
+            <label for="setting-supabase-anon">${escapeHtml(t("settingSupabaseAnonKey"))}</label>
+            <textarea id="setting-supabase-anon" rows="3" autocomplete="off" style="font-family:ui-monospace,monospace;font-size:.8rem">${escapeHtml(
+              appSettingsCache.supabaseAnonKey || ""
+            )}</textarea>
+          </div>
           <div class="toolbar" style="margin-top:1rem">
             <button type="button" class="btn btn-primary btn-sm" id="btn-save-system-settings">${escapeHtml(
               t("saveSettings")
@@ -34869,6 +35238,8 @@
       const saveBtn = panel.querySelector("#btn-save-system-settings");
       saveBtn?.addEventListener("click", async () => {
         const enabled = !!panel.querySelector("#setting-supervisor-approvals")?.checked;
+        const supabaseUrl = (panel.querySelector("#setting-supabase-url")?.value || "").trim();
+        const supabaseAnonKey = (panel.querySelector("#setting-supabase-anon")?.value || "").trim();
         if (!enabled && supervisorApprovalsAreEnabled() && !confirm(t("confirmDisableSupervisorApprovals"))) {
           const input = panel.querySelector("#setting-supervisor-approvals");
           if (input) input.checked = true;
@@ -34882,13 +35253,19 @@
             appSettingsDocRef(),
             {
               supervisorApprovalsEnabled: enabled,
+              supabaseUrl: supabaseUrl || null,
+              supabaseAnonKey: supabaseAnonKey || null,
               updatedAt: serverTimestamp(),
               updatedBy: currentUser.uid,
             },
             { merge: true }
           );
           appSettingsCache.supervisorApprovalsEnabled = enabled;
+          appSettingsCache.supabaseUrl = supabaseUrl;
+          appSettingsCache.supabaseAnonKey = supabaseAnonKey;
           appSettingsCache.loaded = true;
+          supabasePoClient = null;
+          supabasePoClientKey = "";
           let moved = 0;
           if (!enabled) moved = await bypassPendingSupervisorOrders();
           if (status) {
