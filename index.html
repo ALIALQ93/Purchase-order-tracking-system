@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.26.1" />
+  <meta name="app-version" content="2026.10.26.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -8616,7 +8616,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>ملفات الدعم:</strong> قسم جديد مقيد بالصلاحيات للاطلاع على الأدلة والملخصات المرجعية.</li><li><strong>الدفع المسبق للرسوم:</strong> تحويل ملف العرض إلى ملخص تفصيلي قابل للقراءة والطباعة (قرار 413/2026).</li><li><strong>مكتب المندوب وسلف المندوبين:</strong> تسجيل السلف والمصروفات مع البحث عن طلب الشراء.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>إرفاق إيصال المصروف:</strong> المندوب يرفق صورة الإيصال عند تسجيل المصروف (تخزين منفصل عن الأرشيف).</li><li><strong>أدوار متعددة:</strong> يمكن منح المستخدم أكثر من دور (مثل مسؤول مجموعة + مكتب مندوب).</li><li><strong>شاشة افتتاحية:</strong> حركة ترحيب عند الدخول مع دليل لتسجيل المصروف.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -10058,7 +10058,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Support files:</strong> New permission-gated section for reference guides and summaries.</li><li><strong>Prepaid duties guide:</strong> Converted the slide deck into a readable, printable detailed summary (Cabinet Decision 413/2026).</li><li><strong>Representative desk & advances:</strong> Record advances/expenses with purchase-order search.</li></ul>",
+          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Expense receipts:</strong> attach a receipt photo when recording an expense (storage isolated from the archive app).</li><li><strong>Multiple roles:</strong> assign more than one role to a user (e.g. group manager + rep desk).</li><li><strong>Splash & help:</strong> welcome motion on sign-in and an expense entry guide.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -33581,7 +33581,7 @@
         url.searchParams.set("_version_check", String(Date.now()));
         const response = await fetch(url.toString(), {
           cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
+          headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
         });
         if (!response.ok) return;
         const payload = await response.json();
@@ -33596,9 +33596,19 @@
       }
     }
 
-    function reloadLatestAppVersion() {
+    async function reloadLatestAppVersion() {
+      const stamp = latestDetectedAppVersion || String(Date.now());
+      try {
+        if ("caches" in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+        }
+      } catch (_) {
+        /* ignore */
+      }
       const url = new URL(location.href);
-      url.searchParams.set("_appv", latestDetectedAppVersion || String(Date.now()));
+      url.searchParams.set("_appv", stamp);
+      url.searchParams.set("_ts", String(Date.now()));
       location.replace(url.toString());
     }
 
@@ -33614,33 +33624,59 @@
 
     startAppVersionMonitor();
 
-    /** معرّف التحديث الحالي — غيّره عند كل تحديث تريد إظهار إشعار «ما الجديد» له. */
-    const CURRENT_UPDATE_ID = "2026-10-03-support-files-prepaid-summary";
+    /**
+     * إشعار «ما الجديد» يُعرض مرة واحدة لكل إصدار تطبيق (meta app-version).
+     * لا يُعاد مع كل دخول إذا ضغط المستخدم «فهمت».
+     */
+    const CURRENT_UPDATE_ID = APP_VERSION;
     const WHATS_NEW_KEY = "pot_whatsnew_seen";
 
     function whatsNewSeenKey() {
       return `${WHATS_NEW_KEY}_${currentUser?.uid || "anon"}`;
     }
 
+    function markWhatsNewSeen() {
+      const id = CURRENT_UPDATE_ID || "dev";
+      try {
+        localStorage.setItem(whatsNewSeenKey(), id);
+        localStorage.setItem(WHATS_NEW_KEY, id);
+      } catch (_) {
+        /* ignore */
+      }
+      try {
+        sessionStorage.setItem(whatsNewSeenKey(), id);
+      } catch (_) {
+        /* ignore */
+      }
+    }
+
+    function hasSeenWhatsNew() {
+      const id = CURRENT_UPDATE_ID || "dev";
+      try {
+        if (sessionStorage.getItem(whatsNewSeenKey()) === id) return true;
+      } catch (_) {
+        /* ignore */
+      }
+      try {
+        if (localStorage.getItem(whatsNewSeenKey()) === id) return true;
+        // توافق مع مفتاح عام قديم إن وُجد لنفس الإصدار
+        if (localStorage.getItem(WHATS_NEW_KEY) === id) return true;
+      } catch (_) {
+        /* ignore */
+      }
+      return false;
+    }
+
     function closeWhatsNewModal() {
       $("modal-whats-new")?.classList.add("hidden");
-      try {
-        localStorage.setItem(whatsNewSeenKey(), CURRENT_UPDATE_ID);
-      } catch (_) {
-        // ignore storage errors
-      }
+      markWhatsNewSeen();
     }
 
     function maybeShowWhatsNewModal() {
       const m = $("modal-whats-new");
       if (!m || !currentUser) return;
-      let seen = null;
-      try {
-        seen = localStorage.getItem(whatsNewSeenKey());
-      } catch (_) {
-        return;
-      }
-      if (seen === CURRENT_UPDATE_ID) return;
+      if (!m.classList.contains("hidden")) return;
+      if (hasSeenWhatsNew()) return;
       const body = $("modal-whats-new-body");
       if (body) body.innerHTML = t("whatsNewBody");
       m.classList.remove("hidden");
