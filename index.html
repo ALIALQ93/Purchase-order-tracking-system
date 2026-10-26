@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.26.2" />
+  <meta name="app-version" content="2026.10.26.3" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -5274,6 +5274,45 @@
       }
     }
 
+    .po-linked-receipts {
+      margin-top: 0.85rem;
+      padding: 0.75rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface2);
+    }
+    .po-linked-receipts h4 {
+      margin: 0 0 0.55rem;
+      font-size: 0.95rem;
+    }
+    .po-linked-receipts-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+    .po-linked-receipt-card {
+      width: min(160px, 42vw);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: hidden;
+      text-align: center;
+    }
+    .po-linked-receipt-card img {
+      display: block;
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      background: #fff;
+      cursor: pointer;
+    }
+    .po-linked-receipt-card .meta {
+      padding: 0.4rem 0.45rem 0.55rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
     /* —— PO Splash (motion graphics) — ألوان التطبيق —— */
     #po-splash {
       --po-splash-ink: var(--ds-text-main);
@@ -7237,6 +7276,7 @@
           </div>
         </div>
       </div>
+      <div id="wf-po-expense-receipts" class="po-linked-receipts hidden" aria-live="polite"></div>
       <p class="wf-po-hint" data-i18n="workflowPoLinesHint">
         يمكنك تعديل الكميات وإضافة أو حذف بنود ثم حفظ.
       </p>
@@ -7547,6 +7587,7 @@
           </div>
         </div>
       </div>
+      <div id="acc-po-expense-receipts" class="po-linked-receipts hidden" aria-live="polite"></div>
       <p class="wf-po-hint" data-i18n="accountingPoModalHint">
         أدخل سعر الوحدة لكل بند.
       </p>
@@ -7606,6 +7647,7 @@
         أدخل الكمية المستلمة فعلياً لكل بند، ويمكن إضافة مواد إضافية غير موجودة في الطلب. يمكن أن تكون الكمية أعلى من المطلوب. إذا كان الاستلام جزئياً سيُطلب منك قرار الإغلاق.
       </p>
       <input type="hidden" id="wr-po-id" />
+      <div id="wr-po-expense-receipts" class="po-linked-receipts hidden" aria-live="polite"></div>
       <div class="table-scroll po-lines-wrap" style="margin-top:0.5rem">
         <table class="data-table">
           <thead>
@@ -8999,6 +9041,10 @@
         repExpenseReceiptNotConfigured: "رفع الإيصالات غير مُعدّ بعد. أدخل رابط ومفتاح Supabase من إعدادات النظام.",
         repExpenseReceiptInvalidType: "اختر صورة (JPG / PNG / WebP).",
         repExpenseReceiptTooLarge: "الصورة كبيرة جداً بعد الضغط. جرّب صورة أوضح وأقرب.",
+        poLinkedReceiptsTitle: "إيصالات مصروف المندوب",
+        poLinkedReceiptsHint: "تظهر فقط للمشتريات واستلام المستودع والحسابات والمشرف عندما يربط المندوب المصروف بهذا الطلب.",
+        poLinkedReceiptsEmpty: "لا توجد إيصالات مصروف مربوطة بهذا الطلب.",
+        poLinkedReceiptsLoadError: "تعذّر تحميل إيصالات المصروف.",
         settingSupabaseTitle: "تخزين إيصالات المصروف (Supabase)",
         settingSupabaseHint: "مشروع منفصل منطقياً عن الأرشيف: bucket po-receipts وجدول po_expense_receipts. الصق Project URL و anon public key.",
         settingSupabaseUrl: "Supabase URL",
@@ -10442,6 +10488,10 @@
         repExpenseReceiptNotConfigured: "Receipt upload is not configured. Add Supabase URL and anon key in System settings.",
         repExpenseReceiptInvalidType: "Choose an image (JPG / PNG / WebP).",
         repExpenseReceiptTooLarge: "Image is still too large after compression. Try a clearer closer photo.",
+        poLinkedReceiptsTitle: "Representative expense receipts",
+        poLinkedReceiptsHint: "Visible only to purchasing, warehouse receipt, accounting, and supervisor when the rep links the expense to this PO.",
+        poLinkedReceiptsEmpty: "No expense receipts linked to this purchase order.",
+        poLinkedReceiptsLoadError: "Could not load expense receipts.",
         settingSupabaseTitle: "Expense receipt storage (Supabase)",
         settingSupabaseHint: "Logically isolated from the company archive: bucket po-receipts and table po_expense_receipts. Paste Project URL and anon public key.",
         settingSupabaseUrl: "Supabase URL",
@@ -19844,6 +19894,15 @@
           addWorkflowPoLineRow(l.item, l.unit, l.qty, av, lineToBuyQty(l));
         });
       else addWorkflowPoLineRow("", "", "", "", "");
+      if (mode === "supervisor" && canViewPoLinkedExpenseReceipts()) {
+        void fillPoLinkedExpenseReceipts("wf-po-expense-receipts", po.id, { forceShow: true });
+      } else {
+        const box = $("wf-po-expense-receipts");
+        if (box) {
+          box.classList.add("hidden");
+          box.innerHTML = "";
+        }
+      }
       $("modal-workflow-po-lines").classList.remove("hidden");
     }
 
@@ -20244,6 +20303,7 @@
           : isPurchasingOfficer
           ? t("accountingPoModalHintPurchasing")
           : t("accountingPoModalHint");
+      void fillPoLinkedExpenseReceipts("acc-po-expense-receipts", po.id);
       $("modal-accounting-po").classList.remove("hidden");
     }
 
@@ -31285,6 +31345,85 @@
       $("modal-rep-receipt-view")?.classList.remove("hidden");
     }
 
+    /** إيصالات المصروف على الطلب: مشتريات + استلام مستودع + حسابات + مشرف/مدير. */
+    function canViewPoLinkedExpenseReceipts() {
+      if (hasAdminAccess()) return true;
+      return hasRole("purchasing_officer", "warehouse_supervisor", "accountant");
+    }
+
+    async function fetchRepExpensesWithReceiptsForPo(poId) {
+      const id = (poId || "").trim();
+      if (!id) return [];
+      const qy = query(collection(db, REP_EXPENSES_COL), where("purchaseOrderIds", "array-contains", id));
+      const snap = await getDocs(qy);
+      const rows = [];
+      snap.forEach((d) => {
+        const data = d.data() || {};
+        if ((data.status || "posted") !== "posted") return;
+        const url = (data.receiptPublicUrl || "").trim();
+        if (!url) return;
+        rows.push({ id: d.id, ...data, receiptPublicUrl: url });
+      });
+      rows.sort((a, b) => String(b.spentAt || "").localeCompare(String(a.spentAt || "")));
+      return rows;
+    }
+
+    function renderPoLinkedExpenseReceiptsHtml(rows) {
+      if (!rows.length) {
+        return `<p class="user-form-hint" style="margin:0">${escapeHtml(t("poLinkedReceiptsEmpty"))}</p>`;
+      }
+      return `<div class="po-linked-receipts-list">${rows
+        .map((r) => {
+          const url = escapeAttr(r.receiptPublicUrl);
+          const vendor = escapeHtml((r.vendorName || "").trim() || t("dash"));
+          const amount = escapeHtml(formatRepMoney(r.amount, r.currency));
+          const receiptNo = escapeHtml((r.receiptNumber || "").trim() || t("dash"));
+          const spent = escapeHtml((r.spentAt || "").trim() || t("dash"));
+          const rep = escapeHtml((r.representativeName || "").trim() || t("dash"));
+          return `<article class="po-linked-receipt-card">
+            <img src="${url}" alt="" loading="lazy" data-receipt-url="${url}" class="btn-po-linked-receipt-img" />
+            <div class="meta">
+              <div><strong>${rep}</strong></div>
+              <div>${vendor}</div>
+              <div>${amount}</div>
+              <div>${escapeHtml(t("repExpenseReceiptNoLabel"))}: ${receiptNo}</div>
+              <div>${spent}</div>
+              <button type="button" class="btn btn-secondary btn-sm btn-po-linked-receipt-view" data-url="${url}" style="margin-top:.35rem">${escapeHtml(
+                t("repExpenseReceiptView")
+              )}</button>
+            </div>
+          </article>`;
+        })
+        .join("")}</div>`;
+    }
+
+    async function fillPoLinkedExpenseReceipts(containerId, poId, { forceShow = false } = {}) {
+      const el = $(containerId);
+      if (!el) return;
+      if (!forceShow && !canViewPoLinkedExpenseReceipts()) {
+        el.classList.add("hidden");
+        el.innerHTML = "";
+        return;
+      }
+      el.classList.remove("hidden");
+      el.innerHTML = `<h4 style="margin:0 0 .35rem">${escapeHtml(t("poLinkedReceiptsTitle"))}</h4>
+        <p class="user-form-hint" style="margin:0 0 .55rem">${escapeHtml(t("poLinkedReceiptsHint"))}</p>
+        <p class="loading">${escapeHtml(t("loading"))}</p>`;
+      try {
+        const rows = await fetchRepExpensesWithReceiptsForPo(poId);
+        el.innerHTML = `<h4 style="margin:0 0 .35rem">${escapeHtml(t("poLinkedReceiptsTitle"))}</h4>
+          <p class="user-form-hint" style="margin:0 0 .55rem">${escapeHtml(t("poLinkedReceiptsHint"))}</p>
+          ${renderPoLinkedExpenseReceiptsHtml(rows)}`;
+        el.querySelectorAll(".btn-po-linked-receipt-view, .btn-po-linked-receipt-img").forEach((btn) => {
+          btn.addEventListener("click", () => openRepReceiptView(btn.dataset.url || btn.dataset.receiptUrl || btn.getAttribute("src")));
+        });
+      } catch (e) {
+        console.error(e);
+        el.innerHTML = `<h4 style="margin:0 0 .35rem">${escapeHtml(t("poLinkedReceiptsTitle"))}</h4>
+          <p class="error-msg">${escapeHtml(t("poLinkedReceiptsLoadError"))} ${escapeHtml(e.message || "")}</p>`;
+      }
+    }
+
     async function deleteSupabaseExpenseReceipt(meta) {
       const path = (meta?.storagePath || meta?.receiptStoragePath || "").trim();
       if (!path) return;
@@ -33220,6 +33359,7 @@
       $("wr-po-id").value = poId;
       syncWarehouseReceiptQtyModalUi(wrModalMode);
       renderWarehouseReceiptQtyLines(wrEditBaseLines);
+      void fillPoLinkedExpenseReceipts("wr-po-expense-receipts", poId);
       $("modal-warehouse-receipt-qty")?.classList.remove("hidden");
       $("wr-lines-tbody")?.querySelector("input.wr-line-received")?.focus();
     }
