@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.26.3" />
+  <meta name="app-version" content="2026.10.31.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -9012,9 +9012,14 @@
         modalRepExpenseTitle: "تسجيل مصروف",
         modalRepExpenseHint: "أدخل مبلغ الصرف، ويمكن توزيعه على سلفة واحدة أو أكثر مع إظهار الباقي لكل سلفة.",
         modalRepExpenseEditTitle: "تعديل مصروف",
-        modalRepExpenseEditHint: "يمكن للمندوب تعديل المصروف خلال 24 ساعة من تسجيله. المدير يعدّل بلا مهلة.",
+        modalRepExpenseEditHint: "يمكن للمندوب تعديل المصروف خلال 24 ساعة من تسجيله. المدير يعدّل بلا مهلة. رفع الإيصال متاح دائماً.",
+        modalRepExpenseReceiptOnlyTitle: "إرفاق إيصال المصروف",
+        modalRepExpenseReceiptOnlyHint: "انتهت مهلة تعديل بيانات المصروف. يمكنك رفع أو استبدال صورة الإيصال في أي وقت.",
+        btnRepExpenseAttachReceipt: "إرفاق إيصال",
+        repExpenseReceiptOnlySaved: "تم حفظ الإيصال.",
+        repExpenseReceiptOnlyNoChange: "اختر صورة إيصال أو أزل الإيصال الحالي ثم احفظ.",
         repExpenseUpdated: "تم تحديث المصروف.",
-        repExpenseEditWindowExpired: "انتهت مهلة التعديل (24 ساعة). لا يمكن تعديل هذا المصروف.",
+        repExpenseEditWindowExpired: "انتهت مهلة التعديل (24 ساعة). لا يمكن تعديل بيانات هذا المصروف.",
         confirmRepExpenseDelete: "حذف هذا المصروف؟ سيُعاد احتساب أرصدة السلف المرتبطة.",
         repExpenseDeleted: "تم حذف المصروف.",
         modalRepAdvanceIssueTitle: "إصدار سلفة نقدية",
@@ -10459,9 +10464,14 @@
         modalRepExpenseTitle: "Record expense",
         modalRepExpenseHint: "Enter the spent amount; you can split it across one or more advances with remaining balance shown.",
         modalRepExpenseEditTitle: "Edit expense",
-        modalRepExpenseEditHint: "The representative can edit within 24 hours of recording. Managers can edit without a time limit.",
+        modalRepExpenseEditHint: "The representative can edit within 24 hours of recording. Managers can edit without a time limit. Receipt upload stays available anytime.",
+        modalRepExpenseReceiptOnlyTitle: "Attach expense receipt",
+        modalRepExpenseReceiptOnlyHint: "The expense edit window has ended. You can still upload or replace the receipt image anytime.",
+        btnRepExpenseAttachReceipt: "Attach receipt",
+        repExpenseReceiptOnlySaved: "Receipt saved.",
+        repExpenseReceiptOnlyNoChange: "Choose a receipt image or remove the current one, then save.",
         repExpenseUpdated: "Expense updated.",
-        repExpenseEditWindowExpired: "The 24-hour edit window has ended. This expense can no longer be edited.",
+        repExpenseEditWindowExpired: "The 24-hour edit window has ended. Expense details can no longer be edited.",
         confirmRepExpenseDelete: "Delete this expense? Linked advance balances will be recalculated.",
         repExpenseDeleted: "Expense deleted.",
         modalRepAdvanceIssueTitle: "Issue cash advance",
@@ -31210,6 +31220,7 @@
     let repExpensePoSearchTimer = null;
     let repExpenseOpenAdvancesCache = [];
     let repExpenseEditingId = null;
+    let repExpenseReceiptOnlyMode = false;
     let repExpenseReceiptDraft = null;
     let repExpenseReceiptExisting = null;
     let repExpenseReceiptClearExisting = false;
@@ -31509,7 +31520,7 @@
 
     /**
      * المدير يعدّل بلا مهلة.
-     * المندوب يعدّل مصروفه فقط خلال 24 ساعة.
+     * المندوب يعدّل بيانات مصروفه فقط خلال 24 ساعة.
      */
     function canEditRepExpense(expense, linkedRep) {
       if (!expense?.id) return false;
@@ -31520,11 +31531,56 @@
       return isRepExpenseWithinEditWindow(expense);
     }
 
-    function setRepExpenseModalMode(isEdit) {
+    /** رفع/استبدال إيصال المصروف للمندوب دون قيد الـ 24 ساعة. */
+    function canAttachRepExpenseReceipt(expense, linkedRep) {
+      if (!expense?.id) return false;
+      if ((expense.status || "posted") !== "posted") return false;
+      if (canViewAllRepDesks()) return true;
+      if (!linkedRep?.id) return false;
+      return String(expense.representativeId || "").trim() === String(linkedRep.id).trim();
+    }
+
+    function setRepExpenseModalMode(isEdit, receiptOnly = false) {
       const titleEl = document.querySelector("#modal-rep-expense h3");
       const hintEl = document.querySelector("#modal-rep-expense .user-form-hint");
-      if (titleEl) titleEl.textContent = t(isEdit ? "modalRepExpenseEditTitle" : "modalRepExpenseTitle");
-      if (hintEl) hintEl.textContent = t(isEdit ? "modalRepExpenseEditHint" : "modalRepExpenseHint");
+      if (receiptOnly) {
+        if (titleEl) titleEl.textContent = t("modalRepExpenseReceiptOnlyTitle");
+        if (hintEl) hintEl.textContent = t("modalRepExpenseReceiptOnlyHint");
+      } else {
+        if (titleEl) titleEl.textContent = t(isEdit ? "modalRepExpenseEditTitle" : "modalRepExpenseTitle");
+        if (hintEl) hintEl.textContent = t(isEdit ? "modalRepExpenseEditHint" : "modalRepExpenseHint");
+      }
+    }
+
+    function setRepExpenseFormFieldsLocked(locked) {
+      const ids = [
+        "rep-expense-amount",
+        "rep-expense-currency",
+        "rep-expense-date",
+        "rep-expense-vendor",
+        "rep-expense-receipt-no",
+        "rep-expense-receipt-date",
+        "rep-expense-note",
+        "rep-expense-po-search",
+        "rep-expense-rep",
+      ];
+      ids.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        el.disabled = !!locked;
+        if ("readOnly" in el) el.readOnly = !!locked;
+      });
+      $("rep-expense-advances-wrap")?.querySelectorAll("input, select, button, textarea").forEach((el) => {
+        el.disabled = !!locked;
+      });
+      $("rep-expense-po-selected")?.querySelectorAll("button").forEach((el) => {
+        el.disabled = !!locked;
+      });
+      // إيصال الصورة يبقى متاحاً دائماً (حتى بعد انتهاء مهلة تعديل الحقول)
+      ["rep-expense-receipt-file", "rep-expense-receipt-camera", "rep-expense-receipt-remove"].forEach((id) => {
+        const el = $(id);
+        if (el) el.disabled = false;
+      });
     }
 
     function wireRepExpenseEditButtons(root) {
@@ -31840,9 +31896,13 @@
           ${rows
             .map((r) => {
               const refs = Array.isArray(r.purchaseOrderRefs) ? r.purchaseOrderRefs.filter(Boolean) : [];
-              const editBtn = canEditRepExpense(r, linkedRep)
+              const fullEdit = canEditRepExpense(r, linkedRep);
+              const receiptOnly = !fullEdit && canAttachRepExpenseReceipt(r, linkedRep);
+              const editBtn = fullEdit
                 ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-expense-edit" data-id="${escapeAttr(r.id)}">${escapeHtml(t("edit"))}</button>`
-                : "";
+                : receiptOnly
+                  ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-expense-edit" data-id="${escapeAttr(r.id)}" data-receipt-only="1">${escapeHtml(t("btnRepExpenseAttachReceipt"))}</button>`
+                  : "";
               const deleteBtn = canDeleteRepExpense()
                 ? `<button type="button" class="btn btn-secondary btn-sm btn-rep-expense-delete" data-id="${escapeAttr(r.id)}">${escapeHtml(t("delete"))}</button>`
                 : "";
@@ -31991,7 +32051,9 @@
       $("rep-expense-rep")?.addEventListener("change", () => void onRepExpenseRepChanged());
       $("modal-rep-expense-cancel")?.addEventListener("click", () => {
         repExpenseEditingId = null;
+        repExpenseReceiptOnlyMode = false;
         resetRepExpenseReceiptUi();
+        setRepExpenseFormFieldsLocked(false);
         const repSel = $("rep-expense-rep");
         if (repSel) repSel.disabled = false;
         setRepExpenseModalMode(false);
@@ -32350,6 +32412,7 @@
       resetRepExpenseReceiptUi();
       await loadAppSettingsCache();
       repExpenseEditingId = null;
+      repExpenseReceiptOnlyMode = false;
       let existing = null;
       const editId = (expenseId || "").trim();
       if (editId) {
@@ -32359,10 +32422,13 @@
           return;
         }
         existing = { id: snap.id, ...snap.data() };
-        if (!canEditRepExpense(existing, linkedRep)) {
+        const fullEdit = canEditRepExpense(existing, linkedRep);
+        const receiptOnly = canAttachRepExpenseReceipt(existing, linkedRep);
+        if (!fullEdit && !receiptOnly) {
           alert(t("repExpenseEditWindowExpired"));
           return;
         }
+        repExpenseReceiptOnlyMode = !fullEdit && receiptOnly;
         repExpenseEditingId = existing.id;
       }
 
@@ -32456,14 +32522,16 @@
         excludeExpenseId: existing?.id || null,
         prefillAllocs,
       });
-      setRepExpenseModalMode(!!existing);
+      setRepExpenseModalMode(!!existing, repExpenseReceiptOnlyMode);
+      setRepExpenseFormFieldsLocked(repExpenseReceiptOnlyMode);
       const saveBtn = $("modal-rep-expense-save");
       if (saveBtn) {
         saveBtn.disabled = false;
         saveBtn.removeAttribute("title");
       }
       $("modal-rep-expense")?.classList.remove("hidden");
-      amount?.focus();
+      if (repExpenseReceiptOnlyMode) $("rep-expense-receipt-file")?.focus?.();
+      else amount?.focus();
     }
 
     async function saveRepExpenseModal() {
@@ -32472,6 +32540,73 @@
         alert(canViewAllRepDesks() ? t("repSelectRepRequired") : t("repNoLinkedProfile"));
         return;
       }
+      const receiptOnly = !!repExpenseReceiptOnlyMode && !!repExpenseEditingId;
+      const statusEl = $("rep-expense-receipt-status");
+
+      if (receiptOnly) {
+        try {
+          const editRef = doc(db, REP_EXPENSES_COL, repExpenseEditingId);
+          const snap = await getDoc(editRef);
+          if (!snap.exists()) {
+            alert(t("loadError"));
+            return;
+          }
+          const existing = { id: snap.id, ...snap.data() };
+          const linkedRep = await resolvePurchasingRepForCurrentUser();
+          if (!canAttachRepExpenseReceipt(existing, linkedRep)) {
+            alert(t("repExpenseEditWindowExpired"));
+            return;
+          }
+          if (!repExpenseReceiptDraft && !repExpenseReceiptClearExisting) {
+            alert(t("repExpenseReceiptOnlyNoChange"));
+            return;
+          }
+          const receiptPatch = {};
+          if (repExpenseReceiptDraft) {
+            if (!isSupabaseReceiptConfigured()) {
+              alert(t("repExpenseReceiptNotConfigured"));
+              return;
+            }
+            if (statusEl) {
+              statusEl.dataset.busy = "1";
+              statusEl.textContent = t("repExpenseReceiptUploading");
+            }
+            if (existing.receiptStoragePath) await deleteSupabaseExpenseReceipt(existing);
+            Object.assign(receiptPatch, await uploadRepExpenseReceipt(existing.id));
+          } else if (repExpenseReceiptClearExisting && existing.receiptStoragePath) {
+            await deleteSupabaseExpenseReceipt(existing);
+            receiptPatch.receiptId = deleteField();
+            receiptPatch.receiptStoragePath = deleteField();
+            receiptPatch.receiptPublicUrl = deleteField();
+            receiptPatch.receiptFileName = deleteField();
+            receiptPatch.receiptContentType = deleteField();
+            receiptPatch.receiptSizeBytes = deleteField();
+          }
+          await updateDoc(editRef, {
+            ...receiptPatch,
+            updatedAt: serverTimestamp(),
+            updatedBy: currentUser.uid,
+          });
+          repExpenseEditingId = null;
+          repExpenseReceiptOnlyMode = false;
+          resetRepExpenseReceiptUi();
+          setRepExpenseFormFieldsLocked(false);
+          setRepExpenseModalMode(false);
+          $("modal-rep-expense")?.classList.add("hidden");
+          alert(t("repExpenseReceiptOnlySaved"));
+          await loadRepDesk();
+        } catch (e) {
+          const msg = e?.message || e?.error_description || String(e || "");
+          alert(t("repExpenseReceiptUploadFailed") + " " + msg);
+        } finally {
+          if (statusEl) {
+            delete statusEl.dataset.busy;
+            syncRepExpenseReceiptPreview();
+          }
+        }
+        return;
+      }
+
       const rawAllocs = readRepExpenseAdvanceAllocationsFromUi();
       if (rawAllocs.length) {
         const currencies = [...new Set(rawAllocs.map((a) => a.currency))];
@@ -32503,12 +32638,6 @@
       }
       const currency =
         (rawAllocs[0]?.currency || $("rep-expense-currency")?.value || "IQD").trim() || "IQD";
-      if (rawAllocs.length) {
-        const sum = rawAllocs.reduce((s, a) => s + a.amount, 0);
-        if (Math.abs(sum - amount) > 0.0001) {
-          // keep amount as sum of allocations
-        }
-      }
       const finalAmount = rawAllocs.length
         ? rawAllocs.reduce((s, a) => s + a.amount, 0)
         : amount;
@@ -32539,7 +32668,6 @@
         purchaseOrderRefs: poRefs,
         updatedAt: serverTimestamp(),
       };
-      const statusEl = $("rep-expense-receipt-status");
       try {
         let expenseId = repExpenseEditingId;
         let existingReceiptMeta = null;
@@ -32607,7 +32735,9 @@
 
         const wasEdit = !!repExpenseEditingId;
         repExpenseEditingId = null;
+        repExpenseReceiptOnlyMode = false;
         resetRepExpenseReceiptUi();
+        setRepExpenseFormFieldsLocked(false);
         const repSel = $("rep-expense-rep");
         if (repSel) repSel.disabled = false;
         setRepExpenseModalMode(false);
