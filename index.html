@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.02.4" />
+  <meta name="app-version" content="2026.11.02.5" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -3918,6 +3918,7 @@
       opacity: 0.35;
       cursor: default;
     }
+    .po007-surface.po007-edit-mode .po007-items-table thead .po007-items-col-head,
     .po007-surface.po007-edit-mode .po007-items-table thead .po007-items-extra-col-head {
       display: block;
       width: 100%;
@@ -8744,7 +8745,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.02.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>جدول مواد الإدارة العامة — عرض أفقي:</strong> خيار «عمودي / عرضي» أثناء التعديل والمعاينة والطباعة، وللنموذج الاحترافي أيضاً.</li><li><strong>صفحة المواد معاً:</strong> في الوضع العرضي يبقى رأس الصفحة والأطراف مع جدول المواد في ورقة واحدة دون فصلهما.</li><li><strong>إيصال المصروف:</strong> يمكن للمندوب رفع أو استبدال صورة الإيصال في أي وقت، حتى بعد انتهاء مهلة تعديل بيانات المصروف (24 ساعة).</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.02.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>تسمية أعمدة جدول المواد:</strong> يمكن تعديل عناوين الأعمدة الثابتة (مثل الكمية والوصف) أو إضافة نص إليها بالنقر على العنوان.</li><li><strong>عرض أفقي لجدول المواد:</strong> خيار عمودي/عرضي في التعديل والمعاينة والطباعة والنموذج الاحترافي، مع بقاء الرأس مع الجدول.</li><li><strong>إيصال المصروف:</strong> رفع أو استبدال صورة الإيصال في أي وقت بعد مهلة الـ 24 ساعة.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -9560,6 +9561,7 @@
         genPo007ItemsColVisibilityTitle: "إظهار وإخفاء الأعمدة",
         genPo007ItemsResetColWidths: "إعادة ضبط عرض الأعمدة",
         genPo007ItemsColResize: "سحب لتغيير عرض العمود",
+        genPo007ItemsColHeadHint: "انقر لتعديل عنوان العمود أو إضافة نص",
         genPo007ItemsLineNoLabel: "الترقيم",
         genPo007ItemsLineNoAuto: "تلقائي",
         genPo007ItemsLineNoManual: "يدوي",
@@ -10198,7 +10200,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.02.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>General PO materials table — landscape:</strong> Portrait/Landscape option while editing, previewing, and printing — including the professional print template.</li><li><strong>Materials page stays together:</strong> In landscape, the page header and parties stay with the materials table on one sheet.</li><li><strong>Expense receipts:</strong> Representatives can upload or replace a receipt photo anytime, even after the 24-hour expense edit window ends.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.02.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Materials column titles:</strong> Rename fixed column headers (qty, description, etc.) or add text by clicking the header.</li><li><strong>Materials landscape layout:</strong> Portrait/Landscape in edit, preview, print, and pro print — header stays with the table.</li><li><strong>Expense receipts:</strong> Upload or replace receipt photos anytime after the 24-hour edit window.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -11016,6 +11018,7 @@
         genPo007ItemsColVisibilityTitle: "Show and hide columns",
         genPo007ItemsResetColWidths: "Reset column widths",
         genPo007ItemsColResize: "Drag to resize column",
+        genPo007ItemsColHeadHint: "Click to rename the column or add text",
         genPo007ItemsLineNoLabel: "Line no.",
         genPo007ItemsLineNoAuto: "Auto",
         genPo007ItemsLineNoManual: "Manual",
@@ -12287,7 +12290,15 @@
       const columnVisibility = mergePo007ItemsColumnVisibility(base.columnVisibility, columnOrder, extraColumns);
       const lineNumberMode = base.lineNumberMode === "manual" ? "manual" : "auto";
       const columnWidths = mergePo007ItemsColumnWidths(base.columnWidths, columnOrder, extraColumns);
-      return { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths };
+      const columnLabels = {};
+      const rawLabels = base.columnLabels && typeof base.columnLabels === "object" ? base.columnLabels : {};
+      Object.keys(rawLabels).forEach((id) => {
+        if (id !== "no" && !PO007_ITEMS_BUILTIN_COL_IDS.has(id)) return;
+        if (isPo007ItemsExtraColId(id)) return;
+        const v = String(rawLabels[id] ?? "").trim();
+        if (v) columnLabels[id] = v;
+      });
+      return { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths, columnLabels };
     }
 
     function po007ItemsColCssClass(colId) {
@@ -12302,11 +12313,10 @@
       return "po007-col-extra";
     }
 
-    function po007ItemsColLabel(colId, cfg, docLang, curSuffix) {
+    function po007ItemsDefaultColLabel(colId, docLang, curSuffix) {
       const ar = docLang === "ar";
-      const extra = (cfg?.extraColumns || []).find((c) => c.id === colId);
-      if (extra) return extra.label;
       const map = {
+        no: ar ? "م" : "No.",
         item: tPo007(docLang, "genPoColItemTag"),
         desc: ar ? "الوصف" : "Description",
         unit: tPo007(docLang, "genPoColUnit"),
@@ -12317,6 +12327,14 @@
         remarks: tPo007(docLang, "genPoColRemarks"),
       };
       return map[colId] || colId;
+    }
+
+    function po007ItemsColLabel(colId, cfg, docLang, curSuffix) {
+      const extra = (cfg?.extraColumns || []).find((c) => c.id === colId);
+      if (extra) return extra.label;
+      const custom = String(cfg?.columnLabels?.[colId] ?? "").trim();
+      if (custom) return custom;
+      return po007ItemsDefaultColLabel(colId, docLang, curSuffix);
     }
 
     function po007ItemsPrintColumnOrder(cfg, docLang) {
@@ -12401,14 +12419,24 @@
         .map((h) => h.getAttribute("data-po007-items-col"))
         .filter((id) => id && id !== "no");
       const extraColumns = base.extraColumns.map((c) => ({ ...c }));
+      const columnLabels = { ...(base.columnLabels || {}) };
+      const curSuffix = po007CurrencySuffix(getPo007MetaCurrency(), lang);
       heads.forEach((h) => {
         const colId = h.getAttribute("data-po007-items-col");
-        if (!isPo007ItemsExtraColId(colId)) return;
+        if (!colId) return;
         const labelEl = h.querySelector("[data-po007-items-col-head]");
         const label = (labelEl?.textContent || "").trim();
-        const idx = extraColumns.findIndex((c) => c.id === colId);
-        if (idx >= 0) extraColumns[idx].label = label || extraColumns[idx].label;
-        else extraColumns.push({ id: colId, label: label || (lang === "ar" ? "عمود" : "Column") });
+        if (isPo007ItemsExtraColId(colId)) {
+          const idx = extraColumns.findIndex((c) => c.id === colId);
+          if (idx >= 0) extraColumns[idx].label = label || extraColumns[idx].label;
+          else extraColumns.push({ id: colId, label: label || (lang === "ar" ? "عمود" : "Column") });
+          return;
+        }
+        if (colId === "no" || PO007_ITEMS_BUILTIN_COL_IDS.has(colId)) {
+          const def = po007ItemsDefaultColLabel(colId, lang, curSuffix);
+          if (label && label !== def) columnLabels[colId] = label;
+          else delete columnLabels[colId];
+        }
       });
       let columnVisibility = { ...base.columnVisibility };
       mount?.querySelectorAll(".po007-items-col-vis-cb").forEach((cb) => {
@@ -12428,7 +12456,7 @@
         if (Number.isFinite(n) && n > 0) columnWidths[id] = n;
       });
       return normalizePo007ItemsTableConfig(
-        { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths },
+        { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths, columnLabels },
         lang
       );
     }
@@ -16707,10 +16735,10 @@
         .querySelectorAll('.po007-items-table-wrap:has([data-po007="items-table"])')
         .forEach((wrap) => po007PageGuidesRo.observe(wrap));
     }
-    function po007ItemsTableLabels(docLang, curSuffix) {
+    function po007ItemsTableLabels(docLang, curSuffix, cfg) {
       const ar = docLang === "ar";
       return {
-        no: ar ? "م" : "No.",
+        no: po007ItemsColLabel("no", cfg, docLang, curSuffix) || (ar ? "م" : "No."),
         addRow: ar ? "+ إضافة صف مادة" : "+ Add Item Row",
         delTitle: ar ? "حذف الصف" : "Delete row",
       };
@@ -16734,9 +16762,8 @@
         <button type="button" class="po007-items-col-move" data-po007-items-col-move="1" data-po007-items-col-id="${escapeAttr(colId)}" title="${escapeAttr(tPo007(docLang, "genPo007ItemsColMoveRight"))}"${canRight ? "" : " disabled"}>▶</button>
         ${isExtra ? `<button type="button" class="del-btn po007-del-items-extra-col" data-po007-items-col-id="${escapeAttr(colId)}" title="${escapeAttr(tPo007(docLang, "genPo007ItemsDelExtraCol"))}">✕</button>` : ""}
       </div>`;
-      const labelHtml = isExtra
-        ? `<span class="po007-items-extra-col-head" data-po007-items-col-head contenteditable="true" spellcheck="false">${escapeHtml(label)}</span>`
-        : `<span>${escapeHtml(label)}</span>`;
+      const headTitle = escapeAttr(tPo007(docLang, "genPo007ItemsColHeadHint"));
+      const labelHtml = `<span class="po007-items-col-head${isExtra ? " po007-items-extra-col-head" : ""}" data-po007-items-col-head contenteditable="true" spellcheck="false" title="${headTitle}">${escapeHtml(label)}</span>`;
       const inclTitle =
         colId === "included" ? ` title="${escapeAttr(tPo007(docLang, "genPoLinesIncludedHint"))}"` : "";
       const visible = po007ItemsVisibleColumnOrder(cfg, true, docLang);
@@ -16916,8 +16943,8 @@
     }
 
     function renderGeneralPo007EditorLineRow(l, i, docLang, cfg, rowCount) {
-      const lbl = po007ItemsTableLabels(docLang, "");
       const norm = normalizePo007ItemsTableConfig(cfg, docLang);
+      const lbl = po007ItemsTableLabels(docLang, "", norm);
       const included = generalLineIsIncluded(l);
       const canUp = i > 0;
       const canDown = i < rowCount - 1;
@@ -16945,8 +16972,8 @@
     function renderGeneralPo007EditorItemsTable(lines, g) {
       const docLang = g.documentLang === "en" ? "en" : "ar";
       const curSuffix = po007CurrencySuffix(g.currency, docLang);
-      const lbl = po007ItemsTableLabels(docLang, curSuffix);
       const cfg = normalizePo007ItemsTableConfig(g.itemsTableConfig, docLang);
+      const lbl = po007ItemsTableLabels(docLang, curSuffix, cfg);
       const lineList = lines.length ? lines : [{ itemTag: "", description: "", qty: 1, priceText: "0", lineTotal: 0 }];
       const rows = lineList
         .map((l, i) => renderGeneralPo007EditorLineRow(l, i, docLang, cfg, lineList.length))
@@ -17013,7 +17040,7 @@
         <table class="po007-items-table" data-po007="items-table">
           <colgroup>${colgroup}</colgroup>
           <thead><tr>
-            <th class="po007-col-no" data-po007="th-no" data-po007-items-col="no"><div class="po007-items-th-cell"><span>${escapeHtml(lbl.no)}</span>${noResize}</div></th>
+            <th class="po007-col-no" data-po007="th-no" data-po007-items-col="no"><div class="po007-items-th-cell"><span class="po007-items-col-head" data-po007-items-col-head contenteditable="true" spellcheck="false" title="${escapeAttr(tPo007(docLang, "genPo007ItemsColHeadHint"))}">${escapeHtml(lbl.no)}</span>${noResize}</div></th>
             ${headCells}
           </tr></thead>
           <tbody>
@@ -17586,28 +17613,38 @@
       syncPo007EditorPaymentAutoAmounts(mount);
     }
 
+    function syncPo007ItemsColumnLabelsCacheFromMount() {
+      const mount = getGeneralPo007Mount();
+      if (!mount || !generalPo007EditorCachedMeta) return;
+      const docLang = getPo007DocumentLang();
+      const cfg = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta.itemsTableConfig, docLang);
+      generalPo007EditorCachedMeta.itemsTableConfig = cfg;
+    }
+
     function updateGeneralPo007ItemHeaders() {
       const mount = getGeneralPo007Mount();
       if (!mount) return;
       const docLang = getPo007DocumentLang();
       const curSuffix = po007CurrencySuffix(getPo007MetaCurrency(), docLang);
-      const lbl = po007ItemsTableLabels(docLang, curSuffix);
-      const cfg = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta?.itemsTableConfig, docLang);
-      const thNo = mount.querySelector('[data-po007="th-no"]');
-      if (thNo) thNo.textContent = lbl.no;
-      mount.querySelectorAll("thead [data-po007-items-col]").forEach((th, i) => {
+      const live = readPo007ItemsTableConfigFromMount(mount, generalPo007EditorCachedMeta?.itemsTableConfig, docLang);
+      // استخدم التسميات المخزّنة لتجنب اعتبار عنوان العملة القديم عنواناً مخصصاً
+      const cachedLabels = normalizePo007ItemsTableConfig(
+        generalPo007EditorCachedMeta?.itemsTableConfig,
+        docLang
+      ).columnLabels;
+      const cfg = { ...live, columnLabels: { ...cachedLabels } };
+      const lbl = po007ItemsTableLabels(docLang, curSuffix, cfg);
+      mount.querySelectorAll("thead [data-po007-items-col]").forEach((th) => {
         const colId = th.getAttribute("data-po007-items-col");
         if (!colId) return;
         const label = po007ItemsColLabel(colId, cfg, docLang, curSuffix);
         const headField = th.querySelector("[data-po007-items-col-head]");
-        if (headField) {
-          if (document.activeElement !== headField) headField.textContent = label;
-        } else {
-          const span = th.querySelector(".po007-items-th-cell > span:not(.po007-items-extra-col-head)");
-          if (span) span.textContent = label;
-        }
-        const canLeft = i > 0;
-        const canRight = i < cfg.columnOrder.length - 1;
+        if (headField && document.activeElement !== headField) headField.textContent = label;
+        if (colId === "no") return;
+        const orderIdx = cfg.columnOrder.indexOf(colId);
+        if (orderIdx < 0) return;
+        const canLeft = orderIdx > 0;
+        const canRight = orderIdx < cfg.columnOrder.length - 1;
         th.querySelectorAll("[data-po007-items-col-move]").forEach((btn) => {
           const dir = Number(btn.getAttribute("data-po007-items-col-move"));
           btn.disabled = dir < 0 ? !canLeft : !canRight;
@@ -17842,6 +17879,13 @@
         mount.addEventListener("pointermove", onPo007ItemsColResizePointerMove);
         mount.addEventListener("pointerup", onPo007ItemsColResizePointerUp);
         mount.addEventListener("pointercancel", onPo007ItemsColResizePointerUp);
+      }
+      if (!mount.dataset.po007ColHeadWired) {
+        mount.dataset.po007ColHeadWired = "1";
+        mount.addEventListener("focusout", (e) => {
+          if (!e.target?.matches?.("[data-po007-items-col-head]")) return;
+          syncPo007ItemsColumnLabelsCacheFromMount();
+        });
       }
       mount.onclick = (e) => {
         const secActionBtn = e.target.closest("[data-po007-sec-action]");
@@ -18718,7 +18762,7 @@
             return `<div class="po007-items-table-wrap"><table class="po007-items-table">
               <colgroup>${colgroup}</colgroup>
               <thead><tr>
-                <th class="po007-col-no">${docLang === "ar" ? "م" : "No."}</th>
+                <th class="po007-col-no">${escapeHtml(po007ItemsColLabel("no", itemsCfg, docLang, curSuffix))}</th>
                 ${headCells}
               </tr></thead>
               <tbody>${lineRows}${totalRow}</tbody>

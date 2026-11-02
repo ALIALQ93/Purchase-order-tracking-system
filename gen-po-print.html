@@ -723,7 +723,15 @@
       const columnVisibility = mergeItemsColumnVisibility(base.columnVisibility, columnOrder, extraColumns);
       const lineNumberMode = base.lineNumberMode === "manual" ? "manual" : "auto";
       const columnWidths = mergeItemsColumnWidths(base.columnWidths, columnOrder, extraColumns);
-      return { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths };
+      const columnLabels = {};
+      const rawLabels = base.columnLabels && typeof base.columnLabels === "object" ? base.columnLabels : {};
+      Object.keys(rawLabels).forEach((id) => {
+        if (id !== "no" && !PO007_ITEMS_BUILTIN_COL_IDS.has(id)) return;
+        if (String(id || "").startsWith("ec_")) return;
+        const v = String(rawLabels[id] ?? "").trim();
+        if (v) columnLabels[id] = v;
+      });
+      return { columnOrder, extraColumns, columnVisibility, lineNumberMode, columnWidths, columnLabels };
     }
 
     /** نسب الأعمدة الظاهرة في الطباعة مطبّعة إلى 100%. */
@@ -771,7 +779,10 @@
     function itemsColLabel(colId, cfg, lang, cur) {
       const extra = (cfg.extraColumns || []).find((c) => c.id === colId);
       if (extra) return extra.label;
+      const custom = String(cfg.columnLabels?.[colId] ?? "").trim();
+      if (custom) return custom;
       const map = {
+        no: lang === "ar" ? "م" : "No.",
         item: t(lang, "colItem"),
         desc: t(lang, "colDesc"),
         unit: t(lang, "colUnit"),
@@ -1258,7 +1269,7 @@
       return `<table class="data">
         <colgroup>${colgroup}</colgroup>
         <thead><tr>
-          <th class="num">${esc(t(lang, "colNo"))}</th>
+          <th class="num">${esc(itemsColLabel("no", cfg, lang, cur))}</th>
           ${headCells}
         </tr></thead>
         <tbody>${rows}</tbody>
