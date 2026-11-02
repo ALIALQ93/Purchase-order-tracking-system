@@ -1584,20 +1584,47 @@
         }
       };
 
+      // اجمع رأس الصفحة (شعار/عنوان/أطراف) مع جدول المواد في نفس الورقة العرضية
+      const pendingMaterialsLead = [];
+      let materialsStarted = false;
+
+      const flushPendingMaterialsLead = () => {
+        if (!pendingMaterialsLead.length) return;
+        ensureItemsLandPage();
+        while (pendingMaterialsLead.length) {
+          appendNode(pendingMaterialsLead.shift());
+        }
+      };
+
       sourceEl.querySelectorAll("[data-print-unit]").forEach((unit) => {
         const type = unit.dataset.printUnit || "block";
         if (type === "table") {
+          flushPendingMaterialsLead();
           const table = unit.querySelector("table");
           if (table) appendTable(table);
+          materialsStarted = true;
           return;
         }
         if (type === "section") {
+          flushPendingMaterialsLead();
           appendSection(unit.classList.contains("section") ? unit : unit.querySelector(".section"));
+          materialsStarted = true;
+          return;
+        }
+        const kids = [...unit.children].map((child) => child.cloneNode(true));
+        if (itemsLandscapeMode && !materialsStarted) {
+          pendingMaterialsLead.push(...kids);
           return;
         }
         ensurePortraitPage();
-        [...unit.children].forEach((child) => appendNode(child.cloneNode(true)));
+        kids.forEach((child) => appendNode(child));
       });
+
+      // إن لم يوجد جدول مواد: اطبع الرأس المخزّن بشكل عمودي
+      if (pendingMaterialsLead.length) {
+        ensurePortraitPage();
+        while (pendingMaterialsLead.length) appendNode(pendingMaterialsLead.shift());
+      }
 
       flushPage(false);
       meas.destroy();

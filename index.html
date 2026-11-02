@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.02.3" />
+  <meta name="app-version" content="2026.11.02.4" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -8744,7 +8744,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">آخر التحديثات:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>إرفاق إيصال المصروف:</strong> المندوب يرفق صورة الإيصال عند تسجيل المصروف (تخزين منفصل عن الأرشيف).</li><li><strong>أدوار متعددة:</strong> يمكن منح المستخدم أكثر من دور (مثل مسؤول مجموعة + مكتب مندوب).</li><li><strong>شاشة افتتاحية:</strong> حركة ترحيب عند الدخول مع دليل لتسجيل المصروف.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.02.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>جدول مواد الإدارة العامة — عرض أفقي:</strong> خيار «عمودي / عرضي» أثناء التعديل والمعاينة والطباعة، وللنموذج الاحترافي أيضاً.</li><li><strong>صفحة المواد معاً:</strong> في الوضع العرضي يبقى رأس الصفحة والأطراف مع جدول المواد في ورقة واحدة دون فصلهما.</li><li><strong>إيصال المصروف:</strong> يمكن للمندوب رفع أو استبدال صورة الإيصال في أي وقت، حتى بعد انتهاء مهلة تعديل بيانات المصروف (24 ساعة).</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -10198,7 +10198,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .5rem\">Latest updates:</p><ul style=\"margin:0;padding-inline-start:1.2rem\"><li><strong>Expense receipts:</strong> attach a receipt photo when recording an expense (storage isolated from the archive app).</li><li><strong>Multiple roles:</strong> assign more than one role to a user (e.g. group manager + rep desk).</li><li><strong>Splash & help:</strong> welcome motion on sign-in and an expense entry guide.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.02.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>General PO materials table — landscape:</strong> Portrait/Landscape option while editing, previewing, and printing — including the professional print template.</li><li><strong>Materials page stays together:</strong> In landscape, the page header and parties stay with the materials table on one sheet.</li><li><strong>Expense receipts:</strong> Representatives can upload or replace a receipt photo anytime, even after the 24-hour expense edit window ends.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -15789,6 +15789,14 @@
       const out = [];
       const leadEls = [];
       let leadAttached = false;
+      const materialsLandscape = po007IsLandscapePrint();
+
+      const isMaterialsLead = (unit) => {
+        if (unit.kind !== "block" || unit.isMiniHeader) return false;
+        // في العرض الأفقي: كل ما قبل جدول المواد يبقى معه في نفس الورقة
+        if (materialsLandscape) return true;
+        return po007IsTableLeadBlockUnit(unit);
+      };
 
       const flushOrphanLeads = () => {
         while (leadEls.length) {
@@ -15799,7 +15807,7 @@
       };
 
       for (const unit of units) {
-        if (po007IsTableLeadBlockUnit(unit)) {
+        if (!leadAttached && isMaterialsLead(unit)) {
           leadEls.push(unit.el);
           continue;
         }
@@ -16000,8 +16008,11 @@
         return measCtx.measureEl(po007BundleContinuationContent(dummy, miniHeader, doc));
       };
 
-      const startNewPage = ({ forItems = false } = {}) => {
+      const startNewPage = (opts = {}) => {
         if (page.body.childNodes.length && !po007PrintPageIsOrphanHeader(page)) pages.push(page);
+        // افتراضياً أبقِ نفس اتجاه الصفحة الحالية (لا تفصل رأس جدول المواد عن الجدول)
+        const forItems =
+          opts.forItems != null ? !!opts.forItems : pageIsItemsLandscape();
         const useLand = !!(itemsLandscape && forItems);
         page = po007NewPrintPage(doc, { itemsLandscape: useLand });
         if (measCtx.setLandscape) measCtx.setLandscape(useLand);
@@ -16022,7 +16033,10 @@
         if (!itemsLandscape) return;
         if (!pageIsItemsLandscape() && !pageHasTable()) return;
         if (page.body.childNodes.length > 0) startNewPage({ forItems: false });
-        else if (measCtx.setLandscape) measCtx.setLandscape(false);
+        else {
+          page.el.classList.remove("po007-print-page--items-landscape");
+          if (measCtx.setLandscape) measCtx.setLandscape(false);
+        }
       };
 
       const wrapContinuationIfNeeded = (node) => {
@@ -16037,7 +16051,7 @@
           const h = measCtx.measureEl(toPlace);
           let used = bodyUsed();
           if (used + h > bodyLimit() && page.body.childNodes.length > 0) {
-            startNewPage();
+            startNewPage({ forItems: pageIsItemsLandscape() });
             return placeOnce(rawNode, true);
           }
           page.body.appendChild(toPlace);
@@ -16050,7 +16064,7 @@
               if (toPlace.classList.contains("po007-print-continuation-bundle")) miniOnPage = true;
               return;
             }
-            startNewPage();
+            startNewPage({ forItems: pageIsItemsLandscape() });
             placeOnce(rawNode, false);
           }
         };
