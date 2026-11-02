@@ -39,7 +39,7 @@
       box-shadow: 0 2px 10px rgba(0,0,0,.22);
     }
     #toolbar .title { font-weight: 600; font-size: 14px; }
-    #toolbar .actions { display: flex; gap: 8px; }
+    #toolbar .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     #toolbar button {
       border: 1px solid rgba(255,255,255,.25);
       background: rgba(255,255,255,.1);
@@ -51,6 +51,20 @@
     #toolbar button.primary { background: #fff; color: var(--navy); border-color: #fff; }
     #toolbar button:hover { background: rgba(255,255,255,.2); }
     #toolbar button.primary:hover { background: #f0f4fa; }
+    #toolbar .orient-bar {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-inline-end: 8px; padding: 3px 8px; border-radius: 8px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+    }
+    #toolbar .orient-bar .lbl { font-size: 11px; font-weight: 600; opacity: .9; }
+    #toolbar .orient-bar button { padding: 5px 10px; font-size: 12px; }
+    #toolbar .orient-bar button.is-active { background: #fff; color: var(--navy); border-color: #fff; }
+    .print-page.print-page--items-landscape {
+      width: 297mm;
+      height: 210mm;
+      min-height: 210mm;
+      max-height: 210mm;
+    }
     #status {
       max-width: 210mm; margin: 0 auto 12px;
       padding: 12px 16px; border-radius: 8px;
@@ -295,6 +309,10 @@
       size: A4 portrait;
       margin: 0;
     }
+    @page items-land {
+      size: A4 landscape;
+      margin: 0;
+    }
 
     @media print {
       html, body {
@@ -330,6 +348,13 @@
         page-break-inside: avoid;
         break-inside: avoid;
       }
+      .print-page.print-page--items-landscape {
+        width: 297mm !important;
+        height: 210mm !important;
+        min-height: 210mm !important;
+        max-height: 210mm !important;
+        page: items-land;
+      }
       .print-page:last-child {
         page-break-after: auto;
         break-after: auto;
@@ -345,6 +370,11 @@
   <div id="toolbar">
     <span class="title" id="toolbar-title">أمر شراء — نموذج طباعة احترافي</span>
     <div class="actions">
+      <div class="orient-bar" role="group" aria-label="Materials orientation">
+        <span class="lbl" id="orient-label">اتجاه جدول المواد</span>
+        <button type="button" id="btn-orient-portrait" class="is-active">عمودي</button>
+        <button type="button" id="btn-orient-landscape">عرضي</button>
+      </div>
       <button type="button" id="btn-back">← رجوع</button>
       <button type="button" class="primary" id="btn-print">طباعة / PDF</button>
     </div>
@@ -385,6 +415,9 @@
     const I18N = {
       ar: {
         toolbarTitle: "أمر شراء — نموذج طباعة احترافي",
+        orientLabel: "اتجاه جدول المواد",
+        orientPortrait: "عمودي",
+        orientLandscape: "عرضي",
         back: "← رجوع",
         print: "طباعة / PDF",
         loading: "جاري تحميل أمر الشراء…",
@@ -433,6 +466,9 @@
       },
       en: {
         toolbarTitle: "Purchase Order — Professional Print",
+        orientLabel: "Materials table orientation",
+        orientPortrait: "Portrait",
+        orientLandscape: "Landscape",
         back: "← Back",
         print: "Print / PDF",
         loading: "Loading purchase order…",
@@ -1300,6 +1336,13 @@
     const PRINT_CONTENT_WIDTH_PX = mmToPx(210 - 2 * PRINT_MARGIN_X_MM);
     const PRINT_BODY_MAX_PX =
       mmToPx(297 - PRINT_MARGIN_TOP_MM - PRINT_MARGIN_BOTTOM_MM - PRINT_FOOTER_RESERVE_MM);
+    const PRINT_LAND_CONTENT_WIDTH_PX = mmToPx(297 - 2 * PRINT_MARGIN_X_MM);
+    const PRINT_LAND_BODY_MAX_PX =
+      mmToPx(210 - PRINT_MARGIN_TOP_MM - PRINT_MARGIN_BOTTOM_MM - PRINT_FOOTER_RESERVE_MM);
+    const ITEMS_ORIENT_LS_KEY = "po007PrintOrientation";
+    let itemsLandscapeMode =
+      (typeof localStorage !== "undefined" && localStorage.getItem(ITEMS_ORIENT_LS_KEY) === "landscape");
+    let lastRenderedDoc = null;
 
     // الارتفاع الحقيقي المتاح للجسم = ارتفاع .print-page-body بعد حجز التذييل (flex)
     function readPrintBodyLimitPx() {
@@ -1351,6 +1394,9 @@
       document.body.appendChild(host);
       return {
         shell,
+        setWidth(px) {
+          shell.style.width = `${px}px`;
+        },
         measureNode(node) {
           shell.innerHTML = "";
           shell.appendChild(node.cloneNode(true));
@@ -1371,26 +1417,59 @@
     const PRINT_SAFETY_PX = 16;
 
     function paginatePrintDocument(sourceEl, meta, lang, bodyLimitPx, bodyWidthPx) {
-      const bodyMax = Math.max(200, (bodyLimitPx || PRINT_BODY_MAX_PX) - PRINT_SAFETY_PX);
-      const meas = createMeasureCtx(lang, bodyWidthPx);
+      const portraitMax = Math.max(200, (bodyLimitPx || PRINT_BODY_MAX_PX) - PRINT_SAFETY_PX);
+      const landMax = Math.max(200, PRINT_LAND_BODY_MAX_PX - PRINT_SAFETY_PX);
+      const portraitW = bodyWidthPx || PRINT_CONTENT_WIDTH_PX;
+      const landW = PRINT_LAND_CONTENT_WIDTH_PX;
+      const meas = createMeasureCtx(lang, portraitW);
       const pages = [];
-      let current = { body: document.createElement("div") };
+      let current = { body: document.createElement("div"), itemsLandscape: false };
       current.body.className = "print-page-body";
+      let onItemsLandPage = false;
 
+      const bodyMax = () => (onItemsLandPage ? landMax : portraitMax);
       const bodyUsed = () => meas.measureBody(current.body);
 
-      const flushPage = () => {
+      const applyMeasureWidth = () => {
+        meas.setWidth(onItemsLandPage ? landW : portraitW);
+      };
+
+      const flushPage = (nextItemsLand = false) => {
         if (current.body.childNodes.length) pages.push(current);
-        current = { body: document.createElement("div") };
+        current = { body: document.createElement("div"), itemsLandscape: !!nextItemsLand };
         current.body.className = "print-page-body";
+        onItemsLandPage = !!nextItemsLand;
+        applyMeasureWidth();
+      };
+
+      const ensureItemsLandPage = () => {
+        if (!itemsLandscapeMode) return;
+        if (onItemsLandPage) return;
+        if (current.body.childNodes.length) flushPage(true);
+        else {
+          onItemsLandPage = true;
+          current.itemsLandscape = true;
+          applyMeasureWidth();
+        }
+      };
+
+      const ensurePortraitPage = () => {
+        if (!itemsLandscapeMode) return;
+        if (!onItemsLandPage) return;
+        if (current.body.childNodes.length) flushPage(false);
+        else {
+          onItemsLandPage = false;
+          current.itemsLandscape = false;
+          applyMeasureWidth();
+        }
       };
 
       const appendNode = (node) => {
         const place = () => {
           const h = meas.measureNode(node);
           const used = bodyUsed();
-          if (used + h > bodyMax && current.body.childNodes.length > 0) {
-            flushPage();
+          if (used + h > bodyMax() && current.body.childNodes.length > 0) {
+            flushPage(onItemsLandPage);
             return place();
           }
           current.body.appendChild(node.cloneNode(true));
@@ -1399,6 +1478,7 @@
       };
 
       const appendTable = (tableEl) => {
+        ensureItemsLandPage();
         const colgroup = tableEl.querySelector("colgroup");
         const thead = tableEl.querySelector("thead");
         const tbody = tableEl.querySelector("tbody");
@@ -1429,14 +1509,12 @@
           chunk.tb.appendChild(row.cloneNode(true));
           const h = meas.measureNode(chunk.table);
           const used = bodyUsed();
-          if (used + h > bodyMax) {
+          if (used + h > bodyMax()) {
             chunk.tb.removeChild(chunk.tb.lastChild);
             if (chunk.tb.children.length) {
-              // ثبّت الصفوف التي تتسع في الصفحة الحالية ثم انتقل لصفحة جديدة
               appendNode(chunk.table);
             }
-            // كل ما تبقّى من الجدول يبدأ في صفحة جديدة برأس واحد فقط
-            flushPage();
+            flushPage(itemsLandscapeMode);
             chunk = newChunk();
             chunk.tb.appendChild(row.cloneNode(true));
           }
@@ -1454,8 +1532,9 @@
 
       const appendSection = (sectionEl) => {
         if (!sectionEl) return;
+        ensurePortraitPage();
         const probe = sectionEl.cloneNode(true);
-        if (bodyUsed() + meas.measureNode(probe) <= bodyMax || !current.body.childNodes.length) {
+        if (bodyUsed() + meas.measureNode(probe) <= bodyMax() || !current.body.childNodes.length) {
           appendNode(sectionEl);
           return;
         }
@@ -1516,14 +1595,15 @@
           appendSection(unit.classList.contains("section") ? unit : unit.querySelector(".section"));
           return;
         }
+        ensurePortraitPage();
         [...unit.children].forEach((child) => appendNode(child.cloneNode(true)));
       });
 
-      flushPage();
+      flushPage(false);
       meas.destroy();
 
       if (!pages.length) {
-        pages.push({ body: document.createElement("div") });
+        pages.push({ body: document.createElement("div"), itemsLandscape: false });
         pages[0].body.className = "print-page-body";
       }
 
@@ -1532,7 +1612,9 @@
       wrap.className = "sheet-wrap";
       pages.forEach((p, i) => {
         const pageEl = document.createElement("article");
-        pageEl.className = "print-page";
+        pageEl.className = p.itemsLandscape
+          ? "print-page print-page--items-landscape"
+          : "print-page";
         pageEl.appendChild(p.body);
         const footWrap = document.createElement("div");
         footWrap.innerHTML = buildPageFooterHtml(meta, lang, i + 1, total);
@@ -1549,7 +1631,15 @@
       document.getElementById("toolbar-title").textContent = t(lang, "toolbarTitle");
       document.getElementById("btn-back").textContent = t(lang, "back");
       document.getElementById("btn-print").textContent = t(lang, "print");
+      const orientLabel = document.getElementById("orient-label");
+      if (orientLabel) orientLabel.textContent = t(lang, "orientLabel");
+      const btnPortrait = document.getElementById("btn-orient-portrait");
+      const btnLandscape = document.getElementById("btn-orient-landscape");
+      if (btnPortrait) btnPortrait.textContent = t(lang, "orientPortrait");
+      if (btnLandscape) btnLandscape.textContent = t(lang, "orientLandscape");
+      syncOrientButtonsUi();
       document.title = `${t(lang, "purchaseOrder")} ${g.poNumber || ""}`.trim();
+      lastRenderedDoc = { po, g, company };
 
       const buyer = companyName(po, company, lang);
       const vendor = g.vendor || {};
@@ -1670,11 +1760,32 @@
       }
     }
 
+    function syncOrientButtonsUi() {
+      document.getElementById("btn-orient-portrait")?.classList.toggle("is-active", !itemsLandscapeMode);
+      document.getElementById("btn-orient-landscape")?.classList.toggle("is-active", itemsLandscapeMode);
+    }
+
+    function setItemsOrientation(orient) {
+      itemsLandscapeMode = orient === "landscape";
+      try {
+        localStorage.setItem(ITEMS_ORIENT_LS_KEY, itemsLandscapeMode ? "landscape" : "portrait");
+      } catch (_) {
+        /* ignore */
+      }
+      syncOrientButtonsUi();
+      if (lastRenderedDoc) {
+        renderDocument(lastRenderedDoc.po, lastRenderedDoc.g, lastRenderedDoc.company);
+      }
+    }
+
     document.getElementById("btn-print").addEventListener("click", () => window.print());
     document.getElementById("btn-back").addEventListener("click", () => {
       if (history.length > 1) history.back();
       else window.close();
     });
+    document.getElementById("btn-orient-portrait")?.addEventListener("click", () => setItemsOrientation("portrait"));
+    document.getElementById("btn-orient-landscape")?.addEventListener("click", () => setItemsOrientation("landscape"));
+    syncOrientButtonsUi();
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {

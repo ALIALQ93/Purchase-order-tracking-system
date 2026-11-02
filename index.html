@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.10.31.2" />
+  <meta name="app-version" content="2026.11.02.3" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -2223,6 +2223,29 @@
       background: #e9eef5;
       border: none;
     }
+    #modal-po-print-view.po007-items-landscape .po-print-sheet:has(.po007-preview-mode) {
+      max-width: min(1200px, calc(100vw - 1rem));
+    }
+    #modal-po-print-view.po007-items-landscape .modal.po-modal-wide {
+      max-width: min(1240px, 98vw);
+    }
+    .po007-print-orient-bar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+      margin-inline-end: auto;
+    }
+    .po007-print-orient-label {
+      font-size: 0.8rem;
+      color: var(--muted, #64748b);
+      font-weight: 600;
+    }
+    .po007-print-orient-btn.is-active {
+      background: #1c4587 !important;
+      border-color: #1c4587 !important;
+      color: #fff !important;
+    }
     /* PO007 — معاينة A4 مطابقة للطباعة */
     #modal-po-print-view .po007-surface.po007-preview-mode {
       --po007-a4-w: 794px;
@@ -2230,6 +2253,24 @@
       --po007-print-pad-x: 28px;
       --po007-print-pad-bottom: 14px;
       width: 100%;
+    }
+    /* العرض الأفقي لمعاينة جدول المواد فقط — باقي الصفحة تبقى بعرض عمودي */
+    #modal-po-print-view.po007-items-landscape .po007-surface.po007-preview-mode .po007-items-table-wrap {
+      width: min(1067px, calc(100vw - 3rem));
+      max-width: none;
+      overflow-x: auto;
+    }
+    #modal-po-print-view.po007-items-landscape .po007-surface.po007-preview-mode .po007-page:has(.po007-items-table) {
+      width: max(var(--po007-a4-w), 1123px);
+      max-width: none;
+    }
+    #modal-po-print-view.po007-items-landscape .po007-surface.po007-preview-mode .po007-page:not(:has(.po007-items-table)) {
+      width: var(--po007-a4-w);
+    }
+    #modal-po-print-view.po007-items-landscape .po007-surface.po007-preview-mode .po007-items-table thead th,
+    #modal-po-print-view.po007-items-landscape .po007-surface.po007-preview-mode .po007-items-table td {
+      font-size: 9.5px;
+      padding: 4px 6px;
     }
     #modal-po-print-view .po007-surface.po007-preview-mode .po007-doc {
       gap: 0;
@@ -2371,6 +2412,46 @@
       flex-direction: column;
       box-sizing: border-box;
       position: relative;
+    }
+    /* أثناء التعديل: العرض الأفقي لصفحة/جدول المواد فقط */
+    #modal-general-po007.po007-items-landscape .po007-editor-modal {
+      width: min(98vw, 1760px);
+      max-width: min(98vw, 1760px);
+    }
+    #modal-general-po007.po007-items-landscape .po007-surface.po007-edit-mode .po007-page:has(.po007-items-table) {
+      width: 1123px;
+      max-width: none;
+      min-height: 794px;
+      padding: 28px 32px 22px;
+    }
+    #modal-general-po007.po007-items-landscape .po007-surface.po007-edit-mode .po007-page:not(:has(.po007-items-table)) {
+      width: 794px;
+      min-height: 1123px;
+    }
+    #modal-general-po007.po007-items-landscape .po007-surface.po007-edit-mode .po007-items-table thead th,
+    #modal-general-po007.po007-items-landscape .po007-surface.po007-edit-mode .po007-items-table td {
+      font-size: 11px;
+    }
+    .po007-items-orient-bar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #c8d4e8;
+      background: #f4f7fb;
+    }
+    .po007-items-orient-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #1c4587;
+      white-space: nowrap;
+    }
+    .po007-items-orient-bar .po007-print-orient-btn {
+      min-height: 1.65rem;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.72rem;
     }
     .po007-surface:not(.po007-edit-mode):not(.po007-print-output) .po007-page {
       background: #fff;
@@ -7556,6 +7637,11 @@
       <p id="po007-preview-hint" class="po007-preview-hint no-print hidden" aria-live="polite"></p>
       <div id="po-print-content" class="po-print-sheet"></div>
       <div class="modal-actions no-print">
+        <div id="po007-print-orient-bar" class="po007-print-orient-bar hidden" role="group" aria-label="Orientation">
+          <span class="po007-print-orient-label" data-i18n="po007PrintOrientLabel">اتجاه جدول المواد</span>
+          <button type="button" class="btn btn-secondary btn-sm po007-print-orient-btn is-active" id="po007-print-orient-portrait" data-orient="portrait" data-i18n="po007PrintOrientPortrait">عمودي</button>
+          <button type="button" class="btn btn-secondary btn-sm po007-print-orient-btn" id="po007-print-orient-landscape" data-orient="landscape" data-i18n="po007PrintOrientLandscape">عرضي</button>
+        </div>
         <button type="button" class="btn btn-secondary" id="modal-po-print-close" data-i18n="cancel">إلغاء</button>
         <button type="button" class="btn btn-secondary" id="modal-po-export-pdf" data-i18n="poPrintExportPdfBtn">
           تصدير PDF
@@ -8706,6 +8792,9 @@
         btnGenPoProPrint: "النموذج الاحترافي",
         poPrintViewTitle: "طلب شراء — عرض للطباعة",
         poPrintPrintBtn: "طباعة",
+        po007PrintOrientLabel: "اتجاه جدول المواد",
+        po007PrintOrientPortrait: "عمودي",
+        po007PrintOrientLandscape: "عرضي",
         poPrintExportPdfBtn: "تصدير PDF",
         poPrintExportPdfHint: "من نافذة الطباعة اختر الوجهة: حفظ كـ PDF (Save as PDF).",
         poPrintMetaRef: "المرجع",
@@ -10157,6 +10246,9 @@
         btnGenPoProPrint: "Pro print",
         poPrintViewTitle: "Purchase request — print view",
         poPrintPrintBtn: "Print",
+        po007PrintOrientLabel: "Materials table orientation",
+        po007PrintOrientPortrait: "Portrait",
+        po007PrintOrientLandscape: "Landscape",
         poPrintExportPdfBtn: "Export PDF",
         poPrintExportPdfHint: "In the print dialog, choose destination: Save as PDF.",
         poPrintMetaRef: "Reference",
@@ -15003,12 +15095,14 @@
       if (curSel) curSel.value = "USD";
       setPo007MetaPoDateIso(formatTodayYmd());
       syncGeneralPo007EditorModeUi();
+      applyPo007EditorOrientationUi();
       $("modal-general-po007")?.classList.remove("hidden");
       const docLang = getPo007DocumentLang();
       const g = buildGeneralPoTemplateEditorForm(docLang);
       g.poNumber = "—";
       g.poDate = getPo007MetaPoDateIso();
       mountGeneralPo007Editor(g, {});
+      applyPo007EditorOrientationUi();
       void refreshPo007MetaToFrame();
     }
 
@@ -15158,23 +15252,89 @@
     const PO007_PRINT_MARGIN_TOP_MM = 3;
     const PO007_PRINT_MARGIN_X_MM = 8;
     const PO007_PRINT_MARGIN_BOTTOM_MM = 5;
+    const PO007_PRINT_ORIENT_LS_KEY = "po007PrintOrientation";
+    let po007PrintOrientation =
+      (typeof localStorage !== "undefined" && localStorage.getItem(PO007_PRINT_ORIENT_LS_KEY) === "landscape")
+        ? "landscape"
+        : "portrait";
     function po007MmToPx(mm) {
       return Math.round((mm / 25.4) * 96);
     }
     const PO007_PRINT_MARGIN_TOP_PX = po007MmToPx(PO007_PRINT_MARGIN_TOP_MM);
     const PO007_PRINT_MARGIN_X_PX = po007MmToPx(PO007_PRINT_MARGIN_X_MM);
     const PO007_PRINT_MARGIN_BOTTOM_PX = po007MmToPx(PO007_PRINT_MARGIN_BOTTOM_MM);
-    const PO007_PRINT_PAGE_HEIGHT_PX = PO007_A4_HEIGHT_PX;
-    const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
     const PO007_PRINT_FOOTER_GAP_PX = 6;
     const PO007_PRINT_FOOTER_RESERVE_PX = 22;
+    function po007IsLandscapePrint() {
+      return po007PrintOrientation === "landscape";
+    }
+    function po007ActivePageWidthPx() {
+      return po007IsLandscapePrint() ? PO007_A4_HEIGHT_PX : PO007_A4_WIDTH_PX;
+    }
+    function po007ActivePageHeightPx() {
+      return po007IsLandscapePrint() ? PO007_A4_WIDTH_PX : PO007_A4_HEIGHT_PX;
+    }
+    function po007ActivePrintContentWidthPx() {
+      return po007ActivePageWidthPx() - 2 * PO007_PRINT_MARGIN_X_PX;
+    }
     /** ارتفاع منطقة المحتوى داخل صفحة A4 (بعد هوامش الطباعة) */
+    function po007ActivePrintBodyMaxPx() {
+      return po007ActivePageHeightPx() - PO007_PRINT_MARGIN_TOP_PX - PO007_PRINT_MARGIN_BOTTOM_PX;
+    }
+    const PO007_PRINT_PAGE_HEIGHT_PX = PO007_A4_HEIGHT_PX;
+    const PO007_PRINT_CONTENT_WIDTH_PX = PO007_A4_WIDTH_PX - 2 * PO007_PRINT_MARGIN_X_PX;
     const PO007_PRINT_BODY_MAX_PX =
       PO007_PRINT_PAGE_HEIGHT_PX - PO007_PRINT_MARGIN_TOP_PX - PO007_PRINT_MARGIN_BOTTOM_PX;
     const PO007_PRINT_SHEET_HEIGHT_PX = PO007_PRINT_PAGE_HEIGHT_PX;
     const PO007_PRINT_CONTENT_HEIGHT_PX = PO007_PRINT_BODY_MAX_PX;
     function po007PrintBodyLimitPx() {
-      return PO007_PRINT_BODY_MAX_PX;
+      return po007ActivePrintBodyMaxPx();
+    }
+    function syncPo007OrientationButtons(land) {
+      document.querySelectorAll(".po007-print-orient-btn[data-orient='portrait']").forEach((btn) => {
+        btn.classList.toggle("is-active", !land);
+      });
+      document.querySelectorAll(".po007-print-orient-btn[data-orient='landscape']").forEach((btn) => {
+        btn.classList.toggle("is-active", land);
+      });
+    }
+    function applyPo007EditorOrientationUi() {
+      const editorModal = $("modal-general-po007");
+      const land = po007IsLandscapePrint();
+      editorModal?.classList.toggle("po007-items-landscape", land);
+      syncPo007OrientationButtons(land);
+      const mount = getGeneralPo007Mount();
+      if (mount?.querySelector(".po007-edit-mode")) {
+        schedulePo007PageBreakGuides(mount);
+      }
+    }
+    function applyPo007PrintOrientationUi(showBar) {
+      const modal = $("modal-po-print-view");
+      const bar = $("po007-print-orient-bar");
+      if (bar) bar.classList.toggle("hidden", !showBar);
+      modal?.classList.toggle("po007-items-landscape", !!showBar && po007IsLandscapePrint());
+      syncPo007OrientationButtons(po007IsLandscapePrint());
+    }
+    function setPo007PrintOrientation(orient, { refreshPreview = true } = {}) {
+      po007PrintOrientation = orient === "landscape" ? "landscape" : "portrait";
+      try {
+        localStorage.setItem(PO007_PRINT_ORIENT_LS_KEY, po007PrintOrientation);
+      } catch (_) {
+        /* ignore */
+      }
+      const printBarVisible = !$("po007-print-orient-bar")?.classList.contains("hidden");
+      applyPo007PrintOrientationUi(printBarVisible);
+      applyPo007EditorOrientationUi();
+      if (refreshPreview && lastPo007PrintSource) {
+        schedulePo007PageBreakGuides($("po-print-content"));
+      }
+    }
+    function wirePo007ItemsOrientButtons(root) {
+      root?.querySelectorAll("[data-po007-items-orient]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          setPo007PrintOrientation(btn.getAttribute("data-po007-items-orient") || "portrait");
+        });
+      });
     }
     let po007PageGuidesTimer = null;
     let po007PageGuidesRo = null;
@@ -15714,13 +15874,21 @@
 
       const surface = doc.createElement("div");
       surface.className = "po007-surface po007-print-output";
-      surface.style.cssText = `width:${PO007_A4_WIDTH_PX}px;margin:0;padding:0;`;
       host.appendChild(surface);
 
       const bodyShell = doc.createElement("div");
       bodyShell.className = "po007-print-page-body";
-      bodyShell.style.cssText = `box-sizing:border-box;width:${PO007_PRINT_CONTENT_WIDTH_PX}px;margin:0;padding:0;font-size:11px;line-height:1.42;`;
+      bodyShell.style.cssText = "box-sizing:border-box;margin:0;padding:0;font-size:11px;line-height:1.42;";
       surface.appendChild(bodyShell);
+
+      let landscape = false;
+      const applyDims = () => {
+        const pageW = landscape ? PO007_A4_HEIGHT_PX : PO007_A4_WIDTH_PX;
+        const contentW = pageW - 2 * PO007_PRINT_MARGIN_X_PX;
+        surface.style.cssText = `width:${pageW}px;margin:0;padding:0;`;
+        bodyShell.style.width = `${contentW}px`;
+      };
+      applyDims();
 
       const measureInBody = () => bodyShell.scrollHeight || bodyShell.offsetHeight || 0;
 
@@ -15735,7 +15903,17 @@
         return measureInBody();
       };
 
-      return { host, measureEl, measureBody, destroy: () => host.remove() };
+      return {
+        host,
+        measureEl,
+        measureBody,
+        isLandscape: () => landscape,
+        setLandscape(v) {
+          landscape = !!v;
+          applyDims();
+        },
+        destroy: () => host.remove(),
+      };
     }
 
     function po007ClonePrintRunningHeader(miniHeaderEl, doc) {
@@ -15750,9 +15928,11 @@
       return previewDoc?.querySelector(".po007-mini-header") || null;
     }
 
-    function po007NewPrintPage(doc) {
+    function po007NewPrintPage(doc, { itemsLandscape = false } = {}) {
       const el = doc.createElement("div");
-      el.className = "po007-print-page";
+      el.className = itemsLandscape
+        ? "po007-print-page po007-print-page--items-landscape"
+        : "po007-print-page";
       const body = doc.createElement("div");
       body.className = "po007-print-page-body";
       el.appendChild(body);
@@ -15791,16 +15971,26 @@
 
     function po007PackUnitsToPages(units, measCtx, doc, opts) {
       const { miniHeader } = opts;
+      const itemsLandscape = po007IsLandscapePrint();
       const pages = [];
-      let page = po007NewPrintPage(doc);
+      let page = po007NewPrintPage(doc, { itemsLandscape: false });
+      if (measCtx.setLandscape) measCtx.setLandscape(false);
       let miniOnPage = false;
       let pendingRows = [];
       let pendingMeta = null;
-      const bodyLimit = () => po007PrintBodyLimitPx();
+      const bodyLimit = () =>
+        measCtx.isLandscape?.()
+          ? PO007_A4_WIDTH_PX - PO007_PRINT_MARGIN_TOP_PX - PO007_PRINT_MARGIN_BOTTOM_PX
+          : PO007_PRINT_BODY_MAX_PX;
 
       const bodyUsed = () => measCtx.measureBody(page.body);
 
-      const pageHasTable = () => !!page.body.querySelector(".po007-items-table-wrap");
+      const pageHasTable = () =>
+        !!page.body.querySelector(
+          '.po007-items-table-wrap:has([data-po007="items-table"]), table.po007-items-table[data-po007="items-table"]'
+        );
+      const pageIsItemsLandscape = () =>
+        !!page.el?.classList.contains("po007-print-page--items-landscape");
 
       const isContinuationSheet = () => pages.length > 0;
 
@@ -15810,10 +16000,29 @@
         return measCtx.measureEl(po007BundleContinuationContent(dummy, miniHeader, doc));
       };
 
-      const startNewPage = () => {
+      const startNewPage = ({ forItems = false } = {}) => {
         if (page.body.childNodes.length && !po007PrintPageIsOrphanHeader(page)) pages.push(page);
-        page = po007NewPrintPage(doc);
+        const useLand = !!(itemsLandscape && forItems);
+        page = po007NewPrintPage(doc, { itemsLandscape: useLand });
+        if (measCtx.setLandscape) measCtx.setLandscape(useLand);
         miniOnPage = false;
+      };
+
+      const ensureItemsLandscapePage = () => {
+        if (!itemsLandscape) return;
+        if (pageIsItemsLandscape()) return;
+        if (page.body.childNodes.length > 0) startNewPage({ forItems: true });
+        else {
+          page.el.classList.add("po007-print-page--items-landscape");
+          if (measCtx.setLandscape) measCtx.setLandscape(true);
+        }
+      };
+
+      const ensurePortraitPageAfterItems = () => {
+        if (!itemsLandscape) return;
+        if (!pageIsItemsLandscape() && !pageHasTable()) return;
+        if (page.body.childNodes.length > 0) startNewPage({ forItems: false });
+        else if (measCtx.setLandscape) measCtx.setLandscape(false);
       };
 
       const wrapContinuationIfNeeded = (node) => {
@@ -15883,17 +16092,18 @@
 
       const placeTable = (rows, meta) => {
         if (!rows.length) return;
+        ensureItemsLandscapePage();
         let remaining = [...rows];
         while (remaining.length) {
           if (pageHasTable()) {
-            startNewPage();
+            startNewPage({ forItems: itemsLandscape });
           }
           let snap = po007SnapshotTableMetaFlags(meta);
           let fitCount = countFittingTableRows(remaining, meta);
           po007RestoreTableMetaFlags(meta, snap);
           if (fitCount === 0) {
             if (page.body.childNodes.length > 0) {
-              startNewPage();
+              startNewPage({ forItems: itemsLandscape });
               snap = po007SnapshotTableMetaFlags(meta);
               fitCount = countFittingTableRows(remaining, meta);
               po007RestoreTableMetaFlags(meta, snap);
@@ -15911,10 +16121,13 @@
         if (!pendingRows.length || !pendingMeta) return;
         placeTable(pendingRows, pendingMeta);
         pendingRows = [];
+        pendingMeta = null;
       };
 
       const appendBlock = (el, isMini) => {
+        const hadItemsPage = pageIsItemsLandscape() || pageHasTable();
         flushTable();
+        if (hadItemsPage && itemsLandscape && !isMini) ensurePortraitPageAfterItems();
         if (isMini) {
           if (miniOnPage) return;
           if (page.body.querySelector(".po007-print-continuation-header, .po007-print-continuation-bundle")) return;
@@ -15935,10 +16148,12 @@
 
         if (pendingMeta && pendingMeta.tableRef !== unit.meta.tableRef) {
           flushTable();
+          ensurePortraitPageAfterItems();
           pendingMeta = null;
         }
         if (!pendingMeta) pendingMeta = unit.meta;
 
+        ensureItemsLandscapePage();
         const activeMeta = pendingMeta || unit.meta;
         const trial = [...pendingRows, ...unit.rows];
         if (tableFitsOnPage(trial, activeMeta)) {
@@ -15948,7 +16163,7 @@
 
         if (pendingRows.length) {
           flushTable();
-          startNewPage();
+          startNewPage({ forItems: itemsLandscape });
           pendingMeta = activeMeta;
           pendingRows = [...unit.rows];
           if (!tableFitsOnPage(pendingRows, pendingMeta)) {
@@ -15958,7 +16173,7 @@
         }
 
         if (page.body.childNodes.length > 0) {
-          startNewPage();
+          startNewPage({ forItems: itemsLandscape });
         }
         pendingMeta = activeMeta;
         pendingRows = [...unit.rows];
@@ -16019,20 +16234,21 @@
     function po007SetIframePrintDimensions(doc) {
       if (!doc) return;
       const pageW = `${PO007_A4_WIDTH_PX}px`;
-      const contentW = `${PO007_PRINT_CONTENT_WIDTH_PX}px`;
-      doc.documentElement.style.width = pageW;
-      doc.body.style.width = pageW;
+      const wideW = `${PO007_A4_HEIGHT_PX}px`;
+      doc.documentElement.style.width = po007IsLandscapePrint() ? wideW : pageW;
+      doc.body.style.width = po007IsLandscapePrint() ? wideW : pageW;
       doc.body.style.margin = "0";
       doc.body.style.padding = "0";
       const modal = doc.getElementById("modal-po-print-view");
       if (modal) {
-        modal.style.width = pageW;
-        modal.style.maxWidth = pageW;
+        modal.style.width = po007IsLandscapePrint() ? wideW : pageW;
+        modal.style.maxWidth = po007IsLandscapePrint() ? wideW : pageW;
+        modal.classList.toggle("po007-items-landscape", po007IsLandscapePrint());
       }
       const sheet = doc.getElementById("po-print-content");
       if (sheet) {
-        sheet.style.width = contentW;
-        sheet.style.maxWidth = contentW;
+        sheet.style.width = "100%";
+        sheet.style.maxWidth = "100%";
         sheet.style.margin = "0 auto";
         sheet.style.boxSizing = "border-box";
       }
@@ -16047,21 +16263,29 @@
 
     function buildPo007PrintOutputIframeCss() {
       const bodyH = PO007_PRINT_BODY_MAX_PX;
+      const landBodyH = PO007_A4_WIDTH_PX - PO007_PRINT_MARGIN_TOP_PX - PO007_PRINT_MARGIN_BOTTOM_PX;
       const padTop = PO007_PRINT_MARGIN_TOP_PX;
       const padX = PO007_PRINT_MARGIN_X_PX;
       const padBottom = PO007_PRINT_MARGIN_BOTTOM_PX;
       const pageH = PO007_A4_HEIGHT_PX;
+      const landPageH = PO007_A4_WIDTH_PX;
+      const landPageW = PO007_A4_HEIGHT_PX;
       return `
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-doc {
-      display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0;
+      display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0; align-items: center;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page {
-      box-sizing: border-box; width: 100%; max-width: 100%;
+      box-sizing: border-box; width: ${PO007_A4_WIDTH_PX}px; max-width: 100%;
       min-height: ${pageH}px;
       padding: ${padTop}px ${padX}px ${padBottom}px;
       margin: 0; background: #fff;
       display: block;
       page-break-after: always; break-after: page;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page.po007-print-page--items-landscape {
+      width: ${landPageW}px;
+      min-height: ${landPageH}px;
+      page: po007-items-land;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page:last-child {
       page-break-after: auto; break-after: auto;
@@ -16069,6 +16293,9 @@
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-body {
       max-height: ${bodyH}px;
       overflow: hidden; font-size: 11px; line-height: 1.42;
+    }
+    #modal-po-print-view .po007-surface.po007-print-output .po007-print-page--items-landscape .po007-print-page-body {
+      max-height: ${landBodyH}px;
     }
     #modal-po-print-view .po007-surface.po007-print-output .po007-print-page-num-slot--below-ref {
       margin-top: 2px;
@@ -16152,6 +16379,7 @@
     function buildPo007IframePrintExtras() {
       return `
     @page { size: A4 portrait; margin: 0; }
+    @page po007-items-land { size: A4 landscape; margin: 0; }
     #modal-po-print-view.modal-overlay,
     #modal-po-print-view .modal,
     #modal-po-print-view .po-print-sheet {
@@ -16292,8 +16520,9 @@
         frame.setAttribute("aria-hidden", "true");
         document.body.appendChild(frame);
       }
+      const frameW = po007IsLandscapePrint() ? PO007_A4_HEIGHT_PX : PO007_A4_WIDTH_PX;
       frame.style.cssText =
-        "position:fixed;left:-12000px;top:0;width:794px;min-height:100vh;border:0;opacity:0;pointer-events:none;visibility:hidden;";
+        `position:fixed;left:-12000px;top:0;width:${frameW}px;min-height:100vh;border:0;opacity:0;pointer-events:none;visibility:hidden;`;
       const doc = frame.contentDocument;
       const win = frame.contentWindow;
       if (!doc || !win) {
@@ -16735,13 +16964,25 @@
         .join("");
       const colVisPanel = renderPo007ItemsColVisibilityPanel(cfg, docLang, curSuffix);
       const lineNoBar = renderPo007ItemsLineNumberModeBar(cfg, docLang);
+      const itemsOrientBar = `<div class="po007-items-orient-bar" role="group" aria-label="${escapeAttr(
+        t("po007PrintOrientLabel")
+      )}">
+          <span class="po007-items-orient-label">${escapeHtml(t("po007PrintOrientLabel"))}</span>
+          <button type="button" class="btn btn-secondary btn-sm po007-print-orient-btn${
+            po007IsLandscapePrint() ? "" : " is-active"
+          }" data-po007-items-orient="portrait">${escapeHtml(t("po007PrintOrientPortrait"))}</button>
+          <button type="button" class="btn btn-secondary btn-sm po007-print-orient-btn${
+            po007IsLandscapePrint() ? " is-active" : ""
+          }" data-po007-items-orient="landscape">${escapeHtml(t("po007PrintOrientLandscape"))}</button>
+        </div>`;
       return `<div class="po007-items-table-wrap">
         <div class="po007-items-table-toolbar">
           <p class="sub gen-lines-included-hint" style="margin:0;color:var(--muted);font-size:0.82rem;flex:1 1 100%">${escapeHtml(
             tPo007(docLang, "genPoLinesIncludedHint")
           )}</p>
+          ${itemsOrientBar}
           ${lineNoBar}
-          <button type="button" class="po007-items-col-vis-btn" data-po007="items-col-visibility" title="${escapeAttr(
+          <button type="button" class="btn btn-secondary btn-sm po007-items-col-vis-btn" data-po007="items-col-visibility" title="${escapeAttr(
             tPo007(docLang, "genPo007ItemsColVisibilityTitle")
           )}">${escapeHtml(tPo007(docLang, "genPo007ItemsColVisibility"))}</button>
           <button type="button" class="po007-items-add-col-btn" data-po007="items-add-col">${escapeHtml(
@@ -18172,6 +18413,8 @@
         }
       }
       patchPo007FootersAndMiniHeader();
+      wirePo007ItemsOrientButtons(mount);
+      applyPo007EditorOrientationUi();
       schedulePo007PageBreakGuides(mount);
       bindPo007PageBreakGuidesObserver(mount);
     }
@@ -18943,6 +19186,7 @@
       const langSelOpen = $("po007-meta-lang");
       if (langSelOpen) langSelOpen.value = docLang;
       syncGeneralPo007EditorModeUi();
+      applyPo007EditorOrientationUi();
       $("modal-general-po007")?.classList.remove("hidden");
       const po = generalPo007PendingLoad?.po || {};
       const g = generalPo007PendingLoad?.g
@@ -18956,12 +19200,14 @@
         g.poDate = getPo007MetaPoDateIso();
       }
       mountGeneralPo007Editor(g, po);
+      applyPo007EditorOrientationUi();
       void refreshPo007MetaToFrame();
       generalPo007PendingLoad = null;
     }
 
     function closeGeneralPo007Modal() {
       $("modal-general-po007")?.classList.add("hidden");
+      $("modal-general-po007")?.classList.remove("po007-items-landscape");
       const mount = getGeneralPo007Mount();
       if (mount) mount.innerHTML = "";
       generalPo007EditorLogo = "";
@@ -19119,16 +19365,19 @@
       const g = normalizeGeneralFormFromPo(po);
       const buyerName = await resolveGeneralPoBuyerName(po, g);
       const poRender = { ...po, companyNameSnapshot: buyerName };
-      const refText = (g.poNumber || po.title || "").trim() || t("docTitle");
       const el = $("po-print-content");
       if (!el) return;
       const html = renderGeneralPo007Html(poRender, g);
       el.innerHTML = html;
       lastPo007PrintSource = { po: poRender, g };
       lastPoPrintDoc = { title: buildPo007PrintPdfTitle(poRender, g), html };
-      const docLang = g.documentLang === "en" ? "en" : "ar";
       $("po007-preview-hint")?.classList.add("hidden");
+      applyPo007PrintOrientationUi(true);
       $("modal-po-print-view")?.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        schedulePo007PageBreakGuides(el);
+        bindPo007PageBreakGuidesObserver(el);
+      });
     }
 
     function openGeneralPoProPrint(poId) {
@@ -26570,6 +26819,7 @@
       restorePo007PrintFooters();
       $("modal-po-print-view")?.classList.add("hidden");
       $("po007-preview-hint")?.classList.add("hidden");
+      applyPo007PrintOrientationUi(false);
       const el = $("po-print-content");
       if (el) el.innerHTML = "";
       lastPoPrintDoc = null;
@@ -26915,6 +27165,8 @@
       const el = $("po-print-content");
       if (el) el.innerHTML = html;
       lastPoPrintDoc = { title: refText || t("docTitle"), html };
+      lastPo007PrintSource = null;
+      applyPo007PrintOrientationUi(false);
       $("modal-po-print-view")?.classList.remove("hidden");
     }
 
@@ -34788,6 +35040,8 @@
     $("modal-po-print-close")?.addEventListener("click", closePoPrintViewModal);
     $("modal-po-print-do")?.addEventListener("click", () => triggerPoPrint());
     $("modal-po-export-pdf")?.addEventListener("click", () => exportPoPdf());
+    $("po007-print-orient-portrait")?.addEventListener("click", () => setPo007PrintOrientation("portrait"));
+    $("po007-print-orient-landscape")?.addEventListener("click", () => setPo007PrintOrientation("landscape"));
     window.addEventListener("afterprint", restorePo007PrintFooters);
 
     $("btn-new-po-project").addEventListener("click", async () => {
