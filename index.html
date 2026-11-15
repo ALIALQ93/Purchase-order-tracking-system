@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.15.3" />
+  <meta name="app-version" content="2026.11.15.4" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -6218,7 +6218,7 @@
         <h1 class="page-title" data-i18n="supervisorApprovalsTitle">موافقات المشرف</h1>
         <div class="card">
           <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.9rem;" data-i18n="supervisorApprovalsHint">
-            طلبات وافق عليها مسؤول المجموعة وبانتظار موافقتك النهائية كمشرف. بعد موافقتك يُحوَّل الطلب للمشتريات، أو يمكنك إرجاعه لمسؤول المجموعة لإعادة المراجعة.
+            طلبات وافق عليها مسؤول المجموعة وبانتظار موافقتك النهائية كمشرف. الموافقة تحوّل الطلب للمشتريات، والإرجاع لمسؤول المجموعة يعيد المراجعة عنده، وإرجاع التعديل يعيد الطلب لبداية الطابور (المستودع) مع مسح الموافقات السابقة.
           </p>
           <div id="supervisor-approvals-wrap"><p class="loading" data-i18n="loading">جاري التحميل…</p></div>
         </div>
@@ -7032,7 +7032,7 @@
           </div>
           <div class="help-section">
             <h3 data-i18n="helpAccountTitle">الحساب</h3>
-            <p data-i18n="helpAccountP1">يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. تغيير كلمة المرور يتم من تبويب المستخدمين: يُرسل الرابط إلى إيميل رسمي مسجّل في إعدادات النظام، والمشرف يفتحه ويبلّغ المستخدم بكلمة المرور الجديدة.</p>
+            <p data-i18n="helpAccountP1">يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. تغيير كلمة المرور يتم من جهاز المشرف عبر الأمر في تبويب المستخدمين، لأن الخطة المجانية لا ترسل رابطاً إلى البريد.</p>
           </div>
         </div>
       </section>
@@ -7447,6 +7447,7 @@
     <div class="modal po-modal-wide">
       <h3 id="modal-wh-title" data-i18n="warehouseReviewModalTitle">مراجعة توفر المستودع</h3>
       <p id="modal-wh-sub" class="sub" style="margin-top:-0.35rem;color:var(--muted);"></p>
+      <div id="wh-revision-banner" class="hidden" style="margin:0 0 0.65rem;padding:0.55rem 0.7rem;border:1px solid rgba(180,83,9,0.35);border-radius:8px;background:rgba(245,158,11,0.12);color:#92400e;font-size:0.88rem;line-height:1.45;"></div>
       <p id="wh-per-wh-hint" class="hidden" style="margin:0 0 0.5rem;color:var(--muted);font-size:0.82rem;"></p>
       <input type="hidden" id="wh-po-id" />
       <div class="table-scroll po-lines-wrap">
@@ -8186,6 +8187,23 @@
     </div>
   </div>
 
+  <!-- إرجاع طلب مشروع للتعديل (المشرف) -->
+  <div id="modal-supervisor-revision" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3 data-i18n="supervisorRevisionTitle">إرجاع للتعديل</h3>
+      <p style="margin:0.65rem 0 0;line-height:1.55;color:var(--muted);font-size:0.92rem;" data-i18n="supervisorRevisionHint">
+        سيُعاد الطلب إلى بداية الطابور (مراجعة المستودع) ويُمسح ختم الموافقات السابقة. هذا ليس رفضاً نهائياً.
+      </p>
+      <input type="hidden" id="supervisor-revision-po-id" />
+      <label for="supervisor-revision-note" style="display:block;margin-top:0.85rem" data-i18n="supervisorRevisionNoteLabel">ما المطلوب تعديله؟</label>
+      <textarea id="supervisor-revision-note" rows="4" style="width:100%;box-sizing:border-box;margin-top:0.35rem" data-i18n-placeholder="supervisorRevisionNotePlaceholder" placeholder="اكتب التعديل المطلوب بوضوح…"></textarea>
+      <div class="modal-actions" style="margin-top:1rem">
+        <button type="button" class="btn btn-secondary" id="supervisor-revision-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="supervisor-revision-confirm" data-i18n="btnReturnForRevision">إرجاع للتعديل</button>
+      </div>
+    </div>
+  </div>
+
   <!-- إشعار التحديث: ما الجديد -->
   <div id="modal-whats-new" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal">
@@ -8385,20 +8403,17 @@
 
   <div id="modal-password-reset" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-password-reset-title">
     <div class="modal">
-      <h3 id="modal-password-reset-title" data-i18n="passwordResetModalTitle">إرسال رابط تغيير كلمة المرور</h3>
-      <p class="user-form-hint" style="margin-top:0" data-i18n="passwordResetModalHint">يُرسل الرابط إلى إيميل رسمي مسجّل. افتح الرسالة، عيّن كلمة المرور، ثم بلّغ المستخدم بها.</p>
+      <h3 id="modal-password-reset-title" data-i18n="passwordResetModalTitle">تعيين كلمة المرور</h3>
+      <p class="user-form-hint" style="margin-top:0" data-i18n="passwordResetModalHint">الخطة المجانية لا ترسل بريداً. مرة واحدة: من Firebase Console افتح Project settings ثم Service accounts ثم Generate new private key، واحفظ الملف باسم functions/service-account.json ولا ترفعه إلى GitHub. بعدها انسخ الأمر، شغّله داخل مجلد functions، وأدخل كلمة المرور الجديدة وبلّغ المستخدم بها.</p>
       <p style="margin:0 0 .75rem"><strong data-i18n="passwordResetTargetLabel">الحساب</strong>: <span id="password-reset-target"></span></p>
-      <p id="password-reset-empty" class="error-msg hidden" data-i18n="passwordResetNoRecipients">أضف إيميلاً رسمياً واحداً على الأقل في إعدادات النظام قبل إرسال الرابط.</p>
-      <div id="password-reset-form-fields">
-        <div class="field">
-          <label for="password-reset-recipient" data-i18n="passwordResetRecipientLabel">الإيميل الذي يستلم الرابط</label>
-          <select id="password-reset-recipient"></select>
-        </div>
+      <div class="field">
+        <label for="password-reset-command" data-i18n="passwordResetCommandLabel">الأمر</label>
+        <textarea id="password-reset-command" rows="2" readonly spellcheck="false" style="font-family:ui-monospace,monospace;font-size:.85rem"></textarea>
       </div>
       <p id="password-reset-status" class="muted" style="min-height:1.25rem" aria-live="polite"></p>
       <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" id="btn-password-reset-cancel" data-i18n="cancel">إلغاء</button>
-        <button type="button" class="btn btn-primary" id="btn-password-reset-send" data-i18n="passwordResetSend">إرسال الرابط</button>
+        <button type="button" class="btn btn-secondary" id="btn-password-reset-cancel" data-i18n="cancel">إغلاق</button>
+        <button type="button" class="btn btn-primary" id="btn-password-reset-send" data-i18n="passwordResetSend">نسخ الأمر</button>
       </div>
     </div>
   </div>
@@ -8887,7 +8902,7 @@
           "طلبات مشاريع مناطقك المسندة. يمكنك الموافقة أو الرفض من أي مرحلة قبل المشتريات (بما فيها تجاوز المستودع أو مدير المشروع).",
         supervisorApprovalsTitle: "موافقات المشرف",
         supervisorApprovalsHint:
-          "طلبات وافق عليها مسؤول المجموعة وبانتظار موافقتك النهائية كمشرف. بعد موافقتك يُحوَّل الطلب للمشتريات، أو يمكنك إرجاعه لمسؤول المجموعة لإعادة المراجعة.",
+          "طلبات وافق عليها مسؤول المجموعة وبانتظار موافقتك النهائية كمشرف. الموافقة تحوّل الطلب للمشتريات، والإرجاع لمسؤول المجموعة يعيد المراجعة عنده، وإرجاع التعديل يعيد الطلب لبداية الطابور (المستودع) مع مسح الموافقات السابقة.",
         labelManagedProjectsPm: "المشاريع المسندة (مدير مشروع)",
         managedProjectsPmHint: "وافق فقط على طلبات هذه المشاريع.",
         labelManagedProjectsEf: "المشاريع المسندة (مهندس أول)",
@@ -8906,7 +8921,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.15.3</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>تقرير حالة الطلبات:</strong> فلاتر الشركة/المشروع/المورد/الحالة كقوائم منسدلة مع بحث واختيار متعدد.</li><li><strong>ملاحظة الطلب:</strong> في الشريط العلوي لأوامر الإدارة العامة وتظهر في تقرير الحالة.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.15.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>طلبات المشاريع:</strong> زر المشرف «إرجاع للتعديل» يعيد الطلب لبداية الطابور (المستودع) مع ملاحظة إلزامية ومسح الموافقات السابقة — دون رفض نهائي.</li><li><strong>تقرير حالة الطلبات:</strong> فلاتر منسدلة باختيار متعدد.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -8949,6 +8964,15 @@
         btnApprove: "موافقة",
         btnReject: "رفض",
         btnReturnToGm: "إرجاع لمسؤول المجموعة",
+        btnReturnForRevision: "إرجاع للتعديل",
+        supervisorRevisionTitle: "إرجاع للتعديل",
+        supervisorRevisionHint:
+          "سيُعاد الطلب إلى بداية الطابور (مراجعة المستودع) ويُمسح ختم الموافقات السابقة. هذا ليس رفضاً نهائياً.",
+        supervisorRevisionNoteLabel: "ما المطلوب تعديله؟",
+        supervisorRevisionNotePlaceholder: "اكتب التعديل المطلوب بوضوح…",
+        alertSupervisorRevisionNoteRequired: "أدخل ملاحظة توضح التعديل المطلوب.",
+        confirmSupervisorRevision: "تأكيد إرجاع الطلب لبداية الطابور ومسح الموافقات السابقة؟",
+        warehouseRevisionBanner: "أُعيد للتعديل من المشرف: {note}",
         btnViewPoRequest: "عرض الطلب",
         btnPoPrintView: "عرض وطباعة",
         btnGenPoProPrint: "النموذج الاحترافي",
@@ -9108,7 +9132,7 @@
         helpNavItem8:
           "<strong>موافقات مسؤول المجموعة:</strong> بعد مدير المشروع — الموافقة على مستوى المناطق المسندة، ثم يُحوَّل الطلب لموافقة المشرف.",
         helpNavItemSupervisor:
-          "<strong>موافقات المشرف:</strong> المرحلة النهائية بعد مسؤول المجموعة — للمشرف فقط؛ الموافقة تمرّر الطلب للمشتريات، والإرجاع يعيده لمسؤول المجموعة لإعادة المراجعة.",
+          "<strong>موافقات المشرف:</strong> المرحلة النهائية بعد مسؤول المجموعة — للمشرف فقط؛ الموافقة تمرّر الطلب للمشتريات، والإرجاع لمسؤول المجموعة يعيد المراجعة عنده، وإرجاع التعديل يعيد الطلب لبداية الطابور مع ملاحظة ومسح الموافقات.",
         helpNavItem9:
           "<strong>المشتريات:</strong> بعد موافقة المشرف — اختر مندوب المشتريات ثم انقل الطلب إلى «قيد الشراء»، وبعدها أرسله للحسابات لسلفة العمل. يظهر اسم المندوب في شاشتي المشتريات والحسابات.",
         helpNavItem10:
@@ -9310,14 +9334,14 @@
           "إيميلات رسمية فقط. رابط تغيير كلمة مرور أي مستخدم يُرسل إلى أحد هذه العناوين، والمشرف يفتح الرابط ويبلّغ المستخدم بالكلمة الجديدة. إيميلات الدخول الوهمية لا تستلم الرابط.",
         passwordResetRecipientsLabel: "إيميل في كل سطر",
         passwordResetRecipientsInvalid: "عنوان غير صالح: {email}",
-        btnSendPasswordReset: "رابط كلمة المرور",
-        passwordResetModalTitle: "إرسال رابط تغيير كلمة المرور",
-        passwordResetModalHint: "يُرسل الرابط إلى إيميل رسمي مسجّل. افتح الرسالة، عيّن كلمة المرور، ثم بلّغ المستخدم بها.",
+        btnSendPasswordReset: "تعيين كلمة المرور",
+        passwordResetModalTitle: "تعيين كلمة المرور",
+        passwordResetModalHint:
+          "الخطة المجانية لا ترسل بريداً. مرة واحدة: من Firebase Console افتح Project settings ثم Service accounts ثم Generate new private key، واحفظ الملف باسم functions/service-account.json ولا ترفعه إلى GitHub. بعدها انسخ الأمر، شغّله داخل مجلد functions، وأدخل كلمة المرور الجديدة وبلّغ المستخدم بها.",
         passwordResetTargetLabel: "الحساب",
-        passwordResetRecipientLabel: "الإيميل الذي يستلم الرابط",
-        passwordResetNoRecipients: "أضف إيميلاً رسمياً واحداً على الأقل في إعدادات النظام قبل إرسال الرابط.",
-        passwordResetSend: "إرسال الرابط",
-        passwordResetSent: "أُرسل الرابط إلى {email}.",
+        passwordResetCommandLabel: "الأمر",
+        passwordResetSend: "نسخ الأمر",
+        passwordResetSent: "تم نسخ الأمر. شغّله داخل مجلد functions.",
         passwordResetNotAdmin: "هذا الإجراء متاح للمشرف فقط.",
         passwordResetRecipientRejected: "هذا الإيميل غير مسجّل ضمن عناوين استلام الرابط.",
         passwordResetUserMissing: "حساب الدخول غير موجود في Firebase Authentication.",
@@ -9699,7 +9723,7 @@
         colPriority: "الأولوية",
         helpAccountTitle: "الحساب",
         helpAccountP1:
-          "يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. تغيير كلمة المرور يتم من تبويب المستخدمين: يُرسل الرابط إلى إيميل رسمي مسجّل في إعدادات النظام، والمشرف يفتحه ويبلّغ المستخدم بكلمة المرور الجديدة.",
+          "يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. تغيير كلمة المرور يتم من جهاز المشرف عبر الأمر في تبويب المستخدمين، لأن الخطة المجانية لا ترسل رابطاً إلى البريد.",
         genPoSectionIdentity: "المرجع والشركة (المشتري)",
         genPoLabelBuyerCompany: "شركة المشتري",
         genPoLabelPoNumber: "رقم أمر الشراء (PO)",
@@ -9907,6 +9931,7 @@
         notif_po_gm: "طلب {{ref}} بانتظار موافقة مسؤول المجموعة.",
         notif_po_supervisor: "طلب {{ref}} بانتظار موافقة المشرف.",
         notif_po_supervisor_returned: "طلب {{ref}} أُعيد من المشرف لإعادة مراجعة مسؤول المجموعة.",
+        notif_po_revision_return: "طلب {{ref}} أُعيد للتعديل من المشرف — راجع الملاحظة وأعد المسار من المستودع.",
         notif_po_supervisor_note: "ملاحظة جديدة من المشرف حول الطلب {{ref}}.",
         notif_po_purchasing: "طلب {{ref}} في طابور المشتريات.",
         notif_po_accounting_advance: "طلب {{ref}} بانتظار الحسابات (سلفة عمل).",
@@ -10369,7 +10394,7 @@
           "Requests for projects in your assigned regions. You may approve or reject from any stage before purchasing (including skipping warehouse or project manager).",
         supervisorApprovalsTitle: "Supervisor approvals",
         supervisorApprovalsHint:
-          "Requests approved by the group manager awaiting your final supervisor approval. After you approve, the request moves to purchasing, or you can return it to the group manager for re-review.",
+          "Requests approved by the group manager awaiting your final supervisor approval. Approve sends to purchasing, return to group manager reopens their review, and return for revision sends the request back to warehouse with previous approvals cleared.",
         labelManagedProjectsPm: "Managed projects (project manager)",
         managedProjectsPmHint: "You approve requests only for these projects.",
         labelManagedProjectsEf: "Managed projects (engineer first)",
@@ -10388,7 +10413,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.15.3</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Status report filters:</strong> company/project/supplier/status as searchable multi-select dropdowns.</li><li><strong>Order note:</strong> in the general PO top bar and status report.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.15.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Project POs:</strong> supervisor «Return for revision» sends the request back to warehouse with a required note and clears prior approvals — not a final rejection.</li><li><strong>Status report:</strong> searchable multi-select filter dropdowns.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -10431,6 +10456,15 @@
         btnApprove: "Approve",
         btnReject: "Reject",
         btnReturnToGm: "Return to group manager",
+        btnReturnForRevision: "Return for revision",
+        supervisorRevisionTitle: "Return for revision",
+        supervisorRevisionHint:
+          "The request will go back to the start of the queue (warehouse review) and previous approval stamps will be cleared. This is not a final rejection.",
+        supervisorRevisionNoteLabel: "What needs to be changed?",
+        supervisorRevisionNotePlaceholder: "Describe the required changes clearly…",
+        alertSupervisorRevisionNoteRequired: "Enter a note describing the required revision.",
+        confirmSupervisorRevision: "Confirm returning this request to the start of the queue and clearing previous approvals?",
+        warehouseRevisionBanner: "Returned for revision by supervisor: {note}",
         btnViewPoRequest: "View request",
         btnPoPrintView: "View & print",
         btnGenPoProPrint: "Pro print",
@@ -10591,7 +10625,7 @@
         helpNavItem8:
           "<strong>Group manager approvals:</strong> After the project manager — approve at assigned region level, then the request goes to supervisor approval.",
         helpNavItemSupervisor:
-          "<strong>Supervisor approvals:</strong> Final stage after the group manager — for the supervisor (admin) only; approve sends the request to purchasing, return sends it back to the group manager for re-review.",
+          "<strong>Supervisor approvals:</strong> Final stage after the group manager — for the supervisor (admin) only; approve sends to purchasing, return to GM reopens their review, and return for revision sends the request back to the start of the queue with a note and cleared approvals.",
         helpNavItem9:
           "<strong>Purchasing:</strong> After supervisor approval — choose the purchasing representative, move to in progress, then send to accounting for the work advance. The representative name appears on Purchasing and Accounting.",
         helpNavItem10:
@@ -10793,15 +10827,14 @@
           "Official emails only. A password-reset link for any user is sent to one of these addresses. The administrator opens the link and tells the user the new password. Sign-in addresses that are not real inboxes do not receive the link.",
         passwordResetRecipientsLabel: "One email per line",
         passwordResetRecipientsInvalid: "Invalid address: {email}",
-        btnSendPasswordReset: "Password link",
-        passwordResetModalTitle: "Send a password-reset link",
+        btnSendPasswordReset: "Set password",
+        passwordResetModalTitle: "Set password",
         passwordResetModalHint:
-          "The link is sent to a registered official email. Open the message, set the new password, then tell the user.",
+          "The free plan cannot send email. Once: in Firebase Console open Project settings → Service accounts → Generate new private key, and save it as functions/service-account.json. Do not upload that file to GitHub. Then copy the command, run it inside the functions folder, enter the new password, and tell the user.",
         passwordResetTargetLabel: "Account",
-        passwordResetRecipientLabel: "Inbox that receives the link",
-        passwordResetNoRecipients: "Add at least one official email in System settings before sending a link.",
-        passwordResetSend: "Send link",
-        passwordResetSent: "The link was sent to {email}.",
+        passwordResetCommandLabel: "Command",
+        passwordResetSend: "Copy command",
+        passwordResetSent: "Command copied. Run it inside the functions folder.",
         passwordResetNotAdmin: "Only an administrator can do this.",
         passwordResetRecipientRejected: "This email is not on the list of inboxes allowed to receive reset links.",
         passwordResetUserMissing: "This sign-in account was not found in Firebase Authentication.",
@@ -11184,7 +11217,7 @@
         colPriority: "Priority",
         helpAccountTitle: "Account",
         helpAccountP1:
-          "Accounts are created by administrators in the Firebase console. Password changes are sent from the Users tab: the link goes to an official email saved in System settings. The administrator opens it and tells the user the new password.",
+          "Accounts are created by administrators in the Firebase console. Passwords are changed from the supervisor's computer with the command in the Users tab, because the free plan cannot email a reset link.",
         genPoSectionIdentity: "Reference & buyer company",
         genPoLabelBuyerCompany: "Buyer company",
         genPoLabelPoNumber: "Purchase order (PO) number",
@@ -11392,6 +11425,7 @@
         notif_po_gm: "Request {{ref}} awaits group manager approval.",
         notif_po_supervisor: "Request {{ref}} awaits supervisor approval.",
         notif_po_supervisor_returned: "Request {{ref}} returned by supervisor for group manager re-review.",
+        notif_po_revision_return: "Request {{ref}} returned for revision by supervisor — review the note and restart from warehouse.",
         notif_po_supervisor_note: "New supervisor note about order {{ref}}.",
         notif_po_purchasing: "Request {{ref}} is in the purchasing queue.",
         notif_po_accounting_advance: "Request {{ref}} awaits accounting (work advance).",
@@ -11631,6 +11665,15 @@
         });
         const cBtn = $("modal-bypass-confirm");
         if (cBtn) cBtn.textContent = t("btnWorkflowBypassConfirm");
+      }
+      const revM = $("modal-supervisor-revision");
+      if (revM && !revM.classList.contains("hidden")) {
+        revM.querySelectorAll("[data-i18n]").forEach((el) => {
+          el.textContent = t(el.dataset.i18n);
+        });
+        revM.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+          el.placeholder = t(el.dataset.i18nPlaceholder);
+        });
       }
       const wfPoM = $("modal-workflow-po-lines");
       if (wfPoM && !wfPoM.classList.contains("hidden")) {
@@ -29667,6 +29710,120 @@
       }
     }
 
+    let supervisorRevisionPendingPoId = null;
+
+    function closeSupervisorRevisionModal() {
+      const m = $("modal-supervisor-revision");
+      if (m) m.classList.add("hidden");
+      supervisorRevisionPendingPoId = null;
+      const hid = $("supervisor-revision-po-id");
+      if (hid) hid.value = "";
+      const note = $("supervisor-revision-note");
+      if (note) note.value = "";
+    }
+
+    function openSupervisorRevisionModal(poId) {
+      if (!poId || !hasAdminAccess()) return;
+      supervisorRevisionPendingPoId = poId;
+      const hid = $("supervisor-revision-po-id");
+      if (hid) hid.value = poId;
+      const note = $("supervisor-revision-note");
+      if (note) note.value = "";
+      const m = $("modal-supervisor-revision");
+      if (m) m.classList.remove("hidden");
+      setTimeout(() => note?.focus(), 0);
+    }
+
+    function buildProjectPoRevisionResetLines(po) {
+      const lines = Array.isArray(po?.lines) ? po.lines : [];
+      return lines.map((line) => {
+        const next = { ...(line || {}) };
+        delete next.availableQty;
+        delete next.warehouseAvailability;
+        delete next.toBuyQty;
+        return next;
+      });
+    }
+
+    function buildProjectPoApprovalClearPatch() {
+      return {
+        warehouseReviewRecorded: deleteField(),
+        warehouseReviewAt: deleteField(),
+        warehouseReviewBy: deleteField(),
+        fulfilledFromWarehouseStock: deleteField(),
+        warehouseStockFulfilledAt: deleteField(),
+        engineerFirstApprovedAt: deleteField(),
+        engineerFirstApprovedBy: deleteField(),
+        engineerFirstRejectedAt: deleteField(),
+        engineerFirstRejectedBy: deleteField(),
+        projectManagerApprovedAt: deleteField(),
+        projectManagerApprovedBy: deleteField(),
+        projectManagerRejectedAt: deleteField(),
+        projectManagerRejectedBy: deleteField(),
+        groupManagerApprovedAt: deleteField(),
+        groupManagerApprovedBy: deleteField(),
+        groupManagerRejectedAt: deleteField(),
+        groupManagerRejectedBy: deleteField(),
+        supervisorApprovedAt: deleteField(),
+        supervisorApprovedBy: deleteField(),
+        supervisorReturnedAt: deleteField(),
+        supervisorReturnedBy: deleteField(),
+        supervisorSkipped: deleteField(),
+        supervisorSkippedAt: deleteField(),
+        supervisorSkippedBy: deleteField(),
+      };
+    }
+
+    async function runSupervisorReturnForRevision(poId, noteText) {
+      if (!poId) return;
+      const note = String(noteText || "").trim();
+      if (!note) {
+        alert(t("alertSupervisorRevisionNoteRequired"));
+        return;
+      }
+      if (!confirm(t("confirmSupervisorRevision"))) return;
+      const ref = doc(db, "purchaseOrders", poId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const po = snap.data();
+      if (!supervisorCanActOnWorkflowStatus(po.workflowStatus)) {
+        alert(t("alertWarehouseReviewStale"));
+        return;
+      }
+      const fromStatus = String(po.workflowStatus || "").trim();
+      const history = Array.isArray(po.revisionHistory) ? [...po.revisionHistory] : [];
+      history.push({
+        note,
+        fromStatus,
+        by: currentUser.uid,
+        at: new Date().toISOString(),
+      });
+      if (history.length > 40) history.splice(0, history.length - 40);
+      try {
+        await updateDoc(ref, {
+          ...buildProjectPoApprovalClearPatch(),
+          workflowStatus: "warehouse_review",
+          lines: buildProjectPoRevisionResetLines(po),
+          returnedForRevision: true,
+          revisionNote: note,
+          revisionRequestedAt: serverTimestamp(),
+          revisionRequestedBy: currentUser.uid,
+          revisionFromStatus: fromStatus,
+          revisionHistory: history,
+          updatedAt: serverTimestamp(),
+        });
+        closeSupervisorRevisionModal();
+        const merged = { ...po, id: poId };
+        void notifyCreatedBy(poId, merged, "notif_po_revision_return", "po-projects");
+        const regId = await resolveRegionIdForPo(po);
+        void notifyWarehouseClerksNewProjectPo(poId, regId, poNotifRefText(merged));
+        refreshWorkflowQueuesByActiveScreen();
+        refreshActiveProjectPoListIfAny();
+      } catch (err) {
+        alert(t("saveFailed") + " " + err.message);
+      }
+    }
+
     async function loadSupervisorApprovalQueue() {
       const wrap = $("supervisor-approvals-wrap");
       if (!wrap) return;
@@ -29711,7 +29868,7 @@
                   <td>${escapeHtml(workflowLabel(r.workflowStatus))}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-wf-open-po" data-id="${escapeHtml(r.id)}" data-mode="supervisor">${escapeHtml(t("btnViewPoRequest"))}</button><button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${escapeHtml(r.id)}">${escapeHtml(t("orderNoteButton"))}</button><button type="button" class="btn btn-primary btn-sm btn-supervisor-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnApprove"))}</button><button type="button" class="btn btn-danger btn-sm btn-supervisor-reject" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnToGm"))}</button>
+                      <button type="button" class="btn btn-secondary btn-sm btn-wf-open-po" data-id="${escapeHtml(r.id)}" data-mode="supervisor">${escapeHtml(t("btnViewPoRequest"))}</button><button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${escapeHtml(r.id)}">${escapeHtml(t("orderNoteButton"))}</button><button type="button" class="btn btn-primary btn-sm btn-supervisor-approve" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnApprove"))}</button><button type="button" class="btn btn-secondary btn-sm btn-supervisor-revision" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnForRevision"))}</button><button type="button" class="btn btn-danger btn-sm btn-supervisor-reject" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnToGm"))}</button>
                     </div>
                   </td>
                 </tr>`
@@ -29726,6 +29883,9 @@
         });
         wrap.querySelectorAll(".btn-supervisor-approve").forEach((btn) => {
           btn.addEventListener("click", () => runSupervisorApprove(btn.dataset.id));
+        });
+        wrap.querySelectorAll(".btn-supervisor-revision").forEach((btn) => {
+          btn.addEventListener("click", () => openSupervisorRevisionModal(btn.dataset.id));
         });
         wrap.querySelectorAll(".btn-supervisor-reject").forEach((btn) => {
           btn.addEventListener("click", () => runSupervisorReject(btn.dataset.id));
@@ -34458,6 +34618,17 @@
       $("wh-po-id").value = po.id;
       const sub = [po.poReference || po.title || "", po.requestDate || ""].filter(Boolean).join(" · ");
       $("modal-wh-sub").textContent = sub;
+      const revBanner = $("wh-revision-banner");
+      if (revBanner) {
+        const revNote = String(po.revisionNote || "").trim();
+        if (po.returnedForRevision && revNote) {
+          revBanner.textContent = t("warehouseRevisionBanner").replace("{note}", revNote);
+          revBanner.classList.remove("hidden");
+        } else {
+          revBanner.textContent = "";
+          revBanner.classList.add("hidden");
+        }
+      }
       const hintEl = $("wh-per-wh-hint");
       if (hintEl) {
         if (warehouses.length > 1) {
@@ -35520,6 +35691,9 @@
         payload.workflowStatus = "pending_engineer_first";
         payload.fulfilledFromWarehouseStock = false;
       }
+      if (whReviewPoSnapshot?.returnedForRevision) {
+        payload.returnedForRevision = false;
+      }
       try {
         await updateDoc(doc(db, "purchaseOrders", poId), payload);
         const mergedPo = { ...(whReviewPoSnapshot || {}), ...payload, id: poId };
@@ -35537,6 +35711,14 @@
       const cb = workflowBypassCallback;
       closeWorkflowBypassModal();
       if (cb) await cb();
+    });
+
+    $("supervisor-revision-cancel")?.addEventListener("click", closeSupervisorRevisionModal);
+    $("supervisor-revision-confirm")?.addEventListener("click", () => {
+      const poId =
+        supervisorRevisionPendingPoId ||
+        ($("supervisor-revision-po-id")?.value || "").trim();
+      void runSupervisorReturnForRevision(poId, $("supervisor-revision-note")?.value || "");
     });
 
     $("modal-whats-new-ok")?.addEventListener("click", closeWhatsNewModal);
@@ -36303,15 +36485,6 @@
               appSettingsCache.supabaseAnonKey || ""
             )}</textarea>
           </div>
-          <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0" />
-          <h3 style="margin:0 0 .5rem;font-size:1.05rem">${escapeHtml(t("passwordResetRecipientsTitle"))}</h3>
-          <p class="user-form-hint" style="margin:0 0 .75rem">${escapeHtml(t("passwordResetRecipientsHint"))}</p>
-          <div class="field">
-            <label for="setting-password-reset-recipients">${escapeHtml(t("passwordResetRecipientsLabel"))}</label>
-            <textarea id="setting-password-reset-recipients" rows="4" autocomplete="off" spellcheck="false">${escapeHtml(
-              (appSettingsCache.passwordResetRecipients || []).join("\n")
-            )}</textarea>
-          </div>
           <div class="toolbar" style="margin-top:1rem">
             <button type="button" class="btn btn-primary btn-sm" id="btn-save-system-settings">${escapeHtml(
               t("saveSettings")
@@ -36324,16 +36497,6 @@
         const enabled = !!panel.querySelector("#setting-supervisor-approvals")?.checked;
         const supabaseUrl = (panel.querySelector("#setting-supabase-url")?.value || "").trim();
         const supabaseAnonKey = (panel.querySelector("#setting-supabase-anon")?.value || "").trim();
-        const parsedRecipients = parsePasswordResetRecipients(
-          panel.querySelector("#setting-password-reset-recipients")?.value || ""
-        );
-        if (parsedRecipients.error) {
-          const status = panel.querySelector("#system-settings-status");
-          if (status) {
-            status.textContent = t("passwordResetRecipientsInvalid").replace("{email}", parsedRecipients.error);
-          }
-          return;
-        }
         if (!enabled && supervisorApprovalsAreEnabled() && !confirm(t("confirmDisableSupervisorApprovals"))) {
           const input = panel.querySelector("#setting-supervisor-approvals");
           if (input) input.checked = true;
@@ -36349,7 +36512,6 @@
               supervisorApprovalsEnabled: enabled,
               supabaseUrl: supabaseUrl || null,
               supabaseAnonKey: supabaseAnonKey || null,
-              passwordResetRecipients: parsedRecipients.emails,
               updatedAt: serverTimestamp(),
               updatedBy: currentUser.uid,
             },
@@ -36358,7 +36520,6 @@
           appSettingsCache.supervisorApprovalsEnabled = enabled;
           appSettingsCache.supabaseUrl = supabaseUrl;
           appSettingsCache.supabaseAnonKey = supabaseAnonKey;
-          appSettingsCache.passwordResetRecipients = parsedRecipients.emails;
           appSettingsCache.loaded = true;
           supabasePoClient = null;
           supabasePoClientKey = "";
@@ -36716,62 +36877,22 @@
       });
     }
 
-    let passwordResetTargetUid = "";
-    let passwordResetUnsub = null;
-    let passwordResetTimer = 0;
-
-    function stopPasswordResetWatch() {
-      if (passwordResetUnsub) {
-        passwordResetUnsub();
-        passwordResetUnsub = null;
-      }
-      if (passwordResetTimer) {
-        clearTimeout(passwordResetTimer);
-        passwordResetTimer = 0;
-      }
-    }
+    let passwordResetCommandText = "";
 
     function closePasswordResetModal() {
-      stopPasswordResetWatch();
       $("modal-password-reset")?.classList.add("hidden");
     }
 
-    function passwordResetErrorText(err) {
-      const raw = [err?.code, err?.message, err?.details].filter(Boolean).join(" ");
-      if (raw.includes("permission-denied")) return t("passwordResetPermission");
-      const map = {
-        "not-admin": "passwordResetNotAdmin",
-        "not-signed-in": "passwordResetNotAdmin",
-        "recipient-not-allowed": "passwordResetRecipientRejected",
-        "user-not-found": "passwordResetUserMissing",
-        "user-has-no-email": "passwordResetNoLoginEmail",
-        "smtp-not-configured": "passwordResetSmtpMissing",
-        "email-send-failed": "passwordResetSendFailed",
-        "link-failed": "passwordResetSendFailed",
-      };
-      const key = Object.keys(map).find((code) => raw.includes(code));
-      return key ? t(map[key]) : t("passwordResetSendFailed");
-    }
-
-    async function openPasswordResetModal(btn) {
-      await loadAppSettingsCache(true);
-      const recipients = appSettingsCache.passwordResetRecipients || [];
-      passwordResetTargetUid = btn?.dataset?.id || "";
+    function openPasswordResetModal(btn) {
+      const email = (btn?.dataset?.email || "").trim();
+      const uid = btn?.dataset?.id || "";
       const name = btn?.dataset?.name || "";
-      const email = btn?.dataset?.email || "";
+      const who = email || uid;
       const target = $("password-reset-target");
-      if (target) target.textContent = [name, email].filter(Boolean).join(" — ") || passwordResetTargetUid;
-      const sel = $("password-reset-recipient");
-      if (sel) {
-        sel.innerHTML = recipients
-          .map((item) => `<option value="${escapeAttr(item)}">${escapeHtml(item)}</option>`)
-          .join("");
-      }
-      const empty = !recipients.length;
-      $("password-reset-empty")?.classList.toggle("hidden", !empty);
-      $("password-reset-form-fields")?.classList.toggle("hidden", empty);
-      const sendBtn = $("btn-password-reset-send");
-      if (sendBtn) sendBtn.disabled = empty;
+      if (target) target.textContent = [name, who].filter(Boolean).join(" — ");
+      passwordResetCommandText = who ? `node set-user-password.js ${JSON.stringify(who)}` : "";
+      const box = $("password-reset-command");
+      if (box) box.value = passwordResetCommandText;
       const status = $("password-reset-status");
       if (status) status.textContent = "";
       $("modal-password-reset")?.classList.remove("hidden");
@@ -36782,51 +36903,17 @@
       if (event.target?.id === "modal-password-reset") closePasswordResetModal();
     });
     $("btn-password-reset-send")?.addEventListener("click", async () => {
-      const sendBtn = $("btn-password-reset-send");
       const status = $("password-reset-status");
-      const recipientEmail = ($("password-reset-recipient")?.value || "").trim().toLowerCase();
-      if (!passwordResetTargetUid || !recipientEmail) return;
-      stopPasswordResetWatch();
-      if (sendBtn) sendBtn.disabled = true;
-      if (status) status.textContent = t("loading");
+      const box = $("password-reset-command");
+      if (!passwordResetCommandText) return;
       try {
-        const ref = await addDoc(collection(db, "passwordResetJobs"), {
-          targetUid: passwordResetTargetUid,
-          recipientEmail,
-          status: "pending",
-          createdAt: serverTimestamp(),
-        });
-        passwordResetTimer = setTimeout(() => {
-          stopPasswordResetWatch();
-          if (status) status.textContent = t("passwordResetStillPending");
-          if (sendBtn) sendBtn.disabled = false;
-        }, 30000);
-        passwordResetUnsub = onSnapshot(
-          ref,
-          (snap) => {
-            const data = snap.data() || {};
-            if (data.status === "sent") {
-              stopPasswordResetWatch();
-              if (status) status.textContent = t("passwordResetSent").replace("{email}", recipientEmail);
-              if (sendBtn) sendBtn.disabled = false;
-            } else if (data.status === "error") {
-              stopPasswordResetWatch();
-              if (status) status.textContent = passwordResetErrorText({ message: data.errorCode || "" });
-              if (sendBtn) sendBtn.disabled = false;
-            }
-          },
-          (err) => {
-            console.error(err);
-            stopPasswordResetWatch();
-            if (status) status.textContent = passwordResetErrorText(err);
-            if (sendBtn) sendBtn.disabled = false;
-          }
-        );
+        await navigator.clipboard.writeText(passwordResetCommandText);
+        if (status) status.textContent = t("passwordResetSent");
       } catch (err) {
         console.error(err);
-        stopPasswordResetWatch();
-        if (status) status.textContent = passwordResetErrorText(err);
-        if (sendBtn) sendBtn.disabled = false;
+        box?.focus();
+        box?.select();
+        if (status) status.textContent = t("passwordResetSendFailed");
       }
     });
 
