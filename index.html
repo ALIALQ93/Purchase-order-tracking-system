@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.02.5" />
+  <meta name="app-version" content="2026.11.15.3" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -407,6 +407,137 @@
       border-radius: 8px;
       background: var(--surface);
       color: var(--text);
+    }
+    .po-projects-filter-fields .po-filter-hint {
+      font-size: 0.72rem;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+    .msdd {
+      position: relative;
+      width: 100%;
+      min-width: 11rem;
+    }
+    .msdd-toggle {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.6rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      text-align: start;
+    }
+    .msdd-toggle:hover,
+    .msdd.open .msdd-toggle {
+      border-color: var(--primary, #2563eb);
+    }
+    .msdd-toggle-label {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .msdd-toggle-count {
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--primary, #2563eb) 14%, transparent);
+      color: var(--text);
+    }
+    .msdd-caret {
+      flex-shrink: 0;
+      opacity: 0.65;
+      font-size: 0.7rem;
+    }
+    .msdd-panel {
+      position: absolute;
+      z-index: 80;
+      inset-inline: 0;
+      top: calc(100% + 0.25rem);
+      min-width: 15rem;
+      max-width: min(22rem, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      padding: 0.55rem;
+      display: none;
+    }
+    .msdd.open .msdd-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .msdd-search {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 2.15rem;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--bg, var(--surface));
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+    .msdd-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .msdd-actions button {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.2rem 0.45rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .msdd-actions button:hover {
+      background: color-mix(in srgb, var(--primary, #2563eb) 10%, transparent);
+    }
+    .msdd-list {
+      max-height: 14rem;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      padding-inline-end: 0.15rem;
+    }
+    .msdd-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      padding: 0.35rem 0.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1.35;
+    }
+    .msdd-item:hover {
+      background: color-mix(in srgb, var(--primary, #2563eb) 8%, transparent);
+    }
+    .msdd-item.hidden {
+      display: none;
+    }
+    .msdd-item input {
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+    .msdd-empty {
+      padding: 0.55rem 0.4rem;
+      color: var(--muted);
+      font-size: 0.82rem;
     }
 
     .po-projects-filter-fields .btn-clear-po-filters {
@@ -3506,7 +3637,12 @@
       flex: 1;
     }
     .po007-meta-field select,
-    .po007-meta-field input[type="date"] { font: inherit; padding: 0.35rem 0.45rem; }
+    .po007-meta-field input[type="date"],
+    .po007-meta-field input[type="text"] { font: inherit; padding: 0.35rem 0.45rem; }
+    .po007-meta-field--wide {
+      min-width: min(22rem, 100%);
+      flex: 2 1 16rem;
+    }
     .po007-editor-scroll {
       overflow: auto;
       flex: 1;
@@ -6699,22 +6835,22 @@
                   <option value="USD">USD</option>
                 </select>
               </label>
-              <label class="po-filter-field">
+              <div class="po-filter-field">
                 <span data-i18n="reportCompanyLabel">الشركة</span>
-                <select id="rep-gstatus-company"></select>
-              </label>
-              <label class="po-filter-field">
+                <div id="rep-gstatus-company" class="msdd" data-msdd></div>
+              </div>
+              <div class="po-filter-field">
                 <span data-i18n="reportProjectLabel">المشروع</span>
-                <select id="rep-gstatus-project"></select>
-              </label>
-              <label class="po-filter-field">
+                <div id="rep-gstatus-project" class="msdd" data-msdd></div>
+              </div>
+              <div class="po-filter-field">
                 <span data-i18n="reportSupplierLabel">المورد</span>
-                <select id="rep-gstatus-supplier"></select>
-              </label>
-              <label class="po-filter-field">
+                <div id="rep-gstatus-supplier" class="msdd" data-msdd></div>
+              </div>
+              <div class="po-filter-field">
                 <span data-i18n="reportStatusLabel">الحالة</span>
-                <select id="rep-gstatus-status"></select>
-              </label>
+                <div id="rep-gstatus-status" class="msdd" data-msdd></div>
+              </div>
               <label class="po-filter-field" style="display:flex;align-items:center;gap:0.4rem;padding-top:1.35rem">
                 <input type="checkbox" id="rep-gstatus-hide-values" />
                 <span data-i18n="genStatusHideValues">إخفاء قيم الطلبات</span>
@@ -6896,7 +7032,7 @@
           </div>
           <div class="help-section">
             <h3 data-i18n="helpAccountTitle">الحساب</h3>
-            <p data-i18n="helpAccountP1">يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. لاستعادة كلمة المرور أو تغييرها، راجع المشرف.</p>
+            <p data-i18n="helpAccountP1">يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. تغيير كلمة المرور يتم من تبويب المستخدمين: يُرسل الرابط إلى إيميل رسمي مسجّل في إعدادات النظام، والمشرف يفتحه ويبلّغ المستخدم بكلمة المرور الجديدة.</p>
           </div>
         </div>
       </section>
@@ -7497,6 +7633,10 @@
             <option value="IQD">IQD</option>
             <option value="USD">USD</option>
           </select>
+        </label>
+        <label class="po007-meta-field po007-meta-po-only po007-meta-field--wide">
+          <span data-i18n="genPoOrderNoteLabel">ملاحظة الطلب</span>
+          <input type="text" id="po007-meta-order-note" autocomplete="off" />
         </label>
         <label class="po007-meta-field po007-meta-po-only">
           <span data-i18n="poStatusLabel">الحالة</span>
@@ -8243,6 +8383,26 @@
     </div>
   </div>
 
+  <div id="modal-password-reset" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-password-reset-title">
+    <div class="modal">
+      <h3 id="modal-password-reset-title" data-i18n="passwordResetModalTitle">إرسال رابط تغيير كلمة المرور</h3>
+      <p class="user-form-hint" style="margin-top:0" data-i18n="passwordResetModalHint">يُرسل الرابط إلى إيميل رسمي مسجّل. افتح الرسالة، عيّن كلمة المرور، ثم بلّغ المستخدم بها.</p>
+      <p style="margin:0 0 .75rem"><strong data-i18n="passwordResetTargetLabel">الحساب</strong>: <span id="password-reset-target"></span></p>
+      <p id="password-reset-empty" class="error-msg hidden" data-i18n="passwordResetNoRecipients">أضف إيميلاً رسمياً واحداً على الأقل في إعدادات النظام قبل إرسال الرابط.</p>
+      <div id="password-reset-form-fields">
+        <div class="field">
+          <label for="password-reset-recipient" data-i18n="passwordResetRecipientLabel">الإيميل الذي يستلم الرابط</label>
+          <select id="password-reset-recipient"></select>
+        </div>
+      </div>
+      <p id="password-reset-status" class="muted" style="min-height:1.25rem" aria-live="polite"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btn-password-reset-cancel" data-i18n="cancel">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="btn-password-reset-send" data-i18n="passwordResetSend">إرسال الرابط</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import {
@@ -8251,6 +8411,7 @@
       signOut,
       onAuthStateChanged,
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
     import {
       getFirestore,
       collection,
@@ -8448,6 +8609,7 @@
         genPoStatusNewLabel: "الحالة الجديدة",
         genPoStatusDateLabel: "تاريخ الحالة",
         genPoStatusNoteLabel: "ملاحظة الحالة",
+        genPoOrderNoteLabel: "ملاحظة الطلب",
         genPoStatusHistoryTitle: "سجل الحالات",
         genPoStatusHistoryEmpty: "لا يوجد سجل حالات بعد.",
         btnUpdateStatus: "تحديث الحالة",
@@ -8745,7 +8907,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.02.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>تسمية أعمدة جدول المواد:</strong> يمكن تعديل عناوين الأعمدة الثابتة (مثل الكمية والوصف) أو إضافة نص إليها بالنقر على العنوان.</li><li><strong>عرض أفقي لجدول المواد:</strong> خيار عمودي/عرضي في التعديل والمعاينة والطباعة والنموذج الاحترافي، مع بقاء الرأس مع الجدول.</li><li><strong>إيصال المصروف:</strong> رفع أو استبدال صورة الإيصال في أي وقت بعد مهلة الـ 24 ساعة.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.15.3</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>تقرير حالة الطلبات:</strong> فلاتر الشركة/المشروع/المورد/الحالة كقوائم منسدلة مع بحث واختيار متعدد.</li><li><strong>ملاحظة الطلب:</strong> في الشريط العلوي لأوامر الإدارة العامة وتظهر في تقرير الحالة.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -9144,6 +9306,25 @@
         settingSupabaseHint: "مشروع منفصل منطقياً عن الأرشيف: bucket po-receipts وجدول po_expense_receipts. الصق Project URL و anon public key.",
         settingSupabaseUrl: "Supabase URL",
         settingSupabaseAnonKey: "Supabase anon key",
+        passwordResetRecipientsTitle: "إيميلات استلام رابط كلمة المرور",
+        passwordResetRecipientsHint:
+          "إيميلات رسمية فقط. رابط تغيير كلمة مرور أي مستخدم يُرسل إلى أحد هذه العناوين، والمشرف يفتح الرابط ويبلّغ المستخدم بالكلمة الجديدة. إيميلات الدخول الوهمية لا تستلم الرابط.",
+        passwordResetRecipientsLabel: "إيميل في كل سطر",
+        passwordResetRecipientsInvalid: "عنوان غير صالح: {email}",
+        btnSendPasswordReset: "رابط كلمة المرور",
+        passwordResetModalTitle: "إرسال رابط تغيير كلمة المرور",
+        passwordResetModalHint: "يُرسل الرابط إلى إيميل رسمي مسجّل. افتح الرسالة، عيّن كلمة المرور، ثم بلّغ المستخدم بها.",
+        passwordResetTargetLabel: "الحساب",
+        passwordResetRecipientLabel: "الإيميل الذي يستلم الرابط",
+        passwordResetNoRecipients: "أضف إيميلاً رسمياً واحداً على الأقل في إعدادات النظام قبل إرسال الرابط.",
+        passwordResetSend: "إرسال الرابط",
+        passwordResetSent: "أُرسل الرابط إلى {email}.",
+        passwordResetNotAdmin: "هذا الإجراء متاح للمشرف فقط.",
+        passwordResetRecipientRejected: "هذا الإيميل غير مسجّل ضمن عناوين استلام الرابط.",
+        passwordResetUserMissing: "حساب الدخول غير موجود في Firebase Authentication.",
+        passwordResetNoLoginEmail: "حساب المستخدم بلا بريد دخول في Firebase.",
+        passwordResetSmtpMissing: "إرسال البريد غير مُعدّ على الخادم. يلزم ضبط SMTP للدالة السحابية.",
+        passwordResetSendFailed: "تعذّر إرسال الرابط.",
         repAdvanceIssued: "تم إصدار السلفة.",
         repAdvanceSettled: "تم تصفية السلفة.",
         repAdvanceSettleSummary: "السلفة: {amount} {currency} — مصروفات مرتبطة: {expenses} — المتبقي التقديري: {remaining}",
@@ -9206,6 +9387,7 @@
         genStatusColSummary: "ملخص الطلب",
         genStatusColMaterialsSummary: "ملخص المواد",
         genStatusColOrderValue: "قيمة الطلب",
+        genStatusColOrderNote: "ملاحظة الطلب",
         genStatusColHistory: "ملخص سجل الحالة",
         genStatusHideValues: "إخفاء قيم الطلبات",
         genStatusHideSummary: "إخفاء ملخص الطلب",
@@ -9265,6 +9447,10 @@
         reportGroupProject: "المشروع",
         reportGroupRep: "مندوب المشتريات",
         reportAllOpt: "الكل",
+        reportMultiSelectHint: "قائمة منسدلة — اختر واحداً أو أكثر، أو اتركها فارغة للكل",
+        reportMultiSearchPlaceholder: "بحث…",
+        reportMultiSelectAll: "تحديد الكل",
+        reportMultiClear: "مسح",
         btnPrintReport: "طباعة التقرير",
         btnRunReport: "عرض التقرير",
         btnExportCsv: "تصدير CSV",
@@ -9512,7 +9698,7 @@
         colPriority: "الأولوية",
         helpAccountTitle: "الحساب",
         helpAccountP1:
-          "يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. لاستعادة كلمة المرور أو تغييرها، راجع المشرف.",
+          "يتم إنشاء الحسابات من قبل الإدارة عبر لوحة Firebase. تغيير كلمة المرور يتم من تبويب المستخدمين: يُرسل الرابط إلى إيميل رسمي مسجّل في إعدادات النظام، والمشرف يفتحه ويبلّغ المستخدم بكلمة المرور الجديدة.",
         genPoSectionIdentity: "المرجع والشركة (المشتري)",
         genPoLabelBuyerCompany: "شركة المشتري",
         genPoLabelPoNumber: "رقم أمر الشراء (PO)",
@@ -9903,6 +10089,7 @@
         genPoStatusNewLabel: "New status",
         genPoStatusDateLabel: "Status date",
         genPoStatusNoteLabel: "Status note",
+        genPoOrderNoteLabel: "Order note",
         genPoStatusHistoryTitle: "Status history",
         genPoStatusHistoryEmpty: "No status history yet.",
         btnUpdateStatus: "Update status",
@@ -10200,7 +10387,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.02.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Materials column titles:</strong> Rename fixed column headers (qty, description, etc.) or add text by clicking the header.</li><li><strong>Materials landscape layout:</strong> Portrait/Landscape in edit, preview, print, and pro print — header stays with the table.</li><li><strong>Expense receipts:</strong> Upload or replace receipt photos anytime after the 24-hour edit window.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.15.3</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Status report filters:</strong> company/project/supplier/status as searchable multi-select dropdowns.</li><li><strong>Order note:</strong> in the general PO top bar and status report.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -10600,6 +10787,26 @@
         settingSupabaseHint: "Logically isolated from the company archive: bucket po-receipts and table po_expense_receipts. Paste Project URL and anon public key.",
         settingSupabaseUrl: "Supabase URL",
         settingSupabaseAnonKey: "Supabase anon key",
+        passwordResetRecipientsTitle: "Inboxes for password-reset links",
+        passwordResetRecipientsHint:
+          "Official emails only. A password-reset link for any user is sent to one of these addresses. The administrator opens the link and tells the user the new password. Sign-in addresses that are not real inboxes do not receive the link.",
+        passwordResetRecipientsLabel: "One email per line",
+        passwordResetRecipientsInvalid: "Invalid address: {email}",
+        btnSendPasswordReset: "Password link",
+        passwordResetModalTitle: "Send a password-reset link",
+        passwordResetModalHint:
+          "The link is sent to a registered official email. Open the message, set the new password, then tell the user.",
+        passwordResetTargetLabel: "Account",
+        passwordResetRecipientLabel: "Inbox that receives the link",
+        passwordResetNoRecipients: "Add at least one official email in System settings before sending a link.",
+        passwordResetSend: "Send link",
+        passwordResetSent: "The link was sent to {email}.",
+        passwordResetNotAdmin: "Only an administrator can do this.",
+        passwordResetRecipientRejected: "This email is not on the list of inboxes allowed to receive reset links.",
+        passwordResetUserMissing: "This sign-in account was not found in Firebase Authentication.",
+        passwordResetNoLoginEmail: "This user has no sign-in email in Firebase.",
+        passwordResetSmtpMissing: "Mail delivery is not configured on the server. Set SMTP for the cloud function.",
+        passwordResetSendFailed: "The link could not be sent.",
         repAdvanceIssued: "Advance issued.",
         repAdvanceSettled: "Advance settled.",
         repAdvanceSettleSummary: "Advance: {amount} {currency} — linked expenses: {expenses} — estimated remaining: {remaining}",
@@ -10662,6 +10869,7 @@
         genStatusColSummary: "Order summary",
         genStatusColMaterialsSummary: "Materials summary",
         genStatusColOrderValue: "Order value",
+        genStatusColOrderNote: "Order note",
         genStatusColHistory: "Status history summary",
         genStatusHideValues: "Hide order values",
         genStatusHideSummary: "Hide order summary",
@@ -10721,6 +10929,10 @@
         reportGroupProject: "Project",
         reportGroupRep: "Representative",
         reportAllOpt: "All",
+        reportMultiSelectHint: "Dropdown — pick one or more, or leave empty for all",
+        reportMultiSearchPlaceholder: "Search…",
+        reportMultiSelectAll: "Select all",
+        reportMultiClear: "Clear",
         btnPrintReport: "Print report",
         btnRunReport: "Run report",
         btnExportCsv: "Export CSV",
@@ -10969,7 +11181,7 @@
         colPriority: "Priority",
         helpAccountTitle: "Account",
         helpAccountP1:
-          "Accounts are created by administrators in the Firebase console. For password reset or changes, contact your administrator.",
+          "Accounts are created by administrators in the Firebase console. Password changes are sent from the Users tab: the link goes to an official email saved in System settings. The administrator opens it and tells the user the new password.",
         genPoSectionIdentity: "Reference & buyer company",
         genPoLabelBuyerCompany: "Buyer company",
         genPoLabelPoNumber: "Purchase order (PO) number",
@@ -11471,6 +11683,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const functions = getFunctions(app, "us-central1");
 
     let currentUser = null;
     let userRole = "user";
@@ -14943,8 +15156,38 @@
       supervisorApprovalsEnabled: true,
       supabaseUrl: "",
       supabaseAnonKey: "",
+      passwordResetRecipients: [],
       loaded: false,
     };
+
+    function normalizePasswordResetRecipients(value) {
+      const list = Array.isArray(value) ? value : String(value || "").split(/[\s,;]+/);
+      const seen = new Set();
+      const out = [];
+      list.forEach((item) => {
+        const email = String(item || "").trim().toLowerCase();
+        if (!email || seen.has(email)) return;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+        seen.add(email);
+        out.push(email);
+      });
+      return out;
+    }
+
+    function parsePasswordResetRecipients(text) {
+      const parts = String(text || "").split(/[\s,;]+/);
+      const seen = new Set();
+      const emails = [];
+      for (const part of parts) {
+        const email = part.trim().toLowerCase();
+        if (!email) continue;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: email, emails: [] };
+        if (seen.has(email)) continue;
+        seen.add(email);
+        emails.push(email);
+      }
+      return { error: "", emails };
+    }
     let supabasePoClient = null;
     let supabasePoClientKey = "";
 
@@ -14960,11 +15203,13 @@
         appSettingsCache.supervisorApprovalsEnabled = data.supervisorApprovalsEnabled !== false;
         appSettingsCache.supabaseUrl = String(data.supabaseUrl || "").trim();
         appSettingsCache.supabaseAnonKey = String(data.supabaseAnonKey || "").trim();
+        appSettingsCache.passwordResetRecipients = normalizePasswordResetRecipients(data.passwordResetRecipients);
       } catch (e) {
         console.error(e);
         appSettingsCache.supervisorApprovalsEnabled = true;
         appSettingsCache.supabaseUrl = "";
         appSettingsCache.supabaseAnonKey = "";
+        appSettingsCache.passwordResetRecipients = [];
       }
       appSettingsCache.loaded = true;
       return appSettingsCache;
@@ -18957,6 +19202,11 @@
       if (noteInp) noteInp.value = "";
     }
 
+    function setPo007OrderNoteMetaField(po) {
+      const noteInp = $("po007-meta-order-note");
+      if (noteInp) noteInp.value = String(po?.orderNote || "").trim();
+    }
+
     let generalPoStatusModalPo = null;
 
     function renderGeneralPoStatusHistory(po) {
@@ -19187,6 +19437,7 @@
             status: "draft",
             statusDate: null,
             statusNote: "",
+            orderNote: "",
             statusHistory: [],
             statusUpdatedAt: null,
             statusUpdatedBy: null,
@@ -19203,6 +19454,7 @@
         }
         fillPo007StatusOptions(duplicate ? "draft" : po.status || "draft", po);
         setPo007StatusMetaFields(duplicate ? null : po);
+        setPo007OrderNoteMetaField(duplicate ? null : po);
         const langSelExisting = $("po007-meta-lang");
         if (langSelExisting) {
           langSelExisting.value =
@@ -19226,6 +19478,7 @@
       } else {
         fillPo007StatusOptions("draft");
         setPo007StatusMetaFields(null);
+        setPo007OrderNoteMetaField(null);
         const langSel = $("po007-meta-lang");
         if (langSel) langSel.value = "en";
         const curSel = $("po007-meta-currency");
@@ -19268,6 +19521,7 @@
       $("modal-general-po007")?.classList.remove("po007-items-landscape");
       const mount = getGeneralPo007Mount();
       if (mount) mount.innerHTML = "";
+      setPo007OrderNoteMetaField(null);
       generalPo007EditorLogo = "";
       generalPo007PendingLoad = null;
       generalPoInvoiceChecklistDraft = null;
@@ -19355,6 +19609,7 @@
         lines,
         totalAmount,
         notes: "",
+        orderNote: ($("po007-meta-order-note")?.value || "").trim(),
         generalPoDate: g.poDate || null,
         companyId,
         companyNameSnapshot,
@@ -19365,7 +19620,7 @@
         generalForm: serializeGeneralFormForFirestore(g),
         updatedAt: serverTimestamp(),
       };
-      const prevPo = generalPo007PendingLoad?.po || null;
+      const prevPo = generalPo007PendingLoad?.po || generalPo007EditorPo || null;
       const prevStatusRaw = prevPo ? String(prevPo.status || "draft").trim() : "";
       const statusDate = ($("po007-meta-status-date")?.value || "").slice(0, 10);
       const statusNote = ($("po007-meta-status-note")?.value || "").trim();
@@ -22918,14 +23173,186 @@
       return i < 0 ? 99 : i;
     }
 
+    function normalizeReportFilterList(value) {
+      if (Array.isArray(value)) {
+        return [...new Set(value.map((v) => String(v ?? "").trim()).filter(Boolean))];
+      }
+      const s = String(value ?? "").trim();
+      return s ? [s] : [];
+    }
+
+    function closeAllMsdd(exceptRoot) {
+      document.querySelectorAll(".msdd.open").forEach((el) => {
+        if (exceptRoot && el === exceptRoot) return;
+        el.classList.remove("open");
+        const btn = el.querySelector(".msdd-toggle");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function updateMsddToggleLabel(root) {
+      if (!root) return;
+      const labelEl = root.querySelector(".msdd-toggle-label");
+      const countEl = root.querySelector(".msdd-toggle-count");
+      if (!labelEl) return;
+      const checked = [...root.querySelectorAll('.msdd-item input[type="checkbox"]:checked')];
+      if (!checked.length) {
+        labelEl.textContent = t("reportAllOpt");
+        if (countEl) countEl.hidden = true;
+        return;
+      }
+      const labels = checked.map((inp) => String(inp.dataset.label || inp.value || "").trim()).filter(Boolean);
+      const preview = labels.slice(0, 2).join(lang === "ar" ? "، " : ", ");
+      labelEl.textContent =
+        labels.length > 2
+          ? preview + (lang === "ar" ? "…" : "…")
+          : preview;
+      if (countEl) {
+        countEl.hidden = false;
+        countEl.textContent = String(labels.length);
+      }
+    }
+
+    function fillMsdd(root, items) {
+      if (!root) return;
+      const prev = new Set(
+        [...root.querySelectorAll('.msdd-item input[type="checkbox"]:checked')].map((i) => i.value)
+      );
+      root.classList.add("msdd");
+      root.innerHTML = `
+        <button type="button" class="msdd-toggle" aria-haspopup="listbox" aria-expanded="false">
+          <span class="msdd-toggle-label">${escapeHtml(t("reportAllOpt"))}</span>
+          <span class="msdd-toggle-count" hidden>0</span>
+          <span class="msdd-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="msdd-panel" role="listbox" aria-multiselectable="true">
+          <input type="search" class="msdd-search" placeholder="${escapeAttr(t("reportMultiSearchPlaceholder"))}" autocomplete="off" />
+          <div class="msdd-actions">
+            <button type="button" data-msdd-act="all">${escapeHtml(t("reportMultiSelectAll"))}</button>
+            <button type="button" data-msdd-act="clear">${escapeHtml(t("reportMultiClear"))}</button>
+          </div>
+          <div class="msdd-list"></div>
+        </div>`;
+      const list = root.querySelector(".msdd-list");
+      const rows = Array.isArray(items) ? items : [];
+      if (!rows.length) {
+        list.innerHTML = `<div class="msdd-empty">${escapeHtml(t("reportNoRows"))}</div>`;
+      } else {
+        list.innerHTML = rows
+          .map((it) => {
+            const value = String(it.value ?? "").trim();
+            const label = String(it.label ?? value).trim();
+            const checked = prev.has(value) ? " checked" : "";
+            return `<label class="msdd-item"><input type="checkbox" value="${escapeAttr(value)}" data-label="${escapeAttr(label)}"${checked} /><span>${escapeHtml(label)}</span></label>`;
+          })
+          .join("");
+      }
+      if (!root.dataset.wired) {
+        root.dataset.wired = "1";
+        root.addEventListener("click", (e) => {
+          const actBtn = e.target.closest("[data-msdd-act]");
+          if (actBtn && root.contains(actBtn)) {
+            e.preventDefault();
+            const act = actBtn.getAttribute("data-msdd-act");
+            const boxes = [...root.querySelectorAll('.msdd-item:not(.hidden) input[type="checkbox"]')];
+            if (act === "all") boxes.forEach((b) => (b.checked = true));
+            if (act === "clear") {
+              root.querySelectorAll('.msdd-item input[type="checkbox"]').forEach((b) => (b.checked = false));
+            }
+            updateMsddToggleLabel(root);
+            return;
+          }
+          const toggle = e.target.closest(".msdd-toggle");
+          if (toggle && root.contains(toggle)) {
+            e.preventDefault();
+            const willOpen = !root.classList.contains("open");
+            closeAllMsdd(willOpen ? root : null);
+            root.classList.toggle("open", willOpen);
+            toggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+            if (willOpen) {
+              const search = root.querySelector(".msdd-search");
+              if (search) {
+                search.value = "";
+                root.querySelectorAll(".msdd-item").forEach((item) => item.classList.remove("hidden"));
+                setTimeout(() => search.focus(), 0);
+              }
+            }
+          }
+        });
+        root.addEventListener("change", (e) => {
+          if (e.target?.matches?.('.msdd-item input[type="checkbox"]')) updateMsddToggleLabel(root);
+        });
+        root.addEventListener("input", (e) => {
+          if (!e.target?.classList?.contains("msdd-search")) return;
+          const q = String(e.target.value || "").trim().toLowerCase();
+          root.querySelectorAll(".msdd-item").forEach((item) => {
+            const text = String(item.textContent || "").toLowerCase();
+            item.classList.toggle("hidden", !!(q && !text.includes(q)));
+          });
+        });
+      }
+      updateMsddToggleLabel(root);
+      if (!document.documentElement.dataset.msddDocWired) {
+        document.documentElement.dataset.msddDocWired = "1";
+        document.addEventListener("click", (e) => {
+          if (e.target.closest(".msdd")) return;
+          closeAllMsdd();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeAllMsdd();
+        });
+      }
+    }
+
+    function readSelectFilterValues(sel) {
+      if (!sel) return [];
+      if (sel.classList?.contains("msdd") || sel.dataset?.msdd != null) {
+        return [...sel.querySelectorAll('.msdd-item input[type="checkbox"]:checked')]
+          .map((o) => String(o.value || "").trim())
+          .filter(Boolean);
+      }
+      if (sel.multiple) {
+        return [...sel.selectedOptions]
+          .map((o) => String(o.value || "").trim())
+          .filter(Boolean);
+      }
+      const v = String(sel.value || "").trim();
+      return v ? [v] : [];
+    }
+
+    function readSelectFilterLabels(sel) {
+      if (!sel) return "";
+      if (sel.classList?.contains("msdd") || sel.dataset?.msdd != null) {
+        const labels = [...sel.querySelectorAll('.msdd-item input[type="checkbox"]:checked')]
+          .map((o) => String(o.dataset.label || o.value || "").trim())
+          .filter(Boolean);
+        return labels.join(lang === "ar" ? "، " : ", ");
+      }
+      if (sel.multiple) {
+        const labels = [...sel.selectedOptions]
+          .map((o) => String(o.textContent || "").trim())
+          .filter(Boolean);
+        return labels.join(lang === "ar" ? "، " : ", ");
+      }
+      return String(sel.selectedOptions?.[0]?.textContent || "").trim();
+    }
+
     async function buildGeneralReportSnapshot(filters) {
       const from = (filters.from || "").slice(0, 10);
       const to = (filters.to || "").slice(0, 10);
       const base = (filters.base || "IQD").trim() || "IQD";
-      const fCompany = (filters.fCompany || "").trim();
-      const fProject = (filters.fProject || "").trim();
-      const fSupplier = (filters.fSupplier || "").trim();
-      const fStatus = (filters.fStatus || "").trim();
+      const fCompanies = normalizeReportFilterList(
+        filters.fCompanies != null ? filters.fCompanies : filters.fCompany
+      );
+      const fProjects = normalizeReportFilterList(
+        filters.fProjects != null ? filters.fProjects : filters.fProject
+      );
+      const fSuppliers = normalizeReportFilterList(
+        filters.fSuppliers != null ? filters.fSuppliers : filters.fSupplier
+      );
+      const fStatuses = normalizeReportFilterList(
+        filters.fStatuses != null ? filters.fStatuses : filters.fStatus
+      );
       if (!from || !to) return { error: "dates" };
 
       const [poSnap, fxSnap, cSnap, pSnap] = await Promise.all([
@@ -23044,16 +23471,17 @@
           fxRate: rate > 0 ? rate : null,
           hasLinePrices,
           statusDate: (po.statusDate || "").slice(0, 10),
+          orderNote: String(po.orderNote || "").trim(),
           installmentCount: getGeneralPoPaymentTerms(po).length,
           lineCount: lines.length,
           statusHistory: Array.isArray(po.statusHistory) ? po.statusHistory.map((h) => ({ ...h })) : [],
         };
       });
       const reportRows = reportRowsRaw.filter((r) => {
-        if (fCompany && r.companyId !== fCompany) return false;
-        if (fProject && r.projectId !== fProject) return false;
-        if (fSupplier && r.supplierId !== fSupplier) return false;
-        if (fStatus && r.status !== fStatus) return false;
+        if (fCompanies.length && !fCompanies.includes(String(r.companyId || "").trim())) return false;
+        if (fProjects.length && !fProjects.includes(String(r.projectId || "").trim())) return false;
+        if (fSuppliers.length && !fSuppliers.includes(String(r.supplierId || "").trim())) return false;
+        if (fStatuses.length && !fStatuses.includes(String(r.status || "").trim())) return false;
         return true;
       });
       const allowedPoIds = new Set(reportRows.map((r) => r.id));
@@ -23079,13 +23507,40 @@
       };
     }
 
+    function fillGeneralReportSelectOptions(sel, optionsHtml) {
+      if (!sel) return;
+      if (sel.multiple) {
+        sel.innerHTML = optionsHtml;
+        const n = sel.options.length;
+        sel.size = Math.min(8, Math.max(4, n || 4));
+        return;
+      }
+      sel.innerHTML = `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` + optionsHtml;
+    }
+
+    function fillGeneralFilterControl(el, items) {
+      if (!el) return;
+      if (el.classList?.contains("msdd") || el.dataset?.msdd != null) {
+        fillMsdd(el, items);
+        return;
+      }
+      fillGeneralReportSelectOptions(
+        el,
+        (items || [])
+          .map((it) => `<option value="${escapeAttr(it.value)}">${escapeHtml(it.label)}</option>`)
+          .join("")
+      );
+    }
+
     function fillGeneralReportStatusSelect(sel) {
       if (!sel) return;
-      sel.innerHTML =
-        `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
-        GENERAL_PO_STATUS_ORDER.map(
-          (v) => `<option value="${escapeAttr(v)}">${escapeHtml(generalPoStatusLabel(v, null))}</option>`
-        ).join("");
+      fillGeneralFilterControl(
+        sel,
+        GENERAL_PO_STATUS_ORDER.map((v) => ({
+          value: v,
+          label: generalPoStatusLabel(v, null),
+        }))
+      );
     }
 
     async function fillGeneralReportFilters(prefix) {
@@ -23099,30 +23554,24 @@
         const companies = [];
         cSnap.forEach((d) => companies.push({ id: d.id, ...d.data() }));
         companies.sort((a, b) => companyDisplayName(a).localeCompare(companyDisplayName(b), loc));
-        const coSel = $(prefix + "-company");
-        if (coSel) {
-          coSel.innerHTML =
-            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
-            companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(companyDisplayName(c))}</option>`).join("");
-        }
-        const projSel = $(prefix + "-project");
-        if (projSel) {
-          const projects = [];
-          pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
-          sortProjectsByCode(projects);
-          projSel.innerHTML =
-            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
-            projects.map((p) => `<option value="${escapeAttr(p.id)}">${escapeHtml(projectOptionLabel(p))}</option>`).join("");
-        }
+        fillGeneralFilterControl(
+          $(prefix + "-company"),
+          companies.map((c) => ({ value: c.id, label: companyDisplayName(c) }))
+        );
+        const projects = [];
+        pSnap.forEach((d) => projects.push({ id: d.id, ...d.data() }));
+        sortProjectsByCode(projects);
+        fillGeneralFilterControl(
+          $(prefix + "-project"),
+          projects.map((p) => ({ value: p.id, label: projectOptionLabel(p) }))
+        );
         const suppliers = [];
         sSnap.forEach((d) => suppliers.push({ id: d.id, ...d.data() }));
         suppliers.sort((a, b) => supplierDisplayName(a).localeCompare(supplierDisplayName(b), loc));
-        const supSel = $(prefix + "-supplier");
-        if (supSel) {
-          supSel.innerHTML =
-            `<option value="">${escapeHtml(t("reportAllOpt"))}</option>` +
-            suppliers.map((s) => `<option value="${escapeAttr(s.id)}">${escapeHtml(supplierDisplayName(s))}</option>`).join("");
-        }
+        fillGeneralFilterControl(
+          $(prefix + "-supplier"),
+          suppliers.map((s) => ({ value: s.id, label: supplierDisplayName(s) }))
+        );
         fillGeneralReportStatusSelect($(prefix + "-status"));
       } catch (_) {
         // ignore filter fill errors
@@ -23290,7 +23739,7 @@
     }
 
     function generalStatusOrdersColspan(hideVal, hideSummary, hideMaterials) {
-      return 4 + (hideVal ? 0 : 1) + (hideSummary ? 0 : 1) + (hideMaterials ? 0 : 1);
+      return 5 + (hideVal ? 0 : 1) + (hideSummary ? 0 : 1) + (hideMaterials ? 0 : 1);
     }
 
     function renderGeneralStatusReportCurrent() {
@@ -23439,6 +23888,7 @@
                 : `<td style="min-width:240px">${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>`
             }
             ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
+            <td style="min-width:140px">${escapeHtml((r.orderNote || "").trim() || t("dash"))}</td>
             <td>${statusBadge(r.status, "general", null)}<div style="margin-top:.25rem;font-size:11.5px;color:var(--muted)">${escapeHtml(
                 generalStatusHistorySummaryText(r)
               )}</div></td>
@@ -23536,6 +23986,7 @@
             ${hideSummary ? "" : `<th>${escapeHtml(t("genStatusColSummary"))}</th>`}
             ${hideMaterials ? "" : `<th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>`}
             ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
+            <th>${escapeHtml(t("genStatusColOrderNote"))}</th>
             <th>${escapeHtml(t("genStatusColHistory"))}</th>
           </tr></thead><tbody>${orderRows}</tbody></table></div>
         </div>`;
@@ -23561,10 +24012,10 @@
           from,
           to,
           base,
-          fCompany: ($("rep-gstatus-company")?.value || "").trim(),
-          fProject: ($("rep-gstatus-project")?.value || "").trim(),
-          fSupplier: ($("rep-gstatus-supplier")?.value || "").trim(),
-          fStatus: ($("rep-gstatus-status")?.value || "").trim(),
+          fCompanies: readSelectFilterValues($("rep-gstatus-company")),
+          fProjects: readSelectFilterValues($("rep-gstatus-project")),
+          fSuppliers: readSelectFilterValues($("rep-gstatus-supplier")),
+          fStatuses: readSelectFilterValues($("rep-gstatus-status")),
         });
         if (snap.error === "noRows" || !(snap.rows || []).length) {
           wrap.innerHTML = `<p class="empty-state">${escapeHtml(t("reportNoRows"))}</p>`;
@@ -23591,10 +24042,10 @@
       const from = ($("rep-gstatus-from")?.value || "").slice(0, 10);
       const to = ($("rep-gstatus-to")?.value || "").slice(0, 10);
       const base = ($("rep-gstatus-base")?.value || "IQD").trim() || "IQD";
-      const coText = $("rep-gstatus-company")?.selectedOptions?.[0]?.textContent?.trim() || "";
-      const projText = $("rep-gstatus-project")?.selectedOptions?.[0]?.textContent?.trim() || "";
-      const supText = $("rep-gstatus-supplier")?.selectedOptions?.[0]?.textContent?.trim() || "";
-      const stText = $("rep-gstatus-status")?.selectedOptions?.[0]?.textContent?.trim() || "";
+      const coText = readSelectFilterLabels($("rep-gstatus-company"));
+      const projText = readSelectFilterLabels($("rep-gstatus-project"));
+      const supText = readSelectFilterLabels($("rep-gstatus-supplier"));
+      const stText = readSelectFilterLabels($("rep-gstatus-status"));
       const genAtSrc = snap.generatedAt || new Date().toISOString();
       const genAt = new Date(genAtSrc).toLocaleString(localeTag(), { dateStyle: "short", timeStyle: "short" });
       const title = t("reportGenStatusTitle");
@@ -23662,6 +24113,7 @@
             ${hideSummary ? "" : `<td>${escapeHtml(generalOrderSummaryText(r))}</td>`}
             ${hideMaterials ? "" : `<td>${escapeHtml(generalOrderMaterialsSummaryText(r, snap))}</td>`}
             ${hideVal ? "" : `<td>${escapeHtml(generalOrderValueText(r))}</td>`}
+            <td>${escapeHtml((r.orderNote || "").trim() || t("dash"))}</td>
             <td>${escapeHtml(generalStatusHistorySummaryText(r))}</td>
           </tr>`
         )
@@ -23674,6 +24126,7 @@
           ${hideSummary ? "" : `<th>${escapeHtml(t("genStatusColSummary"))}</th>`}
           ${hideMaterials ? "" : `<th>${escapeHtml(t("genStatusColMaterialsSummary"))}</th>`}
           ${hideVal ? "" : `<th>${escapeHtml(t("genStatusColOrderValue"))}</th>`}
+          <th>${escapeHtml(t("genStatusColOrderNote"))}</th>
           <th>${escapeHtml(t("genStatusColHistory"))}</th>
         </tr></thead><tbody>${printOrderRows}</tbody></table>
       </section>`;
@@ -23839,6 +24292,7 @@
       if (!hideSummary) orderHeader.push(t("genStatusColSummary"));
       if (!hideMaterials) orderHeader.push(t("genStatusColMaterialsSummary"));
       if (!hideVal) orderHeader.push(t("genStatusColOrderValue"));
+      orderHeader.push(t("genStatusColOrderNote"));
       orderHeader.push(t("genStatusColHistory"));
       line(orderHeader);
       (snap.rows || []).forEach((r) => {
@@ -23846,6 +24300,7 @@
         if (!hideSummary) orderRow.push(generalOrderSummaryText(r));
         if (!hideMaterials) orderRow.push(generalOrderMaterialsSummaryText(r, snap));
         if (!hideVal) orderRow.push(generalOrderValueText(r));
+        orderRow.push((r.orderNote || "").trim());
         orderRow.push(generalStatusHistorySummaryText(r));
         line(orderRow);
       });
@@ -35846,6 +36301,15 @@
               appSettingsCache.supabaseAnonKey || ""
             )}</textarea>
           </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0" />
+          <h3 style="margin:0 0 .5rem;font-size:1.05rem">${escapeHtml(t("passwordResetRecipientsTitle"))}</h3>
+          <p class="user-form-hint" style="margin:0 0 .75rem">${escapeHtml(t("passwordResetRecipientsHint"))}</p>
+          <div class="field">
+            <label for="setting-password-reset-recipients">${escapeHtml(t("passwordResetRecipientsLabel"))}</label>
+            <textarea id="setting-password-reset-recipients" rows="4" autocomplete="off" spellcheck="false">${escapeHtml(
+              (appSettingsCache.passwordResetRecipients || []).join("\n")
+            )}</textarea>
+          </div>
           <div class="toolbar" style="margin-top:1rem">
             <button type="button" class="btn btn-primary btn-sm" id="btn-save-system-settings">${escapeHtml(
               t("saveSettings")
@@ -35858,6 +36322,16 @@
         const enabled = !!panel.querySelector("#setting-supervisor-approvals")?.checked;
         const supabaseUrl = (panel.querySelector("#setting-supabase-url")?.value || "").trim();
         const supabaseAnonKey = (panel.querySelector("#setting-supabase-anon")?.value || "").trim();
+        const parsedRecipients = parsePasswordResetRecipients(
+          panel.querySelector("#setting-password-reset-recipients")?.value || ""
+        );
+        if (parsedRecipients.error) {
+          const status = panel.querySelector("#system-settings-status");
+          if (status) {
+            status.textContent = t("passwordResetRecipientsInvalid").replace("{email}", parsedRecipients.error);
+          }
+          return;
+        }
         if (!enabled && supervisorApprovalsAreEnabled() && !confirm(t("confirmDisableSupervisorApprovals"))) {
           const input = panel.querySelector("#setting-supervisor-approvals");
           if (input) input.checked = true;
@@ -35873,6 +36347,7 @@
               supervisorApprovalsEnabled: enabled,
               supabaseUrl: supabaseUrl || null,
               supabaseAnonKey: supabaseAnonKey || null,
+              passwordResetRecipients: parsedRecipients.emails,
               updatedAt: serverTimestamp(),
               updatedBy: currentUser.uid,
             },
@@ -35881,6 +36356,7 @@
           appSettingsCache.supervisorApprovalsEnabled = enabled;
           appSettingsCache.supabaseUrl = supabaseUrl;
           appSettingsCache.supabaseAnonKey = supabaseAnonKey;
+          appSettingsCache.passwordResetRecipients = parsedRecipients.emails;
           appSettingsCache.loaded = true;
           supabasePoClient = null;
           supabasePoClientKey = "";
@@ -36185,9 +36661,16 @@
                 <td>${managedGmCnt}</td>
                 <td>${escapeHtml(regText)}</td>
                 <td>
-                  <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="userProfiles" data-id="${escapeAttr(
-                    r.id
-                  )}">${escapeHtml(t("edit"))}</button>
+                  <div style="display:flex;flex-wrap:wrap;gap:.35rem">
+                    <button type="button" class="btn btn-secondary btn-sm btn-edit-entity" data-collection="userProfiles" data-id="${escapeAttr(
+                      r.id
+                    )}">${escapeHtml(t("edit"))}</button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-password-reset" data-id="${escapeAttr(
+                      r.id
+                    )}" data-name="${escapeAttr(r.displayName || "")}" data-email="${escapeAttr(
+                      r.email || ""
+                    )}">${escapeHtml(t("btnSendPasswordReset"))}</button>
+                  </div>
                 </td>
               </tr>`;
           })
@@ -36224,7 +36707,80 @@
       panel.querySelectorAll(".btn-supplier-banks").forEach((btn) => {
         btn.addEventListener("click", () => void openSupplierBanksModal(btn.dataset.id));
       });
+      panel.querySelectorAll(".btn-password-reset").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          void openPasswordResetModal(btn);
+        });
+      });
     }
+
+    let passwordResetTargetUid = "";
+
+    function closePasswordResetModal() {
+      $("modal-password-reset")?.classList.add("hidden");
+    }
+
+    function passwordResetErrorText(err) {
+      const raw = [err?.message, err?.details].filter(Boolean).join(" ");
+      const map = {
+        "not-admin": "passwordResetNotAdmin",
+        "recipient-not-allowed": "passwordResetRecipientRejected",
+        "user-not-found": "passwordResetUserMissing",
+        "user-has-no-email": "passwordResetNoLoginEmail",
+        "smtp-not-configured": "passwordResetSmtpMissing",
+        "email-send-failed": "passwordResetSendFailed",
+        "link-failed": "passwordResetSendFailed",
+      };
+      const key = Object.keys(map).find((code) => raw.includes(code));
+      return key ? t(map[key]) : t("passwordResetSendFailed");
+    }
+
+    async function openPasswordResetModal(btn) {
+      await loadAppSettingsCache(true);
+      const recipients = appSettingsCache.passwordResetRecipients || [];
+      passwordResetTargetUid = btn?.dataset?.id || "";
+      const name = btn?.dataset?.name || "";
+      const email = btn?.dataset?.email || "";
+      const target = $("password-reset-target");
+      if (target) target.textContent = [name, email].filter(Boolean).join(" — ") || passwordResetTargetUid;
+      const sel = $("password-reset-recipient");
+      if (sel) {
+        sel.innerHTML = recipients
+          .map((item) => `<option value="${escapeAttr(item)}">${escapeHtml(item)}</option>`)
+          .join("");
+      }
+      const empty = !recipients.length;
+      $("password-reset-empty")?.classList.toggle("hidden", !empty);
+      $("password-reset-form-fields")?.classList.toggle("hidden", empty);
+      const sendBtn = $("btn-password-reset-send");
+      if (sendBtn) sendBtn.disabled = empty;
+      const status = $("password-reset-status");
+      if (status) status.textContent = "";
+      $("modal-password-reset")?.classList.remove("hidden");
+    }
+
+    $("btn-password-reset-cancel")?.addEventListener("click", closePasswordResetModal);
+    $("modal-password-reset")?.addEventListener("click", (event) => {
+      if (event.target?.id === "modal-password-reset") closePasswordResetModal();
+    });
+    $("btn-password-reset-send")?.addEventListener("click", async () => {
+      const sendBtn = $("btn-password-reset-send");
+      const status = $("password-reset-status");
+      const recipientEmail = ($("password-reset-recipient")?.value || "").trim().toLowerCase();
+      if (!passwordResetTargetUid || !recipientEmail) return;
+      if (sendBtn) sendBtn.disabled = true;
+      if (status) status.textContent = t("loading");
+      try {
+        const call = httpsCallable(functions, "sendUserPasswordResetLink");
+        await call({ targetUid: passwordResetTargetUid, recipientEmail });
+        if (status) status.textContent = t("passwordResetSent").replace("{email}", recipientEmail);
+      } catch (err) {
+        console.error(err);
+        if (status) status.textContent = passwordResetErrorText(err);
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+      }
+    });
 
     async function deleteEntity(collectionName, id) {
       if (!confirm(t("confirmDeleteRecord"))) return;
