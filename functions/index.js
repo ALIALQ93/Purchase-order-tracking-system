@@ -1,4 +1,4 @@
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
@@ -48,45 +48,48 @@ function smtpConfig() {
   return { host, user, pass, from, port };
 }
 
-exports.sendUserPasswordResetLink = onCall({ invoker: "public" }, async (request) => {
-  if (!request.auth?.uid) {
-    throw new HttpsError("unauthenticated", "not-signed-in");
-  }
+async function markJob(ref, fields) {
+  await ref.update({
+    ...fields,
+    finishedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+}
 
-  const targetUid = String(request.data?.targetUid || "").trim();
-  const recipientEmail = normalizeEmail(request.data?.recipientEmail);
-  if (!/^[A-Za-z0-9_-]{6,128}$/.test(targetUid)) {
-    throw new HttpsError("invalid-argument", "bad-target");
-  }
-  if (!isEmail(recipientEmail)) {
-    throw new HttpsError("invalid-argument", "bad-recipient");
-  }
+exports.onPasswordResetJob = onDocumentCreated("passwordResetJobs/{jobId}", async (event) => {
+  const snap = event.data;
+  if (!snap) return;
+  const jobRef = snap.ref;
+  const job = snap.data() || {};
+  if (job.status && job.status !== "pending") return;
+
+  const callerUid = String(event.authId || "").trim();
+  const targetUid = String(job.targetUid || "").trim();
+  const recipientEmail = normalizeEmail(job.recipientEmail);
+
+  const fail = (errorCode) => markJob(jobRef, { status: "error", errorCode });
+
+  if (!callerUid) return fail("not-signed-in");
+  if (!/^[A-Za-z0-9_-]{6,128}$/.test(targetUid)) return fail("bad-target");
+  if (!isEmail(recipientEmail)) return fail("bad-recipient");
 
   const db = admin.firestore();
-  const callerSnap = await db.doc(`userProfiles/${request.auth.uid}`).get();
-  if (!callerSnap.exists || !profileIsAdmin(callerSnap.data())) {
-    throw new HttpsError("permission-denied", "not-admin");
-  }
+  const callerSnap = await db.doc(`userProfiles/${callerUid}`).get();
+  if (!callerSnap.exists || !profileIsAdmin(callerSnap.data())) return fail("not-admin");
 
   const settingsSnap = await db.doc("appConfig/generalSettings").get();
   const allowlist = allowlistFromSettings(settingsSnap.exists ? settingsSnap.data() : {});
-  if (!allowlist.includes(recipientEmail)) {
-    throw new HttpsError("permission-denied", "recipient-not-allowed");
-  }
+  if (!allowlist.includes(recipientEmail)) return fail("recipient-not-allowed");
 
   let target;
   try {
     target = await admin.auth().getUser(targetUid);
   } catch (err) {
-    if (err?.code === "auth/user-not-found") {
-      throw new HttpsError("not-found", "user-not-found");
-    }
-    throw new HttpsError("internal", "user-lookup-failed");
+    if (err?.code === "auth/user-not-found") return fail("user-not-found");
+    console.error("getUser failed", err?.code || err?.message || err);
+    return fail("user-lookup-failed");
   }
   const targetEmail = normalizeEmail(target.email);
-  if (!isEmail(targetEmail)) {
-    throw new HttpsError("failed-precondition", "user-has-no-email");
-  }
+  if (!isEmail(targetEmail)) return fail("user-has-no-email");
 
   const profileSnap = await db.doc(`userProfiles/${targetUid}`).get();
   const displayName = String(profileSnap.exists ? profileSnap.data()?.displayName || "" : "").trim();
@@ -99,12 +102,12 @@ exports.sendUserPasswordResetLink = onCall({ invoker: "public" }, async (request
     });
   } catch (err) {
     console.error("generatePasswordResetLink failed", err?.code || err?.message || err);
-    throw new HttpsError("internal", "link-failed");
+    return fail("link-failed");
   }
 
   const mail = smtpConfig();
   if (!mail.host || !mail.user || !mail.pass || !mail.from || !Number.isFinite(mail.port)) {
-    throw new HttpsError("failed-precondition", "smtp-not-configured");
+    return fail("smtp-not-configured");
   }
 
   const subject = "رابط تغيير كلمة المرور — نظام تتبع أوامر الشراء";
@@ -135,18 +138,16 @@ exports.sendUserPasswordResetLink = onCall({ invoker: "public" }, async (request
     });
   } catch (err) {
     console.error("password reset mail failed", err?.message || err);
-    throw new HttpsError("internal", "email-send-failed");
+    return fail("email-send-failed");
   }
 
   await db.collection("passwordResetRequests").add({
-    requestedBy: request.auth.uid,
-    requestedByEmail: normalizeEmail(request.auth.token?.email || ""),
+    requestedBy: callerUid,
     targetUid,
     targetEmail,
     targetName: displayName || null,
     recipientEmail,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
-
-  return { ok: true, recipientEmail };
+  await markJob(jobRef, { status: "sent", errorCode: null });
 });

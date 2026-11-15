@@ -8411,7 +8411,6 @@
       signOut,
       onAuthStateChanged,
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
     import {
       getFirestore,
       collection,
@@ -9325,6 +9324,8 @@
         passwordResetNoLoginEmail: "حساب المستخدم بلا بريد دخول في Firebase.",
         passwordResetSmtpMissing: "إرسال البريد غير مُعدّ على الخادم. يلزم ضبط SMTP للدالة السحابية.",
         passwordResetSendFailed: "تعذّر إرسال الرابط.",
+        passwordResetStillPending: "لم يكتمل الإرسال بعد. انشر دالة Firebase ثم أعد المحاولة.",
+        passwordResetPermission: "تعذّر حفظ طلب الرابط. اسمح للمستخدم المسجّل بإنشاء مستند في مجموعة passwordResetJobs وقراءته.",
         repAdvanceIssued: "تم إصدار السلفة.",
         repAdvanceSettled: "تم تصفية السلفة.",
         repAdvanceSettleSummary: "السلفة: {amount} {currency} — مصروفات مرتبطة: {expenses} — المتبقي التقديري: {remaining}",
@@ -10807,6 +10808,8 @@
         passwordResetNoLoginEmail: "This user has no sign-in email in Firebase.",
         passwordResetSmtpMissing: "Mail delivery is not configured on the server. Set SMTP for the cloud function.",
         passwordResetSendFailed: "The link could not be sent.",
+        passwordResetStillPending: "Sending did not finish. Deploy the Firebase function, then try again.",
+        passwordResetPermission: "The reset request could not be saved. Allow a signed-in user to create and read a document in passwordResetJobs.",
         repAdvanceIssued: "Advance issued.",
         repAdvanceSettled: "Advance settled.",
         repAdvanceSettleSummary: "Advance: {amount} {currency} — linked expenses: {expenses} — estimated remaining: {remaining}",
@@ -11683,7 +11686,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const functions = getFunctions(app, "us-central1");
 
     let currentUser = null;
     let userRole = "user";
@@ -36715,15 +36717,31 @@
     }
 
     let passwordResetTargetUid = "";
+    let passwordResetUnsub = null;
+    let passwordResetTimer = 0;
+
+    function stopPasswordResetWatch() {
+      if (passwordResetUnsub) {
+        passwordResetUnsub();
+        passwordResetUnsub = null;
+      }
+      if (passwordResetTimer) {
+        clearTimeout(passwordResetTimer);
+        passwordResetTimer = 0;
+      }
+    }
 
     function closePasswordResetModal() {
+      stopPasswordResetWatch();
       $("modal-password-reset")?.classList.add("hidden");
     }
 
     function passwordResetErrorText(err) {
-      const raw = [err?.message, err?.details].filter(Boolean).join(" ");
+      const raw = [err?.code, err?.message, err?.details].filter(Boolean).join(" ");
+      if (raw.includes("permission-denied")) return t("passwordResetPermission");
       const map = {
         "not-admin": "passwordResetNotAdmin",
+        "not-signed-in": "passwordResetNotAdmin",
         "recipient-not-allowed": "passwordResetRecipientRejected",
         "user-not-found": "passwordResetUserMissing",
         "user-has-no-email": "passwordResetNoLoginEmail",
@@ -36768,16 +36786,46 @@
       const status = $("password-reset-status");
       const recipientEmail = ($("password-reset-recipient")?.value || "").trim().toLowerCase();
       if (!passwordResetTargetUid || !recipientEmail) return;
+      stopPasswordResetWatch();
       if (sendBtn) sendBtn.disabled = true;
       if (status) status.textContent = t("loading");
       try {
-        const call = httpsCallable(functions, "sendUserPasswordResetLink");
-        await call({ targetUid: passwordResetTargetUid, recipientEmail });
-        if (status) status.textContent = t("passwordResetSent").replace("{email}", recipientEmail);
+        const ref = await addDoc(collection(db, "passwordResetJobs"), {
+          targetUid: passwordResetTargetUid,
+          recipientEmail,
+          status: "pending",
+          createdAt: serverTimestamp(),
+        });
+        passwordResetTimer = setTimeout(() => {
+          stopPasswordResetWatch();
+          if (status) status.textContent = t("passwordResetStillPending");
+          if (sendBtn) sendBtn.disabled = false;
+        }, 30000);
+        passwordResetUnsub = onSnapshot(
+          ref,
+          (snap) => {
+            const data = snap.data() || {};
+            if (data.status === "sent") {
+              stopPasswordResetWatch();
+              if (status) status.textContent = t("passwordResetSent").replace("{email}", recipientEmail);
+              if (sendBtn) sendBtn.disabled = false;
+            } else if (data.status === "error") {
+              stopPasswordResetWatch();
+              if (status) status.textContent = passwordResetErrorText({ message: data.errorCode || "" });
+              if (sendBtn) sendBtn.disabled = false;
+            }
+          },
+          (err) => {
+            console.error(err);
+            stopPasswordResetWatch();
+            if (status) status.textContent = passwordResetErrorText(err);
+            if (sendBtn) sendBtn.disabled = false;
+          }
+        );
       } catch (err) {
         console.error(err);
+        stopPasswordResetWatch();
         if (status) status.textContent = passwordResetErrorText(err);
-      } finally {
         if (sendBtn) sendBtn.disabled = false;
       }
     });
