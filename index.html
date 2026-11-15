@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.15.4" />
+  <meta name="app-version" content="2026.11.15.5" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -8921,7 +8921,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.15.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>طلبات المشاريع:</strong> زر المشرف «إرجاع للتعديل» يعيد الطلب لبداية الطابور (المستودع) مع ملاحظة إلزامية ومسح الموافقات السابقة — دون رفض نهائي.</li><li><strong>تقرير حالة الطلبات:</strong> فلاتر منسدلة باختيار متعدد.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.15.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>إرجاع للتعديل:</strong> إن كانت موافقة المشرف معطّلة يظهر الزر في <em>المشتريات</em> للطلبات بانتظار/قيد الشراء (للمشرف/الأدمن).</li><li><strong>مع تفعيل موافقة المشرف:</strong> يظهر الزر في شاشة موافقات المشرف.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -10413,7 +10413,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.15.4</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Project POs:</strong> supervisor «Return for revision» sends the request back to warehouse with a required note and clears prior approvals — not a final rejection.</li><li><strong>Status report:</strong> searchable multi-select filter dropdowns.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.15.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Return for revision:</strong> if supervisor approval is disabled, the button appears in Purchasing for awaiting/in-progress orders (admin).</li><li><strong>If supervisor approval is enabled:</strong> the button stays on the Supervisor approvals screen.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -27755,6 +27755,20 @@
       return ws === "pending_supervisor" && hasAdminAccess();
     }
 
+    /** إرجاع للتعديل: طابور المشرف، أو طابور المشتريات عندما تكون موافقة المشرف معطّلة. */
+    function canAdminReturnProjectPoForRevision(ws) {
+      if (!hasAdminAccess()) return false;
+      const status = String(ws || "").trim();
+      if (status === "pending_supervisor") return true;
+      if (
+        !supervisorApprovalsAreEnabled() &&
+        (status === "pending_purchasing" || status === "in_progress_purchasing")
+      ) {
+        return true;
+      }
+      return false;
+    }
+
     function setRoleUI() {
       applyNavVisibility();
     }
@@ -29771,6 +29785,11 @@
         supervisorSkipped: deleteField(),
         supervisorSkippedAt: deleteField(),
         supervisorSkippedBy: deleteField(),
+        purchasingRepresentativeId: deleteField(),
+        purchasingRepresentativeName: deleteField(),
+        purchasingInProgressAt: deleteField(),
+        purchasingAssignedAt: deleteField(),
+        purchasingAssignedBy: deleteField(),
       };
     }
 
@@ -29786,7 +29805,7 @@
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
       const po = snap.data();
-      if (!supervisorCanActOnWorkflowStatus(po.workflowStatus)) {
+      if (!canAdminReturnProjectPoForRevision(po.workflowStatus)) {
         alert(t("alertWarehouseReviewStale"));
         return;
       }
@@ -30177,6 +30196,9 @@
                       escapeHtml(t("btnPurchasingSendAdvance")) +
                       "</button>";
                   }
+                  const revisionBtn = canAdminReturnProjectPoForRevision(r.workflowStatus)
+                    ? `<button type="button" class="btn btn-secondary btn-sm btn-supervisor-revision" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnReturnForRevision"))}</button>`
+                    : "";
                   return `
                 <tr>
                   ${projectPoReferenceCellHtml(r)}
@@ -30187,7 +30209,7 @@
                   <td>${purchasingRepresentativeCellHtml(r)}</td>
                   <td class="td-approval-actions">
                     <div class="approval-actions-cell">
-                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${act}
+                      <button type="button" class="btn btn-secondary btn-sm btn-po-print-view" data-id="${escapeHtml(r.id)}">${escapeHtml(t("btnPoPrintView"))}</button>${act}${revisionBtn}
                     </div>
                   </td>
                 </tr>`;
@@ -30287,6 +30309,9 @@
       });
       wrap.querySelectorAll(".btn-verify-prices").forEach((btn) => {
         btn.addEventListener("click", () => openAccountingPoModal(btn.dataset.id));
+      });
+      wrap.querySelectorAll(".btn-supervisor-revision").forEach((btn) => {
+        btn.addEventListener("click", () => openSupervisorRevisionModal(btn.dataset.id));
       });
       if (canAct) {
         wrap.querySelectorAll(".btn-purchasing-advance").forEach((btn) => {
