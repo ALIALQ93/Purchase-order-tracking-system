@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.15.5" />
+  <meta name="app-version" content="2026.11.16.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -8921,7 +8921,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.15.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>إرجاع للتعديل:</strong> إن كانت موافقة المشرف معطّلة يظهر الزر في <em>المشتريات</em> للطلبات بانتظار/قيد الشراء (للمشرف/الأدمن).</li><li><strong>مع تفعيل موافقة المشرف:</strong> يظهر الزر في شاشة موافقات المشرف.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.16.1</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>توفير قراءات Firestore:</strong> ترقيم طلبات المشاريع يعتمد على عدّاد <code>projectPoSeq</code> دون مسح كل الطلبات عند كل حفظ/فتح.</li><li><strong>إرجاع للتعديل:</strong> للمشرف كما في الإصدار السابق.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -10413,7 +10413,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.15.5</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Return for revision:</strong> if supervisor approval is disabled, the button appears in Purchasing for awaiting/in-progress orders (admin).</li><li><strong>If supervisor approval is enabled:</strong> the button stays on the Supervisor approvals screen.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.16.1</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Fewer Firestore reads:</strong> project PO numbering uses the <code>projectPoSeq</code> counter instead of scanning all orders on every open/save.</li><li><strong>Return for revision:</strong> as in the previous release.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -20000,22 +20000,36 @@
       const contractSeg = ctx.contractSeg;
       const counterRef = projectPoSeqCounterRef(projectId, year, contractSeg);
 
+      // Seed only when counter is missing (one scan). Concurrent saves are safe via runTransaction:
+      // two clients updating the same counter → one commits, the other aborts and retries with prev+1.
+      let seedNext = null;
+      try {
+        const existing = await getDoc(counterRef);
+        if (!existing.exists()) {
+          seedNext = await nextPoSequenceForProject(projectId, year, contractSeg);
+        }
+      } catch (_) {
+        seedNext = null;
+      }
+
       let lastErr;
-      for (let attempt = 0; attempt < 14; attempt++) {
-        const scanNext = await nextPoSequenceForProject(projectId, year, contractSeg);
+      for (let attempt = 0; attempt < 12; attempt++) {
         try {
           return await runTransaction(db, async (transaction) => {
             const snap = await transaction.get(counterRef);
             let nextSeq;
             if (!snap.exists()) {
-              nextSeq = scanNext;
+              nextSeq = Math.max(1, Number(seedNext) || 1);
               transaction.set(counterRef, {
                 lastSeq: nextSeq,
+                projectId,
+                year,
+                contractSeg: String(contractSeg).padStart(3, "0"),
                 updatedAt: serverTimestamp(),
               });
             } else {
               const prev = Number(snap.data().lastSeq) || 0;
-              nextSeq = Math.max(prev + 1, scanNext);
+              nextSeq = prev + 1;
               transaction.update(counterRef, {
                 lastSeq: nextSeq,
                 updatedAt: serverTimestamp(),
@@ -20026,8 +20040,15 @@
         } catch (err) {
           lastErr = err;
           const code = err?.code || "";
-          if (code === "aborted" || code === "failed-precondition") {
-            await new Promise((r) => setTimeout(r, 50 + attempt * 40));
+          // aborted/failed-precondition = concurrent write on the same counter — retry safely.
+          if (
+            code === "aborted" ||
+            code === "failed-precondition" ||
+            code === "resource-exhausted" ||
+            code === "unavailable"
+          ) {
+            const base = code === "resource-exhausted" || code === "unavailable" ? 400 : 40;
+            await new Promise((r) => setTimeout(r, base + attempt * (base === 400 ? 350 : 45)));
             continue;
           }
           throw err;
@@ -25464,10 +25485,10 @@
         }
       }
       if (!preserveReference && !existingId) {
+        // Avoid a full purchaseOrders scan just for preview — final number is allocated at save.
         const ymd = $("po-request-date").value || formatTodayYmd();
         const year = ymdYear(ymd);
-        const seq = await nextPoSequenceForProject(pid, year, contractSeg);
-        $("po-reference").value = formatPoReference(year, contractSeg, seq);
+        $("po-reference").value = formatPoReference(year, contractSeg, "…");
       }
     }
 
