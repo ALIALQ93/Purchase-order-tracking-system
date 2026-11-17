@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+functions/node_modules/
+
+# Environment and local secrets
+.env
+.env.*
+*.local
+
+# Firebase / Google service account keys (never commit)
+service-account.json
+**/service-account.json
+*-firebase-adminsdk-*.json
+**/credentials.json
+**/google-services.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs and caches
+*.log
+.firebase/
+.cache/
