@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.16.3" />
+  <meta name="app-version" content="2026.11.19.1" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -6094,6 +6094,10 @@
               <select id="po-projects-filter-company"></select>
             </label>
             <label class="po-filter-field">
+              <span data-i18n="filterProjectLabel">المشروع</span>
+              <select id="po-projects-filter-project"></select>
+            </label>
+            <label class="po-filter-field">
               <span data-i18n="filterRegionLabel">المنطقة</span>
               <select id="po-projects-filter-region"></select>
             </label>
@@ -8510,6 +8514,7 @@
         filterWorkflowLabel: "مرحلة المسار",
         filterPriorityLabel: "الأولوية",
         filterCompanyLabel: "الشركة",
+        filterProjectLabel: "المشروع",
         filterSupplierLabel: "المورد",
         colGenPoDate: "التاريخ",
         poGeneralFilterNoMatch: "لا توجد أوامر تطابق الفلاتر.",
@@ -8926,7 +8931,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.16.3</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>طوابير المتابعة:</strong> لا تجلب المكتمل التاريخي يومياً + كاش 3 دقائق (مشتريات/مستودع/استلام/حسابات).</li><li><strong>طلبات المشاريع:</strong> نشط فقط + كاش كما في الإصدار السابق.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.19.1</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>أوامر شراء المشاريع:</strong> إضافة فلتر المشروع في شريط الفلاتر.</li><li><strong>توفير القراءات:</strong> قوائم نشطة + كاش طوابير كما في الإصدارات السابقة.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -10003,6 +10008,7 @@
         filterWorkflowLabel: "Workflow stage",
         filterPriorityLabel: "Priority",
         filterCompanyLabel: "Company",
+        filterProjectLabel: "Project",
         filterSupplierLabel: "Supplier",
         colGenPoDate: "Date",
         poGeneralFilterNoMatch: "No orders match the filters.",
@@ -10419,7 +10425,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.16.3</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Queue tracking:</strong> skip historical completed orders daily + 3-minute cache (purchasing/warehouse/receipt/accounting).</li><li><strong>Project POs:</strong> active-only list + cache as before.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.19.1</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Project purchase orders:</strong> added a Project filter in the filter bar.</li><li><strong>Read savings:</strong> active lists + queue caches as in prior releases.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -12006,6 +12012,11 @@
       if (co) {
         co.value = "";
         co.selectedIndex = 0;
+      }
+      const proj = $("po-projects-filter-project");
+      if (proj) {
+        proj.value = "";
+        proj.selectedIndex = 0;
       }
       const rg = $("po-projects-filter-region");
       if (rg) {
@@ -28300,11 +28311,12 @@
       return `<td>${ref}${star}</td>`;
     }
 
-    function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg, extra) {
+    function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg, extra, projectId) {
       if (wf && (r.workflowStatus || "") !== wf) return false;
       if (pri && normalizePoPriority(r.priority) !== pri) return false;
       const cDisp = projectPoCompanyDisplay(r, ctx);
       if (co && cDisp !== co) return false;
+      if (projectId && String(r.projectId || "").trim() !== String(projectId).trim()) return false;
       const rName = projectPoRegionDisplayName(r);
       if (reg && rName !== reg) return false;
       if (!matchesExtraReceiptFilter(r, extra)) return false;
@@ -28335,6 +28347,7 @@
       if (!ctx) return;
       const wfSel = $("po-projects-filter-workflow");
       const coSel = $("po-projects-filter-company");
+      const projSel = $("po-projects-filter-project");
       const regSel = $("po-projects-filter-region");
       if (!wfSel || !coSel || !regSel) return;
       const loc = lang === "ar" ? "ar" : "en";
@@ -28342,6 +28355,11 @@
       const companies = [
         ...new Set(ctx.rows.map((r) => projectPoCompanyDisplay(r, ctx)).filter(Boolean)),
       ].sort((a, b) => a.localeCompare(b, loc));
+      const projectIds = [
+        ...new Set(ctx.rows.map((r) => String(r.projectId || "").trim()).filter(Boolean)),
+      ].sort((a, b) =>
+        String(ctx.projectNames?.[a] || a).localeCompare(String(ctx.projectNames?.[b] || b), loc)
+      );
       const regions = [...new Set(ctx.rows.map((r) => projectPoRegionDisplayName(r)).filter((x) => x && x !== t("dash")))].sort((a, b) =>
         a.localeCompare(b, loc)
       );
@@ -28355,6 +28373,18 @@
         `<option value="">${escapeHtml(t("filterAll"))}</option>` +
         companies.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
       coSel.value = companies.includes(coVal) ? coVal : "";
+      if (projSel) {
+        const projVal = projSel.value;
+        projSel.innerHTML =
+          `<option value="">${escapeHtml(t("filterAll"))}</option>` +
+          projectIds
+            .map(
+              (id) =>
+                `<option value="${escapeAttr(id)}">${escapeHtml(ctx.projectNames?.[id] || id)}</option>`
+            )
+            .join("");
+        projSel.value = projectIds.includes(projVal) ? projVal : "";
+      }
       const regVal = regSel.value;
       regSel.innerHTML =
         `<option value="">${escapeHtml(t("filterAll"))}</option>` +
@@ -28371,6 +28401,7 @@
         "po-projects-filter-workflow",
         "po-projects-filter-priority",
         "po-projects-filter-company",
+        "po-projects-filter-project",
         "po-projects-filter-region",
         "po-projects-filter-extra-receipt",
       ].forEach((fid) => {
@@ -28620,9 +28651,12 @@
       const wf = afterSave ? "" : ($("po-projects-filter-workflow")?.value || "");
       const pri = afterSave ? "" : ($("po-projects-filter-priority")?.value || "");
       const co = afterSave ? "" : ($("po-projects-filter-company")?.value || "");
+      const proj = afterSave ? "" : ($("po-projects-filter-project")?.value || "");
       const reg = afterSave ? "" : ($("po-projects-filter-region")?.value || "");
       const extra = afterSave ? "" : ($("po-projects-filter-extra-receipt")?.value || "");
-      let filtered = ctx.rows.filter((r) => projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg, extra));
+      let filtered = ctx.rows.filter((r) =>
+        projectPoRowMatchesFilters(r, ctx, q, wf, pri, co, reg, extra, proj)
+      );
       if (ensurePoId && !filtered.some((r) => r.id === ensurePoId)) {
         const forced = ctx.rows.find((r) => r.id === ensurePoId);
         if (forced) filtered = [forced, ...filtered];
