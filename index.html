@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <!-- ارفع هذا الإصدار مع version.json عند كل نشر حتى تظهر نافذة التحديث لمستخدمي النسخة القديمة. -->
-  <meta name="app-version" content="2026.11.19.1" />
+  <meta name="app-version" content="2026.11.19.2" />
   <title>نظام تتبع أوامر الشراء</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -542,6 +542,54 @@
 
     .po-projects-filter-fields .btn-clear-po-filters {
       align-self: flex-end;
+    }
+    .po-col-picker-wrap {
+      position: relative;
+    }
+    .po-col-picker-panel {
+      position: absolute;
+      z-index: 70;
+      top: calc(100% + 0.3rem);
+      inset-inline-start: 0;
+      min-width: 14rem;
+      max-width: min(20rem, 92vw);
+      max-height: 18rem;
+      overflow: auto;
+      padding: 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .po-col-picker-panel.hidden {
+      display: none;
+    }
+    .po-col-picker-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.35rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .po-col-picker-item:hover {
+      background: color-mix(in srgb, var(--primary, #2563eb) 8%, transparent);
+    }
+    .po-col-picker-item--locked {
+      opacity: 0.72;
+      cursor: default;
+    }
+    .po-col-picker-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.35rem;
+      padding-top: 0.4rem;
+      border-top: 1px solid var(--border);
     }
 
     @media (max-width: 600px) {
@@ -6112,6 +6160,13 @@
             <button type="button" class="btn btn-secondary btn-sm btn-clear-po-filters" id="po-projects-filter-reset" data-i18n="poProjectsClearFilters">
               مسح الفلاتر
             </button>
+            <div class="po-filter-field po-col-picker-wrap">
+              <span data-i18n="poProjectsColumnsLabel">الأعمدة</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-po-projects-columns" data-i18n="poProjectsColumnsButton" aria-haspopup="true" aria-expanded="false">
+                إظهار / إخفاء
+              </button>
+              <div id="po-projects-columns-panel" class="po-col-picker-panel hidden" role="dialog" aria-label="Columns"></div>
+            </div>
             <label class="po-filter-field" style="display:flex;align-items:center;gap:0.4rem;padding-top:1.35rem">
               <input type="checkbox" id="po-projects-include-completed" />
               <span data-i18n="poProjectsIncludeCompleted">إظهار المكتمل</span>
@@ -8515,6 +8570,11 @@
         filterPriorityLabel: "الأولوية",
         filterCompanyLabel: "الشركة",
         filterProjectLabel: "المشروع",
+        poProjectsColumnsLabel: "الأعمدة",
+        poProjectsColumnsButton: "إظهار / إخفاء",
+        poProjectsColumnsShowAll: "إظهار الكل",
+        poProjectsColumnsReset: "افتراضي",
+        poProjectsColumnsSaved: "تم حفظ تفضيل الأعمدة",
         filterSupplierLabel: "المورد",
         colGenPoDate: "التاريخ",
         poGeneralFilterNoMatch: "لا توجد أوامر تطابق الفلاتر.",
@@ -8530,7 +8590,7 @@
         colProject: "المشروع",
         colStatus: "الحالة",
         colTotal: "الإجمالي",
-        colActions: "",
+        colActions: "إجراءات",
         edit: "تعديل",
         delete: "حذف",
         view: "عرض",
@@ -8931,7 +8991,7 @@
         emptySupervisorQueue: "لا توجد طلبات بانتظار موافقتك.",
         whatsNewTitle: "تحديث جديد",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.19.1</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>أوامر شراء المشاريع:</strong> إضافة فلتر المشروع في شريط الفلاتر.</li><li><strong>توفير القراءات:</strong> قوائم نشطة + كاش طوابير كما في الإصدارات السابقة.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>الإصدار 2026.11.19.2</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>أوامر شراء المشاريع:</strong> إظهار/إخفاء أعمدة الجدول مع حفظ التفضيل لكل مستخدم.</li><li><strong>فلتر المشروع:</strong> كما في الإصدار السابق.</li></ul>",
         whatsNewGotIt: "فهمت",
         appUpdateTitle: "يتوفر تحديث جديد",
         appUpdateBody:
@@ -10009,6 +10069,11 @@
         filterPriorityLabel: "Priority",
         filterCompanyLabel: "Company",
         filterProjectLabel: "Project",
+        poProjectsColumnsLabel: "Columns",
+        poProjectsColumnsButton: "Show / hide",
+        poProjectsColumnsShowAll: "Show all",
+        poProjectsColumnsReset: "Default",
+        poProjectsColumnsSaved: "Column preferences saved",
         filterSupplierLabel: "Supplier",
         colGenPoDate: "Date",
         poGeneralFilterNoMatch: "No orders match the filters.",
@@ -10024,7 +10089,7 @@
         colProject: "Project",
         colStatus: "Status",
         colTotal: "Total",
-        colActions: "",
+        colActions: "Actions",
         edit: "Edit",
         delete: "Delete",
         view: "View",
@@ -10425,7 +10490,7 @@
         emptySupervisorQueue: "No requests awaiting your approval.",
         whatsNewTitle: "What's new",
         whatsNewBody:
-          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.19.1</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Project purchase orders:</strong> added a Project filter in the filter bar.</li><li><strong>Read savings:</strong> active lists + queue caches as in prior releases.</li></ul>",
+          "<p style=\"margin:0 0 .55rem\"><strong>Version 2026.11.19.2</strong></p><ul style=\"margin:0;padding-inline-start:1.2rem;display:grid;gap:.45rem\"><li><strong>Project purchase orders:</strong> show/hide table columns with per-user saved preferences.</li><li><strong>Project filter:</strong> as in the previous release.</li></ul>",
         whatsNewGotIt: "Got it",
         appUpdateTitle: "A new update is available",
         appUpdateBody:
@@ -28311,6 +28376,217 @@
       return `<td>${ref}${star}</td>`;
     }
 
+    const PROJECT_PO_TABLE_COLUMNS = [
+      { id: "ref", labelKey: "colPoReference", locked: true },
+      { id: "requestDate", labelKey: "colRequestDate" },
+      { id: "submittedAt", labelKey: "colSubmittedAtIraq" },
+      { id: "project", labelKey: "colProject" },
+      { id: "company", labelKey: "colCompany" },
+      { id: "contract", labelKey: "colContractNumber" },
+      { id: "region", labelKey: "colRegion" },
+      { id: "requester", labelKey: "poRequesterLabel" },
+      { id: "reason", labelKey: "poReasonLabel" },
+      { id: "requestType", labelKey: "poRequestTypeLabel" },
+      { id: "vehicle", labelKey: "poVehicleInfoLabel" },
+      { id: "priority", labelKey: "colPriority" },
+      { id: "workflow", labelKey: "colWorkflow" },
+      { id: "actions", labelKey: "colActions", locked: true },
+    ];
+
+    function projectPoTableColsStorageKey() {
+      const uid = (currentUser?.uid || "").trim() || "anon";
+      return `poProjectTableCols_v1_${uid}`;
+    }
+
+    function defaultProjectPoTableColumnVisibility() {
+      const out = {};
+      PROJECT_PO_TABLE_COLUMNS.forEach((c) => {
+        out[c.id] = true;
+      });
+      return out;
+    }
+
+    function getProjectPoTableColumnVisibility() {
+      const base = defaultProjectPoTableColumnVisibility();
+      let fromLs = null;
+      try {
+        const raw = localStorage.getItem(projectPoTableColsStorageKey());
+        if (raw) fromLs = JSON.parse(raw);
+      } catch (_) {
+        fromLs = null;
+      }
+      const fromProfile =
+        currentUserProfile?.projectPoTableColumnVisibility &&
+        typeof currentUserProfile.projectPoTableColumnVisibility === "object"
+          ? currentUserProfile.projectPoTableColumnVisibility
+          : null;
+      const merged = { ...base, ...(fromLs && typeof fromLs === "object" ? fromLs : {}), ...(fromProfile || {}) };
+      merged.ref = true;
+      merged.actions = true;
+      return merged;
+    }
+
+    function isProjectPoTableColumnVisible(colId, vis) {
+      const map = vis || getProjectPoTableColumnVisibility();
+      const col = PROJECT_PO_TABLE_COLUMNS.find((c) => c.id === colId);
+      if (col?.locked) return true;
+      return map[colId] !== false;
+    }
+
+    async function saveProjectPoTableColumnVisibility(vis) {
+      const next = { ...defaultProjectPoTableColumnVisibility(), ...(vis || {}) };
+      next.ref = true;
+      next.actions = true;
+      try {
+        localStorage.setItem(projectPoTableColsStorageKey(), JSON.stringify(next));
+      } catch (_) {
+        /* ignore quota */
+      }
+      if (currentUserProfile) currentUserProfile.projectPoTableColumnVisibility = next;
+      const uid = (currentUser?.uid || "").trim();
+      if (uid) {
+        try {
+          await updateDoc(doc(db, "userProfiles", uid), {
+            projectPoTableColumnVisibility: next,
+            projectPoTableColumnVisibilityUpdatedAt: serverTimestamp(),
+          });
+        } catch (err) {
+          console.warn("saveProjectPoTableColumnVisibility", err);
+        }
+      }
+      return next;
+    }
+
+    function closeProjectPoColumnsPanel() {
+      const panel = $("po-projects-columns-panel");
+      const btn = $("btn-po-projects-columns");
+      panel?.classList.add("hidden");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    }
+
+    function renderProjectPoColumnsPanel() {
+      const panel = $("po-projects-columns-panel");
+      if (!panel) return;
+      const vis = getProjectPoTableColumnVisibility();
+      const items = PROJECT_PO_TABLE_COLUMNS.map((col) => {
+        const label = t(col.labelKey) || col.id;
+        if (col.locked) {
+          return `<label class="po-col-picker-item po-col-picker-item--locked"><input type="checkbox" checked disabled /> <span>${escapeHtml(
+            label
+          )}</span></label>`;
+        }
+        const checked = vis[col.id] !== false ? " checked" : "";
+        return `<label class="po-col-picker-item"><input type="checkbox" data-po-col-vis="${escapeAttr(
+          col.id
+        )}"${checked} /> <span>${escapeHtml(label)}</span></label>`;
+      }).join("");
+      panel.innerHTML =
+        items +
+        `<div class="po-col-picker-actions">
+          <button type="button" class="btn btn-secondary btn-sm" data-po-col-act="all">${escapeHtml(t("poProjectsColumnsShowAll"))}</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-po-col-act="reset">${escapeHtml(t("poProjectsColumnsReset"))}</button>
+        </div>`;
+    }
+
+    function wireProjectPoColumnsPickerOnce() {
+      const btn = $("btn-po-projects-columns");
+      const panel = $("po-projects-columns-panel");
+      if (!btn || !panel || btn.dataset.wired) return;
+      btn.dataset.wired = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const willOpen = panel.classList.contains("hidden");
+        if (willOpen) {
+          renderProjectPoColumnsPanel();
+          panel.classList.remove("hidden");
+          btn.setAttribute("aria-expanded", "true");
+        } else {
+          closeProjectPoColumnsPanel();
+        }
+      });
+      panel.addEventListener("click", (e) => e.stopPropagation());
+      panel.addEventListener("change", (e) => {
+        const cb = e.target?.closest?.("input[data-po-col-vis]");
+        if (!cb) return;
+        const colId = cb.getAttribute("data-po-col-vis");
+        if (!colId) return;
+        const vis = getProjectPoTableColumnVisibility();
+        vis[colId] = !!cb.checked;
+        void saveProjectPoTableColumnVisibility(vis).then(() => renderProjectPurchaseOrdersTable());
+      });
+      panel.addEventListener("click", (e) => {
+        const actBtn = e.target?.closest?.("[data-po-col-act]");
+        if (!actBtn) return;
+        const act = actBtn.getAttribute("data-po-col-act");
+        let vis = getProjectPoTableColumnVisibility();
+        if (act === "all" || act === "reset") vis = defaultProjectPoTableColumnVisibility();
+        void saveProjectPoTableColumnVisibility(vis).then(() => {
+          renderProjectPoColumnsPanel();
+          renderProjectPurchaseOrdersTable();
+        });
+      });
+      if (!document.documentElement.dataset.poColPickerDocWired) {
+        document.documentElement.dataset.poColPickerDocWired = "1";
+        document.addEventListener("click", () => closeProjectPoColumnsPanel());
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeProjectPoColumnsPanel();
+        });
+      }
+    }
+
+    function projectPoTableCellHtml(colId, r, ctx, canEdit) {
+      const scope = "project";
+      if (colId === "ref") return projectPoReferenceCellHtml(r);
+      if (colId === "requestDate") return `<td>${escapeHtml(poRowDisplayDate(r))}</td>`;
+      if (colId === "submittedAt") return `<td>${escapeHtml(formatFirestoreInstantIraq(r.createdAt))}</td>`;
+      if (colId === "project")
+        return `<td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>`;
+      if (colId === "company")
+        return `<td>${escapeHtml(projectPoCompanyDisplay(r, ctx) || t("dash"))}</td>`;
+      if (colId === "contract")
+        return `<td>${escapeHtml(projectPoContractDisplay(r, ctx) || t("dash"))}</td>`;
+      if (colId === "region") return `<td>${escapeHtml(projectPoRegionDisplayName(r))}</td>`;
+      if (colId === "requester")
+        return `<td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>`;
+      if (colId === "reason") return projectPoReasonTableCell(r.reasonRequest);
+      if (colId === "requestType")
+        return `<td>${escapeHtml(projectPoRequestTypeLabel(r.requestType))}</td>`;
+      if (colId === "vehicle")
+        return `<td title="${escapeAttr(projectPoVehicleInfoLabel(r))}">${escapeHtml(
+          projectPoVehicleInfoLabel(r)
+        )}</td>`;
+      if (colId === "priority") return `<td>${priorityBadge(r.priority)}</td>`;
+      if (colId === "workflow") return `<td>${formatWorkflowTableCellForPo(r)}</td>`;
+      if (colId === "actions") {
+        const canEditRow = canEdit && canEditProjectPoAgainstApprovals(r);
+        const hasAmends = projectPoHasAmendments(r);
+        return `<td>
+                    <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
+                    ${
+                      hasAmends
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-amendments" data-id="${r.id}">${t(
+                            "btnPoAmendments"
+                          )}</button>`
+                        : ""
+                    }
+                    ${
+                      hasAdminAccess()
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
+                            "orderNoteButton"
+                          )}</button>`
+                        : ""
+                    }
+                    ${
+                      canEditRow
+                        ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
+                        : ""
+                    }
+                  </td>`;
+      }
+      return `<td>${escapeHtml(t("dash"))}</td>`;
+    }
+
     function projectPoRowMatchesFilters(r, ctx, qRaw, wf, pri, co, reg, extra, projectId) {
       if (wf && (r.workflowStatus || "") !== wf) return false;
       if (pri && normalizePoPriority(r.priority) !== pri) return false;
@@ -28662,71 +28938,19 @@
         if (forced) filtered = [forced, ...filtered];
       }
       filtered.sort(compareProjectPoRowsNewestFirst);
-      const thead = `<tr>
-              <th>${t("colPoReference")}</th>
-              <th>${t("colRequestDate")}</th>
-              <th>${t("colSubmittedAtIraq")}</th>
-              <th>${t("colProject")}</th>
-              <th>${t("colCompany")}</th>
-              <th>${t("colContractNumber")}</th>
-              <th>${t("colRegion")}</th>
-              <th>${t("poRequesterLabel")}</th>
-              <th>${t("poReasonLabel")}</th>
-              <th>${t("poRequestTypeLabel")}</th>
-              <th>${t("poVehicleInfoLabel")}</th>
-              <th>${t("colPriority")}</th>
-              <th>${t("colWorkflow")}</th>
-              <th></th>
-            </tr>`;
+      wireProjectPoColumnsPickerOnce();
+      const colVis = getProjectPoTableColumnVisibility();
+      const visibleCols = PROJECT_PO_TABLE_COLUMNS.filter((c) => isProjectPoTableColumnVisible(c.id, colVis));
+      const thead = `<tr>${visibleCols
+        .map((c) => `<th>${escapeHtml(c.id === "actions" ? "" : t(c.labelKey))}</th>`)
+        .join("")}</tr>`;
       if (!filtered.length) {
         wrap.innerHTML = `<p class="empty-state">${ctx.rows.length ? t("poProjectsNoFilterResults") : t("noOrdersYet")}</p>`;
         return;
       }
-      const scope = "project";
       const tbody = filtered
         .map((r) => {
-          const compName = projectPoCompanyDisplay(r, ctx) || t("dash");
-          const contractNo = projectPoContractDisplay(r, ctx) || t("dash");
-          const canEditRow = canEdit && canEditProjectPoAgainstApprovals(r);
-          const hasAmends = projectPoHasAmendments(r);
-          return `
-                <tr>
-                  ${projectPoReferenceCellHtml(r)}
-                  <td>${escapeHtml(poRowDisplayDate(r))}</td>
-                  <td>${escapeHtml(formatFirestoreInstantIraq(r.createdAt))}</td>
-                  <td>${escapeHtml(ctx.projectNames[r.projectId] || r.projectId || t("dash"))}</td>
-                  <td>${escapeHtml(compName)}</td>
-                  <td>${escapeHtml(contractNo)}</td>
-                  <td>${escapeHtml(projectPoRegionDisplayName(r))}</td>
-                  <td>${escapeHtml((r.requesterName || "").trim() || t("dash"))}</td>
-                  ${projectPoReasonTableCell(r.reasonRequest)}
-                  <td>${escapeHtml(projectPoRequestTypeLabel(r.requestType))}</td>
-                  <td title="${escapeAttr(projectPoVehicleInfoLabel(r))}">${escapeHtml(projectPoVehicleInfoLabel(r))}</td>
-                  <td>${priorityBadge(r.priority)}</td>
-                  <td>${formatWorkflowTableCellForPo(r)}</td>
-                  <td>
-                    <button type="button" class="btn btn-secondary btn-sm btn-view-po" data-id="${r.id}">${t("view")}</button>
-                    ${
-                      hasAmends
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-po-amendments" data-id="${r.id}">${t(
-                            "btnPoAmendments"
-                          )}</button>`
-                        : ""
-                    }
-                    ${
-                      hasAdminAccess()
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-order-note" data-id="${r.id}">${t(
-                            "orderNoteButton"
-                          )}</button>`
-                        : ""
-                    }
-                    ${
-                      canEditRow
-                        ? `<button type="button" class="btn btn-secondary btn-sm btn-edit-po" data-id="${r.id}" data-scope="${scope}">${t("edit")}</button><button type="button" class="btn btn-danger btn-sm btn-del-po" data-id="${r.id}">${t("delete")}</button>`
-                        : ""
-                    }
-                  </td>
-                </tr>`;
+          return `<tr>${visibleCols.map((c) => projectPoTableCellHtml(c.id, r, ctx, canEdit)).join("")}</tr>`;
         })
         .join("");
       wrap.innerHTML = `<div class="table-scroll"><table class="data-table">
